@@ -18,7 +18,21 @@
 </head>
 <style>
   *{ font-family: "IBM Plex Sans JP", sans-serif;}
-  
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 40px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
 .background-on {
   background-color: var(--element-dark);
   border-radius:40px;
@@ -43,7 +57,7 @@
     justify-content: center;
     align-items: center;
     font-size: 24px;
-    border-radius: 16px;
+    border-radius:40px;
     transition: transform 0.2s ease-out ;
     position: relative;
 }
@@ -51,7 +65,7 @@
 img{
   width:192px;
   height:117px;
-  border-radius:24px;
+  border-radius:40px;
   border:none;
   position:relative;
 	top: 5px;
@@ -62,6 +76,12 @@ img{
   fill: #000000;
 }
 
+  .searchbox{
+    background: var(--text-light);
+    border-radius:100px;
+    padding:10px;
+  }
+  
 .txt-i{
   position: absolute;
   top:50%;
@@ -81,24 +101,25 @@ button{
 }
 
 input[type=search]{
-  background:#fff;
-  color:#fff;
-  border-radius:100px 24px 24px 100px;
+  background:none;
   padding:8px 8px 8px 16px;
   border:none;
-  height:43px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  outline: none;
+  height:58px;
   color:#000;
-  width: 208px;
+  width: 400px;
   margin-right:5px;
+  font-size:40px;
 }
 
+input::-webkit-search-cancel-button {
+      appearance: none;
+    }
+  
 .submit{
-  background-color: var(--element-dark);
-  color: var(--text-dark);
-  border-radius:24px 100px 100px 24px;
+  background-color:none ;
+  color: var(--element-dark);
   padding:8px 16px 5px 16px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .link{
@@ -154,13 +175,12 @@ a{
 :root {
   --background-light: #ffffff; /* Default white background for light mode */
   --background-dark: #000000;  /* Default black background for dark mode */
-  --element-light: #0000ff;    /* Default blue element background for light mode */
-  --element-dark: #0000ff;     /* Default blue element background for dark mode */
-  --text-light: #000000;       /* Default black text color for light mode */
-  --text-dark: #ffffff;        /* Default white text color for dark mode */
+  --element-light: #185af2;    /* Default blue element background for light mode */
+  --element-dark: #185af2;     /* Default blue element background for dark mode */
+  --text-light: #ffffff;       /* Default black text color for light mode */
+  --text-dark: #1c1c1c;        /* Default white text color for dark mode */
 }
 
-/* Default light mode */
 body {
   background-color: var(--background-light);
   margin: 0;
@@ -168,10 +188,12 @@ body {
 }
 
 @media (prefers-color-scheme: dark) {body {background-color: var(--background-dark);}
-
+  .searchbox{
+      background:var(--text-dark);
+  }
+  
 .submit{
-  background-color: var(--element-light);
-  color: var(--text-light);
+  color: var(--element-light);
 }
   
 a{color:#fff;}
@@ -187,18 +209,19 @@ img{
 }  
 
 input[type=search]{
-  background:#303030;
   color:#fff;
 }
 }
 </style>
 <body>
-  <header class="header"><div class="header-inner inner">
-
-<div class="search"><form id="cse-search-box" action="https://www.google.com/search"><input type="search" id="textBox" name="textBox" autofocus></form><form method="get" action="https://www.google.co.jp/search" id="googleForm"><input type="hidden" name="q" id="googleInput" size="31" maxlength="255" value=""　><input type="hidden" name="ie" value="UTF-8"><input type="hidden" name="oe" value="UTF-8"><input type="hidden" name="hl" value="ja"><button type="submit" name="btnG" value="Google 検索"><div class="submit"><span class="material-symbols-outlined">search</span></div></button></form></div><div id="clock"></div></div></header>
-  <div class="link"></div><div class="link"></div><div class="link"></div><div class="link"></div> <div class="link"></div><div class="link"></div>
   
-
+  <div class="link"></div><div class="link">
+    <div class="searchbox">
+  <div class="search"><form id="cse-search-box" action="https://www.google.com/search"><input type="search" id="textBox" name="textBox" placeholder=""　autofocus></form><form method="get" action="https://www.google.co.jp/search" id="googleForm"><input type="hidden" name="q" id="googleInput" size="31" maxlength="255" value=""　><input type="hidden" name="ie" value="UTF-8"><input type="hidden" name="oe" value="UTF-8"><input type="hidden" name="hl" value="ja"><button type="submit" name="btnG" value="Google 検索"><div class="submit"><span class="material-symbols-outlined">search</span></div></button></form></div><div id="clock"></div>
+      </div>
+  
+  </div><div class="link"></div>
+  
 <div class="title">Google</div>
 <div class="link">
   
