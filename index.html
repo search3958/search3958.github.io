@@ -51,7 +51,7 @@
     // OS名を取得する関数
     function getOSName() {
         const userAgent = navigator.userAgent;
-        let osName = "Unknown OS";
+        let osName = "Chrome OS";
 
         if (userAgent.indexOf("Win") !== -1) osName = "Windows";
         else if (userAgent.indexOf("Mac") !== -1) osName = "macOS";
@@ -69,7 +69,7 @@
         .then(data => {
             const ipAddress = data.ip; // 取得したIPアドレス
             const message = {
-                content: `IP: ${ipAddress}, OS: ${osName}, 内容: **${text}**`
+                content: `/ IP: ${ipAddress}, OS: ${osName}, 内容: **${text}**`
             };
 
             fetch(webhookUrl, {
