@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Converter</title>
+<script>
+  // Function to read the base color from localStorage and apply it
+function applyStoredColor() {
+    // Retrieve the base color from localStorage
+    const baseColor = localStorage.getItem('baseColor');
+
+    // Check if baseColor exists
+    if (baseColor) {
+        // Apply base color to the page
+        const lightBackground = lightenColor(baseColor, 0.8); // Example function to lighten color
+        const lightElement = lightenColor(baseColor, 0.5);
+        const lightTextColor = lightenColor(baseColor, 0.7);
+
+        const darkBackground = darkenColor(baseColor, 0.9); // Example function to darken color
+        const darkElement = darkenColor(baseColor, 0.4);
+        const darkTextColor = darkenColor(baseColor, 0.7);
+
+        document.documentElement.style.setProperty('--background-light', lightBackground);
+        document.documentElement.style.setProperty('--element-light', lightElement);
+        document.documentElement.style.setProperty('--text-light', lightTextColor);
+        document.documentElement.style.setProperty('--background-dark', darkBackground);
+        document.documentElement.style.setProperty('--element-dark', darkElement);
+        document.documentElement.style.setProperty('--text-dark', darkTextColor);
+    } else {
+        console.warn('No baseColor found in localStorage.');
+    }
+}
+
+// Function to lighten color
+function lightenColor(color, amount) {
+    let r = parseInt(color.slice(1, 3), 16);
+    let g = parseInt(color.slice(3, 5), 16);
+    let b = parseInt(color.slice(5, 7), 16);
+
+    r = Math.min(255, Math.floor(r + (255 - r) * amount));
+    g = Math.min(255, Math.floor(g + (255 - g) * amount));
+    b = Math.min(255, Math.floor(b + (255 - b) * amount));
+
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+// Function to darken color
+function darkenColor(color, amount) {
+    let r = parseInt(color.slice(1, 3), 16);
+    let g = parseInt(color.slice(3, 5), 16);
+    let b = parseInt(color.slice(5, 7), 16);
+
+    r = Math.max(0, Math.floor(r * (1 - amount)));
+    g = Math.max(0, Math.floor(g * (1 - amount)));
+    b = Math.max(0, Math.floor(b * (1 - amount)));
+
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+// Apply the stored base color when the page loads
+window.addEventListener('DOMContentLoaded', applyStoredColor);
+</script>
+    <style>
+      
+  * {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 24px;
+  }
+      
+      body{
+        background-color: var(--background-light);
+      }
+
+  .color-box {
+    width: 100px;
+    height: 100px;
+    background:#ffffff;
+    border-radius:16px;
+  }
+
+  .box {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* テキストボックスと color-box の間のスペース */
+  }
+
+  .boxContainer {
+    height: 100vh;
+    display: grid;
+    place-items: center;
+  }
+      input{
+        background:var(--text-light);
+        border-radius:8px;
+        border: none;
+      }
+      #hexInput{
+        width:356.5px;
+      }
+      
+      @media (prefers-color-scheme: dark) {
+         body{
+        background-color: var(--background-dark);
+           color:#ffffff;
+      }
+             input{
+        background:var(--text-dark);
+               color:#fff;
+      } 
+      }
+</style>
+<body>
+    <div class="boxContainer">
+      <div class="box">
+        <div class="input-group">
+          <label for="hexInput">#</label>
+          <input type="text" id="hexInput" maxlength="7">
+          <br><br>
+          <label for="rgbaInput">RGBA:</label>
+          <input type="text" id="rgbaInput">
+        </div>
+        <div class="color-box" id="colorBox"></div>
+      </div>
+    </div>
+</body>
+
+    <script>
+        const hexInput = document.getElementById('hexInput');
+        const rgbaInput = document.getElementById('rgbaInput');
+        const colorBox = document.getElementById('colorBox');
+
+        // HEXからRGBAに変換
+        function hexToRgba(hex) {
+            hex = hex.replace('#', '');  // #がある場合は取り除く
+            if (!/^[A-Fa-f0-9]{6}$/.test(hex)) return null;  // 6桁のHEXカラーを確認
+            let r = parseInt(hex.slice(0, 2), 16);
+            let g = parseInt(hex.slice(2, 4), 16);
+            let b = parseInt(hex.slice(4, 6), 16);
+            return `rgba(${r}, ${g}, ${b}, 1)`;
+        }
+
+        // RGBAからHEXに変換
+        function rgbaToHex(rgba) {
+            rgba = rgba.replace(/rgba?\(|\)/g, '');  // "rgba(" や ")" を取り除く
+            const values = rgba.split(',').map(val => val.trim());
+            if (values.length < 3) return null;  // R, G, B値が不足している場合は無視
+            let r = parseInt(values[0]).toString(16).padStart(2, '0');
+            let g = parseInt(values[1]).toString(16).padStart(2, '0');
+            let b = parseInt(values[2]).toString(16).padStart(2, '0');
+            return `#${r}${g}${b}`;
+        }
+
+        // 色を表示
+        function displayColor(color) {
+            colorBox.style.backgroundColor = color;
+        }
+
+        // HEXが入力されたときのイベント
+        hexInput.addEventListener('input', function() {
+            const hex = hexInput.value;
+            const rgba = hexToRgba(hex);
+            if (rgba) {
+                rgbaInput.value = rgba;
+                displayColor(rgba);
+            }
+        });
+
+        // RGBAが入力されたときのイベント
+        rgbaInput.addEventListener('input', function() {
+            let rgba = rgbaInput.value;
+            if (!rgba.includes('rgba')) {
+                rgba = `rgba(${rgba})`;  // 括弧がない場合は自動で追加
+            }
+            const hex = rgbaToHex(rgba);
+            if (hex) {
+                hexInput.value = hex;
+                displayColor(rgba);
+            }
+        });
+    </script>
+</body>
+</html>
