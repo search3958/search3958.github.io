@@ -91,6 +91,20 @@
             gap: 10px;
           
         }
+      @media (prefers-color-scheme: dark) {
+        body{
+          background:var(--background-dark);
+          color:#fff;
+        }
+        .slider {background:var(--text-dark);}
+        input:checked + .slider{
+          background:var(--element-light)
+        }
+        textarea{
+          background:var(--text-dark);
+            color:#fff;
+        }
+      }
     </style>
 </head>
 <body>
