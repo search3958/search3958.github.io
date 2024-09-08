@@ -60,6 +60,7 @@ a{
   border-radius:24px;
   margin:0px;
   padding: 25px;
+  height,width:74.01px;
   background-color:var(--element-light);
   box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.1);
 }
@@ -80,7 +81,6 @@ section {
 }
 .material-symbols-outlined{
 vertical-align: -7px;
-  font-size:480px;
 }
 .head{
   margin: 0;padding: 8px;display: flex;justify-content: center;align-items: center;display: flex;flex-wrap: wrap;text-align: right;
