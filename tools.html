@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  
+  <style>
+    *{
+    font-family: "IBM Plex Sans JP", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+:root {
+--background-light: #ffffff;
+--background-dark: #000000;
+--element-light: #185af2;
+--element-dark: #185af2;
+--text-light: #ffffff;
+--text-dark: #1c1c1c;
+}
+
+body {
+  display: flex;
+  margin: 0;
+  scroll-behavior: smooth;
+  background-color:var(--background-light);
+}
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 90px;
+  height: 100%;
+  padding: 20px;
+  text-align:center;
+}
+
+a{
+  text-decoration: none;
+  color: #333;
+}
+.link {
+  border-radius:100px;
+  margin:0px 20px;
+  display: block;
+  padding: 10px;
+  color: #333;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.link.active {
+  margin:0px 0px;
+  padding:10px 30px;
+  background-color:var(--text-light);
+}
+
+.fab {
+  border-radius:24px;
+  margin:10px;
+  display: block;
+  padding: 20px;
+  color: #333;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  background-color:var(--element-light);
+  
+}
+
+.fab.active {
+  border-radius:24px;
+  margin:5px;
+  padding: 25px;
+  background-color:var(--element-light);
+  box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+  margin-left: 90px;
+  padding:0px 40px;
+}
+
+section {
+  margin-bottom: 20px;
+  width:calc(100vw - 170px);
+  background-color:var(--text-light);
+  border-radius:24px;
+  padding:8px 16px 16px 16px;
+}
+.material-symbols-outlined{
+vertical-align: -7px;
+}
+.searchbox{
+  margin:0 auto;
+  text-align:center;
+  padding:40px;
+}
+iframe{
+  width:100%;
+  height:calc(100% - 25px);
+  border-radius:8px 8px 16px 16px;
+  border:none;
+  background:var(--background-light);
+}
+@media (prefers-color-scheme: dark) {
+  iframe{
+  background:var(--background-dark);
+}
+}
+    </style><script>document.addEventListener("scroll", () => {
+  const sections = document.querySelectorAll("section");
+  const links = document.querySelectorAll(".link");
+  
+
+  let index = sections.length;
+
+  while (--index && window.scrollY + 50 < sections[index].offsetTop) {}
+
+  links.forEach(link => link.classList.remove("active"));
+  links[index].classList.add("active");
+});
+
+
+
+      function applyStoredColor() {
+    // Retrieve the base color from localStorage
+    const baseColor = localStorage.getItem('baseColor');
+
+    // Check if baseColor exists
+    if (baseColor) {
+        // Apply base color to the page
+        const lightBackground = lightenColor(baseColor, 0.9); // Example function to lighten color
+        const lightElement = lightenColor(baseColor, 0.5);
+        const lightTextColor = lightenColor(baseColor, 0.7);
+
+        const darkBackground = darkenColor(baseColor, 0.9); // Example function to darken color
+        const darkElement = darkenColor(baseColor, 0.4);
+        const darkTextColor = darkenColor(baseColor, 0.7);
+
+        document.documentElement.style.setProperty('--background-light', lightBackground);
+        document.documentElement.style.setProperty('--element-light', lightElement);
+        document.documentElement.style.setProperty('--text-light', lightTextColor);
+        document.documentElement.style.setProperty('--background-dark', darkBackground);
+        document.documentElement.style.setProperty('--element-dark', darkElement);
+        document.documentElement.style.setProperty('--text-dark', darkTextColor);
+    } else {
+        console.warn('No baseColor found in localStorage.');
+    }
+}
+
+// Function to lighten color
+function lightenColor(color, amount) {
+    let r = parseInt(color.slice(1, 3), 16);
+    let g = parseInt(color.slice(3, 5), 16);
+    let b = parseInt(color.slice(5, 7), 16);
+
+    r = Math.min(255, Math.floor(r + (255 - r) * amount));
+    g = Math.min(255, Math.floor(g + (255 - g) * amount));
+    b = Math.min(255, Math.floor(b + (255 - b) * amount));
+
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+// Function to darken color
+function darkenColor(color, amount) {
+    let r = parseInt(color.slice(1, 3), 16);
+    let g = parseInt(color.slice(3, 5), 16);
+    let b = parseInt(color.slice(5, 7), 16);
+
+    r = Math.max(0, Math.floor(r * (1 - amount)));
+    g = Math.max(0, Math.floor(g * (1 - amount)));
+    b = Math.max(0, Math.floor(b * (1 - amount)));
+
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+// Apply the stored base color when the page loads
+window.addEventListener('DOMContentLoaded', applyStoredColor);</script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool home</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<script src="https://search3958.github.io/newtab/script.js" defer=""></script>
+<body>
+
+<div class="sidebar">
+  <a href="#section1"><span class="material-symbols-outlined link fab">
+search
+</span></a>
+  <a href="#section2"><span class="material-symbols-outlined link">
+palette
+</span>Color</a>
+  <a href="#section3" class="link">セクション2</a>
+  <a href="#section4" class="link">セクション3</a>
+  <a href="#section5" class="link">セクション4</a>
+</div>
+  
+<div class="content">
+  <section id="section1" style="height:0px;background:none;"></section>
+  <div class="searchbox">Hello</div>
+  <section id="section2" style="height:280px">Color<br><iframe src="https://search3958.github.io/color.html"></iframe></section>
+  <section id="section3" style="height:250px">セクション2の内容</section>
+  <section id="section4" style="height:250px">セクション3の内容</section>
+  <section id="section5" style="height:250px">4</section>
+</div>
+  
+<script src="script.js"></script>
+</body>
+</html>
