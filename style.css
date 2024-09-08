@@ -46,7 +46,7 @@ a{
 
 .fab {
   border-radius:24px;
-  margin:5px;
+  margin:15px;
   display: block;
   padding: 20px;
   color: #333;
@@ -59,7 +59,7 @@ a{
 
 .fab.active {
   border-radius:24px;
-  margin:0px;
+  margin:10px;
   padding: 25px;
   height:24px;
   width:24px;
@@ -171,3 +171,4 @@ position: absolute;
     color:#fff;
   }
 }
+
