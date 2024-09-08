@@ -48,7 +48,7 @@ a{
   border-radius:24px;
   margin:15px;
   display: block;
-  padding: 20px;
+  padding: 18px;
   color: #333;
   text-decoration: none;
   transition: all 0.3s ease;
@@ -60,7 +60,7 @@ a{
 .fab.active {
   border-radius:24px;
   margin:10px;
-  padding: 25px;
+  padding: 23px;
   height:24px;
   width:24px;
   background-color:var(--element-light);
@@ -171,4 +171,3 @@ position: absolute;
     color:#fff;
   }
 }
-
