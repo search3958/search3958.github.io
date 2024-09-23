@@ -1,241 +1,476 @@
 <!DOCTYPE html>
-<html lang="ja"><link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
-<script src="https://search3958.github.io/newtab/cstelm.js" defer></script>
-<script src="https://search3958.github.io/newtab/script.js" defer></script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"　crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP&display=swap" rel="stylesheet">
+<html lang="ja">
 <head>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"　crossorigin="anonymous"></script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://search3958.github.io/newtab/search.js"></script><script src="https://search3958.github.io/newtab/lang.js"></script><script async src="https://fundingchoicesmessages.google.com/i/pub-6151036058675874?ers=1" nonce="81tuZErrm_ZXG-A64GvWgQ"></script><script nonce="81tuZErrm_ZXG-A64GvWgQ">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();
-  
-  window.addEventListener('load', () => {
-  const elem = document.getElementById('textBox');
-  elem.focus();
-  });
 
-  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,-25" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webサイト作成</title>
+    <link rel="stylesheet" href="https://search3958.github.io/web-styles.css">
+</head>
+<body>
   
+
+  
+
+    <header>
+        <button id="copy-html">HTMLをコピー</button>
+        <button id="copy-css">CSSをコピー</button>
+        <button id="copy-script">Scriptをコピー</button>
+        <button id="copy-all">すべてをコピー</button>
+        <button id="download-all">ダウンロード</button>
+      <button id="clear-button">クリア</button>
+    </header>
+    <main>
+        <div id="left-panel">
+            <iframe id="preview-frame"></iframe>
+        </div>
+        <div id="right-panel">
+            <div id="tabs">
+                <button id="elements-tab" class="active">HTML</button>
+                <button id="css-tab">CSS</button>
+            </div>
+            <div id="elements-section" class="section active">
+                <div id="element-grid"></div>
+              <p>要素が削除されない場合，何度かボタンを押すと削除されやすくなります。</p>
+                <div id="added-elements-list"></div>
+            </div>
+            <div id="css-section" class="section">
+                <div id="css-list"></div>
+              <button id="apply-default-css">デフォルトのCSSを適用</button>
+            </div>
+        </div>
+  </main>
   <script>
-function sendWebhookNotification(text) {
-    const webhookUrl = 'https://discord.com/api/webhooks/1256157852259713087/EiGyxFJz5PBRTx06LqtRg9JK3GZE2nLO4rwU2R7e9-6_aNA0hIMJZesnWc7xL3VoNpZy';
+       document.addEventListener('DOMContentLoaded', () => {
+        const elementGrid = document.getElementById('element-grid');
+        const addedElementsList = document.getElementById('added-elements-list');
+        const previewFrame = document.getElementById('preview-frame');
+        const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+        const cssList = document.getElementById('css-list');
+        const applyDefaultCSSButton = document.getElementById('apply-default-css');
+        const clearButton = document.getElementById('clear-button');
 
-    // OS名を取得する関数
-    function getOSName() {
-        const userAgent = navigator.userAgent;
-        let osName = "Chrome OS";
+        let currentStylesheet = null;
+        const elementStyles = {}; // 要素ごとのスタイルを管理するオブジェクト
 
-        if (userAgent.indexOf("Win") !== -1) osName = "Windows";
-        else if (userAgent.indexOf("Mac") !== -1) osName = "macOS";
-        else if (userAgent.indexOf("Linux") !== -1) osName = "Linux";
-        else if (userAgent.indexOf("Android") !== -1) osName = "Android";
-        else if (userAgent.indexOf("like Mac") !== -1) osName = "iOS";
+        // ローカルストレージキー
+        const STORAGE_KEY = 'editorState';
 
-        return osName;
-    }
+        // 状態を保存する関数
+        function saveState() {
+            const elements = [];
+            previewDoc.body.querySelectorAll('*').forEach(element => {
+                // スクリプトタグやスタイルタグは保存対象外とする
+                if (['SCRIPT', 'STYLE'].includes(element.tagName)) return;
 
-    // CSS変数を取得する関数
-    function getCSSVariable(variableName) {
-        return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-    }
+                const el = {
+                    tag: element.tagName.toLowerCase(),
+                    id: element.id,
+                    text: element.textContent,
+                    classes: Array.from(element.classList),
+                    attributes: {}
+                };
+                // 保存が必要な属性を追加
+                if (el.tag === 'img' || el.tag === 'iframe') {
+                    el.attributes.src = element.getAttribute('src');
+                }
+                if (el.tag === 'a') {
+                    el.attributes.href = element.getAttribute('href');
+                }
+                elements.push(el);
+            });
 
-    const osName = getOSName(); // OS名を取得
-    const elementDark = getCSSVariable('--element-dark'); // CSSの--element-dark変数を取得
-    const elementLight = getCSSVariable('--element-light'); // CSSの--element-light変数を取得
+            // CSSの保存
+            const css = currentStylesheet ? currentStylesheet.textContent : '';
 
-    fetch('https://api.ipify.org?format=json')
-        .then(response => response.json())
-        .then(data => {
-            const ipAddress = data.ip; // 取得したIPアドレス
-            const message = {
-                content: `/newtab Clr: ${elementDark}, ${elementLight} IP: ${ipAddress}, OS: ${osName}, 内容: **${text}**`
+            const state = {
+                elements,
+                css
             };
 
-            fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(message),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        // 状態をロードする関数
+        function loadState() {
+            const stateJSON = localStorage.getItem(STORAGE_KEY);
+            if (!stateJSON) return;
+            const state = JSON.parse(stateJSON);
+
+            // CSSの復元
+            if (state.css) {
+                if (!currentStylesheet) {
+                    currentStylesheet = document.createElement('style');
+                    previewDoc.head.appendChild(currentStylesheet);
+                }
+                currentStylesheet.textContent = state.css;
+            }
+
+            // 要素の復元
+            state.elements.forEach(elData => {
+                let newElement;
+                if (elData.tag === 'custom') {
+                    // カスタム要素の場合
+                    newElement = previewDoc.createRange().createContextualFragment(elData.text).firstChild;
+                } else {
+                    newElement = document.createElement(elData.tag);
+                    newElement.textContent = elData.text;
+                    newElement.id = elData.id;
+                    if (elData.classes) {
+                        elData.classes.forEach(cls => newElement.classList.add(cls));
+                    }
+                    // 属性の復元
+                    if (elData.attributes) {
+                        for (const [attr, value] of Object.entries(elData.attributes)) {
+                            newElement.setAttribute(attr, value);
+                        }
+                    }
+                }
+                previewDoc.body.appendChild(newElement);
+
+                // リストの復元
+                const listItem = document.createElement('div');
+                listItem.className = 'item';
+                listItem.dataset.type = elData.tag;
+                listItem.dataset.index = Array.from(previewDoc.body.children).indexOf(newElement);
+
+                let buttonControls = '';
+
+                // 各要素のボタン設定
+                if (elData.tag === 'custom') {
+                    buttonControls = `
+                        <button class="edit-code">コード編集</button>
+                        <button class="delete">削除</button>`;
+                } else {
+                    if (elData.tag === 'img' || elData.tag === 'iframe') {
+                        buttonControls = `
+                            <button class="edit-class">クラス編集</button>
+                            <button class="edit-source">ソース編集</button>
+                            <button class="delete">削除</button>`;
+                    } else {
+                        buttonControls = `
+                            <button class="edit-class">クラス編集</button>
+                            ${elData.tag === 'button' ? '<button class="edit-link">リンク編集</button>' : ''}
+                            <button class="edit-text">テキスト編集</button>
+                            <button class="delete">削除</button>`;
+                    }
+                }
+
+                listItem.innerHTML = `${elData.tag} ${buttonControls}`;
+                addedElementsList.appendChild(listItem);
             });
-        })
-        .catch(error => console.error('Error:', error));
-}
+        }
 
+        // ローカルストレージをクリアする関数
+        function clearState() {
+            if (confirm('本当にローカルデータを削除しますか?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                // プレビューとリストをクリア
+                previewDoc.body.innerHTML = '';
+                addedElementsList.innerHTML = '';
+                if (currentStylesheet) {
+                    currentStylesheet.textContent = '';
+                }
+            }
+        }
+
+        // クリアボタンのイベントリスナー
+        clearButton.addEventListener('click', clearState);
+
+        // Add default CSS styles
+        function addDefaultStyles() {
+            const defaultCSS = `
+                h1, h2, h3, h4, h5, h6 { color: #004e9f; }
+                button { padding: 8px; border: none; margin: 1px; border-radius: 100px; }
+                .filled { background-color: #0072e2; color: #fff; }
+                .tonal { background-color: #d6e3ff; }
+                .outline { border: 1px solid #0072e2; background: none; }
+                .text { color: #004e9f; background: none; }
+                .preview-highlight { outline: 2px dashed blue; }
+                iframe{
+                    border:1px solid #555;
+                    border-radius:8px;
+                }
+            `;
+            if (!currentStylesheet) {
+                currentStylesheet = document.createElement('style');
+                previewDoc.head.appendChild(currentStylesheet);
+            }
+            currentStylesheet.textContent = defaultCSS;
+            saveState();
+        }
+
+        // Function to add CSS
+        function addStyle(cssContent, targetElement = null) {
+            if (!currentStylesheet) {
+                currentStylesheet = document.createElement('style');
+                previewDoc.head.appendChild(currentStylesheet);
+            }
+            
+            if (targetElement) {
+                // 対象の要素にのみスタイルを適用
+                const elementSelector = `#${targetElement.id}`;
+                let existingStyles = elementStyles[elementSelector] || '';
+                existingStyles += ` ${cssContent}`;
+                elementStyles[elementSelector] = existingStyles;
+                
+                updateStyles();
+            } else {
+                currentStylesheet.textContent = cssContent;
+            }
+            saveState();
+        }
+
+        function updateStyles() {
+            let combinedStyles = '';
+            for (const [selector, styles] of Object.entries(elementStyles)) {
+                combinedStyles += `${selector} { ${styles} } `;
+            }
+            currentStylesheet.textContent = combinedStyles;
+        }
+
+        // Function to add element to the iframe and list
+        function addElement(type) {
+            let newElement;
+
+            if (type === 'css') {
+                // Add a <style> element
+                const cssContent = prompt('CSSを入力してください:');
+                if (cssContent !== null) {
+                    addStyle(cssContent);
+                }
+                return;
+            } else if (type === 'custom') {
+                // ユーザーが入力したタグ名で要素を作成（無効な要素を回避）
+                const customTag = prompt('追加したい要素のタグ名を入力してください (例: div, span, section など):');
+                if (customTag && /^[a-zA-Z]+$/.test(customTag)) {
+                    try {
+                        newElement = document.createElement(customTag);
+                        newElement.textContent = `${customTag} Element`;
+                        newElement.id = `element-${Math.random().toString(36).substr(2, 9)}`; // ランダムなIDを付与
+                        previewDoc.body.appendChild(newElement);
+                    } catch (e) {
+                        alert('無効なタグ名です。');
+                        return;
+                    }
+                } else {
+                    alert('無効なタグ名です。');
+                    return;
+                }
+            } else {
+                // 既定のタグ名で要素を作成
+                newElement = document.createElement(type);
+                newElement.textContent = type + ' Element';
+                newElement.id = `element-${Math.random().toString(36).substr(2, 9)}`; // ランダムなIDを付与
+                previewDoc.body.appendChild(newElement);
+            }
+
+            const listItem = document.createElement('div');
+            listItem.className = 'item';
+            listItem.dataset.type = type;
+            listItem.dataset.index = Array.from(previewDoc.body.children).indexOf(newElement);
+
+            let buttonControls = '';
+
+            // 各要素のボタン設定
+            if (type === 'custom') {
+                buttonControls = `
+                    <button class="edit-code">コード編集</button>
+                    <button class="delete">削除</button>`;
+            } else {
+                if (type === 'img' || type === 'iframe') {
+                    buttonControls = `
+                        <button class="edit-class">クラス編集</button>
+                        <button class="edit-source">ソース編集</button>
+                        <button class="delete">削除</button>`;
+                } else {
+                    buttonControls = `
+                        <button class="edit-class">クラス編集</button>
+                        ${type === 'button' ? '<button class="edit-link">リンク編集</button>' : ''}
+                        <button class="edit-text">テキスト編集</button>
+                        <button class="delete">削除</button>`;
+                }
+            }
+
+            listItem.innerHTML = `${type} ${buttonControls}`;
+            addedElementsList.appendChild(listItem);
+            saveState();
+        }
+
+        // Handle hover events
+        addedElementsList.addEventListener('mouseover', event => {
+            const target = event.target.closest('.item');
+            if (target) {
+                const index = target.dataset.index;
+                const elementToHighlight = previewDoc.body.children[index];
+                if (elementToHighlight) {
+                    elementToHighlight.classList.add('preview-highlight');
+                }
+            }
+        });
+
+        addedElementsList.addEventListener('mouseout', event => {
+            const target = event.target.closest('.item');
+            if (target) {
+                const index = target.dataset.index;
+                const elementToRemoveHighlight = previewDoc.body.children[index];
+                if (elementToRemoveHighlight) {
+                    elementToRemoveHighlight.classList.remove('preview-highlight');
+                }
+            }
+        });
+
+        // Toggle tabs
+        const tabs = document.querySelectorAll('#tabs button');
+        const sections = document.querySelectorAll('.section');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                sections.forEach(section => section.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.id.replace('-tab', '-section')).classList.add('active');
+            });
+        });
+
+        // Create CSS accordion items
+        function createCssAccordion() {
+            const cssElements = ['body', 'button', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'その他'];
+            cssElements.forEach(el => {
+                const accordion = document.createElement('div');
+                accordion.className = 'accordion';
+                accordion.textContent = el;
+                accordion.addEventListener('click', () => {
+                    accordion.classList.toggle('active');
+                    const panel = accordion.nextElementSibling;
+                    panel.classList.toggle('show');
+                });
+                cssList.appendChild(accordion);
+
+                const panel = document.createElement('div');
+                panel.className = 'panel';
+                
+                if (el === 'その他') {
+                    // "その他" に対する大きなテキストボックスを追加
+                    const textArea = document.createElement('textarea');
+                    textArea.style.width = '100%';
+                    textArea.style.height = '200px';
+                    textArea.placeholder = 'ここに自由にCSSを入力してください...';
+                    textArea.addEventListener('input', () => {
+                        addStyle(textArea.value);
+                    });
+                    panel.appendChild(textArea);
+                } else {
+                    const cssProperties = {
+                        'body': ['color', 'background-color'],
+                        'button': ['border-radius', 'color', 'background-color', 'outline'],
+                        'p': ['color', 'font-size', 'font-weight'],
+                        'h1': ['color', 'font-size', 'font-weight'],
+                        'h2': ['color', 'font-size', 'font-weight'],
+                        'h3': ['color', 'font-size', 'font-weight'],
+                        'h4': ['color', 'font-size', 'font-weight'],
+                        'h5': ['color', 'font-size', 'font-weight']
+                    };
+                    cssProperties[el].forEach(prop => {
+                        const input = document.createElement('input');
+                        input.placeholder = `${prop} を設定`;
+                        input.addEventListener('input', () => {
+                            const newValue = input.value;
+                            const cssContent = `${prop}: ${newValue};`;
+                            const targetElements = previewDoc.querySelectorAll(el);
+                            targetElements.forEach(targetElement => {
+                                addStyle(cssContent, targetElement);
+                            });
+                        });
+                        panel.appendChild(input);
+                    });
+                }
+                cssList.appendChild(panel);
+            });
+        }
+
+        createCssAccordion();
+
+        // Add elements to the element grid
+        ['css', 'script', 'h1', 'h2', 'h3', 'h4', 'h5', 'p', 'button', 'img', 'iframe', 'custom'].forEach(type => {
+            const button = document.createElement('button');
+            button.textContent = `${type}`;
+            button.addEventListener('click', () => addElement(type));
+            elementGrid.appendChild(button);
+        });
+
+        // Event delegation for list item actions
+        addedElementsList.addEventListener('click', event => {
+            const target = event.target;
+            const listItem = target.closest('.item');
+            if (listItem) {
+                const index = listItem.dataset.index;
+                const elementToEdit = previewDoc.body.children[index];
+                if (!elementToEdit) return;
+
+                if (target.classList.contains('edit-class')) {
+                    const newClass = prompt('新しいクラス名を入力してください(Filled,Tonal,Outline,Text):');
+                    if (newClass !== null) {
+                        elementToEdit.className = newClass;
+                        saveState();
+                    }
+                } else if (target.classList.contains('edit-source')) {
+                    const newSource = prompt('新しいソースを入力してください:');
+                    if (newSource !== null) {
+                        elementToEdit.src = newSource;
+                        saveState();
+                    }
+                } else if (target.classList.contains('edit-text')) {
+                    const newText = prompt('新しいテキストを入力してください:');
+                    if (newText !== null) {
+                        elementToEdit.textContent = newText;
+                        saveState();
+                    }
+                } else if (target.classList.contains('edit-link')) {
+                    const newLink = prompt('新しいリンクを入力してください:');
+                    if (newLink !== null) {
+                        elementToEdit.href = newLink;
+                        saveState();
+                    }
+                } else if (target.classList.contains('delete')) {
+                    if (confirm('この要素を削除しますか?')) {
+                        previewDoc.body.removeChild(elementToEdit);
+                        addedElementsList.removeChild(listItem);
+                        saveState();
+                    }
+                } else if (target.classList.contains('edit-code')) {
+                    const newCode = prompt('カスタム要素のコードを入力してください:');
+                    if (newCode !== null) {
+                        try {
+                            const newElement = previewDoc.createRange().createContextualFragment(newCode).firstChild;
+                            if (newElement) {
+                                previewDoc.body.replaceChild(newElement, elementToEdit);
+                                saveState();
+                            } else {
+                                alert('無効なコードです。');
+                            }
+                        } catch (e) {
+                            alert('無効なコードです。');
+                        }
+                    }
+                }
+            }
+        });
+
+        // Apply default CSS on button click
+        applyDefaultCSSButton.addEventListener('click', () => {
+            addDefaultStyles();
+            saveState();
+        });
+
+        // 初期ロード時に状態を復元
+        loadState();
+    });
     </script>
-<title>新しいタブ</title>
-</head>
-<style>*{ font-family: "IBM Plex Sans JP", sans-serif;}.material-symbols-outlined {  font-family: 'Material Symbols Outlined';  font-weight: normal;  font-style: normal;  font-size: 40px;  line-height: 1;  letter-spacing: normal;  text-transform: none;  display: inline-block;  white-space: nowrap;  word-wrap: normal;  direction: ltr;  -webkit-font-feature-settings: 'liga';  -webkit-font-smoothing: antialiased;
-}
-.background-on {background-color: var(--element-dark);border-radius:40px;box-shadow:none;
-}
- 
-.container {text-align:center;perspective: 1000px;margin: 10px;transition: color 0.2s;color:#000000d0;
-}
-.container:hover{color:#00000040;}
-.box {  width: 190px;  height: 117px;  background-color: #00000000;  color: white;  display: flex;  justify-content: center;  align-items: center;  font-size: 24px;  border-radius:40px;  transition: transform 0.2s ease-out ;  position: relative;
-}
-
-img{width:192px;height:117px;border-radius:40px;border:none;position:relative;
-	top: 5px;
-	left:0px;transition: box-shadow 0.2s,color 0.3s,border-radius 0.3s;box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);background:#ffffff;fill: #000000;
-}
-.searchbox{  background: var(--text-light);  border-radius:100px;  padding:10px;}
-.txt-i{position: absolute;top:50%;left:50%;transform: translate(-50%,-50%);font-size:30px;text-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);padding:0;margin:0;font-size:25px;
-}
-button{border:none;background:none;margin:0px;
-}
-
-input[type=search]{background:none;padding:8px 8px 8px 16px;border:none;outline: none;height:58px;color:#000;width: 400px;margin-right:5px;font-size:40px;
-}
-
-input::-webkit-search-cancel-button {    appearance: none;  }
-.submit{background-color:none ;color: var(--element-dark);padding:8px 16px 5px 16px;
-}
-
-.link{margin: 0;padding: 8px;height: 100%;display: flex;justify-content: center;align-items: center;display: flex;flex-wrap: wrap;text-align: center;
-}
-
-.title{text-align:center;margin:16px 8px 8px 8px;font-size:20px;
-}
-a{color:#000;
-}
-
-
-.header {background: #ffffff90;position: fixed;top: 0;left: 0;right: 0;padding:10px;z-index:999;backdrop-filter: blur(20px);
-}
-.header-inner {display: flex;align-items: center;
-}
-.search {display: flex;align-items: center;margin:0 auto;
-}
-
-#clock{position: fixed;top: 20px;right: 20px;color:#858585;
-}
-
-:root {
---background-light: #ffffff;
---background-dark: #000000;
---element-light: #185af2;
---element-dark: #185af2;
---text-light: #ffffff;
---text-dark: #1c1c1c;
-}
-
-body {background-color: var(--background-light);margin: 0;font-family: Arial, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {body {background-color: var(--background-dark);}.searchbox{    background:var(--text-dark);}
-.submit{color: var(--element-light);
-}
-a{color:#fff;}
-.header{background:#00000090}
-body{background-color: var(--background-dark);}
-.title{color:#fff;}
-.container{color:#ffffffe0;}
-.container:hover{color:#ffffff80;}
-img{box-shadow: 0 0px 25px rgba(255, 255, 255, 0.1);background:#000000;
-}  
-
-input[type=search]{color:#fff;
-}
-}
-</style>
-<body><div class="link"></div><div class="link">  <div class="searchbox"><div class="search"><form id="cse-search-box" action="https://www.google.com/search"><input type="search" id="textBox" name="textBox" placeholder=" " autofocus></form><form method="get" action="https://www.google.co.jp/search" id="googleForm"><input type="hidden" name="q" id="googleInput" size="31" maxlength="255" value=""　><input type="hidden" name="ie" value="UTF-8"><input type="hidden" name="oe" value="UTF-8"><input type="hidden" name="hl" value="ja"><button type="submit" name="btnG" value="Google 検索"><div class="submit"><span class="material-symbols-outlined">search</span></div></button></form></div><div id="clock"></div> </div></div>
-  
-  
-    <style>.var{background-color:var(--element-dark);color:#fff;padding:10px;margin:8px 0px;font-size:24px;text-align:center}.varlink{font-size:20px;padding:2px 8px;background:var(--background-dark);color:var(--background-light);border-radius:8px;}small{color:#fff8;font-size:16px;}</style>
-  <div class="var">このページは間もなく新しく生まれ変わります！<a href="https://search3958.github.io/tools.html" class="varlink">新しいページを見てみる</a>
-  <br><small>従来のページはhttps://search3958.github.io/newtabでご利用いただけます。</small>
-  </div><br>
-  
-  
-  
-  <div class="link"></div>
-<div class="title">Google</div>
-<div class="link">
-<custom-box href="https://mail.google.com" src="https://search3958.github.io/newtab/gmail.png" content="Gmail"></custom-box>
-<custom-box href="https://classroom.google.com" src="https://search3958.github.io/newtab/classroom.png" content="Classroom"></custom-box>
-<custom-box href="https://youtube.com" src="https://search3958.github.io/newtab/youtube.png" content="Youtube"></custom-box>
-<custom-box href="https://docs.google.com" src="https://search3958.github.io/newtab/document.png" content="Document"></custom-box>
-<custom-box href="https://docs.google.com/presentation/" src="https://search3958.github.io/newtab/slide.png" content="Slide"></custom-box>
-<custom-box href="https://docs.google.com/spreadsheet/" src="https://search3958.github.io/newtab/spreadsheet.png" content="Spreadsheet"></custom-box>
-<custom-box href="https://translate.google.com" src="https://search3958.github.io/newtab/translate.png" content="Translate"></custom-box>
-<custom-box href="https://gemini.google.com" src="https://search3958.github.io/newtab/gemini.png" content="Gemini"></custom-box>
-<custom-box href="https://about.google/products" src="https://search3958.github.io/newtab/product.png" content="Product"></custom-box>
-
-</div></div>
-<div id="calc" popover><div class="window"><div class="margin">電卓</div><iframe src="https://search3958.github.io/newtab/calc.html" width="290" height="458.19" loading="lazy"></iframe></div></div></div>
-<div id="stopwatch" popover><div class="window"><div class="margin">ストップウォッチ</div><iframe src="https://search3958.github.io/newtab/stopwatch.html" width="290" height="458.19" loading="lazy"></iframe></div></div></div>
-<div id="timer" popover><div class="window"><div class="margin">タイマー</div><iframe src="https://search3958.github.io/newtab/timer.html" width="320" height="458.19" loading="lazy"></iframe></div></div></div>  
-
-<div id="color" popover><div class="window" ><div class="margin"><ml-block><div data-lang="en">Customize</div><div data-lang="ja-jp">カスタマイズ</div><div data-lang="zh-cn">客製化</div>
-</ml-block></div><div class="size"><div class="color-picker-container"><div class="color-picker">
-<label for="base-color"><ml-block><div data-lang="en">Choose a color</div><div data-lang="ja-jp">色を選択</div><div data-lang="zh-cn">選擇顏色</div>
-</ml-block></label><input type="color" id="base-color" value="#2196F3"></div></div>
-<div class="button-container"><button id="disable-material3"><div class="icon" style="margin:0px;"><ml-block><div data-lang="en">Use default colors</div><div data-lang="ja-jp">デフォルトの色を使用</div><div data-lang="zh-cn">使用預設顏色</div>
-</ml-block></div></button></div>
-<p>プレビュー</p><div class="container">
-<div class="bg"><div class="icon"><span class="material-symbols-outlined">search</span></div>  </div><div class="bgdark"><div class="icondark"><span class="material-symbols-outlined">search</span></div></div>
-<label><input type="checkbox" id="switch"><ml-block><div data-lang="en">Use Theme Icons</div><div data-lang="ja-jp">テーマアイコンを使用する</div><div data-lang="zh-cn">使用主題圖標</div>
-</ml-block></label></div></div></div></div></div>
-
-<div class="title"><ml-block><div data-lang="en">Tools</div><div data-lang="ja-jp">ツール</div><div data-lang="zh-cn">工具</div>
-</ml-block></div>
-<div class="link">
-
-<div class="container"><div class="box"><button popovertarget="calc" popovertargetaction="show"><img src=" https://search3958.github.io/newtab/in-calc.png"></button></div><ml-block><div data-lang="en">calculator</div><div data-lang="ja-jp">計算機</div><div data-lang="zh-cn">計算機</div>
-</ml-block></div>
-
-<div class="container"><div class="box"><button popovertarget="stopwatch" popovertargetaction="show"><img src=" https://search3958.github.io/newtab/stopwatch.png"></button></div><ml-block><div data-lang="en">Stopwatch</div><div data-lang="ja-jp">ストップウォッチ</div><div data-lang="zh-cn">跑表</div>
-</ml-block></div>
-
-<div class="container"><div class="box"><button popovertarget="timer" popovertargetaction="show"><img src=" https://search3958.github.io/newtab/timer.png"></button></div><ml-block><div data-lang="en">Timer</div><div data-lang="ja-jp">タイマー</div><div data-lang="zh-cn">定時器片</div>
-</ml-block></div>
-
-<div class="container"><div class="box"><button popovertarget="color" popovertargetaction="show"><img src=" https://search3958.github.io/newtab/customize.png"></button></div><ml-block><div data-lang="en">Customize</div><div data-lang="ja-jp">カスタマイズ</div><div data-lang="zh-cn">客製化</div>
-</ml-block></div>
-
-</div></div>
-<div class="title"><ml-block><div data-lang="en">Learning and productivity</div><div data-lang="ja-jp">学習と作業効率化</div><div data-lang="zh-cn">學習和工作效率</div>
-</ml-block></div>
-<div class="link">
-
-<custom-box href="https://app.monoxer.com" src="https://search3958.github.io/newtab/monoxer.png" content="Monoxer"></custom-box>
-<custom-box href="https://chatgpt.com" src="https://search3958.github.io/newtab/chatgpt.png" content="Chat GPT"></custom-box>
-<custom-box href="https://copilot.microsoft.com" src="https://search3958.github.io/newtab/copilot.png" content="Copilot"></custom-box>
-<custom-box href="https://codepen.io" src="https://search3958.github.io/newtab/codepen.png" content="Codepen"></custom-box>
-<custom-box href="https://wikipedia.org" src="https://search3958.github.io/newtab/wikipedia.png" content="Wikipedia"></custom-box>
-<custom-box href="https://canva.com" src="https://search3958.github.io/newtab/canva.png" content="Canva"></custom-box>
-<custom-box href="https://turbowarp.ore" src="https://search3958.github.io/newtab/turbowarp.png" content="TurboWarp"></custom-box>
-
-</div></div>
-<div class="title"><ml-block><div data-lang="en">Entertainment</div><div data-lang="ja-jp">娯楽</div><div data-lang="zh-cn">娛樂</div>
-</ml-block></div>
-<div class="link">
-
-<custom-box href="https://scratch.mit.edu" src="https://search3958.github.io/newtab/scratch.png" content="Scratch"></custom-box>
-<custom-box href="https://poki.com" src="https://search3958.github.io/newtab/poki.png" content="poki"></custom-box>
-<custom-box href="https://snake.io" src="https://search3958.github.io/newtab/snakeio.png" content="Snake.io"></custom-box>
-<custom-box href="https://www.google.com/logos/2010/pacman10-i.html" src="https://search3958.github.io/newtab/pacman.png" content="PACMAN"></custom-box>
-<custom-box href="#" src="https://search3958.github.io/newtab/gravity.png" content="驥阪ｊ繧↑?￥???"></custom-box>
-
-</div></div>
-<div class="link"><ml-block><div data-lang="en"><a href="https://forms.gle/TVzQP8dmyeVWbFxz9">Do you have any requests? Click here! (Google Form)</a></div><div data-lang="ja-jp"><a href="https://forms.gle/TVzQP8dmyeVWbFxz9">要望などがありますか？ここをクリックしてください! (Google Form)</a></div><div data-lang="zh-cn"><a href="https://forms.gle/TVzQP8dmyeVWbFxz9">有什麼要求嗎？點這裡（Google表格）</a></div>
-</ml-block>
-
-</div>
-</body>
-<link rel="stylesheet" href="https://search3958.github.io/newtab/style.css">
 </body>
 </html>
