@@ -173,4 +173,26 @@ p{
   font-size:12px;
 }
 
+@media (prefers-color-scheme: dark) {
+
+  #right-panel{
+    background:#000000;
+    color:#ffffff;
+  }
+  button{
+    background:#444444;
+    color:#ffffff;
+    border:none;
+    border: 1px solid #000000;
+  }
+  #tabs button.active{
+    color:#000;
+  } 
+  #tabs button{
+color:#000;
+  }
+  .accordion.active{
+    color:#000;
+  }
+}
 
