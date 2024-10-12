@@ -15,8 +15,8 @@ const sections = [
         links: [
             { text: '細かな修正', href: 'content2-1.html' },
             { text: 'リンクの変更', href: 'content2-2.html' },
-            { text: '機能の変更', href: 'content2-2.html' },
-            { text: '見た目の変更', href: 'content2-2.html' },
+            { text: '機能の変更', href: 'content2-3.html' },
+            { text: '見た目の変更', href: 'content2-3.html' },
         ]
     }
 ];
