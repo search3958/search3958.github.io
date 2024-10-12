@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@100;200;300;400;500;600;700&display=swap');
+*{
+  font-family: "IBM Plex Sans JP", serif;
+}
+body{
+  background:#f0f0f0;
+}
+a{
+  color:#185af2;
+}
+
+
+@media (prefers-color-scheme: dark) {
+  body{
+    color:#fff;
+    background:#000;
+  }
+  a{
+    color:#3a7cff;
+  }
+}
