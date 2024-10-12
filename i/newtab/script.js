@@ -1,5 +1,3 @@
-// sidebar.js
-
 // セクションとリンクのデータを配列として定義
 const sections = [
     {
@@ -7,7 +5,7 @@ const sections = [
         links: [
             { text: 'Newtab3について', href: 'content1-1.html' }, // 外部ファイルのパス（HTML形式）
             { text: '使い方', href: 'content1-2.html' },
-            { text: '今後の予定', href: 'content1-2.html' },
+            { text: '今後の予定', href: 'content1-3.html' },
         ]
     },
     {
@@ -16,7 +14,7 @@ const sections = [
             { text: '細かな修正', href: 'content2-1.html' },
             { text: 'リンクの変更', href: 'content2-2.html' },
             { text: '機能の変更', href: 'content2-3.html' },
-            { text: '見た目の変更', href: 'content2-3.html' },
+            { text: '見た目の変更', href: 'content2-4.html' },
         ]
     }
 ];
@@ -55,7 +53,7 @@ function updateFrame(src) {
 
 // URLのクエリパラメータを更新する関数
 function updateURL(newUrl) {
-    window.history.pushState({}, '', newUrl);
+    window.history.pushState({}, '', `?section=${newUrl}`); // ?section=...の形式でURLを更新
 }
 
 // 初回のコンテンツ更新（URLのクエリパラメータから）
