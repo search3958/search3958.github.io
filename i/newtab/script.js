@@ -3,9 +3,10 @@ const sections = [
     {
         title: '基本', // 小さい見出し
         links: [
-            { text: 'Newtab3について', href: 'content1-1.html' }, // 外部ファイルのパス（HTML形式）
-            { text: '使い方', href: 'content1-2.html' },
-            { text: '今後の予定', href: 'content1-3.html' },
+            { text: '新しいタブに登録する', href: 'content1-1.html' },
+            { text: 'Newtab3について', href: 'content1-2.html' }, // 外部ファイルのパス（HTML形式）
+            { text: '使い方', href: 'content1-3.html' },
+            { text: '今後の予定', href: 'content1-4.html' },
         ]
     },
     {
