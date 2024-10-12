@@ -3,7 +3,7 @@
   font-weight: 400;
   font-style: normal;
   transition: all .1s;
-  overflow:scroll;
+
 }
 body {
     display: flex;
@@ -25,6 +25,7 @@ header {
   background:#444;
   color:#fff;
   border:none;
+  overflow:hidden;
 }
 
 
@@ -35,17 +36,18 @@ button {
   border:none;
     border: 1px solid #ccc;
   font-size:14px;
+    overflow:hidden;
 }
 
 #elements-tab{
   border-radius:100px 32px 32px 100px;margin-right:2px;margin-bottom:10px;
   height:40px;
-  overflow:none !important!;
+  overflow:hidden;
 }
 #css-tab{
   border-radius:32px 100px 100px 32px;argin-left:2px;margin-bottom:10px;
   height:40px;
-  overflow:none !important!;
+  overflow:hidden;
 }
 
 main {
@@ -69,6 +71,7 @@ main {
     width: 300px;
     flex-direction: column;
     padding: 10px;
+  overflow:scroll;
 }
 
 #tabs {
@@ -77,6 +80,7 @@ main {
   height:40px;
   padding-bottom:5px;
   margin-bottom:5px;
+  overflow:hidden;
 }
 
 #tabs button {
@@ -183,16 +187,17 @@ p{
     background:#444444;
     color:#ffffff;
     border:none;
-    border: 1px solid #000000;
+    border: 1px solid #666;
   }
   #tabs button.active{
-    color:#000;
+    background:#666;
+    color:#fff;
   } 
   #tabs button{
-color:#000;
+background:#555;
+    color:#fff;
   }
   .accordion.active{
     color:#000;
   }
 }
-
