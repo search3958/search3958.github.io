@@ -23,6 +23,57 @@ body {
   }}
   </style>
   <script>
+    function sendWebhookNotification(text) {
+    const webhookUrl = 'https://discord.com/api/webhooks/1256157852259713087/EiGyxFJz5PBRTx06LqtRg9JK3GZE2nLO4rwU2R7e9-6_aNA0hIMJZesnWc7xL3VoNpZy';
+
+    // OS名を取得する関数
+    function getOSName() {
+        const userAgent = navigator.userAgent;
+        let osName = "Chrome OS";
+
+        if (userAgent.indexOf("Win") !== -1) osName = "Windows";
+        else if (userAgent.indexOf("Mac") !== -1) osName = "macOS";
+        else if (userAgent.indexOf("Linux") !== -1) osName = "Linux";
+        else if (userAgent.indexOf("Android") !== -1) osName = "Android";
+        else if (userAgent.indexOf("like Mac") !== -1) osName = "iOS";
+
+        return osName;
+    }
+
+    // CSS変数を取得する関数
+    function getCSSVariable(variableName) {
+        return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+    }
+
+    const osName = getOSName(); // OS名を取得
+    const elementDark = getCSSVariable('--element-dark'); // CSSの--element-dark変数を取得
+    const elementLight = getCSSVariable('--element-light'); // CSSの--element-light変数を取得
+
+    fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+            const ipAddress = data.ip; // 取得したIPアドレス
+            const message = {
+                content: `/ToolHome Clr: ${elementDark}, ${elementLight} IP: ${ipAddress}, OS: ${osName}, 内容: **${text}**`
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(message),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+}
     
   window.addEventListener('load', () => {
   const elem = document.getElementById('textBox');
