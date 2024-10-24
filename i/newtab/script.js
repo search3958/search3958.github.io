@@ -1,20 +1,17 @@
-// サイドバーの要素を取得
-const sidebar = document.getElementById('sidebar');
 const contentFrame = document.getElementById('contentFrame');
 
-// リンクをクリックしたときにiframeの内容を更新
-function addLinkListeners() {
-    const links = document.querySelectorAll('.sidebar-link');
-    
-    links.forEach(link => {
-        link.addEventListener('click', (event) => {
-            event.preventDefault(); // デフォルトのリンク動作を防ぐ
-            const href = link.getAttribute('href');
-            updateFrame(href); // iframeのsrcを更新
-            updateURL(href); // URLを更新
-        });
+// サイドバー内のリンクをすべて取得
+const links = document.querySelectorAll('#sidebar a');
+
+// リンクにクリックイベントを追加
+links.forEach(link => {
+    link.addEventListener('click', function(event) {
+        event.preventDefault(); // デフォルトのリンク動作を防ぐ
+        const href = this.getAttribute('href'); // クリックしたリンクのhrefを取得
+        updateFrame(href); // iframeのsrcを更新
+        updateURL(href); // URLを更新
     });
-}
+});
 
 // iframeのsrcを更新する関数
 function updateFrame(src) {
@@ -32,9 +29,9 @@ function updateContentFromURL() {
     const section = params.get('section');
 
     if (section) {
-        const link = document.querySelector(`a[href="${section}"]`);
-        if (link) {
-            updateFrame(section); // iframeのsrcを更新
+        const foundLink = Array.from(links).find(link => link.getAttribute('href') === section);
+        if (foundLink) {
+            updateFrame(foundLink.getAttribute('href')); // iframeのsrcを更新
         }
     }
 }
@@ -42,5 +39,7 @@ function updateContentFromURL() {
 // ページが読み込まれたときにコンテンツを更新
 updateContentFromURL();
 
-// リンクにイベントリスナーを追加
-addLinkListeners();
+// URLの戻る/進む操作に対応
+window.addEventListener('popstate', function() {
+    updateContentFromURL();
+});
