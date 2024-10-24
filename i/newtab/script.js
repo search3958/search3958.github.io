@@ -8,8 +8,11 @@ links.forEach(link => {
     link.addEventListener('click', function(event) {
         event.preventDefault(); // デフォルトのリンク動作を防ぐ
         const href = this.getAttribute('href'); // クリックしたリンクのhrefを取得
-        updateFrame(href); // iframeのsrcを更新
-        updateURL(href); // URLを更新
+        const section = new URLSearchParams(href.split('?')[1]).get('section'); // section パラメータを取得
+        if (section) {
+            updateFrame(section); // iframeのsrcを更新
+            updateURL(href); // URLを更新
+        }
     });
 });
 
@@ -29,10 +32,7 @@ function updateContentFromURL() {
     const section = params.get('section');
 
     if (section) {
-        const foundLink = Array.from(links).find(link => link.getAttribute('href') === section);
-        if (foundLink) {
-            updateFrame(foundLink.getAttribute('href')); // iframeのsrcを更新
-        }
+        updateFrame(section); // iframeのsrcを更新
     }
 }
 
