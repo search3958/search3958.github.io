@@ -1,0 +1,61 @@
+<ui-script style="display:none">
+    font:Noto+sans+jp;
+    color:#3765ff;
+    head:"UI Script";
+    h2:**エフェクト**;br:line;
+    
+     h3:#062373{アイコン};
+    text:アイコンはどこでも使用することができます。;
+    text:@{}の{}にGoogle Materialのアイコン名を入れることで，どこにでもアイコンを追加できます。;
+    text:**コード**;
+text:button：url"#"：text"＠{terminal}ターミナルを開く"；;
+    text:text：＠{subtitles}字幕付き；;
+　　text:**実行結果**;
+    button:url"#":text"@{terminal}ターミナルを開く";
+    text:@{subtitles}字幕付き;
+    br:line;
+    
+     h3:#062373{文字の装飾};
+    text:太字と色を指定することができます。;
+    text:**で囲むことで太字にでき，`#ff0000{}`の{}内に文字を入れることでテキストを装飾することができます。;
+    text:**コード**;
+text:text：とても＊＊大きく＊＊て美しい＃ff0000{＊＊太い＊＊赤}と＃0000ff{青}と＃006000{緑}と＃909000{黄}の虹があった；;
+　　text:**実行結果**;
+    text:とても**大きく**て美しい#ff0000{**太い**赤}と#0000ff{青}と#006000{緑}と#909000{黄}の虹があった;
+    br:line;
+    
+     h2:**要素**;br:line;
+    
+         h3:#062373{button};
+    text:ボタンはFilled,Outline,Text,fabの4つのタイプがあり，それぞれ見た目が違います。;
+    text:デフォルトはFilledに設定されており，fabは画面右下にあります。;
+    text:**コード**;
+text:button：url"google.com"：text"Filled"；;
+    text:button：url"#"：type"outline"：text"Outline"；;
+    text:button：url"#"：type"text"：text"Text"；;
+        text:button：url"#"：type"fab"：text"＠{search}fab"；;
+　　text:**実行結果**;
+    button:type"filled":url"https://google.com":text"Filled";
+    button:text"Outline":type"outline";
+    button:url:text"text":type"text";
+    button:text"@{search}fab":type"fab";
+    br:line;
+    
+        
+         h3:#062373{card};
+    text:カードは，クリックするとボタンんのように作動させることができます。;
+    text:**コード**;
+text:card：title"Hello."：text"hello, card."：button"Google"：link"google.com"；;text:card：title"Hello."：text"hello, card."：button"Google"：link"google.com"；;
+　　text:**実行結果**;
+    card:title"Hello.":text"hello, card.":button"Google":link"google.com";card:title"Hello.":text"hello, card.":button"Google":link"google.com";
+    br:line;
+    
+         h3:#062373{buttom};
+    text:listはcard要素のように作動します。;
+    text:**コード**;
+text:list：title"Hello."：text"hello, list."：button"Google"；link"google.com"；;text:list：title"Hello."：text"hello, list."：button"Google"；link"google.com"；;
+　　text:**実行結果**;
+    list:title"Hello.":text"hello, list.":button"Google":link"google.com";    list:title"Hello.":text"hello, list.":button"Google":link"google.com";
+    br:line;
+  </ui-script>
+  <script async src="https://search3958.github.io/uiscript/script.js"></script>
