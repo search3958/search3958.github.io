@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Gemini</h1>
+    <div id="chat-box"></div>
+  <div class="send-box">
+    <textarea type="text" id="user-input" placeholder="メッセージを入力してください"></textarea>
+    <button id="send-btn">送信</button>
+</div>
+  <style>
+    *{
+    font-family: "IBM Plex Sans JP", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.mine{
+  background:#000;
+  color:#fff;
+  padding:8px 16px;
+  width:fit-content;
+  border-radius:24px;
+  font-weight: 500 !important; margin-top: 10px;
+}
+h1{
+  width:600px;
+  margin:0 auto;
+}
+.gemini{
+  background: linear-gradient(to bottom right, blue, pink);
+  color:#fff;
+  padding:8px 16px;
+  width:fit-content;
+  border-radius:24px;
+  font-weight: 500 !important; margin-top: 10px;
+}
+
+.message,.gemini-message{
+  padding:8px;
+  background:#f0f0f0;
+  margin-top:8px;
+  border-radius:24px;
+  max-width:600px;
+  width:fit-content;
+  margin-bottom: 1em;
+}
+#chat-box { max-width: 600px; margin: 0 auto; padding: 1em; }
+
+.bold { font-weight: 500 !important; } /* 太字用クラス */
+.send-box{
+  display: flex;
+  justify-content: center;
+  padding:16px;
+}
+.code-container { position: relative; } /* コピーボタン用 */
+.copy-button { position: absolute; right: 10px; top: 10px; cursor: pointer; border:none;
+background:#fff;border-radius:100px;padding:8px;}
+pre{
+  width:600px;
+  word-break: break-all;
+}
+#user-input{
+  width:550px !important ;
+  padding:8px;
+  border-radius:24px 8px 8px 24px;
+  min-height:50px;
+  border:none;
+  background:#f0f0f0;
+}
+#send-btn{
+  width:50px;
+  border-radius:8px 24px 24px 8px;
+  margin-left:4px;
+  background:#0f0f0f;
+  color:#fff;
+  border:none;
+}
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "@google/generative-ai": "https://esm.run/@google/generative-ai"
+            }
+        }
+    </script>
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        const API_KEY = "AIzaSyB1W8dbxANWfA2AU9sQCgmCZgBzr_ml-z4";
+
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        async function sendMessage() {
+            const inputElement = document.getElementById("user-input");
+            const userMessage = inputElement.value.trim();
+            if (!userMessage) return;
+
+            // チャットボックスを取得
+            const chatBox = document.getElementById("chat-box");
+
+            // ユーザーメッセージのエレメントを動的に生成
+            const userMessageContainer = document.createElement("div");
+            userMessageContainer.className = "mine";
+            userMessageContainer.textContent = "あなた:";
+
+            const userMessageElement = document.createElement("div");
+            userMessageElement.className = "message";
+            userMessageElement.innerHTML = formatMessage(userMessage); // 改行と太字を適用
+
+            // ユーザーメッセージを表示
+            chatBox.appendChild(userMessageContainer);
+            chatBox.appendChild(userMessageElement);
+
+            inputElement.value = "";
+
+            // AIの応答を表示するためのプレースホルダー
+            const aiMessageContainer = document.createElement("div");
+            aiMessageContainer.className = "gemini";
+            aiMessageContainer.textContent = "AI:";
+
+            const aiMessageElement = document.createElement("div");
+            aiMessageElement.className = "gemini-message";
+
+            chatBox.appendChild(aiMessageContainer);
+            chatBox.appendChild(aiMessageElement);
+
+            try {
+                const result = await model.generateContentStream(userMessage);
+                let fullText = "";
+
+                for await (const chunk of result.stream) {
+                    const chunkText = chunk.text();
+                    fullText += chunkText;
+
+                    // 部分的なテキストをリアルタイムに表示
+                    aiMessageElement.innerHTML = formatMessage(fullText); // 改行と太字を適用
+                }
+            } catch (error) {
+                console.error("エラーが発生しました:", error);
+                aiMessageElement.innerHTML = "エラーが発生しました。もう一度試してください。";
+            }
+        }
+
+        // メッセージをフォーマットする関数
+        function formatMessage(message) {
+            // **で囲まれたテキストを太字に変換
+            message = message.replace(/\*\*(.+?)\*\*/g, '<span class="bold">$1</span>');
+            // ```で囲まれたコードを<pre>要素に変換
+            message = message.replace(/```([\s\S]*?)```/g, '<div class="code-container"><pre>$1</pre><button class="copy-button" onclick="copyToClipboard(this)">コードをコピー</button></div>');
+            // 改行を<br>に変換
+            return message.replace(/\n/g, '<br>');
+        }
+
+        // クリップボードにコピーする関数
+        function copyToClipboard(button) {
+            const codeElement = button.previousElementSibling;
+            const codeText = codeElement.innerText;
+            navigator.clipboard.writeText(codeText).then(() => {
+                alert("コードがコピーされました！");
+            }).catch(err => {
+                console.error("コピーに失敗しました:", err);
+            });
+        }
+
+        // 送信ボタンのイベントリスナーを設定
+        document.getElementById("send-btn").addEventListener("click", sendMessage);
+
+        // Enterキーでもメッセージを送信できるように設定
+        document.getElementById("user-input").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>
