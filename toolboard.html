@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<title>Tool board</title>
+  <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="icon" href="https://search3958.github.io/favicon-newtab.svg">
+  <script type="importmap">
+    {
+      "imports": {
+        "@material/web/": "https://esm.run/@material/web/"
+      }
+    }
+  </script>
+  <script type="module">
+    import '@material/web/all.js';
+    import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
+
+    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+  </script>
+  <script>
+  if (CSS && 'paintWorklet' in CSS) {
+    CSS.paintWorklet.addModule('https://unpkg.com/smooth-corners');
+  }
+</script>
+  </head>
+<body>
+  <div class="title">ダッシュボード</div>
+  <div class="search-box"><md-ripple></md-ripple>
+        <form action="https://www.google.com/search" method="get">
+            <input class="searchtext" type="text" name="q" placeholder="Googleで検索" required>
+            <button class="searchbtn" type="submit"><span class="material-symbols-rounded searchicon">
+search
+</span></button>
+        </form>
+    </div>
+  <div class="sidebar">
+ <label class="label-a side">
+        <input type="radio" name="board" value="a" id="radio-a" class="nonedisplay" checked> 
+   <span class="material-symbols-rounded">
+dashboard
+</span>
+    </label><br><br>
+    <label class="label-b side">
+        <input type="radio" name="board" value="b" class="nonedisplay" id="radio-b"> <span class="material-symbols-rounded">
+pages
+</span>
+    </label></div>
+<div class="board-a">
+  <div class="top">
+    <div class="ripple">
+    <div id="timeDisplay"></div><md-ripple></md-ripple></div>
+    <div class="complication github-icon">
+      <md-ripple></md-ripple>
+      <a href="https://github.com/"><svg height="50px" aria-hidden="true" viewBox="0 0 24 24" version="1.1" width="50px" data-view-component="true">
+    <path d="M12.5.75C6.146.75 1 5.896 1 12.25c0 5.089 3.292 9.387 7.863 10.91.575.101.79-.244.79-.546 0-.273-.014-1.178-.014-2.142-2.889.532-3.636-.704-3.866-1.35-.13-.331-.69-1.352-1.18-1.625-.402-.216-.977-.748-.014-.762.906-.014 1.553.834 1.769 1.179 1.035 1.74 2.688 1.25 3.349.948.1-.747.402-1.25.733-1.538-2.559-.287-5.232-1.279-5.232-5.678 0-1.25.445-2.285 1.178-3.09-.115-.288-.517-1.467.115-3.048 0 0 .963-.302 3.163 1.179.92-.259 1.897-.388 2.875-.388.977 0 1.955.13 2.875.388 2.2-1.495 3.162-1.179 3.162-1.179.633 1.581.23 2.76.115 3.048.733.805 1.179 1.825 1.179 3.09 0 4.413-2.688 5.39-5.247 5.678.417.36.776 1.05.776 2.128 0 1.538-.014 2.774-.014 3.162 0 .302.216.662.79.547C20.709 21.637 24 17.324 24 12.25 24 5.896 18.854.75 12.5.75Z"></path>
+</svg></a>
+    </div>
+    <div class="complication">
+      <md-ripple></md-ripple>
+      <div class="date-a"></div>
+    <div class="date-b"></div>
+    </div>
+    <div class="complication">
+      <md-ripple></md-ripple>
+      <a href="https://search3958.github.io"><img src="https://search3958.github.io/favicon-webmaker.svg" height="60px" class="scode-icon"></a>
+    </div>
+  </div>
+  <div class="widget">
+  <div class="calculator">
+    <input type="text" class="calc-display" id="display" placeholder="計算機">
+    <div class="calc-buttons">
+        <button class="calc-button" onclick="appendValue('7')">7<md-ripple></md-ripple></button>
+        <button class="calc-button" onclick="appendValue('8')">8<md-ripple></md-ripple></button>
+        <button class="calc-button" onclick="appendValue('9')">9<md-ripple></md-ripple></button>
+        <button class="calc-button operation" onclick="appendValue('/')">÷<md-ripple></md-ripple></button>
+        <button class="calc-button" onclick="appendValue('4')">4<md-ripple></md-ripple></button>
+        <button class="calc-button" onclick="appendValue('5')">5<md-ripple></md-ripple></button>
+        <button class="calc-button" onclick="appendValue('6')">6<md-ripple></md-ripple></button>
+        <button class="calc-button operation" onclick="appendValue('*')">×<md-ripple></md-ripple></button>
+        <button class="calc-button" onclick="appendValue('1')">1<md-ripple></md-ripple></button>
+        <button class="calc-button" onclick="appendValue('2')">2<md-ripple></md-ripple></button>
+        <button class="calc-button" onclick="appendValue('3')">3<md-ripple></md-ripple></button>
+        <button class="calc-button operation" onclick="appendValue('-')">−<md-ripple></md-ripple></button>
+        <button class="calc-button" onclick="appendValue('0')">0<md-ripple></md-ripple></button>
+        <button class="calc-button" onclick="appendValue('.')">.<md-ripple></md-ripple></button>
+        <button class="calc-button" onclick="clearDisplay()">C<md-ripple></md-ripple></button>
+        <button class="calc-button operation" onclick="appendValue('+')">+<md-ripple></md-ripple></button>
+        <button class="calc-button equal" onclick="calculate()">=<md-ripple></md-ripple></button>
+    </div>
+</div>
+  <div class="note">ノート
+      <textarea id="myTextBox" rows="10" cols="50" placeholder="入力した内容は自動で復元されます。"></textarea>
+    </div>
+<div class="shortcut">ショートカット
+      <div class="textbox-container">
+        <input class="cut-text" type="text" id="textbox1" placeholder="テキストボックス1">
+        <button class="cut-btn" onclick="openURL(1)">開く<md-ripple></md-ripple></button>
+    </div>
+    <div class="textbox-container">
+        <input class="cut-text" type="text" id="textbox2" placeholder="テキストボックス2">
+        <button class="cut-btn" onclick="openURL(2)">開く<md-ripple></md-ripple></button>
+    </div>
+    <div class="textbox-container">
+        <input class="cut-text" type="text" id="textbox3" placeholder="テキストボックス3">
+        <button class="cut-btn" onclick="openURL(3)">開く<md-ripple></md-ripple></button>
+    </div>
+    <div class="textbox-container">
+        <input class="cut-text" type="text" id="textbox4" placeholder="テキストボックス4">
+        <button class="cut-btn" onclick="openURL(4)">開く<md-ripple></md-ripple></button>
+    </div>
+    <div class="textbox-container">
+        <input class="cut-text" type="text" id="textbox5" placeholder="テキストボックス5">
+        <button class="cut-btn" onclick="openURL(5)">開く<md-ripple></md-ripple></button>
+    </div>
+    <div class="textbox-container">
+        <input class="cut-text" type="text" id="textbox6" placeholder="テキストボックス6">
+        <button class="cut-btn" onclick="openURL(6)">開く<md-ripple></md-ripple></button>
+    </div>
+    </div>
+    <div class="stopwatch">ストップウォッチ
+      <div id="stopwatch-time">00:00:00</div>
+      <div class="stopwatch-buttons">
+    <button id="stopwatch-startStopBtn">開始<md-ripple></md-ripple></button>
+    <button id="stopwatch-resetBtn">リセット<md-ripple></md-ripple></button>
+    </div></div>
+      <div class="colorbox">カラーピッカー
+    <div class="color-picker-container">
+        <label for="color-picker"><div id="color-box" class="color-box"><md-ripple></md-ripple></div></label>
+        <input type="color" id="color-picker">
+    </div><div style="display: flex;justify-content: center;">
+        <input type="text" id="hex-input" placeholder="#000000"></div>
+    </div>
+</div>
+</div>
+  <div class="board-b">
+    <p class="sc">Google</p><div class="links">
+<link-box href="mail.google.com" img="gmail.webp">Gmail</link-box>
+<link-box href="classroom.google.com" img="classroom.webp">Classroom</link-box>
+<link-box href="youtube.com" img="youtube.webp">Youtube</link-box>
+<link-box href="docs.google.com" img="document.webp">Document</link-box>
+<link-box href="docs.google.com/presentation/" img="slide.webp">Slide</link-box>
+<link-box href="docs.google.com/spreadsheet/" img="spreadsheet.webp">Spreadsheet</link-box>
+<link-box href="translate.google.com" img="translate.webp">Translate</link-box>
+<link-box href="gemini.google.com" img="gemini.webp">Gemini</link-box>
+<link-box href="drive.google.com/" img="drive.webp">ドライブ</link-box>
+<link-box href="about.google/products" img="product.webp">Product</link-box></div>
+<p class="sc">学習と作業効率化</p><div class="links">
+<link-box href="app.monoxer.com" img="monoxer.webp">Monoxer</link-box>
+<link-box href="chatgpt.com" img="chatgpt.webp">Chat GPT</link-box>
+<link-box href="copilot.microsoft.com" img="copilot.webp">Copilot</link-box>
+<link-box href="codepen.io" img="codepen.webp">Codepen</link-box>
+<link-box href="https://claude.ai/new" img="claude.webp">Claude</link-box>
+<link-box href="canva.com" img="canva.webp">Canva</link-box>
+<link-box href="www.office.com/?auth=1" img="microsoft365.webp">Microsoft 365</link-box>
+<link-box href="turbowarp.org" img="turbowarp.webp">TurboWarp</link-box>
+<link-box href="kahoot.it" img="kahoot.webp">Kahoot</link-box>
+  </div>
+<p class="sc">ショッピング</p><div class="links">
+<link-box href="www.amazon.co.jp/" img="amazon.webp">Amazon</link-box>
+<link-box href="ja.aliexpress.com/" img="aliexpress.webp">AliExpress</link-box>
+<link-box href="www.wish.com/ja" img="wish.webp">Wish</link-box>
+<link-box href="jp.mercari.com/" img="mercari.webp">Mercali</link-box>
+<link-box href="www.taobao.com/" img="taobao.webp">淘宝</link-box>
+  </div>
+  <p class="sc">娯楽</p><div class="links"><div class="links">
+  <link-box href="scratch.mit.edu" img="scratch.webp">Scratch</link-box>
+<link-box href="poki.com" img="poki.webp">poki</link-box>
+<link-box href="snake.io" img="snakeio.webp">Snake.io</link-box>
+<link-box href="www.google.com/logos/2010/pacman10-i.html" img="pacman.webp">PACMAN</link-box>
+<link-box href="www.instagram.com/" img="instagram.webp">Instagram</link-box>
+<link-box href="www.netflix.com/jp/" img="netflix.webp">Netflix</link-box>
+<link-box href="weverse.io/?hl=ja" img="weverse.webp">Weverse</link-box>
+<link-box href="www.primevideo.com/ref=atv_nb_lcl_ja_JP" img="primevideo.webp">Prime Video</link-box>
+<link-box href="open.spotify.com/intl-ja" img="spotify.webp">Spotify</link-box>
+    </div></div>
+  </div>
+</body>
+<style>*{font-family:"Inter",serif}.board-a{background:#f4f4f4;height:calc(100vh - 100px);width:calc(100vw - 120px);bottom:0;right:0;border-radius:56px 0 0 0;overflow:scroll;display:none}.top{padding:27px;display:flex;gap:16px}.widget{flex-wrap:wrap;padding:27px;display:flex;gap:16px;padding-top:0}.complication{background:#fff;width:60px;height:60px;border-radius:30px;position:relative}#timeDisplay{width:120px;height:60px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;border-radius:30px;--smooth-corners:12,5;mask-image:paint(smooth-corners);-webkit-mask-image:paint(smooth-corners);font-weight:500}.github-icon{padding:4.5px;width:51px;height:51px}.ripple{position:relative;border-radius:30px}.date-a,.date-b{text-align:center;position:relative;top:6px}.date-b{font-size:24px}.date-a{color:#c70808;font-weight:500}.scode-icon{border-radius:30px}.calculator{background:#fff;padding:16px;border-radius:30px;width:18vw;min-width:300px;max-width:500px;height:348px}.calc-display{width:calc(100% - 20px);height:50px;background:#f4f4f4;border:none;outline:none;border-radius:14px;margin-bottom:10px;padding:0 10px;font-size:1.5rem;text-align:right}.calc-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.calc-button{height:50px;background:#f0f0f0;border:none;border-radius:14px;font-size:1.2rem;position:relative}.calc-button.operation{background:#e5edff;color:#001d35}.calc-button.equal{background:#0074ff;color:#fff;grid-column:span 4}.note{background:#fff;border-radius:30px;padding:16px;height:348px;width:20vw;min-width:265px;max-width:700px}.shortcut{background:#fff;border-radius:30px;padding:16px;height:348px;width:20vw;min-width:230px;max-width:600px}#myTextBox{resize:none;width:calc(100% - 16px);height:calc(348px - 45px);border-radius:14px;margin-top:4px;padding:8px;border:none;background:#f4f4f4}.cut-text{width:100%;margin-right:8px;border-radius:14px;border:none;background:#f4f4f4;padding-left:8px}.cut-btn{width:60px;border-radius:14px;border:none;position:relative;background:#0074ff;color:#fff}.textbox-container{display:flex;height:44px;margin-bottom:10px;position:relative;top:8px}#stopwatch-time{font-size:48px;margin:20px;text-align:center;position:relative;top:55px}.stopwatch{background:#fff;border-radius:30px;padding:16px;height:348px;width:15vw;min-width:270px;max-width:400px}.stopwatch-buttons{display:flex;gap:8px}#stopwatch-startStopBtn,#stopwatch-resetBtn{width:100%;height:60px;border-radius:30px;border:none;background:#f0f0f0;position:relative;top:70px}#stopwatch-startStopBtn{background:#0074ff;color:#fff}.geminibox{background:#fff;border-radius:30px;padding:16px;height:348px;width:20vw;min-width:265px;max-width:700px;overflow:scroll}.mine{background:#000;color:#fff;padding:8px 16px;width:fit-content;border-radius:24px;font-weight:500!important;margin-top:10px}.gemini{background:linear-gradient(to bottom right,blue,pink);color:#fff;padding:8px 16px;width:fit-content;border-radius:24px;font-weight:500!important;margin-top:10px}.message,.gemini-message{padding:8px;background:#f0f0f0;margin-top:8px;border-radius:24px;max-width:600px;width:fit-content;margin-bottom:1em}#chat-box{max-width:600px;margin:0 auto;padding:1em}.bold{font-weight:500!important}.send-box{display:flex;justify-content:center;padding:16px}.code-container{position:relative}.copy-button{position:absolute;right:10px;top:10px;cursor:pointer;border:none;background:#fff;border-radius:100px;padding:8px}pre{width:600px;word-break:break-all}#user-input{width:550px!important;padding:8px;border-radius:24px 8px 8px 24px;min-height:50px;border:none;background:#f0f0f0}#send-btn{width:50px;border-radius:8px 24px 24px 8px;margin-left:4px;background:#0f0f0f;color:#fff;border:none}.color-box{width:70%;height:80px;margin-top:10px;background:#000;border-radius:100px;margin:20px auto;position:relative;margin-top:50px;background:#0075ff}.colorbox{background:#fff;border-radius:30px;padding:16px;height:348px;width:15vw;min-width:270px;max-width:400px;display:block}#color-picker{position:relative;bottom:75px;left:60px;opacity:0}#hex-input{font-size:24px;border-radius:13px;width:130px;padding:8px;text-align:center;margin:0 auto}.board-b{display:none;background:#f4f4f4;height:calc(100vh - 100px);width:calc(100vw - 120px);bottom:0;right:0;border-radius:56px 0 0 0;overflow:scroll}.material-symbols-rounded{scale:1;transition:all 0.4s cubic-bezier(.51,0,0,1),scale 0.2s ease;font-size:50px!important;background:#0000;border-radius:10px;padding:4px}.material-symbols-rounded:active{scale:.85;background:#0003}.nonedisplay{display:none}.sidebar{display:block;position:fixed;top:31px;left:31px}.title{font-size:32px;position:fixed;top:31px;left:120px}.search-box{background:#f4f4f4;width:fit-content;position:fixed;top:20px;left:calc(50vw - 200px);display:flex;align-items:center;height:60px;width:402px;border-radius:100px}.searchbtn{height:60px;width:66px;border:none;background:none;border-radius:100px;position:relative}.searchtext{height:60px;width:314px;padding:0;border:none;background:none;border-radius:100px;position:relative;outline:none;font-size:24px;padding-left:16px;position:relative;bottom:3px}.searchicon{font-size:30px!important;border-radius:100px;position:relative;top:3px;left:3px}.container{perspective:800px;width:192px;height:117px;position:relative;margin:14px 10px;text-align:center;border-radius:40px}.links{justify-content:center;align-items:center;display:flex;flex-wrap:wrap}.box{width:192px;height:117px;border-radius:42px;background-color:var(--link-light);display:flex;align-items:center;justify-content:center;transition:transform 0.2s ease-out;--smooth-corners:6.4,3.6;mask-image:paint(smooth-corners);-webkit-mask-image:paint(smooth-corners);transform:rotateX(0deg) rotateY(0deg)}.shortcutimg{width:192px;height:117px;position:relative;top:1px;background:#fff}.sc{text-align:center;width:100%;margin-top:24px;font-size:24px;margin-bottom:0}</style>
+<script>function updateTime(){const displayTime=document.getElementById('timeDisplay');const now=new Date();const hours=now.getHours().toString().padStart(2,'0');const minutes=now.getMinutes().toString().padStart(2,'0');const seconds=now.getSeconds()+now.getMilliseconds()/1000;const degree=(seconds/60)*360;displayTime.style.background=`conic-gradient(from ${degree}deg, rgba(20, 127, 255, 1) 0deg, rgba(0, 108, 238, 1) 180deg, rgba(0, 87, 190, 1) 274deg, rgba(0, 63, 137, 1) 360deg)`;displayTime.textContent=`${hours}:${minutes}`;requestAnimationFrame(updateTime)} updateTime();const today=new Date();const weekdays=["SUN","MON","TUE","WED","THU","FRI","SAT"];const weekdayText=weekdays[today.getDay()];const dayOfMonth=today.getDate().toString().padStart(2,'0');document.querySelector('.date-a').textContent=weekdayText;document.querySelector('.date-b').textContent=dayOfMonth;const displayCalc=document.getElementById('display');const textBox=document.getElementById('myTextBox');function loadSavedData(){const savedValue=localStorage.getItem('calculatorDisplay');if(savedValue){displayCalc.value=savedValue} const savedText=localStorage.getItem('textBoxContent');if(savedText){textBox.value=savedText} for(let i=1;i<=6;i++){const savedText=localStorage.getItem(`textbox${i}`);if(savedText){document.getElementById(`textbox${i}`).value=savedText}}} function saveDisplay(){localStorage.setItem('calculatorDisplay',displayCalc.value)} function saveTextBoxData(){for(let i=1;i<=6;i++){let textbox=document.getElementById(`textbox${i}`);localStorage.setItem(`textbox${i}`,textbox.value)} localStorage.setItem('textBoxContent',textBox.value)} window.onload=loadSavedData;displayCalc.addEventListener('input',saveDisplay);textBox.addEventListener('input',saveTextBoxData);for(let i=1;i<=6;i++){document.getElementById(`textbox${i}`).addEventListener('input',saveTextBoxData)} function openURL(boxNumber){const content=document.getElementById(`textbox${boxNumber}`).value;if(content){let url=content;if(!/^https?:\/\//i.test(content)){url=`https://${url}`} window.open(url,'_blank')}else{alert('テキストボックスに内容がありません')}} function appendValue(value){const display=document.getElementById('display');display.value+=value} function clearDisplay(){const display=document.getElementById('display');display.value='';localStorage.removeItem('calculatorDisplay')} function calculate(){const display=document.getElementById('display');try{const result=eval(display.value);display.value=result;localStorage.setItem('calculatorDisplay',result)}catch(e){display.value='Error'}} let stopwatchStartTime;let stopwatchElapsedTime=0;let stopwatchTimerInterval;let isStopwatchRunning=!1;const stopwatchStartStopBtn=document.getElementById("stopwatch-startStopBtn");const stopwatchResetBtn=document.getElementById("stopwatch-resetBtn");const stopwatchTimeDisplay=document.getElementById("stopwatch-time");stopwatchStartStopBtn.addEventListener("click",()=>{if(isStopwatchRunning){clearInterval(stopwatchTimerInterval);isStopwatchRunning=!1;stopwatchStartStopBtn.textContent="開始"}else{stopwatchStartTime=Date.now()-stopwatchElapsedTime;stopwatchTimerInterval=setInterval(()=>{stopwatchElapsedTime=Date.now()-stopwatchStartTime;updateStopwatchTimeDisplay(stopwatchElapsedTime)},1000);isStopwatchRunning=!0;stopwatchStartStopBtn.textContent="停止"}});stopwatchResetBtn.addEventListener("click",()=>{clearInterval(stopwatchTimerInterval);isStopwatchRunning=!1;stopwatchElapsedTime=0;stopwatchStartStopBtn.textContent="開始";stopwatchTimeDisplay.textContent="00:00:00"});function updateStopwatchTimeDisplay(ms){const hours=String(Math.floor(ms/3600000)).padStart(2,'0');const minutes=String(Math.floor((ms%3600000)/60000)).padStart(2,'0');const seconds=String(Math.floor((ms%60000)/1000)).padStart(2,'0');stopwatchTimeDisplay.textContent=`${hours}:${minutes}:${seconds}`} const colorPicker=document.getElementById('color-picker');const hexInput=document.getElementById('hex-input');const colorBox=document.getElementById('color-box');const savedColor=localStorage.getItem('userpickcolorSub');if(savedColor){colorPicker.value=savedColor;hexInput.value=savedColor;colorBox.style.backgroundColor=savedColor} colorPicker.addEventListener('input',function(){const color=colorPicker.value;hexInput.value=color;colorBox.style.backgroundColor=color;localStorage.setItem('userpickcolorSub',color)});hexInput.addEventListener('input',function(){const color=hexInput.value;if(/^#[0-9A-Fa-f]{6}$/.test(color)){colorBox.style.backgroundColor=color;colorPicker.value=color;localStorage.setItem('userpickcolorSub',color)}});const radioA=document.getElementById('radio-a');const radioB=document.getElementById('radio-b');const boardA=document.querySelector('.board-a');const labelA=document.querySelector('.label-a');const labelB=document.querySelector('.label-b');const boardB=document.querySelector('.board-b');const title=document.querySelector('.title');function toggleBoards(){if(radioA.checked){boardA.style.display='block';boardA.style.position='fixed';boardB.style.display='none';labelA.style.fontVariationSettings='\'FILL\' 1,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelA.style.color='#0077ff';labelB.style.fontVariationSettings='\'FILL\' 0,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelB.style.color='#0f0f0faa';title.textContent='ダッシュボード'}else if(radioB.checked){boardA.style.display='none';boardB.style.display='block';boardB.style.position='fixed';title.textContent='ショートカット';labelA.style.fontVariationSettings='\'FILL\' 0,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelA.style.color='#0f0f0faa';labelB.style.fontVariationSettings='\'FILL\' 1,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelB.style.color='#0077ff'}} radioA.addEventListener('change',toggleBoards);radioB.addEventListener('change',toggleBoards);toggleBoards();class LinkBox extends HTMLElement{static get observedAttributes(){return['href','img']} constructor(){super();this.render()} attributeChangedCallback(){this.render()} render(){const href=this.getAttribute('href')||'#';const img=this.getAttribute('img')||'';this.innerHTML=`<div class="container"> <div class="box"> <a href="https://${href}"> <img class="shortcutimg" src="https://search3958.github.io/newtab/img/${img}" alt="${this.textContent}"> <md-ripple></md-ripple> </a> </div> <div>${this.textContent}</div> </div>`;this.addMouseEvents(this.querySelector('.container'))} addMouseEvents(container){const box=container.querySelector('.box');container.onmousemove=(e)=>{const{left,top,width,height}=box.getBoundingClientRect();box.style.transform=`rotateX(${-((e.clientY - top) - height / 2) / 6}deg) rotateY(${((e.clientX - left) - width / 2) / 6}deg)`};container.onmouseleave=()=>box.style.transform='rotateX(0) rotateY(0)'}} customElements.define('link-box',LinkBox);document.querySelectorAll('.container').forEach(container=>{container.onmousemove=(e)=>{const box=container.querySelector('.box');const{left,top,width,height}=box.getBoundingClientRect();box.style.transform=`rotateX(${-((e.clientY - top) - height / 2) / 6}deg) rotateY(${((e.clientX - left) - width / 2) / 6}deg)`;container.onmouseleave=()=>box.style.transform='rotateX(0) rotateY(0)'}})</script>
+</html>
