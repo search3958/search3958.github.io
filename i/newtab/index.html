@@ -1,26 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
      crossorigin="anonymous"></script>
-<script type="importmap">
-    {
-      "imports": {
-        "@material/web/": "https://esm.run/@material/web/"
-      }
-    }
-  </script>
-  <script type="module">
-    import '@material/web/all.js';
-    import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
-
-    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
-  </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newtab3</title>
-<style>
-  :root {
+<style>:root {
     --background-light: #f0f0f0;
     --element-light: #185af2;
     --background-dark: #000000;
@@ -29,30 +12,49 @@
     --text-dark: #1c1c1c;
   -md-ripple-pressed-color: #000000;
 }
-body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-         height:calc(100vh - 50px);
-         overflow: hidden;
-  background-color:var(--backround-light);
-        }
+   body {
+      background-color:#fff;
+      background-image:url(https://search3958.github.io/project/htmlos/1/light2.png);
+      background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+      margin: 0;
+      padding: 1px;
+      height: 100vh;
+    }
         header {
-            background-color: #FFFFFF;
+          box-shadow: 0 2px 24px rgba(0, 0, 0, 0.1);
+            background-color: #fff7;
             color: #000000;
-            padding: 15px 16px;
+            padding: 10px 16px;
             font-size:24px;
+          width:content-fit;
+          border-radius:100px;
+          position:fixed;
+          top:10px;
+          right:50vw;
+          transform: translateX(50%);
+          backdrop-filter: blur(10px);
         }
         .container {
           display: flex;
           height:100%;
         }
         .sidebar {
-            width: 200px;
-            background-color: #f6f6f6;
+          box-shadow: 0 2px 24px rgba(0, 0, 0, 0.1);
+          backdrop-filter: blur(10px);
+          width:200px;
+            background-color: #f6f6f680;
             padding: 8px;
             overflow:scroll;
+          border-radius:24px;
+            height:calc(100vh - 100px);
+          position:fixed;
+          top:75px;
+          left:10px;
         }
+
         .sidebar a {
             display: block;
           padding:8px 8px;
@@ -60,13 +62,17 @@ body {
             text-decoration: none;
             margin-bottom: 1px;
           border-radius:16px;
-          transition:all 0.2s ease-out;
+          
         }
 a{
+  
   position: relative;
+  transition:all 0.3s ease;
+  scale:1;
 }
         .sidebar a:hover {
-            color:var(--element-dark);
+          background:#0001;
+          scale:0.97;
         }
         .content {
             flex: 1;
@@ -76,53 +82,58 @@ a{
             font-size: 18px; /* 小さい見出しのサイズ */
         }
         iframe {
-            width: 100%;
-            height: 100%;
+          background-color: #f6f6f640;
+          border-radius:25px;
+          position:fixed;
+          top:75px;
+          left:241px;
+          box-shadow: 0 2px 24px rgba(0, 0, 0, 0.1);
+          backdrop-filter: blur(24px);
+            width: calc(100vw - 256px);
+            height:calc(100vh - 85px);
             border: none; 
         }
 .headlink{
+  display:inline-block;
   text-decoration: none;
   color:#000;
-  padding:8px;
+  padding:0px 8px;
   position:relative;
   border-radius:100px;
 }
+.headlink:hover {
+          background:#0001;
+          scale:0.94;
+}
 .primary{
-    text-decoration: none;
+  display:inline-block;
+  text-decoration: none;
   text-align:right;
   color:#fff;
-  background:var(--element-dark);
-  position: absolute;
-top: 16px; right: 16px;
-  padding:5px 8px;;
+  background:#185af2dd;
+  padding:5px 8px;
   font-size:16px;
-  border-radius:16px;
+  border-radius:17px;
+  position:relative;
+  bottom:2px;
 }
-.secondary{
-    text-decoration: none;
-  text-align:right;
-  color:#000;
-  background:var(--background-light);
-  position: absolute;
-top: 16px; right: 140px;
-  padding:5px 8px;;
-  font-size:16px;
-  border-radius:16px;
-}
+.primary:hover {
+          background:#185af2ff;
+          scale:0.94;
+        }
 @media (prefers-color-scheme: dark) {
   body{
     color:#fff;
-    background:#000;
   }
   header{
-    background:#1c1c1c;
+    background:#1c1c1c99;
     color:#fff;
   }
   .headlink{
     color:#fff;
   }
   .sidebar{
-    background:#0f0f0f;
+    background:#0f0f0f99;
     color:#fff;
   }
   .sidebar a {
@@ -132,69 +143,54 @@ top: 16px; right: 140px;
     background:var(--background-dark);
     color:#fff;
   }
-}
-  </style>
+  iframe {
+    background-color: #010101b0;}
+}</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newtab3</title>
 </head>
 <body>
     <header>
         Newtab3
-      <a class="headlink" href="https://search3958.github.io/i/newtab/?section=content1-1.html" >基本<md-ripple></md-ripple></a>
-      <a class="headlink" href="https://search3958.github.io/i/newtab/?section=content2-1.html">バージョン<md-ripple></md-ripple></a>
-      <a class="secondary" href="https://search3958.github.io/newtab/beta/?value=beta-try">ベータ版<md-ripple></md-ripple></a>
-      <a class="primary" href="https://search3958.github.io/newtab/?value=try">サイトへ行く<md-ripple></md-ripple></a>
+      <a class="headlink" href="https://search3958.github.io/i/newtab/?section=content1-1.html" >基本</a>
+      <a class="headlink" href="https://search3958.github.io/i/newtab/?section=content2-1.html">バージョン</a>
+    
+      <a class="primary" href="https://search3958.github.io/newtab/?value=try">サイトへ行く</a>
     </header>
     <div class="container">
         <div class="sidebar" id="sidebar">
+    <h3>基本</h3>
+    <a href="content1-1.html" class="sidebar-link">Newtab3について</a>
+    <a href="content1-2.html" class="sidebar-link">使い方</a>
+    <a href="content1-3.html" class="sidebar-link">今後の予定</a>
+    <h3>バージョン</h3>
+    <a href="content2-1.html" class="sidebar-link">細かな修正</a>
+    <a href="content2-2.html" class="sidebar-link">リンクの変更</a>
+    <a href="content2-3.html" class="sidebar-link">機能の変更</a>
+    <a href="content2-4.html" class="sidebar-link">見た目の変更</a>
         </div>
         <div class="content">
             <iframe id="contentFrame" src="" title="Content Frame"></iframe> <!-- iframeを追加 -->
         </div>
     </div>
 
-    <script>
-  // セクションとリンクのデータを配列として定義
-const sections = [
-    {
-        title: '基本', // 小さい見出し
-        links: [
-            { text: '新しいタブに登録する', href: 'content1-1.html' },
-            { text: 'Newtab3について', href: 'content1-2.html' }, // 外部ファイルのパス（HTML形式）
-            { text: '使い方', href: 'content1-3.html' },
-            { text: '今後の予定', href: 'content1-4.html' },
-        ]
-    },
-    {
-        title: 'バージョン', // 小さい見出し
-        links: [
-            { text: '細かな修正', href: 'content2-1.html' },
-            { text: 'リンクの変更', href: 'content2-2.html' },
-            { text: '機能の変更', href: 'content2-3.html' },
-            { text: '見た目の変更', href: 'content2-4.html' },
-        ]
-    }
-];
-// サイドバーの要素を取得
+    <script src="sidebar.js"></script> <!-- 外部JavaScriptファイルを読み込み -->
+</body>
+  <script>// サイドバーの要素を取得
 const sidebar = document.getElementById('sidebar');
 const contentFrame = document.getElementById('contentFrame');
 
-// リンクをサイドバーに追加する関数
-function addLinksToSidebar() {
-    sections.forEach(section => {
-        // セクション見出しを作成
-        const sectionHeader = document.createElement('h3');
-        sectionHeader.textContent = section.title;
-        sidebar.appendChild(sectionHeader);
-        // リンクを追加
-        section.links.forEach(link => {
-            const a = document.createElement('a');
-            a.href = link.href;
-            a.textContent = link.text;
-            a.onclick = (event) => {
-                event.preventDefault(); // デフォルトのリンク動作を防ぐ
-                updateFrame(link.href); // iframeのsrcを更新
-                updateURL(link.href); // URLを更新
-            };
-            sidebar.appendChild(a);
+// リンクをクリックしたときにiframeの内容を更新
+function addLinkListeners() {
+    const links = document.querySelectorAll('.sidebar-link');
+    
+    links.forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // デフォルトのリンク動作を防ぐ
+            const href = link.getAttribute('href');
+            updateFrame(href); // iframeのsrcを更新
+            updateURL(href); // URLを更新
         });
     });
 }
@@ -206,7 +202,7 @@ function updateFrame(src) {
 
 // URLのクエリパラメータを更新する関数
 function updateURL(newUrl) {
-    window.history.pushState({}, '', `?section=${newUrl}`); // ?section=...の形式でURLを更新
+    window.history.pushState({}, '', newUrl);
 }
 
 // 初回のコンテンツ更新（URLのクエリパラメータから）
@@ -215,9 +211,9 @@ function updateContentFromURL() {
     const section = params.get('section');
 
     if (section) {
-        const foundLink = sections.flatMap(section => section.links).find(link => link.href === section);
-        if (foundLink) {
-            updateFrame(foundLink.href); // iframeのsrcを更新
+        const link = document.querySelector(`a[href="${section}"]`);
+        if (link) {
+            updateFrame(section); // iframeのsrcを更新
         }
     }
 }
@@ -225,8 +221,7 @@ function updateContentFromURL() {
 // ページが読み込まれたときにコンテンツを更新
 updateContentFromURL();
 
-// リンクを追加する関数を呼び出す
-addLinksToSidebar();
-  </script> <!-- 外部JavaScriptファイルを読み込み -->
-</body>
+// リンクにイベントリスナーを追加
+addLinkListeners();
+</script>
 </html>
