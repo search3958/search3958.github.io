@@ -3,7 +3,7 @@
   font-family: "IBM Plex Sans JP", serif;
 }
 body{
-  background:#f0f0f0;
+  background:none;
 }
 a{
   color:#185af2;
@@ -13,7 +13,6 @@ a{
 @media (prefers-color-scheme: dark) {
   body{
     color:#fff;
-    background:#000;
   }
   a{
     color:#3a7cff;
