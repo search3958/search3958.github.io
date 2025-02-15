@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>コードエディタ</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            font-family: sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            background: #1e1e1e;
+            color: #fff;
+        }
+        .editor-container { 
+            display: flex; 
+            flex-direction: row; 
+            height: 50vh; 
+            overflow: hidden; 
+            border-bottom: 2px solid #444;
+        }
+        textarea { 
+            width: 33.3%; 
+            height: calc(100% - 10px;); 
+            resize: horizontal; 
+            padding: 10px; 
+            border:none; 
+            background: #111; 
+            color: #fffb;
+            font-family: monospace; 
+          margin:8px;
+          border-radius:16px;
+          outline:none;
+          line-height: 1.5;
+        }
+      .inputRange {
+  appearance: none;
+  width: 200px;
+  height: 25px;
+  border-radius: 9999px;
+  background: #454545;
+  cursor: pointer;
+}
+
+/* ツマミ：Chrome, Safari, Edge用 */
+.inputRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 40px;
+  border-radius: 9999px;
+  background: #e0e0e0;
+  box-shadow: none;
+}
+
+/* ツマミ：Firefox用 */
+.inputRange::-moz-range-thumb {
+  border: none;
+  width: 15px;
+  height: 40px;
+  border-radius: 9999px;
+  background: #e0e0e0;
+  box-shadow: none;
+}
+      textarea:focus {color:#fff; }
+        iframe { 
+            width: 100%; 
+            height: 50vh; 
+            border: none; 
+            background: #fff;
+        }
+        button { 
+            margin: 10px; 
+            padding: 8px 12px; 
+            background: #444; 
+            color: #fff; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 50px;
+        }
+        button:hover { background: #666; }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #222;
+        }
+        .slider-container label {
+            margin-right: 10px;
+        }
+        input[type="range"] {
+            width: 200px;
+            margin-right: 10px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #333;
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        .modal button {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slider-container">
+        <label for="height-slider">エディタの高さ</label>
+        <input class="inputRange" type="range" id="height-slider" min="200" max="800" value="400">
+        <button onclick="openModal()">消去</button>
+    </div>
+    <div class="editor-container" id="editor-container">
+        <textarea id="html-code" placeholder="HTML"></textarea>
+        <textarea id="css-code" placeholder="CSS"></textarea>
+        <textarea id="js-code" placeholder="JavaScript"></textarea>
+    </div>
+    <iframe id="preview"></iframe>
+    <div id="confirm-modal" class="modal">
+        <p>ローカルデータから削除しますか?</p>
+        <button onclick="clearCode(); closeModal();">はい</button>
+        <button onclick="closeModal()">いいえ</button>
+    </div>
+    <script>
+        const htmlCode = document.getElementById("html-code");
+        const cssCode = document.getElementById("css-code");
+        const jsCode = document.getElementById("js-code");
+        const preview = document.getElementById("preview");
+        const editorContainer = document.getElementById("editor-container");
+        const heightSlider = document.getElementById("height-slider");
+        const modal = document.getElementById("confirm-modal");
+
+        function updatePreview() {
+            const code = `<!DOCTYPE html>
+            <html>
+            <head><style>${cssCode.value}</style></head>
+            <body>${htmlCode.value}<script>${jsCode.value}\<\/script></body>
+            </html>`;
+            preview.contentDocument.open();
+            preview.contentDocument.write(code);
+            preview.contentDocument.close();
+            localStorage.setItem("html", htmlCode.value);
+            localStorage.setItem("css", cssCode.value);
+            localStorage.setItem("js", jsCode.value);
+        }
+
+        function clearCode() {
+            htmlCode.value = "";
+            cssCode.value = "";
+            jsCode.value = "";
+            updatePreview();
+        }
+
+        function openModal() {
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        heightSlider.addEventListener("input", () => {
+            editorContainer.style.height = heightSlider.value + "px";
+            preview.style.height = (800 - heightSlider.value) + "px";
+        });
+
+        [htmlCode, cssCode, jsCode].forEach(editor => {
+            editor.addEventListener("input", updatePreview);
+        });
+
+        htmlCode.value = localStorage.getItem("html") || "";
+        cssCode.value = localStorage.getItem("css") || "";
+        jsCode.value = localStorage.getItem("js") || "";
+        updatePreview();
+    </script>
+</body>
+</html>
