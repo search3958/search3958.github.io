@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <script>
+  if (CSS && 'paintWorklet' in CSS) {
+    CSS.paintWorklet.addModule('https://unpkg.com/smooth-corners');
+  }
+</script>
+  <link rel="stylesheet" href="https://search3958.github.io/aisearch/style.css">
+  <script type="text/javascript" src="//typesquare.com/3/tsst/script/ja/typesquare.js?67afe5719990420aa8d92d04ac1e02e5&fadein=10" charset="utf-8"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI検索</title>
+</head>
+<body class="initial">
+  <!-- 初期ヘッダー（中央） -->
+  <h1 id="initial-header" class="initial-header">こんにちは</h1>
+  <!-- 最小化ヘッダー（左上固定、初期は非表示） -->
+  <div id="minimized-header" class="minimized-header">Search3958 <span class="ailogo">AI検索</span></div>
+  <style></style>
+  <div class="container">
+    <div class="search-container">
+      <input type="text" id="query-input" placeholder="AIは不正確な情報を表示することがあります。">
+      <button onclick="processQuery()">送信</button>
+    </div>
+    
+    <div class="results-container" id="results-container">
+      <!-- Geminiの回答 -->
+      <div class="section" id="gemini-section">
+        <h2>AIの回答</h2>
+        <div id="gemini-response" class="collapsed">回答はここに表示されます</div>
+        <div id="debug-prompt" class="debug"></div>
+      </div>
+      
+      <!-- 検索結果 -->
+      <div class="section">
+        <h2>参考情報</h2>
+        <div id="search-results">結果はここに表示されます</div>
+      </div>
+    </div>
+    
+    <!-- Google検索ボタン -->
+    <div class="google-button-container">
+      <button id="google-search-button" onclick="goToGoogle()">Googleで全ての結果を表示</button>
+    </div>
+  </div>
+  
+</body>
+  <script src="https://search3958.github.io/aisearch/script.js"></script>
+</html>
