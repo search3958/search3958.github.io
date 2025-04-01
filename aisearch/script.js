@@ -74,19 +74,24 @@ async function performSearch(query) {
   }
 }
 
+
 async function sendToGemini(userInput) {
   const apiKey = "AIzaSyCECb_RUgLUA8nS60T9nDqlo8MX3rYfe9Q";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
   let prompt = userInput;
+
   if (topSearchResults.length >= 2) {
     prompt = `${userInput}について教えてください。現在、"${topSearchResults[0].snippet}"と"${topSearchResults[1].snippet}"の情報を得ています。長すぎない回答で教えてください。`;
   } else if (topSearchResults.length == 1) {
     prompt = `${userInput}について教えてください。現在、"${topSearchResults[0].snippet}"の情報を得ています。長すぎない回答で教えてください。`;
   }
+
   document.getElementById("debug-prompt").innerHTML = `送信プロンプト: ${prompt}`;
+
   const requestData = {
     contents: [{ parts: [{ text: prompt }] }]
   };
+
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -95,10 +100,43 @@ async function sendToGemini(userInput) {
     });
     const data = await response.json();
     const responseText = data.candidates && data.candidates[0]?.content?.parts[0]?.text;
+
     if (responseText) {
-      let formattedText = responseText.replace(/```(\w*)([\s\S]*?)```/g, '<pre><code>$2</code></pre>').replace(/\n/g, '<br>');
+      let formattedText = responseText
+        .replace(/```(\w*)([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+        .replace(/\n/g, '<br>');
+
       const geminiResponseDiv = document.getElementById("gemini-response");
-      geminiResponseDiv.innerHTML = formattedText;
+      geminiResponseDiv.innerHTML = ""; // 既存の内容をクリア
+
+      const maxLength = 300; // 300文字以上なら折りたたむ
+      if (formattedText.length > maxLength) {
+        const shortDiv = document.createElement("div");
+        shortDiv.innerHTML = formattedText.substring(0, maxLength) + "...";
+        shortDiv.id = "short-gemini-response";
+
+        const fullDiv = document.createElement("div");
+        fullDiv.innerHTML = formattedText;
+        fullDiv.id = "full-gemini-response";
+        fullDiv.style.display = "none"; // 初期状態では非表示
+
+        const showMoreButton = document.createElement("button");
+        showMoreButton.innerText = "もっと表示";
+        showMoreButton.id = "show-more-button";
+        showMoreButton.addEventListener("click", () => {
+          shortDiv.style.display = "none";
+          fullDiv.style.display = "block";
+          showMoreButton.style.display = "none"; // ボタンを非表示
+        });
+
+        // 要素を追加する順番を変更 (shortDiv → ボタン → fullDiv)
+        geminiResponseDiv.appendChild(shortDiv);
+        geminiResponseDiv.appendChild(showMoreButton);
+        geminiResponseDiv.appendChild(fullDiv);
+      } else {
+        geminiResponseDiv.innerHTML = formattedText;
+      }
+
       setTimeout(() => {
         geminiResponseDiv.classList.add("visible");
       }, 50);
