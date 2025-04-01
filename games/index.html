@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>クソゲー広場</title>
-  <style>body{margin:0;background-image:linear-gradient(123deg,rgba(0,230,255,1),rgba(0,255,175,1));color:#000}iframe{height:calc(100vh - 200px);width:calc(100vw - 16px);background:#000;margin:8px;border-radius:24px;margin-top:0}button{padding:0pc;border:none;background:none;margin:8px;margin-right:0}img{width:128px;height:76.6666666667;border-radius:24px}p,a{margin:0;padding-left:10px}@media (prefers-color-scheme:dark){body{color:#fff;background-image:linear-gradient(123deg,rgba(0,74,82,1),rgba(0,67,46,1))}}</style>
+  <style>body{margin:0;background: linear-gradient(180deg, #F7FFFB 0%, #DDFFF0 100%);color:#000}iframe{height:calc(100vh - 200px);width:calc(100vw - 16px);background:#000;margin:8px;border-radius:24px;margin-top:0}button{padding:0pc;border:none;background:none;margin:8px;margin-right:0}img{width:128px;height:76.6666666667;border-radius:24px}p,a{margin:0;padding-left:10px}@media (prefers-color-scheme:dark){body{color:#fff;background: linear-gradient(180deg, #003A20 0%, #000905 100%);}}</style>
 </head>
 <body>
     <!-- ボタンでiframeの内容と説明文を変更 -->
@@ -18,7 +18,7 @@
 <!-- 説明文を表示するエリア -->
     <div id="description" style="margin-bottom: 20px; font-size: 18px;">
         <!-- 初期メッセージ -->
-        <p>アイコンをクリックしてゲームを選択してください。プレイ中に広告が邪魔することはありせん。どのゲームもBGMは適当です。<br>言語を変更する場合は左下のボタンをクリック。ゲームは全て私が作ったものですので，著作権の問題はありません。<small>(クソゲーだけど広告なしで無料で使わせてやってることに感謝しろよ)</small></p><a href="https://forms.gle/Poou14NMt3C22Vyc7">要望等はこちらから</a>
+        <p>アイコンをクリックしてゲームを選択してください。プレイ中に広告が邪魔することはありせん。どのゲームもBGMは適当です。<br>言語を変更する場合は左下のボタンをクリック。ゲームは全て私が作ったものですので，著作権の問題はありません。</p><a href="https://forms.gle/Poou14NMt3C22Vyc7">要望等はこちらから</a>
     </div>
   <script>window.onload=function(){const params=new URLSearchParams(window.location.search);const file=params.get('file');if(file){changeContent(file)}};function changeContent(file){const iframe=document.getElementById('contentFrame');const description=document.getElementById('description');iframe.src=`https://search3958.github.io/games/file/${file}`;switch(file){case 'キャッチゲーム.html':description.innerHTML="<p>上から落ちてくるアイテムを拾うシンプルなゲームです。<br>ハートを拾うとライフが1回復し，バツを拾うとダメージを喰らいます。<br>マウスポインターの反対方向に動くことには注意してください!</p>";break;case '農場ゲーム.html':description.innerHTML="<p>左上のアイコンを畑に運んで小麦ととうもろこしを育てましょう。<br>成長には水が必要で，30秒ほどごとに，成長します。<br>完全に成長したらタップして出荷しましょう!</p>";break;case '障害物回避.html':description.innerHTML="<p>亀を動かして，ゴールまで辿り着きましょう!<br>壁にぶつかると亀はダメージを喰らいます。<br>慣れれば意外とゴールできます。</p>";break;default:description.innerHTML="<p>指定されたゲームの説明がありません。</p>";break}}</script>
 </body>
