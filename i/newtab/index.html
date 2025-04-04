@@ -1,178 +1,126 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <link href="https://cdn.jsdelivr.net/npm/beercss@3.9.7/dist/cdn/beer.min.css" rel="stylesheet">
+
+<script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.9.7/dist/cdn/beer.min.js"></script>
+
+<script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"></script>
+
+  
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
      crossorigin="anonymous"></script>
-  <style>*{
-    font-family:sans-serif;
-    }
-   body {
-      background-color:#fff;
-      background-image:url(https://search3958.github.io/newtab/bgimg/bg1.webp);
-      background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: cover;
-      margin: 0;
-      padding: 1px;
-      height: 100vh;
-    }
-        header {
-          box-shadow: 0 2px 24px rgba(0, 0, 0, 0.1);
-            background-color: #fff7;
-            color: #000000;
-            padding: 10px 16px;
-            font-size:24px;
-          width:content-fit;
-          border-radius:100px;
-          position:fixed;
-          top:10px;
-          right:50vw;
-          transform: translateX(50%);
-          backdrop-filter: blur(10px);
-        }
-        .container {
-          display: flex;
-          height:100%;
-        }
-        .sidebar {
-          box-shadow: 0 2px 24px rgba(0, 0, 0, 0.1);
-          backdrop-filter: blur(10px);
-          width:200px;
-            background-color: #f6f6f680;
-            padding: 8px;
-            overflow:scroll;
-          border-radius:24px;
-            height:calc(100vh - 100px);
-          position:fixed;
-          top:75px;
-          left:10px;
-        }
-
-        .sidebar a {
-            display: block;
-          padding:8px 8px;
-            color: #333;
-            text-decoration: none;
-            margin-bottom: 1px;
-          border-radius:16px;
-          
-        }
-a{
   
-  position: relative;
-  transition:all 0.3s ease;
-  scale:1;
-}
-        .sidebar a:hover {
-          background:#0001;
-          scale:0.97;
-        }
-        .content {
-            flex: 1;
-        }
-        h3 {
-            padding:0px 8px;
-            font-size: 18px; /* 小さい見出しのサイズ */
-        }
-        iframe {
-          background-color: #f6f6f640;
-          border-radius:25px;
-          position:fixed;
-          top:75px;
-          left:241px;
-          box-shadow: 0 2px 24px rgba(0, 0, 0, 0.1);
-          backdrop-filter: blur(24px);
-            width: calc(100vw - 256px);
-            height:calc(100vh - 85px);
-            border: none; 
-        }
-.headlink{
-  display:inline-block;
-  text-decoration: none;
-  color:#000;
-  padding:0px 8px;
-  position:relative;
-  border-radius:100px;
-}
-.headlink:hover {
-          background:#0001;
-          scale:0.94;
-}
-.primary{
-  display:inline-block;
-  text-decoration: none;
-  text-align:right;
-  color:#fff;
-  background:#185af2dd;
-  padding:5px 8px;
-  font-size:16px;
-  border-radius:17px;
-  position:relative;
-  bottom:2px;
-}
-.primary:hover {
-          background:#185af2ff;
-          scale:0.94;
-        }
-@media (prefers-color-scheme: dark) {
-  body{
-    color:#fff;
-  }
-  header{
-    background:#1c1c1c99;
-    color:#fff;
-  }
-  .headlink{
-    color:#fff;
-  }
-  .sidebar{
-    background:#0f0f0f99;
-    color:#fff;
-  }
-  .sidebar a {
-    color:#fff;
-  }
-  .secondary{
-    background:var(--background-dark);
-    color:#fff;
-  }
-  iframe {
-    background-color: #010101b0;}
-}</style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Newtab3</title>
 </head>
 <body>
-    <header>
-        Newtab3
-      <a class="headlink" href="https://search3958.github.io/i/newtab/?section=content1-1.html" >基本</a>
-      <a class="headlink" href="https://search3958.github.io/i/newtab/?section=content2-1.html">バージョン</a>
-    
-      <a class="primary" href="https://search3958.github.io/newtab/?value=try">サイトへ行く</a>
-    </header>
-    <div class="container">
-        <div class="sidebar" id="sidebar">
-    <h3>基本</h3>
-          <a href="content1-1.html" class="sidebar-link">登録方法</a>
-    <a href="content1-2.html" class="sidebar-link">Newtab3について</a>
-    <a href="content1-3.html" class="sidebar-link">使い方</a>
-    <a href="content1-4.html" class="sidebar-link">今後の予定</a>
-    <h3>バージョン</h3>
-    <a href="content2-1.html" class="sidebar-link">細かな修正</a>
-    <a href="content2-2.html" class="sidebar-link">リンクの変更</a>
-    <a href="content2-3.html" class="sidebar-link">機能の変更</a>
-    <a href="content2-4.html" class="sidebar-link">見た目の変更</a>
-        </div>
-        <div class="content">
-            <iframe id="contentFrame" src="" title="Content Frame"></iframe> <!-- iframeを追加 -->
-        </div>
-    </div>
-
-    <script src="sidebar.js"></script> <!-- 外部JavaScriptファイルを読み込み -->
+  <nav class="drawer" id="sidebar">
+  <header>
+    <nav>
+      <h6>Newtab3</h6>
+    </nav>
+  </header>
+  <label>基本</label>
+  <a>
+    <i>inbox</i>
+    <span class="max">登録方法</span>
+  </a>
+  <a href="content1-1.html" class="sidebar-link">
+    <i>send</i>
+    <span>Newtab3について</span>
+  </a>
+  <a href="content1-2.html" class="sidebar-link">
+    <i>favorite</i>
+    <span>使い方</span>
+  </a>
+  <a href="content1-3.html" class="sidebar-link">
+    <i>delete</i>
+    <span>今後の予定</span>
+  </a>
+  <hr>
+  <label>アップデート</label>
+  <a href="conten2-1.html" class="sidebar-link">
+    <i>fiber_manual_record</i>
+    <span>細かな修正</span>
+  </a>
+  <a href="conten2-2.html" class="sidebar-link">
+    <i>change_history</i>
+    <span>リンクの変更</span>
+  </a>
+  <a href="conten2-3.html" class="sidebar-link">
+    <i>stop</i>
+    <span>機能の変更</span>
+  </a>
+    <a href="conten2-3.html" class="sidebar-link">
+    <i>stop</i>
+    <span>見た目の変更</span>
+  </a>
+</nav>
+<iframe id="contentFrame" src="" title="Content Frame"></iframe> 
 </body>
-  <script>// サイドバーの要素を取得
+ <style>
+*{
+  transition:all 0.1s ease;
+}
+:root{
+  --primary:#006783;
+--on-primary:#ffffff;
+--primary-container:#bde9ff;
+--on-primary-container:#001f2a;
+--secondary:#4d616c;
+--on-secondary:#ffffff;
+--secondary-container:#d0e6f2;
+--on-secondary-container:#081e27;
+--tertiary:#5d5b7d;
+--on-tertiary:#ffffff;
+--tertiary-container:#e3dfff;
+--on-tertiary-container:#191836;
+--error:#ba1a1a;
+--on-error:#ffffff;
+--error-container:#ffdad6;
+--on-error-container:#410002;
+--background:#fbfcfe;
+--on-background:#191c1e;
+--surface:#f8f9fb;
+--on-surface:#191c1e;
+--surface-variant:#dce4e9;
+--on-surface-variant:#40484c;
+--outline:#70787d;
+--outline-variant:#c0c8cd;
+--shadow:#000000;
+--scrim:#000000;
+--inverse-surface:#2e3132;
+--inverse-on-surface:#eff1f3;
+--inverse-primary:#65d3ff;
+--surface-dim:#d9dadc;
+--surface-bright:#f8f9fb;
+--surface-container-lowest:#ffffff;
+--surface-container-low:#f2f4f6;
+--surface-container:#edeef0;
+--surface-container-high:#e7e8ea;
+--surface-container-highest:#e1e2e4;
+}
+iframe{
+  background:#fffa;
+  border:none;
+  position:fixed;
+  right:0;
+  top:0px;
+  height:100vh;
+  width:calc(100vw - 320px);
+  border-radius:24px 0px 0px 24px;
+}
+
+@media (prefers-color-scheme: dark) {
+  iframe{
+    background:#000a;
+  }
+}
+  </style>
+   <script>
+// サイドバーの要素を取得
 const sidebar = document.getElementById('sidebar');
 const contentFrame = document.getElementById('contentFrame');
 
@@ -190,7 +138,6 @@ function addLinkListeners() {
     });
 }
 
-// iframeのsrcを更新する関数
 function updateFrame(src) {
     contentFrame.src = src; // 指定されたURLをiframeのsrcに設定
 }
@@ -218,5 +165,6 @@ updateContentFromURL();
 
 // リンクにイベントリスナーを追加
 addLinkListeners();
-</script>
+
+  </script>
 </html>
