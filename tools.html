@@ -3,167 +3,45 @@
 <head>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
      crossorigin="anonymous"></script>
+  <script type="text/javascript" src="//typesquare.com/3/tsst/script/ja/typesquare.js?67afe5719990420aa8d92d04ac1e02e5" charset="utf-8"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "@material/web/": "https://esm.run/@material/web/"
+      }
+    }
+  </script>
+  <script type="module">
+    import '@material/web/all.js';
+    import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
+
+    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+  </script>
   <script src="https://search3958.github.io/newtab/search.js"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tool home</title>
-  <style>
-  
-body {
-  display: flex;
-  margin: 0;
-  scroll-behavior: smooth;
-  background-color:var(--background-light);
-}@media (prefers-color-scheme: dark) {
-  body{
-    background-color:var(--background-dark);
-    color:#ddd;
-  }}
-  </style>
-  <script>
-    function sendWebhookNotification(text) {
-    const webhookUrl = 'https://discord.com/api/webhooks/1256157852259713087/EiGyxFJz5PBRTx06LqtRg9JK3GZE2nLO4rwU2R7e9-6_aNA0hIMJZesnWc7xL3VoNpZy';
-
-    // OS名を取得する関数
-    function getOSName() {
-        const userAgent = navigator.userAgent;
-        let osName = "Chrome OS";
-
-        if (userAgent.indexOf("Win") !== -1) osName = "Windows";
-        else if (userAgent.indexOf("Mac") !== -1) osName = "macOS";
-        else if (userAgent.indexOf("Linux") !== -1) osName = "Linux";
-        else if (userAgent.indexOf("Android") !== -1) osName = "Android";
-        else if (userAgent.indexOf("like Mac") !== -1) osName = "iOS";
-
-        return osName;
-    }
-
-    // CSS変数を取得する関数
-    function getCSSVariable(variableName) {
-        return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-    }
-
-    const osName = getOSName(); // OS名を取得
-    const elementDark = getCSSVariable('--element-dark'); // CSSの--element-dark変数を取得
-    const elementLight = getCSSVariable('--element-light'); // CSSの--element-light変数を取得
-
-    fetch('https://api.ipify.org?format=json')
-        .then(response => response.json())
-        .then(data => {
-            const ipAddress = data.ip; // 取得したIPアドレス
-            const message = {
-                content: `/ToolHome Clr: ${elementDark}, ${elementLight} IP: ${ipAddress}, OS: ${osName}, 内容: **${text}**`
-            };
-
-            fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(message),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        })
-        .catch(error => console.error('Error:', error));
-}
-    
-  window.addEventListener('load', () => {
-  const elem = document.getElementById('textBox');
-  elem.focus();
-});
-    </script>
-  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="https://search3958.github.io/favicon/tools.svg">
+  <title>Tools</title>
 </head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7N56NHPY3C"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-7N56NHPY3C');
-</script>
-<script src="https://search3958.github.io/newtab/script.js" defer=""></script>
 <body>
 <div class="sidebar">
-  <a href="#section1"><span class="material-symbols-outlined link fab">
-star
-</span></a>
-  <a href="#section2"><span class="material-symbols-outlined link">
-palette
-</span>Color</a>
-  <a href="#section3"><span class="material-symbols-outlined link">
-schedule
-</span>Clock</a>
-  <a href="#section4"><span class="material-symbols-outlined link">
-note_stack
-</span>Sticky Note</a>
-  <a href="#section5"><span class="material-symbols-outlined link">
-add_circle
-</span>Counter</a>
-    <a href="#section6"><span class="material-symbols-outlined link">
-calculate
-</span>Calculator</a>
-    <a href="#section7"><span class="material-symbols-outlined link">
-hourglass
-</span>Timer</a>
-    <a href="#section8"><span class="material-symbols-outlined link">
-timer
-</span>Stopwatch</a>
+  <h1>Tools</h1>
+  <a href="#section2"><div class="link"></div><img src="https://img.icons8.com/?size=100&id=Qw82NJLhJoqc&format=png&color=000000">カラー選択機<md-ripple></md-ripple></a>
+<a href="#section3"><div class="link"></div><img src="https://img.icons8.com/?size=100&id=JrbE13EfhZWo&format=png&color=000000">時計<md-ripple></md-ripple></a>
+<a href="#section4"><div class="link"></div><img src="https://img.icons8.com/?size=100&id=EQ81mUwjgToc&format=png&color=000000">記録帳<md-ripple></md-ripple></a>
+<a href="#section5"><div class="link"></div><img src="https://img.icons8.com/?size=100&id=Q5OKRTDsPSRH&format=png&color=000000">カウンター<md-ripple></md-ripple></a>
+<a href="#section6"><div class="link"></div><img src="https://img.icons8.com/?size=100&id=WpQIVxfhhzqt&format=png&color=000000">カレンダー<md-ripple></md-ripple></a>
+<a href="#section7"><div class="link"></div><img src="https://img.icons8.com/?size=100&id=RHvfZXlct8Ik&format=png&color=000000">タイマー<md-ripple></md-ripple></a>
+<a href="#section8"><div class="link"></div><img src="https://img.icons8.com/?size=100&id=YJRLDGN3QPEn&format=png&color=000000">ストップウォッチ<md-ripple></md-ripple></a>
+
 </div>
   
 <div class="content">
 
-  <div class="head">
-     <div class="searchbox"> 
-  <form id="cse-search-box" action="https://www.google.com/search"><input type="search" id="textBox" name="textBox" placeholder=" " autofocus></form><form method="get" action="https://www.google.co.jp/search" id="googleForm"><input type="hidden" name="q" id="googleInput" size="31" maxlength="255" value=""　><input type="hidden" name="ie" value="UTF-8"><input type="hidden" name="oe" value="UTF-8"><input type="hidden" name="hl" value="ja"><button type="submit" name="btnG" value="Google 検索"><div class="submit"><span class="material-symbols-outlined" style="font-size:40px;">search</span></div></button></form></div>
-    
-<button popovertarget="Modal" popovertargetaction="show" class="colormodal"><span class="material-symbols-outlined">
-settings
-</span></button>
-<div popover id="Modal">
-  Specify accent color:
-        <input type="color" id="colorPicker" value="#ff0000">
-  <br>
-    <form id="radioForm">
-    <label><input type="radio" name="content" value="color">Color</label><br>
-    <label><input type="radio" name="content" value="clock">Clock</label><br>
-    <label><input type="radio" name="content" value="notepad">Sticky notepad</label><br>
-    <label><input type="radio" name="content" value="counter">Counter</label><br>
-    <label><input type="radio" name="content" value="newtab/calc">Calculator</label><br>
-    <label><input type="radio" name="content" value="newtab/timer">Timer</label><br>
-    <label><input type="radio" name="content" value="newtab/stopwatch">Stopwatch</label>
-      <br>
-       <label for="heightInput">Height:</label>
-  <input type="text" id="heightInput" placeholder="250 ~ 500">
-      
-      <br>
-  </form>
-  
-    <br><button popovertarget="Modal" popovertargetaction="hidden">Done</button>
-</div>
-
-
-
-
-  </div>
-  
-    <section id="section2" style="height:400px">
-    <span id="selectedName">[ラジオボタンの名前]</span><br>
-    <iframe id="contentFrame" src="https://search3958.github.io/color.html"></iframe>
-  </section>
-  
-  
   <section id="section2" style="height:200px">Color<br><iframe src="https://search3958.github.io/color.html"></iframe></section>
   <section id="section3" style="height:272px">Clock<br><iframe src="https://search3958.github.io/clock.html"></iframe></section>
   <section id="section4" style="height:350px">Sticky Note<br><iframe src="https://search3958.github.io/notepad.html"></iframe></section>
@@ -172,7 +50,210 @@ settings
   <section id="section7" style="height:270px">Timer<br><iframe src="https://search3958.github.io/newtab/timer.html"></iframe></section>
 <section id="section8" style="height:270px">Stopwatch<br><iframe src="https://search3958.github.io/newtab/stopwatch.html"></iframe></section>
 <div class="last"></div></div>
-<script src="script.js"></script>
 </body>
-</html>
+<style>
+  *{
+      font-family: "Work Sans", "Yu Gothic Pr6N R", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+body {
+  display: flex;
+  margin: 0;
+  scroll-behavior: smooth;
+  background-color:var(--background-light);
+}
+:root {
+  --primary:#0F6CBD;
+--background-light: #FFFFFF;
+  --md-ripple-hover-color:#0000;
+  --md-ripple-pressed-color:#000;
+}
 
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 270px;
+  height: 100%;
+  padding: 20px;
+  display:block;
+  background: #f5f5f5;
+}
+
+a{
+  text-decoration: none;
+  color: #333;
+  display:flex;
+  padding:8px;
+  transition: all 0.1s ease;
+  background:#0000;
+  border-radius:8px;
+  padding-bottom:0px;
+      margin-bottom: 4px;
+  position:relative;
+}
+a:hover{
+  background:#00000008;
+}
+h1 {
+    padding-left: 16px;
+    margin: 10px 0px;
+}
+.link {
+    border-radius: 100px;
+    display: block;
+    padding: 16px 0px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+  margin: 0px 6px;
+    bottom: 4px;
+    right: 11px;
+}
+.link.active {
+    margin: 0px;
+    padding: 16px 6px;
+    background-color: var(--primary);
+}
+
+.fab {
+  border-radius:24px;
+  margin:15px;
+  display: block;
+  padding: 18px;
+  color: #333;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  background-color:var(--element-light);
+  height:24px;
+  width:24px;
+}
+
+.fab.active {
+  border-radius:24px;
+  margin:10px;
+  padding: 23px;
+  height:24px;
+  width:24px;
+  background-color:var(--element-light);
+  box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.1);
+  
+}
+
+.content {
+  margin-left: 280px;
+  padding:40px;
+  padding-right:0px;
+}
+
+section {
+  margin-bottom: 20px;
+  width: calc(100vw - 370px);
+  background-color:#fff8;
+  border-radius:24px;
+  padding:8px 16px 16px 16px;
+box-shadow: 0 8px 8px 0 rgba(0, 0, 0, .08), 0 0 4px 0 rgba(0, 0, 0, .2);
+}
+
+
+.material-symbols-outlined{
+vertical-align: -7px;
+}
+.head{
+  margin: 0;padding: 8px;display: flex;justify-content: center;align-items: center;display: flex;flex-wrap: wrap;text-align: right;
+}
+iframe{
+  width:100%;
+  height:calc(100% - 25px);
+  border-radius:8px 8px 16px 16px;
+  border:none;
+  background:var(--background-light);
+  overflow:hidden;
+}
+.last{
+  height:calc(100vh - 330px);
+}
+.searchbox{  background: var(--text-light);  border-radius:100px;  padding:10px;height:60px;margin-bottom:50px;margin-top:5px;}
+
+.txt-i{position: absolute;top:50%;left:50%;transform: translate(-50%,-50%);text-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);padding:0;margin:0;font-size:25px;
+}
+
+button{border:none;background:none;margin:0px;color:var(--element-dark);
+}
+
+input[type=search]{background:none;padding:8px 8px 8px 16px;border:none;outline: none;height:58px;color:#000;width: 400px;margin-right:5px;font-size:40px;
+  
+}
+
+input::-webkit-search-cancel-button {    appearance: none;  }
+
+.submit{background-color:none ;color: var(--element-dark);padding:8px 16px 5px 16px;position:relative;bottom:56px;
+  left:5px;
+}
+
+.colormodal{
+position: absolute;
+      right: 40px;   /* 右から40px */
+      top: 50px;
+}
+
+#Modal{
+  border:none;
+  border-radius:16px;
+  padding:8px;
+  text-align:left;
+  background:var(--background-light);
+}
+#Modal::backdrop{
+  
+  background:#0005;
+}
+label{
+  margin-bottom:8px;
+}
+img {
+    height: 24px;
+    margin-right: 8px;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --primary:#3174C2;
+--background-light: #000000;
+  --md-ripple-pressed-color:#fff;
+}
+  .sidebar{
+        background: #191919;
+    color: #fff;
+  }
+  a{
+    color:#fff;
+  }
+  section {
+    margin-bottom: 20px;
+    width: calc(100vw - 370px);
+    background-color: #00000088;
+    border-radius: 24px;
+    padding: 8px 16px 16px 16px;
+    box-shadow: 0 8px 8px 0 rgb(255 255 255 / 8%), 0 0 5px 0px rgb(255 255 255 / 20%);
+    color: #fff;
+}
+}
+</style>
+<script>
+  document.addEventListener("scroll", () => {
+  const sections = document.querySelectorAll("section");
+  const links = document.querySelectorAll(".link");
+  
+
+  let index = sections.length;
+
+  while (--index && window.scrollY + 50 < sections[index].offsetTop) {}
+
+  links.forEach(link => link.classList.remove("active"));
+  links[index].classList.add("active");
+});
+
+  </script>
+</html>
