@@ -1,3 +1,4 @@
+//新しいタブに追加する機能の案
 let topSearchResults = [];
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -81,9 +82,9 @@ async function sendToGemini(userInput) {
   let prompt = userInput;
 
   if (topSearchResults.length >= 2) {
-    prompt = `${userInput}について教えてください。現在、"${topSearchResults[0].snippet}"と"${topSearchResults[1].snippet}"の情報を得ています。長すぎない回答で教えてください。`;
+    prompt = `"${userInput}"の質問に対して、柔らかい感じで適切な情報を提供してください。太字などは使わないでください。必要に応じて、以下の検索結果も参考にして、それに依存しすぎず、わかりやすい形で回答してください"${topSearchResults[0].snippet}"，"${topSearchResults[1].snippet}"`;
   } else if (topSearchResults.length == 1) {
-    prompt = `${userInput}について教えてください。現在、"${topSearchResults[0].snippet}"の情報を得ています。長すぎない回答で教えてください。`;
+    prompt = `"${userInput}"の質問に対して、柔らかい感じで適切な情報を提供してください。太字などは使わないでください。必要に応じて、以下の検索結果も参考にして、それに依存しすぎず、わかりやすい形で回答してください"${topSearchResults[0].snippet}"`;
   }
 
   document.getElementById("debug-prompt").innerHTML = `送信プロンプト: ${prompt}`;

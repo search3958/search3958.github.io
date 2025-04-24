@@ -1,5 +1,5 @@
 *{
-    font-family: 'Inter', 'Yu Gothic Pr6N R', sans-serif;
+    font-family: "Zen Maru Gothic", sans-serif;
   font-weight:400;
 }
 body {
@@ -52,6 +52,7 @@ h1{
   margin: 0;
   font-size: 20px;
   text-align: left;
+  font-family: "Inter", sans-serif;
 }
 
 /* フェードイン・移動・ブラー解除するクラス */
@@ -207,6 +208,7 @@ a {
   color:#fff;
   padding:4px 8px;
   background: linear-gradient(180deg, #FF7700 0%, #FE3300 100%);
+  font-family: "Inter", sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
