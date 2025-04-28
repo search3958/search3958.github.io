@@ -2,8 +2,371 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 <link rel="icon" href="https://search3958.github.io/favicon/search3958.svg">
+<style>
+  * {
+   font-family: "Work Sans","IBM Plex Sans JP",sans-serif;
+}
+
+:root {
+  --text-color: #3E361F;
+  --bg-gradient-start: #F7F3E5;
+  --bg-gradient-end: #FFF1D6;
+  --first-bg-gradient: linear-gradient(0deg, #F4E7CB 0%, rgba(243, 228, 188, 46%) 10%, rgba(243, 227, 181, 20%) 23%, rgba(244, 230, 197, 0%) 100%);
+  --card-bg: #fffdf663;
+  --card-shadow: 0px 3px 18px 0px rgba(51, 34, 0, 0.1);
+  --card-shadow-hover: 0px 6px 21px 0px rgba(51, 34, 0, 0.16);
+  --button-bg: #FF7700;
+  --button-shadow: inset 0px -13px 16px -4px #ba2500, 0px 6px 24px 0px rgba(0, 0, 0, 10%);
+  --app-text-color: #000;
+}
+
+
+body {
+  background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+  margin: 0px;
+  padding: 0px;
+  min-height: 100vh;
+  color: var(--text-color);
+  transition: all 0.3s ease;
+   overflow-x: hidden;
+}
+
+.header{
+  position:fixed;
+  width:100vw;
+  top:0px;
+  left:0px;
+  backdrop-filter: blur(32px);
+  background:#fff6;
+  padding:16px 24px;
+  z-index:3;
+  display:flex;
+}
+.head-a {
+    background: none;
+    box-shadow: none;
+    color: #000;
+    padding: 8px 16px;
+}
+h1 {
+  font-size: 3.5em;
+  font-weight: 500;
+  margin: 0px;
+}
+
+.first {
+  background: var(--first-bg-gradient);
+  padding: 80px 32px;
+  position: relative;
+}
+
+.flexboard {
+  display: flex;
+  width: 100vw;
+  gap: 16px;
+  overflow: scroll;
+  padding: 16px;
+}
+
+.title {
+  font-size: 28px;
+  padding-bottom: 8px;
+}
+
+.firsta {
+  font-size: 18px;
+  margin: 16px 0px;
+}
+
+a {
+  background: var(--button-bg);
+  box-shadow: var(--button-shadow);
+  padding: 13px 16px;
+  border-radius: 100px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.firstsvg {
+  position: absolute;
+  top: -65px;
+  right: -65px;
+  animation: rotateAnimation 8s cubic-bezier(.36,.07,0,.85) infinite;
+}
+
+a {
+  display: block;
+  width: fit-content;
+}
+
+.card {
+  box-shadow: var(--card-shadow);
+  padding: 16px;
+  width: 220px;
+  border-radius: 38px;
+  transition: box-shadow 0.5s ease;
+  background: var(--card-bg);
+  flex-shrink: 0;
+}
+
+.card:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+.card-title {
+  font-size: 28px;
+  font-weight: 500;
+  height: 35px;
+}
+
+.card-text {
+  height: 40px;
+  font-size: 20px;
+}
+
+@keyframes rotateAnimation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.flex {
+  display: flex;
+  padding: 16px;
+  display: table;
+}
+
+iframe, .frameimg {
+  border-radius: 38px;
+  width: 560px;
+  height: 315px;
+}
+
+.wflex {
+  padding: 16px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.apps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.app-a {
+  background: none;
+  box-shadow: none;
+  color: var(--app-text-color);
+  width: 260px;
+}
+
+img {
+  filter: brightness(1.07);
+  height: 80px;
+  width: 80px;
+}
+
+[data-theme="dark"] img {
+  filter: brightness(0.93);
+}
+
+.app {
+  display: table;
+  text-align: center;
+}
+
+#aen {
+  display: table-cell;
+  vertical-align: middle;
+  padding-left: 16px;
+}
+
+.bottom {
+  padding: 32px;
+  font-size: 24px;
+  text-align: center;
+}
+
+/* Dark mode toggle button */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--button-bg);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  box-shadow: var(--card-shadow);
+  z-index: 1000;
+}
+
+
+.theme-toggle:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root{
+  --text-color: #F0E6CE;
+  --bg-gradient-start: #171412;
+  --bg-gradient-end: #2D2415;
+  --first-bg-gradient: linear-gradient(0deg, #2A2418 0%, rgba(42, 36, 24, 46%) 10%, rgba(42, 36, 24, 20%) 23%, rgba(42, 36, 24, 0%) 100%);
+  --card-bg: #32281663;
+  --card-shadow: 0px 3px 18px 0px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0px 6px 21px 0px rgba(0, 0, 0, 0.45);
+  --button-bg: #FF7700;
+  --button-shadow: inset 0px -13px 16px -4px #ba2500, 0px 6px 24px 0px rgba(0, 0, 0, 30%);
+  --app-text-color: #F0E6CE;
+    }
+  .head-a {
+        color: var(--text-color);
+      }
+      
+      .header {
+        background: #0006;
+      }
+}
+
+/* Responsive styles for screens 900px or less */
+@media screen and (max-width: 900px) {
+  /* Header adjustments */
+  h1 {
+    font-size: 2.5em;
+  }
+  
+  .first {
+    padding: 60px 24px;
+    text-align: center;
+  }
+  
+  .firstsvg {
+    width: 240px;
+    height: 230px;
+    top: -45px;
+    right: -45px;
+  }
+  
+  /* Flexboard adjustments */
+  .flexboard {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .card {
+    width: 180px;
+    padding: 12px;
+    border-radius: 28px;
+  }
+  
+  .card-title {
+    font-size: 22px;
+    height: 28px;
+  }
+  
+  .card-text {
+    font-size: 16px;
+    height: 34px;
+  }
+  
+  /* Video and content sections */
+  .flex {
+    flex-direction: column;
+    width: 100%;
+    display: block;
+    padding: 12px;
+  }
+  
+  iframe, .frameimg {
+    width: 100%;
+    height: auto;
+    max-height: 250px;
+    border-radius: 28px;
+  }
+  
+    
+  .apps{
+    display:block;
+  }
+  .wflex {
+    padding: 16px 0;
+    text-align: center;
+    display: block;
+  }
+  
+  img {
+    height: 60px;
+    width: 60px;
+  }
+  
+  /* Button adjustments */
+  a {
+    padding: 10px 16px;
+    margin: 8px auto;
+    text-align: center;
+  }
+  
+  /* Theme toggle button positioning */
+  .theme-toggle {
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+}
+
+/* Extra small screens (phones) */
+@media screen and (max-width: 600px) {
+  h1 {
+    font-size: 2em;
+  }
+  
+  .first {
+    padding: 50px 16px;
+  }
+  
+  .firstsvg {
+    width: 180px;
+    height: 170px;
+    top: -35px;
+    right: -35px;
+  }
+  
+  .card {
+    width: 160px;
+    padding: 10px;
+    border-radius: 24px;
+  }
+  
+  .apps{
+    display:block;
+  }
+  
+  
+  .title {
+    font-size: 22px;
+  }
+  
+  .bottom {
+    padding: 24px;
+    font-size: 18px;
+  }
+}
+  </style>
 <script type="importmap">
     {
       "imports": {
@@ -33,139 +396,178 @@
      crossorigin="anonymous"></script>
 
 <body>
-  <div class="search3958"><a class="githublink sec" href="https://github.com/search3958">Githubを見る<md-ripple></md-ripple></a></div>
-  
-  <div class="title">主な作品はこちらです。</div>
-  
+  <div class="header">
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="37" viewBox="0 0 26 37" fill="none">
+<rect width="25.5172" height="25.5172" rx="12.7586" fill="url(#paint0_linear_307_86)"/>
+<rect y="11.4827" width="25.5172" height="25.5172" rx="12.7586" fill="url(#paint1_radial_307_86)"/>
+<defs>
+<linearGradient id="paint0_linear_307_86" x1="12.7586" y1="53.7989" x2="12.7586" y2="-2.76437" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F27618" stop-opacity="0.05"/>
+<stop offset="0.519286" stop-color="#F48021" stop-opacity="0.33"/>
+<stop offset="0.673134" stop-color="#F56725" stop-opacity="0.507702"/>
+<stop offset="1" stop-color="#F77E32"/>
+</linearGradient>
+<radialGradient id="paint1_radial_307_86" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(12.7586 36.9999) rotate(-90) scale(28.2816)">
+<stop stop-color="#F79F32"/>
+<stop offset="0.5" stop-color="#E96500"/>
+<stop offset="1" stop-color="#802400"/>
+</radialGradient>
+</defs>
+</svg>
+    <a class="head-a" href="https://search3958.github.io/">スタート</a>
+    <a class="head-a" href="https://search3958.github.io/i/newtab/">Newtabの詳細</a>
+  </div>
+  <div class="first">
+    <svg xmlns="http://www.w3.org/2000/svg" width="340" height="330" class="firstsvg" viewBox="0 0 191 183" fill="none">
+<path d="M83.2793 4.46334C90.0693 -1.48778 100.218 -1.48778 107.008 4.46334L117.943 14.0472C121.4 17.0773 125.885 18.6698 130.479 18.498L145.13 17.9501C154.346 17.6055 162.333 24.2835 163.625 33.4158L165.456 46.3612C166.127 51.1007 168.658 55.3779 172.489 58.2472L183.075 66.1747C190.67 71.8624 192.546 82.4694 187.362 90.4168L180.441 101.027C177.788 105.094 176.891 110.06 177.953 114.798L180.71 127.102C182.763 136.258 177.436 145.455 168.473 148.232L155.087 152.38C150.612 153.767 146.854 156.843 144.612 160.955L137.987 173.102C133.637 181.077 124.027 184.561 115.578 181.227L101.75 175.772C97.5048 174.097 92.7821 174.097 88.5371 175.772L74.7093 181.227C66.2595 184.561 56.6498 181.077 52.3004 173.102L45.6754 160.955C43.4325 156.843 39.6747 153.767 35.2002 152.38L21.8136 148.232C12.8505 145.455 7.52444 136.258 9.57664 127.102L12.3344 114.798C13.3964 110.06 12.4991 105.094 9.84625 101.027L2.92523 90.4168C-2.25892 82.4694 -0.383396 71.8624 7.21172 66.1747L17.7977 58.2472C21.6291 55.3779 24.16 51.1007 24.8306 46.3612L26.6622 33.4158C27.9544 24.2835 35.9405 17.6055 45.1573 17.9501L59.8076 18.498C64.4016 18.6698 68.8872 17.0773 72.3444 14.0472L83.2793 4.46334Z" fill="#FFB40033"/>
+</svg>
+  <h1>Sentaro</h1>
+    <div class="firsta">私のGitHubがあります！</div>
+    <a href="https://search3958.github.io/">見にいこう</a>
+    </div>
   <div class="flexboard">
-    <div class="card" id="newtab">
-      <div>
-        <div class="card-title">Newtab3</div>
-        <div class="card-text">革命です</div>
+    <div class="card">
+      <div class="card-title">
+        Newtab4
       </div>
-      <div class="flexlink"><a class="pri" href="https://search3958.github.io/newtab/">使う<md-ripple></md-ripple></a><a class="sec" href="https://search3958.github.io/i/newtab/?section=content1-1.html">詳細を見る<md-ripple></md-ripple></a></div>
-    </div>
-    
-    <div class="card" id="toolboard">
-      <div>
-        <div class="card-title">ツールボード</div>
-        <div class="card-text">新たな選択肢</div>
+      <div class="card-text">
+        革命です
       </div>
-      <div class="flexlink"><a class="pri" href="https://search3958.github.io/toolboard">使う<md-ripple></md-ripple></a></div>
+      <a href="https://search3958.github.io/">使う</a>
     </div>
-    
-    <div class="card" id="tools">
-      <div>
-        <div class="card-title">Tools</div>
-        <div class="card-text">便利なのは事実</div>
+    <div class="card">
+      <div class="card-title">
+        ツールボード
       </div>
-      <div class="flexlink"><a class="pri" href="https://search3958.github.io/tools">使う<md-ripple></md-ripple></a></div>
-    </div>
-    <div class="card" id="webcreator">
-      <div>
-        <div class="card-title">Webクリエイター</div>
-        <div class="card-text">骨組みなら誰でも</div>
+      <div class="card-text">
+        新たな選択肢
       </div>
-      <div class="flexlink"><a class="pri" href="https://search3958.github.io/webmaker">使う<md-ripple></md-ripple></a></div>
+      <a href="https://search3958.github.io/toolboard">使う</a>
     </div>
-  </div>
-  
-  <div class="title">私について</div>
-  
-  <div class="flexboard">
-    <div class="naecard" style="background-image: url(https://search3958.github.io/newtab/bgimg/take.webp)!important">
+    <div class="card">
+      <div class="card-title">
+        thinking SNS
+      </div>
+      <div class="card-text">
+        革命です
+      </div>
+      <a href="https://search3958.github.io/">使う</a>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        Tools
+      </div>
+      <div class="card-text">
+        かなり便利
+      </div>
+      <a href="https://search3958.github.io/tools">使う</a>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        Webクリエイタ
+      </div>
+      <div class="card-text">
+        誰でも作れる
+      </div>
+      <a href="https://search3958.github.io/webmaker">使う</a>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        bgImg
+      </div>
+      <div class="card-text">
+        自由使可クレジット必須
+      </div>
+      <a href="https://search3958.github.io/project/images/">使う</a>
     </div>
     
-    <div class="naecard" style="background:var(--cardbg)">
-      早い話，<span class="flex"><span style="color:color(display-p3 0 0.41 0.88)5;">Web系が得意</span>です。</span><span class="naemini">しかしモバイル向けが苦手...</span>
-    </div>   
-    
-    <div class="naecard" style="background:color(display-p3 0 0.32 0.14);color:#fff;">
-      少しでも<span class="flex"><span style="color:color(display-p3 0.94 0.92 0.67);">便利</span>にするために</span><span class="naemini">全てを無料で公開しています</span>
+  </div>
+  <div class="flex">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/wBuQHhLfneg?si=54RcEzKA-s2pti9K" title="動画:Sentaro" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <div class="wflex">
+      <div class="title">SNSも作ってます</div>
+      "thinking"というグループで作ったSNSです。
+      背景色，文字色を設定して投稿できる個性的でカラフルなSNSです。
+      <a href="https://search3958.github.io/">使ってみる</a>
+      </div>
     </div>
-    
-  </div>
-  
-  <div class="appsbg">
-    <div class="title">他にもたくさん</div>
-   <div class="apps">
-     <a href="https://search3958.github.io/newtab/?value=try">
-  <div class="app">
-    <img src="https://search3958.github.io/favicon/newtab.svg">
-    <span id="aen">Newtab 3</span>
-  </div>
-</a>
-<a href="https://search3958.github.io/newtab/?value=wo">
-  <div class="app">
-    <img src="https://search3958.github.io/favicon/toolboars.svg">
-    <span id="aen">ツールボード</span>
-  </div>
-</a>
-<a href="https://search3958.github.io/tools">
-  <div class="app">
-    <img src="https://search3958.github.io/favicon/tools.svg">
-    <span id="aen">Tools</span>
-  </div>
-</a>
-<a href="https://search3958.github.io/project/htmlos/1/">
-  <div class="app">
-    <img src="https://search3958.github.io/favicon/os.svg">
-    <span id="aen">謎OS</span>
-  </div>
-</a>
-<a href="https://search3958.github.io/aisearch/">
-  <div class="app">
-    <img src="https://search3958.github.io/favicon/aisearch.svg">
-    <span id="aen">AI検索</span>
-  </div>
-</a>
-<a href="https://search3958.github.io/webmaker">
-  <div class="app">
-    <img src="https://search3958.github.io/favicon/webcreator.svg">
-    <span id="aen">Webクリエイター</span>
-  </div>
-</a>
-<a href="https://search3958.github.io/uiscript/">
-  <div class="app">
-    <img src="https://search3958.github.io/favicon/uiscript.svg">
-    <span id="aen">UI Script</span>
-  </div>
-</a>
-<a href="https://search3958.github.io/firebasetext.html">
-  <div class="app">
-    <img src="https://search3958.github.io/favicon/firebasetext.svg">
-    <span id="aen">火源台text</span>
-  </div>
-</a>
-<a href="https://search3958.github.io/gemini.html">
-  <div class="app">
-    <img src="https://search3958.github.io/favicon/gemini.svg">
-    <span id="aen">Gemini</span>
-  </div>
-</a>
-<a href="https://search3958.github.io/games/">
-  <div class="app">
-    <img src="https://search3958.github.io/favicon/game.svg">
-    <span id="aen">クソゲーセンター</span>
-  </div>
-</a>
-<a href="https://search3958.github.io/m3color.html">
-  <div class="app">
-    <img src="https://search3958.github.io/favicon/material3color.svg">
-    <span id="aen">M3 Color JS</span>
-  </div>
-</a>
-
-  </div>
-</div>
     <div class="flex">
-      <div style="width:calc(100% - 160px);"><div class="title">要望</div><div style="font-size:24px;padding:16px;font-weight:bold;">何か要望がありますか？<br>遠慮なく言ってください！</div></div><div style="display: flex;justify-content: center;align-items: center;">
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdAP_BsedZ6LFPNv8KvanQ2keAFfok1e2Ewhmkt-xF99gcPLQ/viewform?usp=sf_link" class="pri" style="padding:30px 50px;background: color(display-p3 0.04 0.39 1);border-radius:41px;--smooth-corners: 6, 4;">使う<md-ripple></md-ripple></a>
-        
+    <img src="https://search3958.github.io/imgs/newtab3-bg.webp" class="frameimg"></img>
+    <div class="wflex">
+      <div class="title">Newtabを使おう</div>
+      とにかく便利です。使いたいショートカットにすぐアクセスすることができ，計算機などのミニツールもあります。
+      <a href="https://search3958.github.io/newtab">使ってみる</a>
       </div>
-    </div>
-  <div class="bottom">
-    © Search 3958
   </div>
-<style>*{line-height:1.5}:root{--cardbg:#fff;--md-ripple-hover-color:#0000}body{margin:0;padding:0;background:#f5f5f7;color:#1d1d1f}.search3958{background-image:url(https://search3958.github.io/imgs/search3958.webp);background-size:cover;background-position:center;background-repeat:no-repeat;height:100vh;max-height:65vw;display:flex;align-items:flex-end;width:100%}.githublink{margin:16px auto}a{text-decoration:none;display:flex;border-radius:27.95px;width:fit-content;transition:all 0.3s cubic-bezier(.36,0,0,1);scale:1;color:#fff}a:hover{scale:.93}a:active{scale:.83}a.pri{color:#fff;background:color(display-p3 .04 .39 1 / .83);backdrop-filter:blur(8px);padding:16px 24px;mask-image:paint(smooth-corners);-webkit-mask-image:paint(smooth-corners);--smooth-corners:1.5,1;--md-ripple-pressed-color:#fff}a.sec{background:#fff8;color:#000;backdrop-filter:blur(8px);padding:16px 24px;mask-image:paint(smooth-corners);-webkit-mask-image:paint(smooth-corners);--md-ripple-pressed-color:#000}.title{font-size:32px;font-weight:700;margin:16px;margin-bottom:0;margin-top:32px}.flexboard{width:calc(100% - 32px);overflow:scroll;padding:16px;margin:0;display:flex;gap:16px;padding-bottom:24px}.card{width:300px;height:400px;border-radius:48px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 8px 24px #0001;flex-shrink:0}.naecard{width:fit-content;min-width:120px;height:120px;background:#fff;border-radius:48px;padding:48px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 8px 24px #0001;flex-shrink:0;font-weight:700;font-size:32px;background-size:cover;background-position:center;background-repeat:no-repeat}.card-title{font-size:32px;font-weight:700;padding-top:24px}.card-text{font-size:24px;font-weight:700;opacity:.7}.flexlink{margin-top:auto;display:flex;gap:16px}#newtab{background-image:url(https://search3958.github.io/imgs/newtab3-bg.webp);background-size:cover;background-position:center;background-repeat:no-repeat;color:#fff}#toolboard{background-image:url(https://search3958.github.io/toolboard.png),linear-gradient(color(display-p3 .91 .97 1),color(display-p3 .75 .87 .94));background-size:820px;color:color(display-p3 0 .17 .28)}#tools{background-image:url(https://search3958.github.io/tools.png),linear-gradient(#FFF,#FFF);background-size:700px;color:#1d1d1f}#webcreator{background-image:url(https://search3958.github.io/webcreat.png),linear-gradient(#FFF,#FFF);background-size:810px;color:#1d1d1f}.flex{display:flex}.naemini{font-size:18px;opacity:.7}.appsbg{background-image:url(https://search3958.github.io/imgs/bluebg.webp);background-size:cover;background-position:center;background-repeat:no-repeat;width:100%;padding:10px 0;color:#fff}.apps{display:flex;flex-wrap:wrap;justify-content:center;width:100%}.app{padding:16px;display:flex}img{height:72px;width:72px}#aen{padding:25px;display:block;width:140px}.bottom{background:#e9e9eb;color:#6e6e73;padding:40px;text-align:center;font-size:24px}@media (prefers-color-scheme:dark){:root{--cardbg:#1d1d1f}body{background:#000;color:#f5f5f7}.search3958{background-image:url(https://search3958.github.io/imgs/search3958dark.webp)}.bottom{background:#1e1e23;color:#8e8e93}#toolboard{background-image:url(https://search3958.github.io/toolboard.png),linear-gradient(color(display-p3 0 .2 .31),color(display-p3 0 .13 .19));background-size:820px;color:color(display-p3 .79 .86 .93)}#tools{background-image:url(https://search3958.github.io/tools.png),linear-gradient(var(--cardbg),var(--cardbg));background-size:700px;color:#fff}#webcreator{background-image:url(https://search3958.github.io/webcreat.png),linear-gradient(var(--cardbg),var(--cardbg));background-size:810px;color:#fff}}</style>
+<div class="apps">
+  <a class="app-a" href="https://search3958.github.io/newtab/?value=try">
+    <div class="app">
+      <img src="https://search3958.github.io/favicon/newtab.svg">
+      <span id="aen">Newtab 3</span>
+    </div>
+  </a>
+  <a class="app-a" href="https://search3958.github.io/toolboard">
+    <div class="app">
+      <img src="https://search3958.github.io/favicon/toolboars.svg">
+      <span id="aen">ツールボード</span>
+    </div>
+  </a>
+  <a class="app-a" href="https://search3958.github.io/tools">
+    <div class="app">
+      <img src="https://search3958.github.io/favicon/tools.svg">
+      <span id="aen">Tools</span>
+    </div>
+  </a>
+  <a class="app-a" href="https://search3958.github.io/project/htmlos/1/">
+    <div class="app">
+      <img src="https://search3958.github.io/favicon/os.svg">
+      <span id="aen">謎OS</span>
+    </div>
+  </a>
+  <a class="app-a" href="https://search3958.github.io/aisearch/">
+    <div class="app">
+      <img src="https://search3958.github.io/favicon/aisearch.svg">
+      <span id="aen">AI検索</span>
+    </div>
+  </a>
+  <a class="app-a" href="https://search3958.github.io/webmaker">
+    <div class="app">
+      <img src="https://search3958.github.io/favicon/webcreator.svg">
+      <span id="aen">Webクリエイター</span>
+    </div>
+  </a>
+  <a class="app-a" href="https://search3958.github.io/uiscript/">
+    <div class="app">
+      <img src="https://search3958.github.io/favicon/uiscript.svg">
+      <span id="aen">UI Script</span>
+    </div>
+  </a>
+  <a class="app-a" href="https://search3958.github.io/firebasetext.html">
+    <div class="app">
+      <img src="https://search3958.github.io/favicon/firebasetext.svg">
+      <span id="aen">火源台text</span>
+    </div>
+  </a>
+  <a class="app-a" href="https://search3958.github.io/gemini.html">
+    <div class="app">
+      <img src="https://search3958.github.io/favicon/gemini.svg">
+      <span id="aen">Gemini</span>
+    </div>
+  </a>
+  <a class="app-a" href="https://search3958.github.io/games/">
+    <div class="app">
+      <img src="https://search3958.github.io/favicon/game.svg">
+      <span id="aen">クソゲーセンター</span>
+    </div>
+  </a>
+  <a class="app-a" href="https://search3958.github.io/m3color.html">
+    <div class="app">
+      <img src="https://search3958.github.io/favicon/material3color.svg">
+      <span id="aen">M3 Color JS</span>
+    </div>
+  </a>
+</div>
+<div class="bottom">
+  © Search 3958
+  </div>
   </body>
