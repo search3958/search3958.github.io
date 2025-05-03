@@ -1,15 +1,17 @@
-<!DOCTYPE html>
-<html lang="ja">
+<!doctype html>
+<html amp lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
+  <script async src="https://cdn.ampproject.org/v0.js"></script>
   <title>Search3958 - Newtab4</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="canonical" href="https://search3958.github.io/newtab/">
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <link rel="icon" href="https://search3958.github.io/favicon/newtab.svg">
-  <style>
-    
+  <link rel="shortcut icon" href="https://search3958.github.io/favicon/newtab.svg">
+  <style amp-custom>
     * {
       font-family: "Work Sans","IBM Plex Sans JP",sans-serif;
     }
@@ -39,14 +41,16 @@
 
     .header{
       position: fixed;
-      width: 100vw;
+      width: 100%;
       top: 0px;
       left: 0px;
       backdrop-filter: blur(32px);
-      background: #fff6;
+      -webkit-backdrop-filter: blur(32px);
+      background: rgba(255,255,255,0.4);
       padding: 16px 24px;
       z-index: 3;
       display: flex;
+      box-sizing: border-box;
     }
     
     .head-a {
@@ -105,7 +109,6 @@
       position: absolute;
       top: -65px;
       right: -65px;
-      animation: rotateAnimation 8s cubic-bezier(.36,.07,0,.85) infinite;
     }
 
     .update-item {
@@ -129,11 +132,10 @@
 
     .setup-steps {
       background: var(--card-bg);
-      border-radius: A28px;
+      border-radius: 32px;
       padding: 24px;
       box-shadow: var(--card-shadow);
       margin: 24px 0;
-          border-radius: 32px;
     }
 
     .setup-steps ol {
@@ -153,15 +155,6 @@
       padding: 4px 12px;
       margin: 0 4px;
       font-size: 0.9em;
-    }
-
-    @keyframes rotateAnimation {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
     }
 
     .bottom {
@@ -189,7 +182,7 @@
       }
       
       .header {
-        background: #0006;
+        background: rgba(0,0,0,0.4);
       }
     }
 
@@ -202,13 +195,6 @@
       .first {
         padding: 60px 24px;
         text-align: center;
-      }
-      
-      .firstsvg {
-        width: 240px;
-        height: 230px;
-        top: -45px;
-        right: -45px;
       }
       
       .content {
@@ -233,13 +219,6 @@
         padding: 50px 16px;
       }
       
-      .firstsvg {
-        width: 180px;
-        height: 170px;
-        top: -35px;
-        right: -35px;
-      }
-      
       .title {
         font-size: 22px;
       }
@@ -247,6 +226,19 @@
       .bottom {
         padding: 24px;
         font-size: 18px;
+      }
+    }
+
+    .rotate-svg {
+      animation: rotateAnimation 8s cubic-bezier(.36,.07,0,.85) infinite;
+    }
+
+    @keyframes rotateAnimation {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
       }
     }
   </style>
@@ -278,6 +270,7 @@
     <h1>Newtab4</h1>
     <div class="firsta">あなたのブラウザを、より便利に、よりスタイリッシュに</div>
     <a href="https://search3958.github.io/newtab/">今すぐ試す</a>
+    
   </div>
   
   <div class="content">
