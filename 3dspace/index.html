@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>3D Space</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&family=Zen+Kaku+Gothic+Antique&display=swap" rel="stylesheet">
+  <script type="importmap">
+  {
+    "imports": {
+      "@material/web/": "https://esm.run/@material/web/"
+    }
+  }
+</script>
+<script type="module">
+  import '@material/web/all.js';
+  import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
+
+  document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+</script>
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Tools</title>
+  <style>
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <label for="distanceRange">拡大</label>
+    <input type="range" id="distanceRange" min="100" max="600" value="400">
+    <span id="distanceValue">400px</span>
+  </div>
+  
+  <div class="scene" id="scene">
+    
+    <div class="carousel" id="carousel">
+      <div class="carousel__item" data-id="1">
+        <div class="aictn">
+        <div class="item-content">
+  <input type="text" id="ai-query" placeholder="何を質問しますか？" required>
+</div>
+  <div class="item-content">
+    <button id="ai-button1" onclick="aiGoToURL('chatgpt')">Chat GPT<md-ripple></md-ripple></button>
+    <button id="ai-button2" onclick="aiGoToURL('aisearch')">AI Search<md-ripple></md-ripple></button>
+  </div>
+</div>
+  <div class="item-header">
+    <div class="item-title">AIに質問</div>
+    <div class="item-controls">
+      
+      <div class="control-button size-toggle" data-id="1">⋄</div>
+    </div>
+  </div>
+</div>
+
+<div class="carousel__item large" data-id="2">
+  <div class="item-content"><textarea type="text" id="textbox1" placeholder="内容は自動で保存されます"></textarea></div>
+  <div class="item-header">
+    <div class="item-title">記録帳</div>
+    <div class="item-controls">
+      <div class="control-button size-toggle" data-id="2">⋄</div>
+    </div>
+  </div>
+</div>
+
+<div class="settings-window" data-id="settings">
+  <div class="settingctn">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
+  crossorigin="anonymous"></script>
+<ins class="adsbygoogle"
+  style="display:inline-block;width:380px;height:160px"
+  data-ad-client="ca-pub-6151036058675874"
+  data-ad-slot="7021570851"></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+  <div class="settings-content">
+    <div class="item-content">
+      <button onclick="window.location.href='https://search3958.github.io/'"><md-ripple></md-ripple>私のGithub</button>
+      <button onclick="window.location.href='https://search3958.github.io/newtab/'"><md-ripple></md-ripple>Newtab</button>
+    </div>
+  </div>
+  </div>
+  <div class="settings-header">
+    <h2>私について</h2>
+    <div class="settings-controls">
+      <div class="control-button minimize-button" data-id="settings">－</div>
+    </div>
+  </div>
+</div>
+
+<div class="carousel__item" data-id="3">
+  <div id="calc-container">
+    <div class="calc-display" id="calc-display">0</div>
+    <div class="calc-buttons">
+      <button class="calc-button" onclick="calcClearDisplay()">C<md-ripple></md-ripple></button>
+      <button class="calc-button" onclick="calcAppendValue('(')">(<md-ripple></md-ripple></button>
+      <button class="calc-button" onclick="calcAppendValue(')')">)<md-ripple></md-ripple></button>
+      <button class="calc-button calc-operator" onclick="calcAppendValue('/')">÷</button>
+
+      <button class="calc-button" onclick="calcAppendValue('7')">7<md-ripple></md-ripple></button>
+      <button class="calc-button" onclick="calcAppendValue('8')">8<md-ripple></md-ripple></button>
+      <button class="calc-button" onclick="calcAppendValue('9')">9<md-ripple></md-ripple></button>
+      <button class="calc-button calc-operator" onclick="calcAppendValue('*')">×</button>
+
+      <button class="calc-button" onclick="calcAppendValue('4')">4<md-ripple></md-ripple></button>
+      <button class="calc-button" onclick="calcAppendValue('5')">5<md-ripple></md-ripple></button>
+      <button class="calc-button" onclick="calcAppendValue('6')">6<md-ripple></md-ripple></button>
+      <button class="calc-button calc-operator" onclick="calcAppendValue('-')">−</button>
+
+      <button class="calc-button" onclick="calcAppendValue('1')"><md-ripple></md-ripple>1</button>
+      <button class="calc-button" onclick="calcAppendValue('2')">2<md-ripple></md-ripple></button>
+      <button class="calc-button" onclick="calcAppendValue('3')">3<md-ripple></md-ripple></button>
+      <button class="calc-button calc-operator" onclick="calcAppendValue('+')">+</button>
+
+      <button class="calc-button" onclick="calcAppendValue('0')">0<md-ripple></md-ripple></button>
+      <button class="calc-button" onclick="calcAppendValue('.')">.<md-ripple></md-ripple></button>
+      <button class="calc-button calc-equal" onclick="calcCalculate()">=<md-ripple></md-ripple></button>
+    </div>
+  </div>
+  <div class="item-header">
+    <div class="item-title">計算機</div>
+    <div class="item-controls">
+      <div class="control-button size-toggle" data-id="3">⋄</div>
+    </div>
+  </div>
+</div>
+
+<div class="carousel__item search" data-id="search">
+  <div class="item-content">
+    <form action="https://www.google.com/search" method="GET" target="_blank" autocomplete="off">
+      <input class="searchinput" type="text" name="q" required autocomplete="off">
+      <button type="submit"><md-ripple></md-ripple>検索</button>
+    </form>
+  </div>
+  <div class="item-header">
+    <div class="item-title">Google検索</div>
+    <div class="item-controls">
+    </div>
+  </div>
+</div>
+
+<div class="carousel__item" data-id="4">
+      <div id="timeDisplay">16:41</div>
+      <div class="item-content">
+        <button onclick="window.location.href='https://github.com/'"><md-ripple></md-ripple>Github</button>
+        <button onclick="window.location.href='https://codepen.io/'"><md-ripple></md-ripple>Codepen</button>
+        <button onclick="window.location.href='https://mail.google.com/mail/'"><md-ripple></md-ripple>Gmail</button>
+      </div>
+  <div class="item-header">
+    <div class="item-title">時間</div>
+    <div class="item-controls">
+      <div class="control-button size-toggle" data-id="4">⋄</div>
+    </div>
+  </div>
+</div>
+
+<div class="carousel__item" data-id="5">
+    <div id="stopwatch">00:00.000</div>
+    <div class="stopwatch-controls">
+      <button id="startBtn" onclick="startStopwatch()"><md-ripple></md-ripple>開始</button>
+      <button id="stopBtn" onclick="stopStopwatch()"><md-ripple></md-ripple>停止</button>
+      <button id="resetBtn" onclick="resetStopwatch()"><md-ripple></md-ripple>リセット</button>
+    </div>
+  <div class="item-header">
+    <div class="item-title">ストップウォッチ</div>
+    <div class="item-controls">
+      <div class="control-button size-toggle" data-id="5">⋄</div>
+    </div>
+  </div>
+</div>
+      
+      
+    </div>
+  </div>
+  <script>
+  </script>
+</body>
+</html>
+<!-- partial -->
+  <script  src="./script.js"></script>
+
+</body>
+</html>
