@@ -3,6 +3,8 @@ let topSearchResults = [];
 
 document.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
+  const modeParam = urlParams.get("mode");
+  window.promptMode = modeParam || "default";
   const query = urlParams.get("q");
   if (query) {
     document.getElementById("query-input").value = query;
@@ -82,9 +84,21 @@ async function sendToGemini(userInput) {
   let prompt = userInput;
 
   if (topSearchResults.length >= 2) {
-    prompt = `"${userInput}"の質問に対して、柔らかい感じで適切な情報を提供してください。太字などは使わないでください。必要に応じて、以下の検索結果も参考にして、それに依存しすぎず、わかりやすい形で回答してください"${topSearchResults[0].snippet}"，"${topSearchResults[1].snippet}"`;
+    if (window.promptMode === "simple") {
+      prompt = `"${userInput}" 参考情報:"${topSearchResults[0].snippet}"，"${topSearchResults[1].snippet}"`;
+    } else if (window.promptMode === "summary") {
+      prompt = `"${userInput}" また，箇条書きなどでわかりやすくまとめてください。"${topSearchResults[0].snippet}"，"${topSearchResults[1].snippet}"`;
+    } else {
+      prompt = `"${userInput}" 柔らかい感じで太字などは使わず回答してください。以下の検索結果も参考に、わかりやすく回答してください"${topSearchResults[0].snippet}"，"${topSearchResults[1].snippet}"`;
+    }
   } else if (topSearchResults.length == 1) {
-    prompt = `"${userInput}"の質問に対して、柔らかい感じで適切な情報を提供してください。太字などは使わないでください。必要に応じて、以下の検索結果も参考にして、それに依存しすぎず、わかりやすい形で回答してください"${topSearchResults[0].snippet}"`;
+    if (window.promptMode === "simple") {
+      prompt = `"${userInput}" 参考情報:"${topSearchResults[0].snippet}"`;
+    } else if (window.promptMode === "summary") {
+      prompt = `"${userInput}" また，箇条書きなどでわかりやすくまとめてください"${topSearchResults[0].snippet}"`;
+    } else {
+      prompt = `"${userInput}" 柔らかい感じで太字などは使わず回答してください。以下の検索結果も参考に、わかりやすく回答してください"${topSearchResults[0].snippet}"，"${topSearchResults[1].snippet}"`;
+    }
   }
 
   document.getElementById("debug-prompt").innerHTML = `送信プロンプト: ${prompt}`;
