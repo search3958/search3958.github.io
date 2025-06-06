@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AIショートカット</title>
+
+  <!-- フォント読み込み -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Zen+Maru+Gothic&display=swap" rel="stylesheet"/>
+
+  <!-- Smooth Corners Worklet（ブラウザ対応する場合） -->
+  <script>
+    if (CSS && 'paintWorklet' in CSS) {
+      CSS.paintWorklet.addModule('https://unpkg.com/smooth-corners');
+    }
+  </script>
+
+  <style>
+    /* ---- 全体設定 ---- */
+    * {
+      font-family: "Zen Maru Gothic", sans-serif;
+      font-weight: 400;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      background: linear-gradient(180deg, #F7F3E5 0%, #FFF1D6 100%);
+      min-height: 100vh;
+    }
+    /* 初期状態：画面中央に配置（検索ボックスのみ表示） */
+    body.initial {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    /* 初期ヘッダー（中央表示） */
+    .initial-header {
+      transition: opacity 0.5s ease, transform 0.5s ease, filter 0.5s ease;
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+      text-align: center;
+      font-size: 28px;
+      margin: 0 0 20px;
+    }
+    /* フェードアウト・移動・ブラーするクラス */
+    .fade-out {
+      opacity: 0;
+      transform: translateY(-30px);
+      filter: blur(3px);
+    }
+
+    /* 最小化ヘッダー（左上固定）。初期は非表示 */
+    .minimized-header {
+      transition: opacity 0.5s ease, transform 0.5s ease, filter 0.5s ease;
+      opacity: 0;
+      transform: translateY(30px);
+      filter: blur(3px);
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      margin: 0;
+      font-size: 20px;
+      text-align: left;
+      font-family: "Inter", sans-serif;
+    }
+    /* フェードイン・移動・ブラー解除するクラス */
+    .fade-in {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+
+    /* ---- コンテナ全体 ---- */
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ---- 検索ボックス ---- */
+    .search-container {
+      display: flex;
+      gap: 10px;
+      margin: 10px auto;
+      width: 100%;
+      max-width: 600px;
+    }
+    #query-input {
+      flex-grow: 1;
+      padding: 16px 24px;
+      font-size: 16px;
+      border-radius: 100px;
+      border: none;
+      background: rgba(251, 249, 242, 71%);
+      color: #000;
+      box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.08);
+      outline: none;
+      transition: 0.2s all ease;
+    }
+    #query-input:focus {
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0px 5px 20px rgba(0,0,0,0.1);
+    }
+    .btn {
+      padding: 16px 24px;
+      background: linear-gradient(180deg, #FF7700 0%, #BA2500 100%);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+      box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.08);
+    }
+    .btn:hover {
+      background-color: #357ae8;
+    }
+    .btn:disabled {
+      background-color: #a1a1a1;
+      cursor: not-allowed;
+    }
+    a {
+      text-decoration: none;
+      color: #000; /* 黒くして見やすく */
+      word-break: break-all;
+    }
+
+    /* 「生成中...」表示 */
+    #loading {
+      text-align: center;
+      padding: 10px 0;
+      color: #666;
+      font-size: 0.95em;
+      display: none;
+    }
+
+    /* ---- 結果セクション（検索後に下からスライドアップ） ---- */
+    .results-container {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.5s ease;
+    }
+    .results-container.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section {
+      padding: 24px;
+      border-radius: 32px;
+      box-shadow: 0 2px 20px 0px rgb(0 0 0 / 4%);
+      background: #fff7;
+      margin-bottom: 16px;
+    }
+    .section h2 {
+      margin-top: 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    /* ---- リンクアイテム用アニメーション ---- */
+    .result-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s forwards cubic-bezier(.3,0,0,1);
+      filter: blur(16px);
+    }
+    .result-item:last-child {
+      border-bottom: none;
+    }
+    .result-item .link-text {
+      color: #000; /* 黒くして見やすく */
+      font-size: 0.95em;
+    }
+    .result-item .link-text:hover {
+      text-decoration: underline;
+      color: #555;
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0px);
+      }
+    }
+
+    /* ---- 履歴セクション ---- */
+    .history-section {
+      width: 100%;
+      max-width: 600px;
+      background-color: rgba(251, 249, 242, 71%);
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.08);
+      margin: 0 auto;
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e1e4e8;
+    }
+    .history-header h2 {
+      font-size: 1.1em;
+      color: #2c3e50;
+    }
+    .toggle-btn {
+      background: none;
+      border: none;
+      font-size: 0.9em;
+      color: #f16500;
+      cursor: pointer;
+    }
+    .history-container {
+      overflow: hidden;
+      height: 0; /* 折りたたみ初期状態 */
+      opacity: 0;
+      transition: height 0.3s cubic-bezier(0.22, 0.01, 0, 1), opacity 0.3s ease;
+    }
+    .history-container.expanded {
+      opacity: 1;
+      /* height は JS で設定 */
+    }
+    .history-list {
+      list-style: none;
+      padding: 10px 16px;
+    }
+    .history-item {
+      padding: 8px 0;
+      font-size: 0.95em;
+      color: #555;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(10px);
+      filter: blur(5px);
+      animation: fadeInUpHistory 0.4s forwards cubic-bezier(.3,0,0,1);
+    }
+    .history-item:last-child {
+      border-bottom: none;
+    }
+    @keyframes fadeInUpHistory {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+  </style>
+</head>
+<body class="initial">
+  <!-- 初期ヘッダー（中央） -->
+  <h1 id="initial-header" class="initial-header">何がしたいですか？</h1>
+  <!-- 最小化ヘッダー（左上固定、初期は非表示） -->
+  <div id="minimized-header" class="minimized-header">Search3958 <span class="ailogo">AIショートカット</span></div>
+
+  <div class="container">
+    <!-- 検索ボックス -->
+    <div class="search-container">
+      <input type="text" id="query-input" placeholder="AIは不正確な情報を表示することがあります。" />
+      <button class="btn" id="sendBtn" onclick="sendToGemini()">送信</button>
+    </div>
+
+    <!-- 「生成中...」表示 -->
+    <div id="loading">生成中...</div>
+
+    <!-- 履歴セクション -->
+    <div class="history-section">
+      <div class="history-header">
+        <h2>履歴</h2>
+        <button class="toggle-btn" id="historyToggleBtn" onclick="toggleHistory()">表示</button>
+      </div>
+      <div id="historyContainer" class="history-container">
+        <ul id="historyList" class="history-list"></ul>
+      </div>
+    </div>
+
+    <!-- 結果表示部分 -->
+    <div class="results-container" id="resultsContainer">
+      <div class="section">
+        <h2>リンク結果</h2>
+        <div id="results"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_KEY = 'wodeapi'; // ← あなたのAPIキーに差し替えてください
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+let currentUrls = [];
+const MAX_HISTORY = 3;
+const STORAGE_KEY = 'gemini_link_history';
+
+// ページ読み込み時に履歴をロードして表示
+window.addEventListener('DOMContentLoaded', () => {
+  renderHistory();
+
+  // URLにq=パラメータがある場合、自動入力して送信
+  const params = new URLSearchParams(location.search);
+  const q = params.get('q');
+  if (q) {
+    document.getElementById('query-input').value = q;
+    sendToGemini();
+  }
+});
+
+// Gemini にリクエストしてリンクを取得
+async function sendToGemini() {
+  // 初期ヘッダーをフェードアウト／最小化ヘッダーをフェードイン
+  document.getElementById('initial-header').classList.add('fade-out');
+  document.getElementById('minimized-header').classList.add('fade-in');
+  document.body.classList.remove('initial');
+
+  const userInputElem = document.getElementById('query-input');
+  const userInput = userInputElem.value.trim();
+  const resultsContainer = document.getElementById('resultsContainer');
+  const resultsDiv = document.getElementById('results');
+  const loadingDiv = document.getElementById('loading');
+
+  resultsDiv.innerHTML = '';
+  resultsContainer.classList.remove('visible');
+  loadingDiv.style.display = 'block';
+  collapseHistory();
+  currentUrls = [];
+
+  if (!userInput) {
+    alert('何か入力してください。');
+    loadingDiv.style.display = 'none';
+    return;
+  }
+
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = true;
+
+  const requestBody = {
+    contents: [{
+      parts: [{
+        text: `ユーザーの意図：「${userInput}」。この目的を達成するのに役立つ実在するWebリンクを最大5個、JSON配列（例: ["https://example.com", "https://another.com"]）として返してください。`
+      }]
+    }]
+  };
+
+  try {
+    const response = await fetch(GEMINI_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("APIレスポンスエラー:", errorText);
+      alert("Gemini APIでエラーが発生しました:\n" + errorText);
+      sendBtn.disabled = false;
+      loadingDiv.style.display = 'none';
+      return;
+    }
+
+    const data = await response.json();
+    const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+
+    const jsonMatch = textResponse.match(/\[[\s\S]*?\]/);
+    if (!jsonMatch) {
+      alert("JSON形式のリンクリストが見つかりません:\n" + textResponse);
+      sendBtn.disabled = false;
+      loadingDiv.style.display = 'none';
+      return;
+    }
+
+    let urls;
+    try {
+      urls = JSON.parse(jsonMatch[0]);
+    } catch (e) {
+      alert("抽出したJSONの解析に失敗しました:\n" + jsonMatch[0]);
+      sendBtn.disabled = false;
+      loadingDiv.style.display = 'none';
+      return;
+    }
+
+    if (!Array.isArray(urls) || urls.length === 0) {
+      alert("リンクが配列形式で返ってきませんでした。");
+      sendBtn.disabled = false;
+      loadingDiv.style.display = 'none';
+      return;
+    }
+
+    addToHistory(userInput);
+
+    currentUrls = urls;
+    urls.forEach((url, index) => {
+      const container = document.createElement('div');
+      container.className = 'result-item';
+      container.style.animationDelay = `${index * 0.1}s`;
+
+      const linkText = document.createElement('a');
+      linkText.className = 'link-text';
+      linkText.textContent = url;
+      linkText.href = url;
+      linkText.target = '_blank';
+      linkText.rel = 'noopener noreferrer';
+
+      const button = document.createElement('button');
+      button.className = 'btn';
+      button.textContent = '開く';
+      button.style.backgroundColor = '#67c23a';
+      button.style.marginLeft = '10px';
+      button.onclick = () => window.open(url, '_blank');
+
+      container.appendChild(linkText);
+      container.appendChild(button);
+      resultsDiv.appendChild(container);
+    });
+
+    loadingDiv.style.display = 'none';
+    setTimeout(() => {
+      resultsContainer.classList.add('visible');
+    }, 100);
+
+  } catch (error) {
+    console.error("通信エラー:", error);
+    alert("通信エラーが発生しました: " + error.message);
+    loadingDiv.style.display = 'none';
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+// 履歴を取得して表示
+function renderHistory() {
+  const historyListElem = document.getElementById('historyList');
+  historyListElem.innerHTML = '';
+  const history = getHistory();
+  history.forEach((item, idx) => {
+    const li = document.createElement('li');
+    li.className = 'history-item';
+    li.style.animationDelay = `${idx * 0.1}s`;
+    li.textContent = item;
+    li.addEventListener('click', () => {
+      document.getElementById('query-input').value = item;
+    });
+    historyListElem.appendChild(li);
+  });
+}
+
+function getHistory() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return [];
+  try {
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return [];
+    return arr;
+  } catch {
+    return [];
+  }
+}
+
+function addToHistory(text) {
+  const history = getHistory();
+  if (history[0] !== text) {
+    history.unshift(text);
+    if (history.length > MAX_HISTORY) {
+      history.pop();
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  }
+  renderHistory();
+}
+
+function collapseHistory() {
+  const container = document.getElementById('historyContainer');
+  const toggleBtn = document.getElementById('historyToggleBtn');
+  container.classList.remove('expanded');
+  container.style.height = '0';
+  container.style.opacity = '0';
+  toggleBtn.textContent = '表示';
+}
+
+function toggleHistory() {
+  const container = document.getElementById('historyContainer');
+  const toggleBtn = document.getElementById('historyToggleBtn');
+  if (container.classList.contains('expanded')) {
+    container.classList.remove('expanded');
+    container.style.height = '0';
+    container.style.opacity = '0';
+    toggleBtn.textContent = '表示';
+  } else {
+    container.classList.add('expanded');
+    const scrollH = container.scrollHeight;
+    container.style.height = scrollH + 'px';
+    container.style.opacity = '1';
+    toggleBtn.textContent = '折りたたむ';
+  }
+}
+
+  </script>
+</body>
+</html>
