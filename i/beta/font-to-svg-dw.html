@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>アウトラインSVG + メタ情報生成（新フォーマット）</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2rem; }
+    textarea { width: 80%; height: 100px; margin-top: 1rem; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>フォントからSVGアウトライン生成 + メタ情報（新フォーマット）</h1>
+  <input type="file" id="fontFile" accept=".ttf,.otf" />
+  <br><br>
+  <button onclick="generateFromUpload()">ZIPを生成</button>
+  <p id="status"></p>
+  <textarea id="metadata" readonly placeholder="メタ情報がここに表示されます"></textarea>
+
+  <script>
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789+",./?+*;:@-=!_'.split('');
+    const fontSize = 20;
+
+    const symbolMap = {
+      '+': 'あ',
+      '"': 'い',
+      ',': 'う',
+      '.': 'え',
+      '/': 'お',
+      '?': 'か',
+      '*': 'き',
+      ';': 'く',
+      ':': 'け',
+      '@': 'こ',
+      '-': 'さ',
+      '=': 'し',
+      '!': 'す',
+      '_': 'せ'
+    };
+
+    function escapeChar(ch) {
+      if (/[a-z0-9]/.test(ch)) return ch;
+      return symbolMap[ch] || '不'; 
+    }
+
+    function padWidth(width) {
+      // 横幅を整数にして、2桁固定長でゼロパディング（最大99まで対応）
+      let w = Math.floor(width);
+      if (w > 99) w = 99; 
+      return w.toString().padStart(2, '0');
+    }
+
+    async function generateFromUpload() {
+      const status = document.getElementById('status');
+      const input = document.getElementById('fontFile');
+      const metaOutput = document.getElementById('metadata');
+      const file = input.files[0];
+
+      if (!file) {
+        status.textContent = "フォントファイルを選択してください。";
+        return;
+      }
+
+      status.textContent = "フォント読み込み中...";
+      const arrayBuffer = await file.arrayBuffer();
+
+      let font;
+      try {
+        font = opentype.parse(arrayBuffer);
+      } catch (e) {
+        status.textContent = "フォントの解析に失敗しました。TTF/OTFのみ対応です。";
+        return;
+      }
+
+      const zip = new JSZip();
+      let metadataArray = [];
+      status.textContent = "SVG生成中...";
+
+      for (const ch of chars) {
+        const glyph = font.charToGlyph(ch);
+        const path = glyph.getPath(0, fontSize, fontSize);
+        const svgPath = path.toPathData(2);
+
+        const width = (glyph.advanceWidth || font.unitsPerEm) * fontSize / font.unitsPerEm;
+        const safeName = escapeChar(ch);
+        const svgContent = `
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${fontSize}" viewBox="0 0 ${width} ${fontSize}">
+  <path d="${svgPath}" fill="#f00" />
+</svg>`.trim();
+
+        zip.file(`${safeName}.svg`, svgContent);
+
+        metadataArray.push(`${ch}${safeName}${padWidth(width)}`);
+      }
+
+      status.textContent = "ZIP生成中...";
+      const blob = await zip.generateAsync({ type: "blob" });
+
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "outlined_svgs.zip";
+      a.click();
+
+      metaOutput.value = metadataArray.join(',');
+      status.textContent = "完了：ZIPをダウンロード & メタ情報を出力しました。";
+    }
+  </script>
+</body>
+</html>

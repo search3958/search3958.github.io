@@ -1,0 +1,587 @@
+<!doctype html>
+<html amp lang="ja">
+<head>
+  <meta charset="utf-8">
+  <script async src="https://cdn.ampproject.org/v0.js"></script>
+  <title>Search3958</title>
+  <link rel="canonical" href="https://search3958.github.io/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Search3958は、便利なツールやカスタマイズ可能なウェブアプリを提供するポータルサイトです。日常の作業を効率化する多彩な機能をお試しください。">
+  <meta property="og:title" content="Search3958 - 便利ツールとウェブアプリのポータル">
+  <meta property="og:description" content="Search3958は、便利なツールやカスタマイズ可能なウェブアプリを提供するポータルサイトです。日常の作業を効率化する多彩な機能をお試しください。">
+  <meta property="og:url" content="https://search3958.github.io">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="https://search3958.github.io/favicon/search3958.svg">
+
+  <script async custom-element="amp-iframe" src="https://cdn.ampproject.org/v0/amp-iframe-0.1.js"></script>
+  <script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>
+
+  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+
+  <style amp-custom>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+    
+    * {
+      font-family: "Work Sans","IBM Plex Sans JP",sans-serif;
+    }
+    
+    :root {
+      --text-color: #3E361F;
+      --bg-gradient-start: #F7F3E5;
+      --bg-gradient-end: #FFF1D6;
+      --first-bg-gradient: linear-gradient(0deg, #F4E7CB 0%, rgba(243, 228, 188, 46%) 10%, rgba(243, 227, 181, 20%) 23%, rgba(244, 230, 197, 0%) 100%);
+      --card-bg: #fffdf663;
+      --card-shadow: 0px 3px 18px 0px rgba(51, 34, 0, 0.1);
+      --card-shadow-hover: 0px 6px 21px 0px rgba(51, 34, 0, 0.16);
+      --button-bg: #FF7700;
+      --button-shadow: inset 0px -13px 16px -4px #ba2500, 0px 6px 24px 0px rgba(0, 0, 0, 10%);
+      --app-text-color: #000;
+    }
+    
+    body {
+      background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      color: var(--text-color);
+      transition: all 0.3s ease;
+      overflow-x: hidden;
+    }
+    
+    .header{
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(32px);
+      padding: 16px 24px;
+      z-index: 3;
+      display: flex;
+      box-sizing: border-box;
+    }
+    
+    .head-a {
+      background: none;
+      box-shadow: none;
+      color: #000;
+      padding: 8px 16px;
+      text-decoration: none;
+    }
+    
+    h1 {
+      font-size: 3.5em;
+      font-weight: 500;
+      margin: 0;
+    }
+    
+    .first {
+      background: var(--first-bg-gradient);
+      padding: 80px 32px;
+      position: relative;
+    }
+    
+    .flexboard {
+      display: flex;
+      width: 100%;
+      gap: 16px;
+      overflow-x: auto;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    
+    .title {
+      font-size: 28px;
+      padding-bottom: 8px;
+    }
+    
+    .firsta {
+      font-size: 18px;
+      margin: 16px 0;
+    }
+    
+    a {
+      display: block;
+      width: fit-content;
+      background: var(--button-bg);
+      box-shadow: var(--button-shadow);
+      padding: 13px 16px;
+      border-radius: 100px;
+      text-decoration: none;
+      color: #fff;
+    }
+    
+    .firstsvg {
+      position: absolute;
+      top: -65px;
+      right: -65px;
+      animation: rotateAnimation 8s cubic-bezier(.36,.07,0,.85) infinite;
+    }
+    
+    .card {
+      box-shadow: var(--card-shadow);
+      padding: 16px;
+      width: 220px;
+      border-radius: 38px;
+      background: var(--card-bg);
+      flex-shrink: 0;
+    }
+    
+    .card-title {
+      font-size: 28px;
+      font-weight: 500;
+      height: 35px;
+    }
+    
+    .card-text {
+      height: 40px;
+      font-size: 20px;
+    }
+    
+    @keyframes rotateAnimation {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .flex {
+      display: flex;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    
+    .flex-container {
+      display: flex;
+      width: 100%;
+    }
+    
+    .frameimg,iframe {
+      border-radius: 38px;
+      width: 560px;
+      height: 315px;
+    }
+    
+    .wflex {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .apps {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .app-a {
+      background: none;
+      box-shadow: none;
+      color: var(--app-text-color);
+      width: 260px;
+    }
+    
+    .app-img {
+      filter: brightness(1.07);
+      height: 80px;
+      width: 80px;
+    }
+    
+    .app {
+      display: flex;
+      align-items: center;
+      text-align: center;
+    }
+    
+    #aen {
+      padding-left: 16px;
+    }
+    
+    .bottom {
+      padding: 32px;
+      font-size: 24px;
+      text-align: center;
+    }
+    
+    .githublink {
+      display: inline-block;
+      margin-top: 16px;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      :root{
+        --text-color: #F0E6CE;
+        --bg-gradient-start: #171412;
+        --bg-gradient-end: #2D2415;
+        --first-bg-gradient: linear-gradient(0deg, #2A2418 0%, rgba(42, 36, 24, 46%) 10%, rgba(42, 36, 24, 20%) 23%, rgba(42, 36, 24, 0%) 100%);
+        --card-bg: #32281663;
+        --card-shadow: 0px 3px 18px 0px rgba(0, 0, 0, 0.3);
+        --card-shadow-hover: 0px 6px 21px 0px rgba(0, 0, 0, 0.45);
+        --button-bg: #FF7700;
+        --button-shadow: inset 0px -13px 16px -4px #ba2500, 0px 6px 24px 0px rgba(0, 0, 0, 30%);
+        --app-text-color: #F0E6CE;
+      }
+      .head-a {
+        color: var(--text-color);
+      }
+      
+      .header {
+        background: rgba(0, 0, 0, 0.4);
+      }
+    }
+    
+    /* Responsive styles for screens 900px or less */
+    @media screen and (max-width: 900px) {
+      /* Header adjustments */
+      h1 {
+        font-size: 2.5em;
+        margin-top: 60px;
+      }
+      
+      .first {
+        padding: 60px 24px;
+        text-align: center;
+      }
+      
+      .firstsvg {
+        width: 240px;
+        height: 230px;
+        top: -45px;
+        right: -45px;
+      }
+      
+      /* Flexboard adjustments */
+      .flexboard {
+        padding: 12px;
+        gap: 12px;
+      }
+      
+      .card {
+        width: 180px;
+        padding: 12px;
+        border-radius: 28px;
+      }
+      
+      .card-title {
+        font-size: 22px;
+        height: 28px;
+      }
+      
+      .card-text {
+        font-size: 16px;
+        height: 34px;
+      }
+      
+      /* Video and content sections */
+      .flex {
+        flex-direction: column;
+        width: 100%;
+        padding: 12px;
+      }
+      
+      .flex-container {
+        flex-direction: column;
+      }
+      
+      .frameimg {
+        width: 100%;
+        height: auto;
+        max-height: 250px;
+        border-radius: 28px;
+      }
+      
+      .wflex {
+        padding: 16px 0;
+        text-align: center;
+      }
+      
+      .app-img {
+        height: 60px;
+        width: 60px;
+      }
+      
+      /* Button adjustments */
+      .githublink {
+        padding: 10px 16px;
+        margin: 8px auto;
+        text-align: center;
+      }
+    }
+    
+    /* Extra small screens (phones) */
+    @media screen and (max-width: 600px) {
+      h1 {
+        font-size: 2em;
+      }
+      
+      .first {
+        padding: 50px 16px;
+      }
+      
+      .firstsvg {
+        width: 180px;
+        height: 170px;
+        top: -35px;
+        right: -35px;
+      }
+      
+      .card {
+        width: 160px;
+        padding: 10px;
+        border-radius: 24px;
+      }
+      
+      .title {
+        font-size: 22px;
+      }
+      
+      .bottom {
+        padding: 24px;
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Google Analytics -->
+  <amp-analytics type="gtag" data-credentials="include">
+    <script type="application/json">
+      {
+        "vars": {
+          "gtag_id": "G-7N56NHPY3C",
+          "config": {
+            "G-7N56NHPY3C": { "groups": "default" }
+          }
+        }
+      }
+    </script>
+  </amp-analytics>
+
+  <div class="header">
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="37" viewBox="0 0 26 37" fill="none">
+      <rect width="25.5172" height="25.5172" rx="12.7586" fill="url(#paint0_linear_307_86)"/>
+      <rect y="11.4827" width="25.5172" height="25.5172" rx="12.7586" fill="url(#paint1_radial_307_86)"/>
+      <defs>
+        <linearGradient id="paint0_linear_307_86" x1="12.7586" y1="53.7989" x2="12.7586" y2="-2.76437" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#F27618" stop-opacity="0.05"/>
+          <stop offset="0.519286" stop-color="#F48021" stop-opacity="0.33"/>
+          <stop offset="0.673134" stop-color="#F56725" stop-opacity="0.507702"/>
+          <stop offset="1" stop-color="#F77E32"/>
+        </linearGradient>
+        <radialGradient id="paint1_radial_307_86" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(12.7586 36.9999) rotate(-90) scale(28.2816)">
+          <stop stop-color="#F79F32"/>
+          <stop offset="0.5" stop-color="#E96500"/>
+          <stop offset="1" stop-color="#802400"/>
+        </radialGradient>
+      </defs>
+    </svg>
+    <a class="head-a" href="https://search3958.github.io/">スタート</a>
+    <a class="head-a" href="https://search3958.github.io/i/newtab/">Newtabの詳細</a>
+  </div>
+
+  <div class="first">
+    <svg xmlns="http://www.w3.org/2000/svg" width="340" height="330" class="firstsvg" viewBox="0 0 191 183" fill="none">
+      <path d="M83.2793 4.46334C90.0693 -1.48778 100.218 -1.48778 107.008 4.46334L117.943 14.0472C121.4 17.0773 125.885 18.6698 130.479 18.498L145.13 17.9501C154.346 17.6055 162.333 24.2835 163.625 33.4158L165.456 46.3612C166.127 51.1007 168.658 55.3779 172.489 58.2472L183.075 66.1747C190.67 71.8624 192.546 82.4694 187.362 90.4168L180.441 101.027C177.788 105.094 176.891 110.06 177.953 114.798L180.71 127.102C182.763 136.258 177.436 145.455 168.473 148.232L155.087 152.38C150.612 153.767 146.854 156.843 144.612 160.955L137.987 173.102C133.637 181.077 124.027 184.561 115.578 181.227L101.75 175.772C97.5048 174.097 92.7821 174.097 88.5371 175.772L74.7093 181.227C66.2595 184.561 56.6498 181.077 52.3004 173.102L45.6754 160.955C43.4325 156.843 39.6747 153.767 35.2002 152.38L21.8136 148.232C12.8505 145.455 7.52444 136.258 9.57664 127.102L12.3344 114.798C13.3964 110.06 12.4991 105.094 9.84625 101.027L2.92523 90.4168C-2.25892 82.4694 -0.383396 71.8624 7.21172 66.1747L17.7977 58.2472C21.6291 55.3779 24.16 51.1007 24.8306 46.3612L26.6622 33.4158C27.9544 24.2835 35.9405 17.6055 45.1573 17.9501L59.8076 18.498C64.4016 18.6698 68.8872 17.0773 72.3444 14.0472L83.2793 4.46334Z" fill="#FFB40033"/>
+    </svg>
+    <h1>Sentaro</h1>
+    <div class="firsta">私のGitHubがあります！</div>
+    <a href="https://github.com/search3958/" class="githublink">見にいこう</a>
+  </div>
+
+  <div class="flexboard">
+    <div class="card">
+      <div class="card-title">Newtab4</div>
+      <div class="card-text">革命です</div>
+      <a href="https://search3958.github.io/newtab/">使う</a>
+    </div>
+    <div class="card">
+      <div class="card-title">ツールボード</div>
+      <div class="card-text">新たな選択肢</div>
+      <a href="https://search3958.github.io/toolboard">使う</a>
+    </div>
+    <div class="card">
+      <div class="card-title">thinking SNS</div>
+      <div class="card-text">かなり個性的</div>
+      <a href="https://thinking-grp.github.io/sns/">使う</a>
+    </div>
+    <div class="card">
+      <div class="card-title">Tools</div>
+      <div class="card-text">かなり便利</div>
+      <a href="https://search3958.github.io/tools">使う</a>
+    </div>
+    <div class="card">
+      <div class="card-title">Webクリエイタ</div>
+      <div class="card-text">誰でも作れる</div>
+      <a href="https://search3958.github.io/webmaker">使う</a>
+    </div>
+    <div class="card">
+      <div class="card-title">bgImg</div>
+      <div class="card-text">自由使可我表記必須</div>
+      <a href="https://search3958.github.io/project/images/">使う</a>
+    </div>
+  </div>
+
+  <div class="flex">
+    <div class="flex-container">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/wBuQHhLfneg?si=54RcEzKA-s2pti9K" title="動画:Sentaro" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <div class="wflex">
+        <div class="title">SNSも作ってます</div>
+        "thinking"というグループで作ったSNSです。
+        背景色，文字色を設定して投稿できる個性的でカラフルなSNSです。
+        <a href="https://thinking-grp.github.io/sns/" class="githublink">使ってみる</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex">
+    <div class="flex-container">
+      <amp-img src="https://search3958.github.io/imgs/newtab3-bg.webp"
+               class="frameimg"
+               layout="responsive"
+               width="560"
+               height="315"
+               alt="Newtabの背景画像">
+      </amp-img>
+      <div class="wflex">
+        <div class="title">Newtabを使おう</div>
+        とにかく便利です。使いたいショートカットにすぐアクセスすることができ，計算機などのミニツールもあります。
+        <a href="https://search3958.github.io/newtab" class="githublink">使ってみる</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="apps">
+    <a class="app-a" href="https://search3958.github.io/newtab/?value=try">
+      <div class="app">
+        <amp-img src="https://search3958.github.io/favicon/newtab.svg"
+                 class="app-img"
+                 width="80"
+                 height="80"
+                 alt="Newtab 3アイコン">
+        </amp-img>
+        <span id="aen">Newtab 3</span>
+      </div>
+    </a>
+    <a class="app-a" href="https://search3958.github.io/toolboard">
+      <div class="app">
+        <amp-img src="https://search3958.github.io/favicon/toolboars.svg"
+                 class="app-img"
+                 width="80"
+                 height="80"
+                 alt="ツールボードアイコン">
+        </amp-img>
+        <span id="aen">ツールボード</span>
+      </div>
+    </a>
+    <a class="app-a" href="https://search3958.github.io/tools">
+      <div class="app">
+        <amp-img src="https://search3958.github.io/favicon/tools.svg"
+                 class="app-img"
+                 width="80"
+                 height="80"
+                 alt="Toolsアイコン">
+        </amp-img>
+        <span id="aen">Tools</span>
+      </div>
+    </a>
+    <a class="app-a" href="https://search3958.github.io/project/htmlos/1/">
+      <div class="app">
+        <amp-img src="https://search3958.github.io/favicon/os.svg"
+                 class="app-img"
+                 width="80"
+                 height="80"
+                 alt="謎OSアイコン">
+        </amp-img>
+        <span id="aen">謎OS</span>
+      </div>
+    </a>
+    <a class="app-a" href="https://search3958.github.io/aisearch/">
+      <div class="app">
+        <amp-img src="https://search3958.github.io/favicon/aisearch.svg"
+                 class="app-img"
+                 width="80"
+                 height="80"
+                 alt="AI検索アイコン">
+        </amp-img>
+        <span id="aen">AI検索</span>
+      </div>
+    </a>
+    <a class="app-a" href="https://search3958.github.io/webmaker">
+      <div class="app">
+        <amp-img src="https://search3958.github.io/favicon/webcreator.svg"
+                 class="app-img"
+                 width="80"
+                 height="80"
+                 alt="Webクリエイターアイコン">
+        </amp-img>
+        <span id="aen">Webクリエイター</span>
+      </div>
+    </a>
+    <a class="app-a" href="https://search3958.github.io/uiscript/">
+      <div class="app">
+        <amp-img src="https://search3958.github.io/favicon/uiscript.svg"
+                 class="app-img"
+                 width="80"
+                 height="80"
+                 alt="UI Scriptアイコン">
+        </amp-img>
+        <span id="aen">UI Script</span>
+      </div>
+    </a>
+    <a class="app-a" href="https://search3958.github.io/firebasetext.html">
+      <div class="app">
+        <amp-img src="https://search3958.github.io/favicon/firebasetext.svg"
+                 class="app-img"
+                 width="80"
+                 height="80"
+                 alt="火源台textアイコン">
+        </amp-img>
+        <span id="aen">火源台text</span>
+      </div>
+    </a>
+    <a class="app-a" href="https://search3958.github.io/gemini.html">
+      <div class="app">
+        <amp-img src="https://search3958.github.io/favicon/gemini.svg"
+                 class="app-img"
+                 width="80"
+                 height="80"
+                 alt="Geminiアイコン">
+        </amp-img>
+        <span id="aen">Gemini</span>
+      </div>
+    </a>
+    <a class="app-a" href="https://search3958.github.io/games/">
+      <div class="app">
+        <amp-img src="https://search3958.github.io/favicon/game.svg"
+                 class="app-img"
+                 width="80"
+                 height="80"
+                 alt="クソゲーセンターアイコン">
+        </amp-img>
+        <span id="aen">クソゲーセンター</span>
+      </div>
+    </a>
+    <a class="app-a" href="https://search3958.github.io/m3color.html">
+      <div class="app">
+        <amp-img src="https://search3958.github.io/favicon/material3color.svg"
+                 class="app-img"
+                 width="80"
+                 height="80"
+                 alt="M3 Color JSアイコン">
+        </amp-img>
+        <span id="aen">M3 Color JS</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="bottom">
+    © Search 3958
+  </div>
+</body>
+</html>
