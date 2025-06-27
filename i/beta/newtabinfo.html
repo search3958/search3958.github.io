@@ -338,7 +338,6 @@
     gap: 24px;
     padding: 16px;
 }
-
 .grid-card {
     position: relative;
     box-shadow: inset -2px 2px 2px -1px rgba(255, 255, 255, 0.6), 
@@ -425,6 +424,13 @@
 .btnflex{
   display:flex;
 }
+.setup-steps{
+  box-shadow: inset -2px 2px 2px -1px rgba(255, 255, 255, 0.6), 
+                inset 2px -2px 2px -1px rgba(255, 255, 255, 0.6), 
+                inset 4px 4px 2px -5px rgba(0, 0, 0, 0.28), 
+                inset -4px -4px 2px -5px rgba(0, 0, 0, 0.4), 
+                0px 8px 24px -8px rgba(0, 0, 0, 0.15);
+}
 @media (max-width: 768px) {
     .grid-cards {
         grid-template-columns: 1fr;
@@ -507,7 +513,7 @@
 
   <div class="section" style="margin-top:24px;">
     <h2 class="sc-title" style="font-size:22px;">設定方法</h2>
-    <div class="setup-steps" style="width:calc(100vw - 32px);margin:16px auto;padding:32px 20px 24px 20px;background:linear-gradient(135deg,#fff 80%,#f8f9fa 100%);border-radius:32px;box-shadow:0 4px 24px -8px #007aff22;">
+    <div class="setup-steps" style="width:calc(100vw - 32px);margin:16px auto;padding:32px 20px 24px 20px;background:linear-gradient(135deg,#fff 80%,#f8f9fa 100%);border-radius:32px;">
       <ol style="list-style:none;padding:0;margin:0;">
         <li style="margin-bottom:32px;">
           <div style="display:flex;align-items:flex-start;gap:18px;">
@@ -516,8 +522,8 @@
               <span style="font-weight:600;color:#007AFF;">New Tab Redirect</span>をChromeに追加します。<br>
               <a style="color:#007AFF;font-weight:500;" href="https://chromewebstore.google.com/detail/icpgjfneehieebagbmdbhnlpiopdcmna?utm_source=item-share-cb" target="_blank">Chrome ウェブストアで開く</a>
               <div class="setup-imgs">
-                <img class="svgimg" src="1.svg" alt="step1">
-                <img class="svgimg" src="2.svg" alt="step2">
+                <img class="svgimg" src="https://search3958.github.io/i/newtab/1.svg" alt="step1">
+                <img class="svgimg" src="https://search3958.github.io/i/newtab/2.svg" alt="step2">
               </div>
             </div>
           </div>
@@ -529,8 +535,8 @@
               インストールが完了したら、<span style="font-weight:600;">Set Options</span>をクリックし<br>
               <span style="background:#f6f8fa;border-radius:8px;padding:2px 8px;color:#007AFF;font-weight:600;">https://search3958.github.io/newtab/</span> を入力して <span style="font-weight:600;">Save</span> します。
               <div class="setup-imgs">
-                <img class="svgimg" src="3.svg" alt="step3">
-                <img class="svgimg" src="4.svg" alt="step4">
+                <img class="svgimg" src="https://search3958.github.io/i/newtab/3.svg" alt="step3">
+                <img class="svgimg" src="https://search3958.github.io/i/newtab/4.svg" alt="step4">
               </div>
             </div>
           </div>
@@ -540,141 +546,291 @@
     </div>
   </div>
 
-<div class="section">
-<h2 class="sc-title">おすすめのツール</h2>
-<div class="flexboard">
-    <div class="card" onclick="window.location.href='https://search3958.github.io/newtab/'">
-      <div class="card-icon">
-        <span class="material-symbols-outlined">web</span>
+  <div class="section" style="margin-top:24px;">
+    <h2 class="sc-title" style="font-size:22px;">Newtab4とは？</h2>
+    <div class="grid-cards" style="grid-template-columns:1fr;">
+      <div class="grid-card">
+        <p>
+          よく使うサイトにすぐアクセスできるようにするために作成しました。<br>
+多くの方にも便利に使っていただきたいので無料で公開しています！<br>
+今後も新機能などのアップデートはどんどん配信されます
+        </p>
       </div>
-      <span class="card-tag">新しいタブ</span>
-      <div class="card-title">Newtab4</div>
-      <div class="card-text">革命的な新しいタブページ体験。美しいデザインと実用性を兼ね備えた次世代のブラウザ環境。</div>
-      <div class="btnflex">
-        <button class="primary">使ってみる<md-ripple></md-ripple></button>
-        <button>詳細<md-ripple></md-ripple></button>
-      </div>
-    </div>
-
-    <div class="card" onclick="window.location.href='https://search3958.github.io/toolboard'">
-      <div class="card-icon">
-        <span class="material-symbols-outlined">extension</span>
-      </div>
-      <span class="card-tag">ツールコレクション</span>
-      <div class="card-title">Tool Board</div>
-      <div class="card-text">日常で使える便利ツールを一箇所に集約。生産性向上のための新たな選択肢を提供します。</div>
-      <button class="primary">使う<md-ripple></md-ripple></button>
-    </div>
-    <div class="card" onclick="window.location.href='https://sns.thinking-grp.org/'">
-      <div class="card-icon">
-        <span class="material-symbols-outlined">psychology</span>
-      </div>
-      <span class="card-tag">ソーシャル</span>
-      <div class="card-title">thinkSocial</div>
-      <div class="card-text">色情報も共有できるプラットフォーム。従来のSNSとは一線を画した体験をお楽しみください。</div>
-      <button class="primary">参加する<md-ripple></md-ripple></button>
-    </div>
-    <div class="card" onclick="window.location.href='https://search3958.github.io/3dspace/'">
-      <div class="card-icon">
-        <span class="material-symbols-outlined">deployed_code</span>
-      </div>
-      <span class="card-tag">簡易的なツールコレクション</span>
-      <div class="card-title">3D Space</div>
-      <div class="card-text">Toolsの機能の一部を搭載しています。Newtab系列とは違い、タッチ操作もしやすいです。</div>
-      <button class="primary">使う<md-ripple></md-ripple></button>
     </div>
   </div>
-</div>
 
-<div class="section">
-<h2 class="sc-title">新着情報</h2>
-<div class="grid-cards">
-    <div class="grid-card">
-      <h3>SNSも開発中！</h3>
-      <p>thinkingグループで、個性的でカラフルなSNSを開発しています。背景色や文字色を自由に設定して、自分らしい投稿が楽しめる新感覚のSNSです。</p>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <span class="stat-number">∞</span>
-          <span class="stat-label">カスタマイズ</span>
+  <!-- 主なアップデート履歴をタイムラインカードで改善 -->
+  <div class="section" style="margin-top:24px;">
+    <h2 class="sc-title" style="font-size:22px;">主なアップデート履歴</h2>
+    <div class="timeline-container">
+      <div class="timeline">
+        <!-- 2025/04/28 v4 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <span class="timeline-version">v4</span>
+            <span class="timeline-date">2025/04/28</span>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-title">メジャーアップデート</div>
+            <div class="timeline-desc">
+              WinUI3のようなデザインから独自のシンプルなデザインに変更。また、Appleのliquid glass風デザインを追加<br>
+              ショートカットをコンパクトにしてより見やすく変更。<br>
+              また，v3で利用できなくなっていたミニツールの復活
+            </div>
+          </div>
         </div>
-        <div class="stat-item">
-          <span class="stat-number">0</span>
-          <span class="stat-label">制限</span>
+        <!-- 2025/03/21 v3.5 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <span class="timeline-version">v3.5</span>
+            <span class="timeline-date">2025/03/21</span>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-title">メジャーアップデート</div>
+            <div class="timeline-desc">
+              AI Search（Google Gemini搭載）を追加。より具体的かつ幅広い検索が可能に。<br>
+              デザインをApple風からOneUIベースに刷新、わかりやすさ向上。<br>
+              ウィジェット機能追加、Newtab設定をコントロールパネルに統合。<br>
+              標準壁紙選択UIを改善。
+            </div>
+          </div>
+        </div>
+        <!-- 2025/02/12 v3 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <span class="timeline-version">v3</span>
+            <span class="timeline-date">2025/02/12</span>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-title">メジャーアップデート</div>
+            <div class="timeline-desc">
+              3Dアイコンを新デザイン化。色変更対応、ダークモードも最適化。<br>
+              時計・カスタマイズ・概要を小型ボックスにまとめ、コンパクト化。<br>
+              バッテリー残量警告表示を追加。<br>
+              デザインをMaterial3風からApple風透明デザインに変更。
+            </div>
+          </div>
+        </div>
+        <!-- 2025/01/11 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-title">検索エンジン選択機能追加</div>
+            <div class="timeline-desc">
+              検索エンジン選択機能を追加。<br>
+              （Google / Bing / Yahoo / DuckDuckGo / NAVER / Naenara）
+            </div>
+          </div>
+        </div>
+        <!-- 2024/12/05 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-title">Gemini検索機能追加</div>
+            <div class="timeline-desc">
+              ダイアログ表示の不具合を修正。<br>
+              ログイン不要で使えるGemini検索機能を追加。
+            </div>
+          </div>
+        </div>
+        <!-- 2024/12/03 v2.1 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <span class="timeline-version">v2.1</span>
+            <span class="timeline-date">2024/12/03</span>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-title">メジャーアップデート</div>
+            <div class="timeline-desc">
+              背景に画像を設定できる機能を追加。
+            </div>
+          </div>
+        </div>
+        <!-- 2024/11/14 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-title">URL直接入力復活</div>
+            <div class="timeline-desc">
+              検索ボックスから直接URLを入力してアクセスできる機能を復活。
+            </div>
+          </div>
+        </div>
+        <!-- 2024/11/02 v2 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <span class="timeline-version">v2</span>
+            <span class="timeline-date">2024/11/02</span>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-title">メジャーアップデート</div>
+            <div class="timeline-desc">
+              サイト全体を再構築し、コードを簡素化 → 読み込み速度が大幅向上。<br>
+              履歴機能追加、カスタマイズUI改善、アニメーション強化、一部デザイン変更。
+            </div>
+          </div>
+        </div>
+        <!-- 2024/10/24 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-title">アニメーション強化</div>
+            <div class="timeline-desc">
+              リップルエフェクトやウィンドウアニメーションを追加し、全体の動きを強化。<br>
+              その他、細かい微調整を実施。
+            </div>
+          </div>
         </div>
       </div>
-      <button class="primary" onclick="window.location.href='https://sns.thinking-grp.org/'">参加する<md-ripple></md-ripple></button>
-    </div>
-
-    <div class="grid-card">
-      <h3>Newtabを使おう！</h3>
-      <p>とにかく便利な新しいタブ。よく使うショートカットにすぐアクセスできるだけでなく、計算機などのミニツールも搭載。日常のちょっとした操作をスマートにしてくれます。</p>
-      <ul class="feature-list">
-        <li>ショートカットへクイックアクセス</li>
-        <li>ミニツール搭載</li>
-        <li>カスタマイズ可能</li>
-      </ul>
-      <button class="primary" onclick="window.location.href='https://search3958.github.io/newtab/'">使ってみる<md-ripple></md-ripple></button>
-    </div>
-</div>
-</div>
-
-<div class="section">
-<h2 class="sc-title">私について</h2>
-<div class="grid-cards">
-    <div class="grid-card">
-      <h3>🚀 ミッション</h3>
-      <p>日常のデジタル体験をより豊かで効率的にすることを目指しています。使いやすさと美しさを両立するため、以下のことを重視しています。</p>
-      <ul class="feature-list">
-        <li>ユーザー中心設計</li>
-        <li>モダンなUI/UX</li>
-        <li>パフォーマンス重視</li>
-        <li>多すぎない広告</li>
-      </ul>
-    </div>
-    <div class="grid-card">
-      <h3>⚡ 技術スタック</h3>
-      <p>最新のウェブ技術を活用し、高品質なアプリケーションを構築しています。</p>
-      <ul class="feature-list">
-        <li>HTML & CSS</li>
-        <li>JavaScript</li>
-        <li>Flutter(少し)</li>
-      </ul>
-    </div>
-    <div class="grid-card">
-      <h3>📊 プロジェクト統計</h3>
-      <p>これまでの開発実績と現在進行中のプロジェクトの概要です。</p>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <span class="stat-number">11</span>
-          <span class="stat-label">プロジェクト</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">1000+</span>
-          <span class="stat-label">additions</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">3</span>
-          <span class="stat-label">活発なプロジェクト</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">2024</span>
-          <span class="stat-label">開始年</span>
-        </div>
+      <div style="color:#888;font-size:0.97em;margin-top:18px;text-align:right;">
+        ※ 2024/10/12以降の更新情報のみ掲載しています。
       </div>
     </div>
-    <div class="grid-card">
-      <h3>🎯 今後の展望</h3>
-      <p>より多くのユーザーに価値を提供し、ウェブ開発コミュニティに貢献していきます。</p>
-      <ul class="feature-list">
-        <li>新機能の継続的な追加</li>
-        <li>ユーザーフィードバックの反映</li>
-        <li>パフォーマンスの最適化</li>
-        <li>多言語対応</li>
-      </ul>
-    </div>
-</div>
-</div>
+  </div>
+  <style>
+    /* Timeline styles */
+    .timeline-container {
+      width: 100%;
+      padding: 0 0 8px 0;
+      margin: 0 auto;
+      max-width: 900px;
+    }
+    .timeline {
+      position: relative;
+      margin: 0 0 0 0;
+      padding-left: 32px;
+      border-left: 3px solid #e5e5e5;
+    }
+    .timeline-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      position: relative;
+    }
+    .timeline-marker {
+      position: relative;
+      left: -20px;
+      width: 70px;
+      min-width: 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      z-index: 2;
+    }
 
+
+    .timeline-version {
+      display: inline-block; 
+      color: #fff;
+    background: #007AFFD0;
+      font-size: 1.1em;
+      border-radius: 200px;
+      padding: 2px 14px;
+      margin-bottom: 6px;
+       box-shadow: inset -2px 2px 2px -1px rgba(255, 255, 255, 0.6), inset 2px -2px 2px -1px rgba(255, 255, 255, 0.6), inset 4px 4px 2px -5px rgba(0, 0, 0, 0.28), inset -4px -4px 2px -5px rgba(0, 0, 0, 0.4), 0px 5px 16px -7px rgba(0, 0, 0, 0.4), 0px 1px 10px -7px rgba(0, 0, 0, 0.29);
+      min-width: 38px;
+      text-align: center;
+      
+    }
+    .timeline-date {
+      color: #696969cc;
+      font-size: 0.93em;
+      margin-bottom: 2px;
+      border-radius: 8px;
+      padding: 2px 8px;
+      min-width: 60px;
+      text-align: center;
+    }
+    .timeline-card {
+      background: linear-gradient(135deg,#fff 80%,#f8f9fa 100%);
+      border-radius: 24px;
+      
+  box-shadow: inset -2px 2px 2px -1px rgba(255, 255, 255, 0.6), 
+                inset 2px -2px 2px -1px rgba(255, 255, 255, 0.6), 
+                inset 4px 4px 2px -5px rgba(0, 0, 0, 0.28), 
+                inset -4px -4px 2px -5px rgba(0, 0, 0, 0.4), 
+                0px 8px 24px -8px rgba(0, 0, 0, 0.15);
+      padding: 18px 22px 14px 22px;
+      margin-left: 18px;
+      min-width: 0;
+      flex: 1;
+      border: 1px solid #f0f4ff;
+      position: relative;
+      z-index: 1;
+      transition: box-shadow 0.2s;
+    }
+    .timeline-title {
+      font-size: 1.1em;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+    .timeline-desc {
+      color: #333;
+      font-size: 0.98em;
+      line-height: 1.7;
+    }
+    /* Timeline vertical line dot */
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -42px;
+      top: 7px;
+      width: 14px;
+      height: 14px;
+    background: #007AFFD0;
+      border-radius: 50%;
+box-shadow: inset -2px 2px 2px -1px rgba(255, 255, 255, 0.6), inset 2px -2px 2px -1px rgba(255, 255, 255, 0.6), inset 4px 4px 2px -5px rgba(0, 0, 0, 0.28), inset -4px -4px 2px -5px rgba(0, 0, 0, 0.4), 0px 5px 16px -7px rgba(0, 0, 0, 0.4), 0px 1px 10px -7px rgba(0, 0, 0, 0.29);
+      z-index: 3;
+    }
+    @media (max-width: 700px) {
+      .timeline-container {
+        padding: 0 2vw;
+      }
+      .timeline {
+        padding-left: 18px;
+      }
+      .timeline-marker {
+        left: -18px;
+        width: 56px;
+        min-width: 56px;
+      }
+      .timeline-item::before {
+        left: -22px;
+        width: 12px;
+        height: 12px;
+      }
+      .timeline-card {
+        padding: 14px 10px 10px 14px;
+        font-size: 0.98em;
+      }
+    }
+    @media (max-width: 500px) {
+      .timeline-container {
+        padding: 0 1vw;
+      }
+      .timeline {
+        padding-left: 10px;
+      }
+      .timeline-marker {
+        left: -20px;
+        width: 38px;
+        min-width: 38px;
+      }
+      .timeline-item::before {
+        left: -12px;
+        width: 10px;
+        height: 10px;
+      }
+      .timeline-card {
+        padding: 10px 4px 8px 8px;
+        font-size: 0.95em;
+      }
+    }
+  </style>
     <canvas id="lensFx_canvas" data-html2canvas-ignore="true"></canvas>
 <div class="header" data-html2canvas-ignore="true">
   <button class="header-toggle" onclick="window.location.href='https://search3958.github.io/'">
@@ -977,57 +1133,6 @@ headerToggle.addEventListener('click', () => {
 });
 </script>
 
-<div style="margin: 48px 0 0 0;">
-  <div class="section">
-    <h2 class="sc-title" style="font-size:22px;padding:16px;">他にもたくさんあります！</h2>
-    <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));gap:12px;">
-      <a class="grid-card link-collection-card" href="https://search3958.github.io/newtab/?value=try" target="_blank">
-        <img class="link-icon" src="https://search3958.github.io/favicon/newtab.svg" alt="Newtab 3" />
-        <span class="link-collection-title">Newtab 4</span>
-      </a>
-      <a class="grid-card link-collection-card" href="https://search3958.github.io/toolboard" target="_blank">
-        <img class="link-icon" src="https://search3958.github.io/favicon/toolboars.svg" alt="ツールボード" />
-        <span class="link-collection-title">ツールボード</span>
-      </a>
-      <a class="grid-card link-collection-card" href="https://search3958.github.io/tools" target="_blank">
-        <img class="link-icon" src="https://search3958.github.io/favicon/tools.svg" alt="Tools" />
-        <span class="link-collection-title">Tools</span>
-      </a>
-      <a class="grid-card link-collection-card" href="https://search3958.github.io/project/htmlos/1/" target="_blank">
-        <img class="link-icon" src="https://search3958.github.io/favicon/os.svg" alt="謎OS" />
-        <span class="link-collection-title">謎OS</span>
-      </a>
-      <a class="grid-card link-collection-card" href="https://search3958.github.io/aisearch/" target="_blank">
-        <img class="link-icon" src="https://search3958.github.io/favicon/aisearch.svg" alt="AI検索" />
-        <span class="link-collection-title">AI検索</span>
-      </a>
-      <a class="grid-card link-collection-card" href="https://search3958.github.io/webmaker" target="_blank">
-        <img class="link-icon" src="https://search3958.github.io/favicon/webcreator.svg" alt="Webクリエイター" />
-        <span class="link-collection-title">Webクリエイター</span>
-      </a>
-      <a class="grid-card link-collection-card" href="https://search3958.github.io/uiscript/" target="_blank">
-        <img class="link-icon" src="https://search3958.github.io/favicon/uiscript.svg" alt="UI Script" />
-        <span class="link-collection-title">UI Script</span>
-      </a>
-      <a class="grid-card link-collection-card" href="https://search3958.github.io/firebasetext.html" target="_blank">
-        <img class="link-icon" src="https://search3958.github.io/favicon/firebasetext.svg" alt="火源台text" />
-        <span class="link-collection-title">火源台text</span>
-      </a>
-      <a class="grid-card link-collection-card" href="https://search3958.github.io/3dspace/" target="_blank">
-        <img class="link-icon" src="https://search3958.github.io/favicon/gemini.svg" alt="Gemini" />
-        <span class="link-collection-title">3D Space</span>
-      </a>
-      <a class="grid-card link-collection-card" href="https://search3958.github.io/games/" target="_blank">
-        <img class="link-icon" src="https://search3958.github.io/favicon/game.svg" alt="クソゲーセンター" />
-        <span class="link-collection-title">クソゲーセンター</span>
-      </a>
-      <a class="grid-card link-collection-card" href="https://search3958.github.io/m3color.html" target="_blank">
-        <img class="link-icon" src="https://search3958.github.io/favicon/material3color.svg" alt="M3 Color JS" />
-        <span class="link-collection-title">M3 Color JS</span>
-      </a>
-    </div>
-  </div>
-</div>
 
 <!-- フッター追加 -->
 <footer style="width:100%;text-align:center;padding:32px 0 16px 0;color:#888;font-size:14px;">
