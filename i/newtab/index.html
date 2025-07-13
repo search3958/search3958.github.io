@@ -1,385 +1,897 @@
-
-<!doctype html>
-<html amp lang="ja">
+<!DOCTYPE html>
+<html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <script async src="https://cdn.ampproject.org/v0.js"></script>
-  <title>Search3958 - Newtab4</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newtab 4・Search3958</title><link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="canonical" href="https://search3958.github.io/i/newtab">
   <meta name="description" content="ショートカットや便利ツールを集約したカスタマイズ可能な新しいタブページ。日常の作業効率を向上させます。">
 <meta property="og:title" content="NewTab4 - カスタマイズ可能な新しいタブページ">
 <meta property="og:description" content="ショートカットや便利ツールを集約したカスタマイズ可能な新しいタブページ。日常の作業効率を向上させます。">
 <meta property="og:url" content="https://search3958.github.io/i/newtab">
-<meta property="og:type" content="website">
-  <link rel="canonical" href="https://search3958.github.io/i/newtab/">
-  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <link rel="shortcut icon" href="https://search3958.github.io/favicon/newtab.svg">
-  <style amp-custom>
-    * {
-      font-family: "Work Sans","IBM Plex Sans JP",sans-serif;
-    }
-
-    :root {
-      --text-color: #3E361F;
-      --bg-gradient-start: #F7F3E5;
-      --bg-gradient-end: #FFF1D6;
-      --first-bg-gradient: linear-gradient(0deg, #F4E7CB 0%, rgba(243, 228, 188, 46%) 10%, rgba(243, 227, 181, 20%) 23%, rgba(244, 230, 197, 0%) 100%);
-      --card-bg: #fffdf663;
-      --card-shadow: 0px 3px 18px 0px rgba(51, 34, 0, 0.1);
-      --card-shadow-hover: 0px 6px 21px 0px rgba(51, 34, 0, 0.16);
-      --button-bg: #FF7700;
-      --button-shadow: inset 0px -13px 16px -4px #ba2500, 0px 6px 24px 0px rgba(0, 0, 0, 10%);
-      --app-text-color: #000;
-    }
-
-    body {
-      background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-      margin: 0px;
-      padding: 0px;
-      min-height: 100vh;
-      color: var(--text-color);
-      transition: all 0.3s ease;
-      overflow-x: hidden;
-    }
-
-    .header{
-      position: fixed;
-      width: 100%;
-      top: 0px;
-      left: 0px;
-      backdrop-filter: blur(32px);
-      -webkit-backdrop-filter: blur(32px);
-      background: rgba(255,255,255,0.4);
-      padding: 16px 24px;
-      z-index: 3;
-      display: flex;
-      box-sizing: border-box;
-    }
-    
-    .head-a {
-      background: none;
-      box-shadow: none;
-      color: #000;
-      padding: 8px 16px;
-    }
-    
-    h1 {
-      font-size: 3.5em;
-      font-weight: 500;
-      margin: 0px;
-    }
-
-    h2 {
-      font-size: 2em;
-      font-weight: 500;
-      margin: 32px 0 16px 0;
-    }
-
-    .first {
-      background: var(--first-bg-gradient);
-      padding: 80px 32px;
-      position: relative;
-    }
-
-    .content {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 32px;
-    }
-
-    .title {
-      font-size: 28px;
-      padding-bottom: 8px;
-    }
-
-    .firsta {
-      font-size: 18px;
-      margin: 16px 0px;
-    }
-
-    a {
-      background: var(--button-bg);
-      box-shadow: var(--button-shadow);
-      padding: 13px 16px;
-      border-radius: 100px;
-      text-decoration: none;
-      color: #fff;
-      display: block;
-      width: fit-content;
-    }
-
-    .firstsvg {
-      position: absolute;
-      top: -65px;
-      right: -65px;
-    }
-
-    .update-item {
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(62, 54, 31, 0.1);
-    }
-
-    .update-date {
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
-
-    .update-content {
-      margin-left: 16px;
-    }
-
-    .update-content p {
-      margin: 8px 0;
-    }
-
-    .setup-steps {
-      background: var(--card-bg);
-      border-radius: 32px;
-      padding: 24px;
-      box-shadow: var(--card-shadow);
-      margin: 24px 0;
-    }
-
-    .setup-steps ol {
-      padding-left: 32px;
-    }
-
-    .setup-steps li {
-      margin-bottom: 16px;
-    }
-
-    .highlight {
-      font-weight: 500;
-    }
-
-    .inline-link {
-      display: inline;
-      padding: 4px 12px;
-      margin: 0 4px;
-      font-size: 0.9em;
-    }
-
-    .bottom {
-      padding: 32px;
-      font-size: 24px;
-      text-align: center;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root{
-        --text-color: #F0E6CE;
-        --bg-gradient-start: #171412;
-        --bg-gradient-end: #2D2415;
-        --first-bg-gradient: linear-gradient(0deg, #2A2418 0%, rgba(42, 36, 24, 46%) 10%, rgba(42, 36, 24, 20%) 23%, rgba(42, 36, 24, 0%) 100%);
-        --card-bg: #32281663;
-        --card-shadow: 0px 3px 18px 0px rgba(0, 0, 0, 0.3);
-        --card-shadow-hover: 0px 6px 21px 0px rgba(0, 0, 0, 0.45);
-        --button-bg: #FF7700;
-        --button-shadow: inset 0px -13px 16px -4px #ba2500, 0px 6px 24px 0px rgba(0, 0, 0, 30%);
-        --app-text-color: #F0E6CE;
-      }
-      
-      .head-a {
-        color: var(--text-color);
-      }
-      
-      .header {
-        background: rgba(0,0,0,0.4);
+  <link rel="icon" href="https://search3958.github.io/icons/search3958.svg">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@100..900&family=Noto+Sans+JP:wght@100..900&family=Unbounded:wght@200..900&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+      "imports": {
+        "@material/web/": "https://esm.run/@material/web/"
       }
     }
+  </script>
+  <script type="module">
+    import '@material/web/all.js';
+    import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
 
-    @media screen and (max-width: 900px) {
-      h1 {
-        font-size: 2.5em;
-         margin-top:60px;
-      }
-      
-      .first {
-        padding: 60px 24px;
-        text-align: center;
-      }
-      
-      .content {
-        padding: 16px;
-      }
-      
-      .setup-steps {
-        padding: 16px;
-      }
-    }
+    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+  </script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Albert Sans","Zen Kaku Gothic New",sans-serif;
+            line-height: 1.5;
+        }
+        :root{
+          --md-ripple-hover-color:#0000;
+          --header-width: 279px;
+    --header-expanded-width: 279px;
+          --section-raius:64px;
+          --mac-color:#fff;
+        }
+        body {
+            height: calc(fit-content - 40px);
+            background: #F1EDEE;
+        }
+        a{
+          color:#000;
+    text-decoration: none;
+        }
+        h1{
+          font-family: "Unbounded", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-size:3.5em;
+  margin-bottom:24px;
+  position:relative;
+  top:130px;
+  z-index:6;
+    color: #A2A2A2;
+    mix-blend-mode: plus-lighter; 
+    animation: h1anm 1s cubic-bezier(.62,0,0,1) forwards;
+      animation-delay: 1.3s;
+        }
 
-    @media screen and (max-width: 600px) {
-      h1 {
-        font-size: 2em;
-      }
-      
-      h2 {
-        font-size: 1.5em;
-      }
-      
-      .first {
-        padding: 50px 16px;
-      }
-      
-      .title {
-        font-size: 22px;
-      }
-      
-      .bottom {
-        padding: 24px;
-        font-size: 18px;
-      }
-    }
-
-    .rotate-svg {
-      animation: rotateAnimation 8s cubic-bezier(.36,.07,0,.85) infinite;
-    }
-
-    @keyframes rotateAnimation {
-      from {
-        transform: rotate(0deg);
-      }
+    @keyframes h1anm {
       to {
-        transform: rotate(360deg);
+        top:0px;
       }
     }
-  </style>
+.toph2 {
+    position: relative;
+  top:130px;
+        opacity: 0;
+    z-index: 6;
+    font-weight: bold;
+    color: #888;
+    mix-blend-mode: plus-lighter;
+    animation: h2anm 1s cubic-bezier(.62,0,0,1) forwards;
+      animation-delay: 1.4s;
+      filter:blur(8px);
+}
+    @keyframes h2anm {
+      to {
+        top:-16px;
+        opacity: 1;
+        filter:blur(0px);
+      }
+    }
+
+        #lensFx_canvas {
+            position: fixed;
+            top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+            width: var(--header-width);
+            height: 80px;
+            border-radius: 40px;
+            z-index: 10;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    --smooth-corners: 8,3;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+  
+        }
+        .header {
+            position: fixed;
+            top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+            width: var(--header-width);
+            height: 80px;
+            border-radius: 40px;
+            z-index: 11;
+            transition: all 0.6s cubic-bezier(.2,0,0,1);
+            background: #aaa;
+            backdrop-filter: blur(4px);
+            gap: 16px;
+            padding: 0 16px;
+    mix-blend-mode: overlay;
+    --smooth-corners: 8,3;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+        }
+
+        .header-ctn {
+            position: fixed;
+            top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+            width: var(--header-width);
+            height: 80px;
+            border-radius: 40px;
+            z-index: 12;
+            background: none;
+            display: flex;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            align-items: center;
+            gap: 16px;
+            padding: 0 16px;
+            background:#fff6;
+   box-shadow: 0px 8px 32px 0px rgba(0, 0, 0, 0.22);
+        }
+
+        .first{
+              background-size: cover;
+    background-position: center;
+          background-image:
+  linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+  url(https://search3958.github.io/newtab/bgimg/3958bg3.webp);
+            padding:32px;
+          padding-top:120px;
+          position:relative;
+          color:#fff;
+            border-radius: var(--section-raius);
+            margin:10px;
+            --smooth-corners: 3,3;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+        }
+
+        .section{
+          background:#FFFFFF;
+            padding:32px;
+          position:relative;
+          color:#000;
+            border-radius: var(--section-raius);
+            margin:10px;
+            --smooth-corners: 3,3;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+        }
+
+        .prg-blur {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 300px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.01);
+       border-radius: calc(var(--section-raius) + 2px);
+
+}
+
+.prg-blur::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  backdrop-filter: blur(0.7rem);
+  mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0%) 0%,
+    rgb(0 0 0 / 4.9%) 7.75%,
+    rgb(0 0 0 / 10.4%) 11.25%,
+    rgb(0 0 0 / 45%) 23.55%,
+    rgb(0 0 0 / 55%) 26.45%,
+    rgb(0 0 0 / 89.6%) 38.75%,
+    rgb(0 0 0 / 95.1%) 42.25%,
+    rgb(0 0 0 / 100%) 50%
+  );
+
+     border-radius: calc(var(--section-raius) + 2px);
+}
+
+.prg-blur::after {
+  position: absolute;
+  inset: 0;
+  top: 25%;
+  content: "";
+  backdrop-filter: blur(0.7rem);
+  mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0%) 0%,
+    rgb(0 0 0 / 4.9%) 15.5%,
+    rgb(0 0 0 / 10.4%) 22.5%,
+    rgb(0 0 0 / 45%) 47.1%,
+    rgb(0 0 0 / 55%) 52.9%,
+    rgb(0 0 0 / 89.6%) 77.5%,
+    rgb(0 0 0 / 95.1%) 91.9%,
+    rgb(0 0 0 / 100%) 100%
+  );
+
+   border-radius: calc(var(--section-raius) + 2px);
+}
+.btnflex{
+  position:relative;
+}
+svg{
+  height:50px;
+  width:50px;
+  position:relative;
+  top:3px;
+}
+.header-toggle{
+  border-radius:100px;
+  height:60px;
+  border:none;
+  background:none;
+}
+.material-symbols-rounded{
+  margin-top:-10px;
+  position:relative;
+  top:8px;
+}
+.headbtn{
+  padding:8px 12px;
+  border-radius:100px;
+  border:none;
+background:#777;
+position:relative;
+top:162px;
+    mix-blend-mode: plus-lighter;
+    color:#777;
+    animation: btnanm 1s cubic-bezier(.62,0,0,1) forwards;
+      animation-delay: 1.5s;
+      filter:blur(8px);
+        opacity: 0;
+}
+
+    @keyframes btnanm {
+      to {
+        top:0px;
+        opacity: 1;
+        filter:blur(0px);
+      }
+    }
+.headbtn.xi{
+  padding:8px 12px;
+  border-radius:100px;
+  border:none;
+background:none;
+    mix-blend-mode: multiply;
+    color:#222;
+    transform: translate(-100%, 0px);
+}
+.hda{
+  color:#000;
+}
+h3{
+  font-size:24px;
+}
+.scrollcard{
+  border-radius:16px;
+  margin-top:8px;
+  display:flex;
+inline-size: 100%;
+overflow:scroll;
+gap:16px;
+}
+.card{
+  background:#F5F2F3;
+  padding:16px;
+  width:240px;
+            --smooth-corners: 7,10;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+  flex-shrink: 0;
+}
+.card-icon{
+  background-image: linear-gradient(90deg, #B6F0F9, #AADDFF);
+  width:fit-content;
+  padding:16px;
+  border-radius:16px;
+
+            --smooth-corners: 3;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+}
+.card-title{
+  font-family: "Unbounded", sans-serif;
+  font-weight: 250;
+  font-size:1.9em;
+}
+.card-text{
+  color:#555555;
+  margin-top:8px;
+}
+.card-img{
+font-size:32px;
+color:#3b3b3b;
+    mix-blend-mode: multiply;
+}
+.card-btn{
+  background:#FFC8C9;
+  color:#3c0101;
+  border:none;
+inline-size: 100%;
+padding:16px;
+margin-top:8px;
+  border-radius:16px;
+            --smooth-corners: 13,3;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+}
+
+.flex{
+  display:flex;
+}
+.nae-card{
+  background:#F5F2F3;
+inline-size: 100%;
+  padding:16px;
+  border-radius:32px 32px 16px 16px;
+  margin-top:8px;
+}
+.nae-card.b{
+  border-radius:16px 16px 32px 32px;
+}
+.icon-btn{
+  background:none;
+  border:none;
+}
+.all-prj-card{
+  border-radius:32px;
+  background:#F1F5F8;
+  padding:32px;
+  display:flex;
+  gap:32px;
+  overflow:scroll;
+}
+.prj-icon{
+  height:64px;
+  width:64px;
+}
+.icon-btn{
+  display:block;
+}
+footer{
+ padding:40px;
+ background:#fff;
+ padding-bottom:80px;
+            --smooth-corners: 1;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+          font-family: "Unbounded", sans-serif;
+          color:#AEA0A1;
+          text-align: center;
+}
+.footer{
+  height:104px;
+  overflow:hidden;
+}
+.contact{
+  background-size: cover;
+    background-position: center;
+          background-image:
+  linear-gradient(#fff8, #fff8),
+  url(https://search3958.github.io/newtab/bgimg/circle7.webp);
+  display:flex;
+            padding:48px;
+            justify-content: space-between;
+  
+}
+.contactbtn{
+  background:#FFC8C9;
+  color:#3c0101;
+  border:none;
+padding:32px;
+  border-radius:16px;
+            --smooth-corners: 9.7,5.1;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+}
+.contacth3{
+  padding-top:8px;
+}
+.install{
+inline-size: 50%;
+}
+    </style>
 </head>
 <body>
-  <div class="header">
-    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="37" viewBox="0 0 26 37" fill="none">
-      <rect width="25.5172" height="25.5172" rx="12.7586" fill="url(#paint0_linear_307_86)"/>
-      <rect y="11.4827" width="25.5172" height="25.5172" rx="12.7586" fill="url(#paint1_radial_307_86)"/>
-      <defs>
-        <linearGradient id="paint0_linear_307_86" x1="12.7586" y1="53.7989" x2="12.7586" y2="-2.76437" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#F27618" stop-opacity="0.05"/>
-          <stop offset="0.519286" stop-color="#F48021" stop-opacity="0.33"/>
-          <stop offset="0.673134" stop-color="#F56725" stop-opacity="0.507702"/>
-          <stop offset="1" stop-color="#F77E32"/>
-        </linearGradient>
-        <radialGradient id="paint1_radial_307_86" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(12.7586 36.9999) rotate(-90) scale(28.2816)">
-          <stop stop-color="#F79F32"/>
-          <stop offset="0.5" stop-color="#E96500"/>
-          <stop offset="1" stop-color="#802400"/>
-        </radialGradient>
-      </defs>
-    </svg>
-    <a class="head-a" href="https://search3958.github.io/">スタート</a>
-    <a class="head-a" href="https://search3958.github.io/newtab/">Newtabの詳細</a>
-  </div>
+
+    <canvas id="lensFx_canvas" data-html2canvas-ignore="true"></canvas>
+<div class="header" data-html2canvas-ignore="true">
+</div>
+
+<div class="header-ctn" data-html2canvas-ignore="true">
+  <button class="header-toggle" onclick="window.location.href='https://search3958.github.io/'"> 
+
+<svg xmlns="http://www.w3.org/2000/svg" width="10" height="13" viewBox="0 0 10 13" fill="none">
+<path d="M0.68103 4.55652C0.68103 2.17122 2.6147 0.237549 5 0.237549C7.3853 0.237549 9.31897 2.17122 9.31897 4.55652C9.31897 6.94182 7.3853 8.87549 5 8.87549C2.6147 8.87549 0.68103 6.94182 0.68103 4.55652Z" fill="url(#paint0_radial_547_63)"/>
+<foreignObject x="-3.31897" y="0.124512" width="16.6379" height="16.6379"><div xmlns="http://www.w3.org/1999/xhtml" style="clip-path:url(#bgblur_0_547_63_clip_path);height:100%;width:100%"></div></foreignObject><path data-figma-bg-blur-radius="4" d="M0.68103 8.44348C0.68103 6.05818 2.6147 4.12451 5 4.12451C7.3853 4.12451 9.31897 6.05818 9.31897 8.44348C9.31897 10.8288 7.3853 12.7625 5 12.7625C2.6147 12.7625 0.68103 10.8288 0.68103 8.44348Z" fill="url(#paint1_radial_547_63)"/>
+<defs>
+<clipPath id="bgblur_0_547_63_clip_path" transform="translate(3.31897 -0.124512)"><path d="M0.68103 8.44348C0.68103 6.05818 2.6147 4.12451 5 4.12451C7.3853 4.12451 9.31897 6.05818 9.31897 8.44348C9.31897 10.8288 7.3853 12.7625 5 12.7625C2.6147 12.7625 0.68103 10.8288 0.68103 8.44348Z"/>
+</clipPath><radialGradient id="paint0_radial_547_63" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(5 8.87549) rotate(-90) scale(9.57372 9.57372)">
+<stop stop-color="#0000"/>
+<stop offset="1" stop-color="#0009"/>
+</radialGradient>
+<radialGradient id="paint1_radial_547_63" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(5 12.7625) rotate(-90) scale(9.57372 9.57372)">
+<stop stop-color="#545454"/>
+<stop offset="1" stop-color="#0003"/>
+</radialGradient>
+</defs>
+</svg>
+
+  </button>
+  <a class="hda" href="https://search3958.github.io/">概要</a>
+  <a class="hda" href="https://search3958.github.io/i/newtab/">Newtab</a>
+  <a class="hda" href="https://search3958.github.io/i/tools/">ツール</a>
+</div>
   
-  <div class="first">
-    <h1>Newtab4</h1>
-    <div class="firsta">あなたのブラウザを、より便利に、よりスタイリッシュに</div>
-    <a href="https://search3958.github.io/newtab/">今すぐ試す</a>
-    
+  <div class="first smooth">
+
+    <div class="prg-blur"></div>
+    <h1>Newtab 4</h1>
+    <h2 class="toph2">サッとショートカットにアクセス<br>理想の新しいタブです。</h2>
+    <div class="btnflex">
+      <button class="headbtn" onclick="window.location.href='https://github.com/search3958/'">いますぐ試す
+        <span class="material-symbols-rounded">
+arrow_outward
+</span><md-ripple></md-ripple></button>
+<button class="headbtn xi" onclick="window.location.href='https://github.com/search3958/'">いますぐ試す
+        <span class="material-symbols-rounded">
+arrow_outward
+</span><md-ripple></md-ripple></button>
+    </div>
   </div>
+
+  <div class="section smooth">
+    <h3>使用を始める</h3>
+
+      <div class="nae-card">
+        <h4>1.拡張機能をインストール</h4>
+        Newtab4を使用するには、New Tab Redirect拡張機能を使用します。
+        <div class="flex">
+          <img class="install" src="https://search3958.github.io/i/newtab/1.svg">
+          <img class="install" src="https://search3958.github.io/i/newtab/2.svg">
+        </div>
+      </div>
+
+      <div class="nae-card b">
+        <h4>2.設定を開始</h4>
+インストールが完了したらSet Optionsを選択し、テキストボックスにNewtabのURLを挿入し、Saveをクリックします。
+        <div class="flex">
+          <img class="install" src="https://search3958.github.io/i/newtab/3.svg">
+          <img class="install" src="https://search3958.github.io/i/newtab/4.svg">
+        </div>
+      </div>
+      
+  </div>
+
+  <div class="section smooth">
+    <h3>歴史を振り返ろう</h3>
+    <div class="scrollcard">
+      
+      <div class="card">
+        <div class="card-title">v4</div>
+        <div class="card-text">Liquid Glassデザインを採用しながら、独自デザインも採用しています。
+        <br>また、シュートカットは正方形になり、小さい画面でも表示できる量が増えました。</div>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/newtab'">使う</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">v3.6</div>
+        <div class="card-text">WinUI3のようなデザインを採用して、よりモダンなデザインになりました。
+<br>特にWindows 11標準アプリにとてもよく馴染むデザインです。</div>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/newtab/v3.6'">使う</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">Lite</div>
+        <div class="card-text">v2.1の新しいタブをベースに高速化しています。
+        <br>Chromeデフォルトのタブのようにショートカットは右上のボタンで表示できるようにしました。</div>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/newtab/v2.1/index2'">使う</button>
+      </div>
+      
+      
+      <div class="card">
+        <div class="card-title">v3.5</div>
+        <div class="card-text">OneUI 7らしいデザインを採用しました。
+<br>また、ウィジェット・AI検索機能も追加され、機能面でも大幅にアップグレードし使いやすくなりました。</div>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/newtab/v3.5'">使う</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">v3</div>
+        <div class="card-text">今回のデザインはかなりiPadOS 18やtvOSの影響を受けています。
+          <br>大きな変更点は、Material3ライクなデザインではなくなったことです。</div>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/newtab/v3'">使う</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">Elemental</div>
+        <div class="card-text">v2.1の新しいタブをベースに再デザインしています。
+        <br>Elementalはthinkingグループのデザインで、この特別版ではそのデザインになっています。</div>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/newtab/v2.1/index2'">使う</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">v2.1</div>
+        <div class="card-text">背景に画像を設定できる機能、検索エンジン機能が追加されました。
+        <br>そして、今回新たにスクロールしてショートカットを表示する形式になりました。</div>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/newtab/v2.1/index2'">使う</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">v2</div>
+        <div class="card-text">サイト全体を再構築し、コードを簡素化し読み込み速度が大幅向上しました。
+        <br>履歴機能追加、UI改善、アニメーション強化、一部デザイン変更なども含まれます。</div>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/newtab/v2'">使う</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">v1</div>
+        <div class="card-text">この時から、周りの人が使い始めました。Newtabを多くの人に使ってもらいたいため，無料で公開しています。これがNewtabの始まりです！</div>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/newtab/old/'">使う (復元版)</button>
+      </div>
+      
+      
+      <div class="card">
+        <div class="card-title">First</div>
+        <div class="card-text">よく使うサイトへすぐアクセスするために作りました。この時はまだ自分しか使っていません。<br>これは本当に0の状態からの最初のバージョンです。</div>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/newtab/old/first'">使う (復元版)</button>
+      </div>
+      
+      
+      <div class="card">
+        <div class="card-title">Portal</div>
+        <div class="card-text">これは授業のあまり時間に短時間で作ったものです。<br>まだ何もなく、結局このコードは使わなかったですが、このアイデアをもとにNewtabの開発を始めました。</div>
+        <button class="card-btn" onclick="window.location.href='https://codepen.io/sentaroTakenaka/pen/MWdRQgY'">見る (Codepen)</button>
+      </div>
+      
+    </div>
+  </div>
+
+  <div class="section smooth contact">
+    <h3 class="contacth3">何か私に伝えることが<br>ありますか？</h3>
+<button class="contactbtn" onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform?usp=sharing&ouid=116246090197695118669'">フォームを表示</button>
+      
+  </div>
+
+<script>
+
+  const lensFx_canvas   = document.getElementById("lensFx_canvas");
+  const lensFx_ctx      = lensFx_canvas.getContext("2d");
+  const debugInfo       = document.getElementById("debugInfo");
+
+  const LAYERS           = 13;
+  const MIN_ZOOM         = 1.8;
+  const MAX_ZOOM         = 1;
+  const SHRINK_STEP      = 5.5;
+  const CAPTURE_INTERVAL = 1000;
+  const SCROLL_CAPTURE_INTERVAL = 5000;
+
+  let lensFx_img     = null;
+  let scrollOffsetY  = 0;
+  let captureTimer   = null;
+  let autoUpdate     = true;
+  let showDebug      = false;
+  let isScrolling    = false;
+  let scrollTimeout  = null;
+
+  function safeInverseEasing(t) {
+    const ε = 0.05;
+    const v = 1/(t+ε) - 1/ε;
+    const maxV = 1/(1+ε) - 1/ε;
+    return v/maxV;
+  }
+
+  function radiusEasing(t) {
+    return 0.3 + 0.7*(1 - t*t);
+  }
+
+  function updateCanvasSize(canvas, ctx) {
+    const rect = canvas.getBoundingClientRect();
+    const dpr  = window.devicePixelRatio||1;
+    canvas.width  = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.scale(dpr,dpr);
+  }
+
+  function getRadius(canvas) {
+    return parseFloat(getComputedStyle(canvas).borderRadius) || 0;
+  }
+
+  function drawLens(img, ctx, canvasElem) {
+    if (!img) return;
+    
+    const imgW = img.width;
+    const imgH = img.height;
+    const rect = canvasElem.getBoundingClientRect();
+    const wLens = rect.width;
+    const hLens = rect.height;
+    const radius = getRadius(canvasElem);
+
+    const canvasScreenX = rect.left;
+    const canvasScreenY = rect.top + scrollOffsetY;
+
+    const viewportW = window.innerWidth;
+    const viewportH = document.documentElement.scrollHeight;
+    
+    const scaleX = imgW / viewportW;
+    const scaleY = imgH / viewportH;
+    
+    const imgCenterX = (viewportW / 2) * scaleX;
+    const imgCenterY = canvasScreenY * scaleY + (hLens/2) * scaleY;
+
+    ctx.clearRect(0, 0, canvasElem.width, canvasElem.height);
+
+    if (showDebug) {
+      debugInfo.innerHTML = `
+        Canvas位置: (${canvasScreenX.toFixed(0)}, ${canvasScreenY.toFixed(0)})<br>
+        画像サイズ: ${imgW} x ${imgH}<br>
+        ビューポート: ${viewportW} x ${viewportH}<br>
+        スケール: ${scaleX.toFixed(3)} x ${scaleY.toFixed(3)}<br>
+        画像上中心: (${imgCenterX.toFixed(0)}, ${imgCenterY.toFixed(0)})
+      `;
+    }
+
+    for (let i = 0; i < LAYERS; i++) {
+      const t = i / (LAYERS - 1);
+      const zoom = MIN_ZOOM + safeInverseEasing(t) * (MAX_ZOOM - MIN_ZOOM);
+      const w = wLens - i * SHRINK_STEP;
+      const h = hLens - i * SHRINK_STEP;
+      const dx = (wLens - w) / 2;
+      const dy = (hLens - h) / 2;
+      
+      // 拡大する範囲を計算
+      const sw = (w / zoom) * scaleX;
+      const sh = (h / zoom) * scaleY;
+      const sx = imgCenterX - sw / 2;
+      const sy = imgCenterY - sh / 2;
+      
+      const rad = radius * radiusEasing(t);
+
+      // クリッピングパスを作成
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(dx + rad, dy);
+      ctx.lineTo(dx + w - rad, dy);
+      ctx.quadraticCurveTo(dx + w, dy, dx + w, dy + rad);
+      ctx.lineTo(dx + w, dy + h - rad);
+      ctx.quadraticCurveTo(dx + w, dy + h, dx + w - rad, dy + h);
+      ctx.lineTo(dx + rad, dy + h);
+      ctx.quadraticCurveTo(dx, dy + h, dx, dy + h - rad);
+      ctx.lineTo(dx, dy + rad);
+      ctx.quadraticCurveTo(dx, dy, dx + rad, dy);
+      ctx.closePath();
+      ctx.clip();
+
+      // 画像を描画
+      ctx.drawImage(img, sx, sy, sw, sh, dx, dy, w, h);
+      ctx.restore();
+
+    }
+  }
+
+  function renderAll() {
+    updateCanvasSize(lensFx_canvas, lensFx_ctx);
+    drawLens(lensFx_img, lensFx_ctx, lensFx_canvas);
+  }
+
+  async function captureFullPage() {
+  try {
+    const fullW = document.documentElement.scrollWidth;
+    const fullH = document.documentElement.scrollHeight;
+    const canvas = await html2canvas(document.body, {
+      useCORS: true,
+      allowTaint: true,
+      scale: 1,
+      width: fullW,
+      height: fullH,
+      scrollX: 0,
+      scrollY: 0,
+      backgroundColor: null,
+
+      // ← ★ここから追加
+      onclone: (clonedDoc) => {
+        const targets = clonedDoc.querySelectorAll('h1, .toph2');
+        const rootStyles = getComputedStyle(clonedDoc.documentElement);
+        const macColor = rootStyles.getPropertyValue('--mac-color').trim();
+        targets.forEach(el => {
+          el.style.color = macColor;
+          el.style.top = 0;
+          el.style.opacity = 1;
+          el.style.filter = null;
+        });
+        const targets2 = clonedDoc.querySelectorAll('.headbtn');
+        targets2.forEach(el => {
+          el.style.background = macColor;
+        });
+        const targets3 = clonedDoc.querySelectorAll('.toph2');
+        targets3.forEach(el => {
+          el.style.top = "-16px";
+        });
+      }
+    });
+
+    const img = new Image();
+    img.onload = () => {
+      lensFx_img = img;
+      renderAll();
+    };
+    img.src = canvas.toDataURL();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+
+  // コントロール関数
+  function updateLensEffect() {
+    captureFullPage();
+  }
+
+  function toggleAutoUpdate() {
+    autoUpdate = !autoUpdate;
+    if (autoUpdate) {
+      captureTimer = setInterval(captureFullPage, CAPTURE_INTERVAL);
+    } else {
+      clearInterval(captureTimer);
+    }
+  }
+
+  function toggleDebug() {
+    showDebug = !showDebug;
+    debugInfo.style.display = showDebug ? 'block' : 'none';
+    if (showDebug) {
+      renderAll();
+    }
+  }
+
+  // 初期化
+  captureFullPage();
+  updateCaptureTimer();
+
+  window.addEventListener("scroll", () => {
+    scrollOffsetY = window.scrollY;
+    renderAll();
+    
+    // スクロール中の処理
+    isScrolling = true;
+    clearTimeout(scrollTimeout);
+    // ↓ ここで必ずintervalをクリア
+    clearInterval(captureTimer);
+    updateCaptureTimer();
+
+    scrollTimeout = setTimeout(() => {
+      isScrolling = false;
+      updateCaptureTimer();
+    }, 150);
+  });
+
+  function updateCaptureTimer() {
+    // 既存のintervalを必ずクリア
+    if (captureTimer) {
+      clearInterval(captureTimer);
+      captureTimer = null;
+    }
+    if (autoUpdate) {
+      const interval = isScrolling ? SCROLL_CAPTURE_INTERVAL : CAPTURE_INTERVAL;
+      captureTimer = setInterval(captureFullPage, interval);
+    }
+  }
+
+  window.addEventListener("resize", renderAll);
   
-  <div class="content">
-    <h2>Newtab4を新しいタブに設定する方法</h2>
+  // ResizeObserver
+  if (window.ResizeObserver) {
+    const resizeObserver = new ResizeObserver(() => {
+      syncWidth();
+    });
     
-    <div class="setup-steps">
-      <ol>
-        <li><span class="highlight">拡張機能「New Tab Redirect」</span>をChromeまたはEdgeに追加します。
-          <br><a href="https://chromewebstore.google.com/detail/new-tab-redirect/icpgjfneehieebagbmdbhnlpiopdcmna?hl=ja&authuser=0" target="_blank">New Tab Redirect（ウェブストア）</a>
-        </li>
-        <li>ブラウザ右上の拡張機能アイコンから「New Tab Redirect」のオプションを開き、
-          <br>Redirect URLに
-          <br><span class="highlight">https://search3958.github.io/newtab/</span>
-          <br>を入力して保存します。
-        </li>
-      </ol>
-      <p>※ 他の端末でも表示されない場合は、同じ設定を行ってください。</p>
-    </div>
-    
-    <h2>Newtab4とは？</h2>
-    <p>よく使うサイトにすぐアクセスできるようにするために作成しました。<br>多くの方にも便利に使っていただきたいので無料で公開しています！</p>
-    
-    <h2>主なアップデート履歴</h2>
-    
-    <div class="update-item">
-      <div class="update-date">2025/04/28　v4 メジャーアップデート</div>
-      <div class="update-content">
-        <p>WinUI3のようなデザインから独自のシンプルなデザインに変更。</p>
-        <p>ショートカットをコンパクトにしてより見やすく変更。</p>
-        <p>また，v3で利用できなくなっていたミニツールの復活</p>
-      </div>
-    </div>
-    
-    <div class="update-item">
-      <div class="update-date">2025/03/21　v3.5 メジャーアップデート</div>
-      <div class="update-content">
-        <p><span class="highlight">AI Search（Google Gemini搭載）</span>を追加。より具体的かつ幅広い検索が可能に。</p>
-        <p>デザインをApple風からOneUIベースに刷新、わかりやすさ向上。</p>
-        <p>ウィジェット機能追加、Newtab設定をコントロールパネルに統合。</p>
-        <p>標準壁紙選択UIを改善。</p>
-      </div>
-    </div>
-    
-    <div class="update-item">
-      <div class="update-date">2025/02/12　v3 メジャーアップデート</div>
-      <div class="update-content">
-        <p>3Dアイコンを新デザイン化。色変更対応、ダークモードも最適化。</p>
-        <p>時計・カスタマイズ・概要を小型ボックスにまとめ、コンパクト化。</p>
-        <p>バッテリー残量警告表示を追加。</p>
-        <p>デザインをMaterial3風からApple風透明デザインに変更。</p>
-      </div>
-    </div>
-    
-    <div class="update-item">
-      <div class="update-date">2025/01/11</div>
-      <div class="update-content">
-        <p>検索エンジン選択機能を追加。<br>（Google / Bing / Yahoo / DuckDuckGo / NAVER / Naenara）</p>
-      </div>
-    </div>
-    
-    <div class="update-item">
-      <div class="update-date">2024/12/05</div>
-      <div class="update-content">
-        <p>ダイアログ表示の不具合を修正。</p>
-        <p>ログイン不要で使えるGemini検索機能を追加。</p>
-      </div>
-    </div>
-    
-    <div class="update-item">
-      <div class="update-date">2024/12/03　v2.1 メジャーアップデート</div>
-      <div class="update-content">
-        <p>背景に画像を設定できる機能を追加。</p>
-      </div>
-    </div>
-    
-    <div class="update-item">
-      <div class="update-date">2024/11/14</div>
-      <div class="update-content">
-        <p>検索ボックスから直接URLを入力してアクセスできる機能を復活。</p>
-      </div>
-    </div>
-    
-    <div class="update-item">
-      <div class="update-date">2024/11/02　v2 メジャーアップデート</div>
-      <div class="update-content">
-        <p>サイト全体を再構築し、コードを簡素化 → 読み込み速度が大幅向上。</p>
-        <p>履歴機能追加、カスタマイズUI改善、アニメーション強化、一部デザイン変更。</p>
-      </div>
-    </div>
-    
-    <div class="update-item">
-      <div class="update-date">2024/10/24</div>
-      <div class="update-content">
-        <p>リップルエフェクトやウィンドウアニメーションを追加し、全体の動きを強化。</p>
-        <p>その他、細かい微調整を実施。</p>
-      </div>
-    </div>
-    
-    <p>※ 2024/10/12以降の更新情報のみ掲載しています。</p>
-  </div>
+    // headerとcanvasの両方を監視
+    resizeObserver.observe(header);
+    resizeObserver.observe(lensFx_canvas);
+  }
+
+
+  const header = document.querySelector('.header');
+  let isExpanded = false;
+
+// headerの幅をlensFx_canvasに同期させる関数
+function syncWidth() {
+  lensFx_canvas.style.width = `${header.offsetWidth}px`;
+  renderAll();
+}
+
+// ResizeObserverの設定
+if (window.ResizeObserver) {
+  const resizeObserver = new ResizeObserver(() => {
+    syncWidth();
+  });
   
-  <div class="bottom">
-    © Search 3958
-  </div>
+  // headerとcanvasの両方を監視
+  resizeObserver.observe(header);
+  resizeObserver.observe(lensFx_canvas);
+}
+
+// MutationObserverの設定
+const mutationObserver = new MutationObserver(() => {
+  syncWidth();
+});
+
+// headerのstyle属性の変更を監視
+mutationObserver.observe(header, {
+  attributes: true,
+  attributeFilter: ['style']
+});
+
+// 初期同期
+syncWidth();
+
+// ヘッダーの開閉処理を追加
+const headerToggle = document.querySelector('.header-toggle');
+
+headerToggle.addEventListener('click', () => {
+  header.classList.toggle('active');
+  syncWidth(); // 既存の同期関数を呼び出し
+});
+</script>
+<script>
+function updateSmoothCorners() {
+  // 対象: .smooth クラスを持つ要素
+  const elements = document.querySelectorAll('.smooth');
+
+  elements.forEach(el => {
+    // 現在の computed style で --smooth-corners が使われているかチェック
+    const style = getComputedStyle(el);
+    const hasSmoothCorners = style.getPropertyValue('--smooth-corners');
+
+    if (hasSmoothCorners !== '') {
+      const height = el.offsetHeight;
+      const width = el.offsetWidth;
+      const smoothValue = `${(width / 50).toFixed(2)}, ${(height / 50).toFixed(2)}`;
+      el.style.setProperty('--smooth-corners', smoothValue);
+    }
+  });
+}
+
+// 初回実行
+updateSmoothCorners();
+
+// ウィンドウサイズ変更時にも再計算
+window.addEventListener('resize', updateSmoothCorners);
+
+// DOM追加時にも対応（必要なら）
+const observer = new MutationObserver(updateSmoothCorners);
+observer.observe(document.body, { childList: true, subtree: true });
+</script>
+<script>
+  if (CSS && 'paintWorklet' in CSS) CSS.paintWorklet.addModule('https://unpkg.com/smooth-corners')
+</script>
+
+<div class="footer">
+<footer class="smooth">
+  © Search 3958
+</footer>
+</div>
+
 </body>
 </html>

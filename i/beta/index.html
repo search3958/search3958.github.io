@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search3958</title><link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link rel="canonical" href="https://search3958.github.io/">
+  <meta name="description" content="Search3958は、便利なツールやカスタマイズ可能なウェブアプリを提供するポータルサイトです。日常の作業を効率化する多彩な機能をお試しください。">
+  <meta property="og:title" content="Search3958 - 便利ツールとウェブアプリのポータル">
+  <meta property="og:description" content="Search3958は、便利なツールやカスタマイズ可能なウェブアプリを提供するポータルサイトです。日常の作業を効率化する多彩な機能をお試しください。">
+  <meta property="og:url" content="https://search3958.github.io">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="https://search3958.github.io/icons/search3958.svg">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@100..900&family=Noto+Sans+JP:wght@100..900&family=Unbounded:wght@200..900&display=swap" rel="stylesheet">
     <script type="importmap">
@@ -37,10 +45,8 @@
           --mac-color:#fff;
         }
         body {
-            min-height: 100vh;
+            height: calc(fit-content - 40px);
             background: #EFF3F6;
-            overflow-x: hidden;
-            padding-bottom:100vh;
         }
         a{
           color:#000;
@@ -53,23 +59,44 @@
   font-size:3.5em;
   margin-bottom:24px;
   position:relative;
+  top:130px;
   z-index:6;
     color: #A2A2A2;
-    mix-blend-mode: plus-lighter;
+    mix-blend-mode: plus-lighter; 
+    animation: h1anm 1s cubic-bezier(.62,0,0,1) forwards;
+      animation-delay: 1.3s;
         }
+
+    @keyframes h1anm {
+      to {
+        top:0px;
+      }
+    }
 .toph2 {
     position: relative;
-    bottom: 16px;
+  top:130px;
+        opacity: 0;
     z-index: 6;
     font-weight: bold;
     color: #888;
     mix-blend-mode: plus-lighter;
+    animation: h2anm 1s cubic-bezier(.62,0,0,1) forwards;
+      animation-delay: 1.4s;
+      filter:blur(8px);
 }
+    @keyframes h2anm {
+      to {
+        top:-16px;
+        opacity: 1;
+        filter:blur(0px);
+      }
+    }
 
         #lensFx_canvas {
             position: fixed;
             top: 24px;
-            left: 24px;
+  left: 50%;
+  transform: translateX(-50%);
             width: var(--header-width);
             height: 80px;
             border-radius: 40px;
@@ -83,7 +110,8 @@
         .header {
             position: fixed;
             top: 24px;
-            left: 24px;
+  left: 50%;
+  transform: translateX(-50%);
             width: var(--header-width);
             height: 80px;
             border-radius: 40px;
@@ -102,7 +130,8 @@
         .header-ctn {
             position: fixed;
             top: 24px;
-            left: 24px;
+  left: 50%;
+  transform: translateX(-50%);
             width: var(--header-width);
             height: 80px;
             border-radius: 40px;
@@ -114,7 +143,7 @@
             align-items: center;
             gap: 16px;
             padding: 0 16px;
-            background:#fff4;
+            background:#fff6;
    box-shadow: 0px 8px 32px 0px rgba(0, 0, 0, 0.22);
         }
 
@@ -223,9 +252,23 @@ svg{
   border-radius:100px;
   border:none;
 background:#777;
+position:relative;
+top:162px;
     mix-blend-mode: plus-lighter;
     color:#777;
+    animation: btnanm 1s cubic-bezier(.62,0,0,1) forwards;
+      animation-delay: 1.5s;
+      filter:blur(8px);
+        opacity: 0;
 }
+
+    @keyframes btnanm {
+      to {
+        top:0px;
+        opacity: 1;
+        filter:blur(0px);
+      }
+    }
 .headbtn.xi{
   padding:8px 12px;
   border-radius:100px;
@@ -318,6 +361,64 @@ inline-size: 100%;
 .nae-card.b{
   border-radius:16px 16px 32px 32px;
 }
+.icon-btn{
+  background:none;
+  border:none;
+}
+.all-prj-card{
+  border-radius:32px;
+  background:#F1F5F8;
+  padding:32px;
+  display:flex;
+  gap:32px;
+  overflow:scroll;
+}
+.prj-icon{
+  height:64px;
+  width:64px;
+}
+.icon-btn{
+  display:block;
+}
+footer{
+ padding:40px;
+ background:#fff;
+ padding-bottom:80px;
+            --smooth-corners: 1;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+          font-family: "Unbounded", sans-serif;
+          color:#A0A7AE;
+          text-align: center;
+}
+.footer{
+  height:104px;
+  overflow:hidden;
+}
+.contact{
+  background-size: cover;
+    background-position: center;
+          background-image:
+  linear-gradient(#fff8, #fff8),
+  url(https://search3958.github.io/newtab/bgimg/circle1.webp);
+  display:flex;
+            padding:48px;
+            justify-content: space-between;
+  
+}
+.contactbtn{
+  background:#B1DDFB;
+  color:#011e3c;
+  border:none;
+padding:32px;
+  border-radius:16px;
+            --smooth-corners: 9.7,5.1;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+}
+.contacth3{
+  padding-top:8px;
+}
     </style>
 </head>
 <body>
@@ -327,8 +428,7 @@ inline-size: 100%;
 </div>
 
 <div class="header-ctn" data-html2canvas-ignore="true">
-  <button class="header-toggle" onclick="window.location.href='https://search3958.github.io/'">
-    
+  <button class="header-toggle" onclick="window.location.href='https://search3958.github.io/'"> 
 
 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="13" viewBox="0 0 10 13" fill="none">
 <path d="M0.68103 4.55652C0.68103 2.17122 2.6147 0.237549 5 0.237549C7.3853 0.237549 9.31897 2.17122 9.31897 4.55652C9.31897 6.94182 7.3853 8.87549 5 8.87549C2.6147 8.87549 0.68103 6.94182 0.68103 4.55652Z" fill="url(#paint0_radial_547_63)"/>
@@ -346,7 +446,6 @@ inline-size: 100%;
 </defs>
 </svg>
 
-
   </button>
   <a class="hda" href="https://search3958.github.io/">概要</a>
   <a class="hda" href="https://search3958.github.io/i/newtab/">Newtab</a>
@@ -354,6 +453,7 @@ inline-size: 100%;
 </div>
   
   <div class="first smooth">
+
     <div class="prg-blur"></div>
     <h1>Search3958</h1>
     <h2 class="toph2">私の名前はSentaroです。<br>とにかく使いやすく、便利なツールを。</h2>
@@ -369,7 +469,6 @@ arrow_outward
     </div>
   </div>
 
-
   <div class="section smooth">
     <h3>主なプロジェクト</h3>
     <div class="scrollcard">
@@ -379,8 +478,8 @@ arrow_outward
         <div class="card-title">Newtab 4</div>
         <div class="card-text">革命的な新しいタブページ体験。<br>美しいデザインと実用性を兼ね備えた次世代の新しいタブ</div>
         <div class="flex" style="gap:8px;">
-        <button class="card-btn b">詳細</button>
-        <button class="card-btn a">使う</button>
+        <button class="card-btn b" onclick="window.location.href='https://search3958.github.io/i/newtab/'">詳細</button>
+        <button class="card-btn a" onclick="window.location.href='https://search3958.github.io/newtab'">使う</button>
         </div>
       </div>
       
@@ -388,33 +487,32 @@ arrow_outward
         <div class="card-icon"><span class="material-symbols-rounded card-img">extension</span></div>
         <div class="card-title">ToolBoard</div>
         <div class="card-text">日常で使える便利ツールを一箇所に集約。<br>生産性向上のための新たな選択肢を提供します。</div>
-        <button class="card-btn">使う</button>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/toolboard'">使う</button>
       </div>
       
       <div class="card">
         <div class="card-icon"><span class="material-symbols-rounded card-img">psychology</span></div>
         <div class="card-title">thinkSocial</div>
         <div class="card-text">色情報も共有できるプラットフォーム。<br>従来のSNSとは一線を画した体験をお楽しみください。</div>
-        <button class="card-btn">使う</button>
+        <button class="card-btn" onclick="window.location.href='https://sns.thinking-grp.org/'">使う</button>
       </div>
       
       <div class="card">
         <div class="card-icon"><span class="material-symbols-rounded card-img">business_center</span></div>
         <div class="card-title">Tools</div>
         <div class="card-text">一番最初に作られた最もシンプルなツール集。<br>たまに使いたくなるツールを集結。</div>
-        <button class="card-btn">使う</button>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/tools'">使う</button>
       </div>
       
       <div class="card">
         <div class="card-icon"><span class="material-symbols-rounded card-img">cards_star</span></div>
         <div class="card-title">Images</div>
         <div class="card-text">ここにある画像は自由に使用できます。<br>ただし、クレジット表記は必須です。</div>
-        <button class="card-btn">使う</button>
+        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/project/images/'">使う</button>
       </div>
       
     </div>
   </div>
-
 
   <div class="section smooth">
     <h3>私について</h3>
@@ -431,7 +529,90 @@ arrow_outward
       
   </div>
 
+  <div class="section smooth">
+    <h3>他にもたくさんあります</h3>
+
+      <div class="all-prj-card">
+       
+      <button class="icon-btn" onclick="window.location.href='https://search3958.github.io/newtab'">
+        <img class="prj-icon" src="https://search3958.github.io/icons/newtab.svg">
+        <div class="prj-txt">Newtab</div>
+      </button>
+
+
+      <button class="icon-btn" onclick="window.location.href='https://search3958.github.io/aisearch'">
+        <img class="prj-icon" src="https://search3958.github.io/icons/aisearch.svg">
+        <div class="prj-txt">AI Search</div>
+      </button>
+
+
+      <button class="icon-btn" onclick="window.location.href='https://search3958.github.io/firebasetext'">
+        <img class="prj-icon" src="https://search3958.github.io/icons/firebasetext.svg">
+        <div class="prj-txt">火源台txt</div>
+      </button>
+
+
+      <button class="icon-btn" onclick="window.location.href='https://search3958.github.io/games'">
+        <img class="prj-icon" src="https://search3958.github.io/icons/game.svg">
+        <div class="prj-txt">クソゲー</div>
+      </button>
+
+
+      <button class="icon-btn" onclick="window.location.href='https://search3958.github.io/aishortcut'">
+        <img class="prj-icon" src="https://search3958.github.io/icons/gemini.svg">
+        <div class="prj-txt">AItab</div>
+      </button>
+
+
+      <button class="icon-btn" onclick="window.location.href='https://search3958.github.io/m3color'">
+        <img class="prj-icon" src="https://search3958.github.io/icons/material3color.svg">
+        <div class="prj-txt">M3 Gen</div>
+      </button>
+
+
+      <button class="icon-btn" onclick="window.location.href='https://search3958.github.io/project/htmlos/1/'">
+        <img class="prj-icon" src="https://search3958.github.io/icons/os.svg">
+        <div class="prj-txt">Hanul OS</div>
+      </button>
+
+
+      <button class="icon-btn" onclick="window.location.href='https://search3958.github.io/'">
+        <img class="prj-icon" src="https://search3958.github.io/icons/toolboard.svg">
+        <div class="prj-txt">Toolboard</div>
+      </button>
+
+
+      <button class="icon-btn" onclick="window.location.href='https://search3958.github.io/toolboard'">
+        <img class="prj-icon" src="https://search3958.github.io/icons/tools.svg">
+        <div class="prj-txt">Tools</div>
+      </button>
+
+
+      <button class="icon-btn" onclick="window.location.href='https://search3958.github.io/uiscript'">
+        <img class="prj-icon" src="https://search3958.github.io/icons/uiscript.svg">
+        <div class="prj-txt">UI Script</div>
+      </button>
+
+
+      <button class="icon-btn" onclick="window.location.href='https://search3958.github.io/webmaker'">
+        <img class="prj-icon" src="https://search3958.github.io/icons/webcreator.svg">
+        <div class="prj-txt">Creator</div>
+      </button>
+
+
+
+      </div>
+  </div>
+
+
+  <div class="section smooth contact">
+    <h3 class="contacth3">何か私に伝えることが<br>ありますか？</h3>
+<button class="contactbtn" onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform?usp=sharing&ouid=116246090197695118669'">フォームを表示</button>
+      
+  </div>
+
 <script>
+
   const lensFx_canvas   = document.getElementById("lensFx_canvas");
   const lensFx_ctx      = lensFx_canvas.getContext("2d");
   const debugInfo       = document.getElementById("debugInfo");
@@ -439,7 +620,7 @@ arrow_outward
   const LAYERS           = 13;
   const MIN_ZOOM         = 1.8;
   const MAX_ZOOM         = 1;
-  const SHRINK_STEP      = 4;
+  const SHRINK_STEP      = 5.5;
   const CAPTURE_INTERVAL = 1000;
   const SCROLL_CAPTURE_INTERVAL = 5000;
 
@@ -494,7 +675,7 @@ arrow_outward
     const scaleX = imgW / viewportW;
     const scaleY = imgH / viewportH;
     
-    const imgCenterX = (canvasScreenX + wLens/2) * scaleX;
+    const imgCenterX = (viewportW / 2) * scaleX;
     const imgCenterY = canvasScreenY * scaleY + (hLens/2) * scaleY;
 
     ctx.clearRect(0, 0, canvasElem.width, canvasElem.height);
@@ -544,21 +725,6 @@ arrow_outward
       ctx.drawImage(img, sx, sy, sw, sh, dx, dy, w, h);
       ctx.restore();
 
-      // 境界線を描画
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = `rgba(255,255,255,${0.005 + 0.02 * t})`;
-      ctx.beginPath();
-      ctx.moveTo(dx + rad, dy);
-      ctx.lineTo(dx + w - rad, dy);
-      ctx.quadraticCurveTo(dx + w, dy, dx + w, dy + rad);
-      ctx.lineTo(dx + w, dy + h - rad);
-      ctx.quadraticCurveTo(dx + w, dy + h, dx + w - rad, dy + h);
-      ctx.lineTo(dx + rad, dy + h);
-      ctx.quadraticCurveTo(dx, dy + h, dx, dy + h - rad);
-      ctx.lineTo(dx, dy + rad);
-      ctx.quadraticCurveTo(dx, dy, dx + rad, dy);
-      ctx.closePath();
-      ctx.stroke();
     }
   }
 
@@ -588,9 +754,19 @@ arrow_outward
         const macColor = rootStyles.getPropertyValue('--mac-color').trim();
         targets.forEach(el => {
           el.style.color = macColor;
+          el.style.top = 0;
+          el.style.opacity = 1;
+          el.style.filter = null;
+        });
+        const targets2 = clonedDoc.querySelectorAll('.headbtn');
+        targets2.forEach(el => {
+          el.style.background = macColor;
+        });
+        const targets3 = clonedDoc.querySelectorAll('.toph2');
+        targets3.forEach(el => {
+          el.style.top = "-16px";
         });
       }
-      // ★ここまで
     });
 
     const img = new Image();
@@ -745,15 +921,15 @@ window.addEventListener('resize', updateSmoothCorners);
 const observer = new MutationObserver(updateSmoothCorners);
 observer.observe(document.body, { childList: true, subtree: true });
 </script>
-
 <script>
   if (CSS && 'paintWorklet' in CSS) CSS.paintWorklet.addModule('https://unpkg.com/smooth-corners')
 </script>
 
-<!-- フッター追加 -->
-<footer>
+<div class="footer">
+<footer class="smooth">
   © Search 3958
 </footer>
+</div>
 
 </body>
 </html>
