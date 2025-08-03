@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>JSON と Canvas レイアウト</title><style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container {
+    display: flex;
+    width: 90%;
+    max-width: 1200px;
+    height: 80%;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .side {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  #jsonSide {
+    border-right: 1px solid #ddd;
+    width: 50%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #canvasSide {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  #jsonContainer {
+    flex: 1;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+
+  #resultContainer {
+    height: 25%;
+    box-sizing: border-box;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: bold;
+  }
+
+  textarea {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    font-family: monospace;
+    resize: none;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #444;
+    outline: none;
+  }
+
+  textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+
+  #resizeSlider {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 200px;
+  }
+
+  .canvas-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    justify-content: flex-end;
+  }
+
+  .canvas-controls input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #007bff;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+
+  .canvas-controls input::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #007bff;
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+  }
+
+  .canvas-controls input:focus {
+    outline: none;
+  }
+
+  .canvas-controls input::placeholder {
+    color: #aaa;
+  }
+
+  .canvas-controls label {
+    font-weight: normal;
+  }
+
+  .canvas-controls label input {
+    margin-right: 5px;
+  }
+
+  #myCanvas {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .canvas-controls button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    outline: none;
+  }
+
+  .canvas-controls button:hover {
+    background-color: #0056b3;
+  }
+
+  .canvas-controls button:focus {
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+
+  #canvasSide > canvas {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div id="jsonSide" class="side">
+      <input id="resizeSlider" type="range" min="20" max="80" value="50" title="JSON/結果 列幅 (%)">
+      <div id="jsonContainer">
+        <label for="jsonInput">JSON:</label>
+        <textarea id="jsonInput"></textarea>
+      </div>
+      <div id="resultContainer">
+        <label for="resultOutput">결과:</label>
+        <textarea id="resultOutput" readonly></textarea>
+      </div>
+    </div>
+    <div id="canvasSide" class="side">
+      <canvas id="myCanvas" width="240" height="240" style="border:1px solid #000;"></canvas>
+      <div class="canvas-controls">
+        <input id="canvasSizeSlider" type="range" min="0.5" max="2" step="0.1" value="1" title="Canvas スケール">
+        <label><input id="roundToggle" type="checkbox"> 円形</label>
+        <input id="sectionInput" type="text" placeholder="section name">
+        <button id="btnNext">Next</button>
+        <button id="btnSelect">Select</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    const resizeSlider = document.getElementById('resizeSlider');
+    const jsonSide = document.getElementById('jsonSide');
+    const canvasSizeSlider = document.getElementById('canvasSizeSlider');
+    const roundToggle = document.getElementById('roundToggle');
+    const sectionInput = document.getElementById('sectionInput');
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+    const jsonInput = document.getElementById('jsonInput');
+    const resultOutput = document.getElementById('resultOutput');
+
+    const btnNext = document.getElementById('btnNext');
+    const btnSelect = document.getElementById('btnSelect');
+
+    let currentPage = "home";
+    let currentScroll = 0;
+
+    resizeSlider.addEventListener('input', e => { jsonSide.style.width = e.target.value + '%'; });
+    canvasSizeSlider.addEventListener('input', e => { canvas.style.transform = `scale(${e.target.value})`; });
+    roundToggle.addEventListener('change', e => { canvas.style.borderRadius = e.target.checked ? '100%' : '0%'; });
+
+    jsonInput.addEventListener('input', () => update('NONE'));
+    sectionInput.addEventListener('input', () => update('NONE'));
+
+    btnNext.addEventListener('click', () => update('NEXT'));
+    btnSelect.addEventListener('click', () => update('SELECT'));
+
+    function update(actionType) {
+      const text = jsonInput.value;
+      const sections = [];
+      
+      let currentPos = 0;
+      
+      while (currentPos < text.length) {
+        const sectionMatch = text.slice(currentPos).match(/^[ \t]*([a-zA-Z0-9_]+)[ \t]*\{/);
+        
+        if (!sectionMatch) {
+          const nextLine = text.indexOf('\n', currentPos);
+          if (nextLine === -1) break;
+          currentPos = nextLine + 1; 
+          continue;
+        }
+        
+        const sectionName = sectionMatch[1];
+        const sectionStart = currentPos + sectionMatch.index + sectionMatch[0].length;
+        
+        let braceCount = 1;
+        let pos = sectionStart;
+        
+        while (pos < text.length && braceCount > 0) {
+          if (text[pos] === '{') {
+            braceCount++;
+          } else if (text[pos] === '}') {
+            braceCount--;
+          }
+          pos++;
+        }
+        
+        if (braceCount === 0) {
+          const sectionBody = text.slice(sectionStart, pos - 1);
+          sections.push({
+            name: sectionName,
+            body: sectionBody
+          });
+          currentPos = pos;
+        } else {
+          break;
+        }
+      }
+
+      const codeLines = [];
+      sections.forEach((sec, idx) => {
+        const fillrectCmds = [];
+        const printCmds = [];
+        let bgColor = null;
+        let actionData = { next: null, select: [] };
+
+        // bg色を抽出
+        const bgMatch = sec.body.match(/bg\s*:\s*([#\w]+)\s*;/);
+        if (bgMatch) {
+          bgColor = bgMatch[1];
+        }
+        
+        // fillrectブロックを全て抽出
+        sec.body.replace(/fillrect\{([^}]+)\}/gi, (_, body) => {
+          const obj = {};
+          body.split(';').forEach(pair => { 
+            const [k,v] = pair.split(':'); 
+            if(k&&v) obj[k.trim()] = v.trim().replace(/;$/,''); 
+          });
+          if(obj.x && obj.y && obj.width && obj.height) {
+            fillrectCmds.push(obj);
+          }
+        });
+
+        // printブロックを全て抽出
+        sec.body.replace(/print\{([^}]+)\}/gi, (_, body) => {
+          const obj = {};
+          body.split(';').forEach(pair => {
+            const [k,v] = pair.split(':');
+            if(k&&v) obj[k.trim()] = v.trim().replace(/;$/,'');
+          });
+          if (obj.x && obj.y && obj.text) {
+            printCmds.push(obj);
+          }
+        });
+        
+        // actionブロックを抽出
+        const actionMatch = sec.body.match(/action\{([\s\S]*)\}/);
+        if (actionMatch) {
+          const actionContent = actionMatch[1];
+
+          // nextアクションの処理
+          const nextMatch = actionContent.match(/next\{([^}]+)\}/);
+          if (nextMatch) {
+            const nextInnerContent = nextMatch[1];
+            const changeScrollMatch = nextInnerContent.match(/changeScroll\s*:\s*([+-]?\d+)/);
+            if (changeScrollMatch) {
+              actionData.next = { changeScroll: parseInt(changeScrollMatch[1]) };
+            }
+          }
+          
+          // selectアクションの処理
+          const selectMatch = actionContent.match(/select\{([\s\S]*)\}/);
+          if (selectMatch) {
+            const selectInnerContent = selectMatch[1];
+            const caseRegex = /(\d+)\{([^}]+)\}/g;
+            let caseMatch;
+            while ((caseMatch = caseRegex.exec(selectInnerContent)) !== null) {
+              const caseNum = parseInt(caseMatch[1]);
+              const caseBody = caseMatch[2];
+              
+              const actions = {};
+              const setPageMatch = caseBody.match(/setPage\s*:\s*([^;]+)/);
+              if (setPageMatch) {
+                actions.setPage = setPageMatch[1].trim();
+              }
+              const setScrollMatch = caseBody.match(/setScroll\s*:\s*([+-]?\d+)/);
+              if (setScrollMatch) {
+                actions.setScroll = parseInt(setScrollMatch[1]);
+              }
+              actionData.select.push({ num: caseNum, actions: actions });
+            }
+          }
+        }
+
+        // JavaScript側でのアクションの適用
+        if (sec.name === currentPage) {
+          if (actionType === 'NEXT' && actionData.next) {
+            currentScroll += actionData.next.changeScroll;
+          } else if (actionType === 'SELECT' && actionData.select.length > 0) {
+            for (const caseItem of actionData.select) {
+              if (currentScroll === caseItem.num) {
+                if (caseItem.actions.setPage !== undefined) {
+                  currentPage = caseItem.actions.setPage;
+                }
+                if (caseItem.actions.setScroll !== undefined) {
+                  currentScroll = caseItem.actions.setScroll;
+                }
+                break;
+              }
+            }
+          }
+        }
+
+        // 生成されるArduinoコードのロジック
+        const prefix = idx === 0 ? `if (page == "${sec.name}") {` : `} else if (page == "${sec.name}") {`;
+        codeLines.push(prefix);
+        
+        if (bgColor) {
+          const hex = bgColor;
+          const rv=parseInt(hex.substr(1,2),16), gv=parseInt(hex.substr(3,2),16), bv=parseInt(hex.substr(5,2),16);
+          codeLines.push(`  lcd.fillScreen(tft.color565(0x${rv.toString(16)}, 0x${gv.toString(16)}, 0x${bv.toString(16)}));`);
+        }
+        
+        fillrectCmds.forEach(o => {
+          const x=o.x, y=o.y, w=o.width, h=o.height, r=o.radius || '0';
+          const hex=o.color || '#000000';
+          const rv=parseInt(hex.substr(1,2),16), gv=parseInt(hex.substr(3,2),16), bv=parseInt(hex.substr(5,2),16);
+          codeLines.push(`  lcd.fillRoundRect(${x}, ${y}, ${w}, ${h}, ${r}, tft.color565(0x${rv.toString(16)}, 0x${gv.toString(16)}, 0x${bv.toString(16)}));`);
+        });
+
+        // printコマンドのArduinoコード生成
+        printCmds.forEach(o => {
+          const x = o.x, y = o.y;
+          const size = o.size || '1';
+          const color = o.color || '#FFFFFF';
+          const textContent = o.text.replace(/"/g, '\\"');
+
+          const rv=parseInt(color.substr(1,2),16), gv=parseInt(color.substr(3,2),16), bv=parseInt(color.substr(5,2),16);
+          
+          codeLines.push(`  lcd.setCursor(${x}, ${y});`);
+          codeLines.push(`  lcd.setTextSize(${size});`);
+          codeLines.push(`  lcd.setTextColor(tft.color565(0x${rv.toString(16)}, 0x${gv.toString(16)}, 0x${bv.toString(16)}));`);
+          codeLines.push(`  lcd.print("${textContent}");`);
+        });
+        
+        if (actionData.next) {
+          codeLines.push(`  if (act == NEXT) {`);
+          codeLines.push(`    scroll = (scroll + ${actionData.next.changeScroll});`);
+          codeLines.push(`  }`);
+        }
+        
+        if (actionData.select.length > 0) {
+          codeLines.push(`  else if (act == SELECT) {`);
+          actionData.select.forEach((selectCase, i) => {
+            const condition = i === 0 ? `if (scroll == ${selectCase.num})` : `else if (scroll == ${selectCase.num})`;
+            codeLines.push(`    ${condition} {`);
+            if (selectCase.actions.setPage !== undefined) {
+              codeLines.push(`      page = "${selectCase.actions.setPage}";`);
+            }
+            if (selectCase.actions.setScroll !== undefined) {
+              codeLines.push(`      scroll = ${selectCase.actions.setScroll};`);
+            }
+            codeLines.push(`    }`);
+          });
+          codeLines.push(`  }`);
+        }
+      });
+      if(sections.length) codeLines.push('}');
+      
+      if (sections.length) codeLines.push('}');
+
+      const header = `#include <Arduino.h>
+#include <LovyanGFX.hpp>
+
+class LGFX_GC9A01_Custom : public lgfx::LGFX_Device {
+public:
+  lgfx::Panel_GC9A01 _panel_instance;
+  lgfx::Bus_SPI      _bus_instance;
+
+  LGFX_GC9A01_Custom() {
+    auto cfg = _bus_instance.config();
+    cfg.spi_host   = SPI2_HOST;
+    cfg.spi_mode   = 0;
+    cfg.freq_write = 45'000'000;
+    cfg.freq_read  = 16'000'000;
+    cfg.pin_sclk   = 36;
+    cfg.pin_mosi   = 35;
+    cfg.pin_miso   = -1;
+    cfg.pin_dc     = 4;
+    _bus_instance.config(cfg);
+    _panel_instance.setBus(&_bus_instance);
+
+    cfg = _panel_instance.config();
+    cfg.pin_cs          = 10;
+    cfg.pin_rst         = 2;
+    cfg.pin_busy        = -1;
+    cfg.panel_width     = 240;
+    cfg.panel_height    = 240;
+    cfg.offset_x        = 0;
+    cfg.offset_y        = 0;
+    cfg.offset_rotation = 0;
+    cfg.rgb_order       = false;
+    cfg.invert          = true;
+    cfg.readable        = false;
+    _panel_instance.config(cfg);
+
+    setPanel(&_panel_instance);
+  }
+};
+
+LGFX_GC9A01_Custom lcd;
+static constexpr int PIN_NEXT   = 16;
+static constexpr int PIN_SELECT = 12;
+
+enum Action { NONE, NEXT, SELECT };
+String page   = "${currentPage}";
+int    scroll = ${currentScroll};
+
+Action readAction() {
+  if (digitalRead(PIN_NEXT)   == LOW)  return NEXT;
+  if (digitalRead(PIN_SELECT) == LOW)  return SELECT;
+  return NONE;
+}
+
+void setup() {
+  pinMode(PIN_NEXT,   INPUT_PULLUP);
+  pinMode(PIN_SELECT, INPUT_PULLUP);
+  lcd.init();
+}
+
+void loop() {
+  Action act = readAction();`;
+
+const footer = `  if (act != NONE) {
+    delay(200);  // デバウンス用待機
+  }
+}`;
+
+resultOutput.value = `${header}\n${codeLines.join('\n')}\n${footer}`;
+
+
+      const target = sectionInput.value.trim();
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      sections.filter(sec => !target || sec.name === target).forEach(sec => {
+        if (sec.name !== currentPage) {
+          return;
+        }
+
+        // 数式を評価する関数（Canvas表示用）
+        function evaluateExpression(expr) {
+          const evaluatedExpr = expr.replace(/scroll/g, currentScroll.toString());
+          try {
+            if (/^[\d\s+\-*/().]+$/.test(evaluatedExpr)) {
+              return eval(evaluatedExpr);
+            } else {
+              return parseInt(expr) || 0;
+            }
+          } catch (e) {
+            return parseInt(expr) || 0;
+          }
+        }
+
+        // 背景色の処理
+        const bgMatch = sec.body.match(/bg\s*:\s*([#\w]+)\s*;/);
+        if (bgMatch) {
+          ctx.fillStyle = bgMatch[1];
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // fillrectの描画
+        sec.body.replace(/fillrect\{([^}]+)\}/gi, (_, body) => {
+          const obj = {};
+          body.split(';').forEach(pair => { 
+            const [k,v] = pair.split(':'); 
+            if(k&&v) obj[k.trim()] = v.trim().replace(/;$/,''); 
+          });
+          
+          const x = evaluateExpression(obj.x);
+          const y = evaluateExpression(obj.y);
+          const w = evaluateExpression(obj.width);
+          const h = evaluateExpression(obj.height);
+          const r = evaluateExpression(obj.radius || '0');
+          
+          ctx.fillStyle = obj.color;
+          if(r>0) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+          } else {
+            ctx.fillRect(x, y, w, h);
+          }
+        });
+
+        // printの描画
+        sec.body.replace(/print\{([^}]+)\}/gi, (_, body) => {
+          const obj = {};
+          body.split(';').forEach(pair => {
+            const [k,v] = pair.split(':');
+            if(k&&v) obj[k.trim()] = v.trim().replace(/;$/,'');
+          });
+
+          const x = evaluateExpression(obj.x);
+          const y = evaluateExpression(obj.y);
+          const size = parseFloat(obj.size) || 1;
+          const color = obj.color || '#FFFFFF';
+          const textContent = obj.text || '';
+
+          // ここで指定通りに文字サイズとフォントを設定しています
+          ctx.font = `${size * 8}px monospace`;
+          ctx.fillStyle = color;
+          ctx.fillText(textContent, x, y + (size * 8 * 0.8));
+        });
+      });
+    }
+
+    update('NONE');
+  </script>
+</body>
+</html>
