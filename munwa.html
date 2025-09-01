@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>문화텏트</title>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--preview-h:20vh; font-family:"M PLUS 1p", system-ui,-apple-system,"Segoe UI",Roboto,'Yu Gothic',"Hiragino Kaku Gothic ProN",Meiryo,Arial}
+    html,body{height:100%;margin:0;background:#060609;color:#fff;overflow:hidden}
+    .screen{display:flex;flex-direction:column;width:100%;height:100vh;align-items:center;justify-content:flex-start;overflow:hidden}
+    .page-current,.page-next{box-sizing:border-box;border-radius:10px;overflow:hidden;width:96%;max-width:1400px;}
+    .page-current{padding:4px;display:flex;flex-direction:column;gap:6px;flex-grow:1;height:calc(100% - var(--preview-h));}
+    .page-next{height:var(--preview-h);margin-bottom:4px;padding:4px;display:flex;align-items:center;justify-content:center;background:#111827;}
+    .block{border-radius:6px;padding:6px;overflow:hidden}
+    .block .text{width:100%;text-align:center;white-space:pre-wrap;font-weight:400;line-height:1.3}
+    .blk-Orange{background:#5c2a00;color:#ffcc80;font-size:clamp(20px,4vw,36px)}
+    .blk-Green{background:#0f3d1a;color:#a8f0c2;font-size:clamp(20px,4vw,36px)}
+    .blk-Pink{background:#4d0d2a;color:#ffb7dc;font-size:clamp(20px,4vw,36px)}
+    .blk-Text{background:#111827;color:#eaf6ff;display:flex;align-items:center;justify-content:center;font-size:clamp(28px,6vw,64px);flex-grow:1;}
+    .blk-Text .text{flex-grow:1; display:flex; align-items:center; justify-content:center; height:100%;}
+    .page-next .text{font-size:clamp(16px,3vw,24px)}
+    .controls{position:fixed;right:12px;bottom:12px;display:flex;gap:8px;z-index:99}
+    .btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:700}
+    .meta{position:fixed;left:12px;bottom:12px;font-size:12px;opacity:.6;z-index:98}
+  </style>
+</head>
+<body>
+
+<div class="screen">
+  <div id="pageCurrent" class="page-current" data-key></div>
+  <div id="pageNext" class="page-next" aria-hidden="true"></div>
+</div>
+
+<div class="controls">
+  <button id="backBtn" class="btn">◀︎ Back</button>
+  <button id="nextBtn" class="btn">Next ▶︎</button>
+</div>
+<div class="meta">同期間隔: <span id="intervalMs">100</span>ms</div>
+
+<script id="pages-data" type="application/json">
+[
+  {"Orange":"シーン切り替え","Green":"並ぶ","Pink":"ライトオン","Text":"もし、人生を変えるチャンスが\nあるとしたら\n"},
+  {"Orange":"次のシーン","Text":"参加してみたいと思いませんか？\n"}
+]
+</script>
+
+<script>
+const DB_BASE = 'https://couud-dashboard-default-rtdb.firebaseio.com';
+const DB_KEY  = 'nunhoa:1';
+const POLL_MS = 100;
+const DB_URL = `${DB_BASE}/${encodeURIComponent(DB_KEY)}.json`;
+
+let rawPages = [];
+try { rawPages = JSON.parse(document.getElementById('pages-data').textContent || '[]'); } catch(e) { rawPages = []; console.error(e); }
+const pages = Array.isArray(rawPages) ? rawPages : [];
+
+let currentIndex = 0;
+let lastRemoteTs = 0;
+const elCurrent = document.getElementById('pageCurrent');
+const elNext = document.getElementById('pageNext');
+const elInterval = document.getElementById('intervalMs'); elInterval.textContent = POLL_MS;
+
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderPage(index) {
+  index = ((index % pages.length) + pages.length) % pages.length;
+  const cur = pages[index];
+  const nxt = pages[(index + 1) % pages.length];
+
+  elCurrent.innerHTML = Object.keys(cur).filter(k => k!=='Text').map(k=>`<div class="block blk-${k}"><div class="text">${escapeHtml(cur[k]||'')}</div></div>`).join('') + `<div class="block blk-Text" style="flex-grow:1;"><div class="text">${escapeHtml(cur.Text||'')}</div></div>`;
+  elNext.innerHTML = `<div class="text">${escapeHtml(nxt.Text||'')}</div>`;
+  currentIndex = index;
+}
+
+async function writeIndexToFirebase(index){
+  try{
+    await fetch(DB_URL, {
+      method:'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({index:index, updatedAt:Date.now()})
+    });
+  }catch(e){console.error(e);}
+}
+
+function goNext(){
+  const next = (currentIndex + 1) % pages.length;
+  renderPage(next);
+  writeIndexToFirebase(next);
+}
+function goPrev(){
+  const prev = (currentIndex - 1 + pages.length) % pages.length;
+  renderPage(prev);
+  writeIndexToFirebase(prev);
+}
+
+document.getElementById('nextBtn').addEventListener('click', goNext);
+document.getElementById('backBtn').addEventListener('click', goPrev);
+window.addEventListener('keydown', e=>{if(e.key==='ArrowRight') goNext(); if(e.key==='ArrowLeft') goPrev();});
+
+async function fetchRemote(){
+  try{
+    const res = await fetch(DB_URL + '?t=' + Date.now(), {cache:'no-store', mode:'cors'});
+    if(!res.ok) return;
+    const data = await res.json();
+    if(!data) return;
+    const remoteIndex = (typeof data.index === 'number') ? data.index : null;
+    const remoteTs = (typeof data.updatedAt === 'number') ? data.updatedAt : 0;
+    if(remoteTs > lastRemoteTs && remoteIndex !== null && remoteIndex !== currentIndex){
+      lastRemoteTs = remoteTs;
+      renderPage(remoteIndex);
+    }
+  }catch(e){console.error(e);}
+}
+
+if(pages.length){ renderPage(0); }
+setInterval(fetchRemote, POLL_MS);
+</script>
+
+</body>
+</html>
