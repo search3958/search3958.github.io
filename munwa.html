@@ -36,7 +36,14 @@
   <button id="backBtn" class="btn">◀︎ Back</button>
   <button id="nextBtn" class="btn">Next ▶︎</button>
 </div>
-<div class="meta">同期間隔: <span id="intervalMs">100</span>ms</div>
+<div class="meta">
+  同期間隔: <span id="intervalMs">100</span>ms
+  <!-- ページジャンプ機能追加 -->
+  <span style="margin-left:16px;">
+    ページ: <input id="pageJumpInput" type="number" min="1" style="width:48px;">
+    <button id="pageJumpBtn" class="btn" style="padding:2px 8px;font-size:12px;">移動</button>
+  </span>
+</div>
 
 <script id="pages-data" type="application/json">
 [{"Orange":"動画音響関係指示はここ","Green":"役者指示関係はここ","Pink":"照明関係指示はここ","Text":"セリフとシーン説明はここ"},{"Orange":"","Green":"","Pink":"","Text":"j302_イカゲーム"},{"Orange":"Change Screen [Station/駅]","Green":"[ギフン]ステージ中央・俯いて座る","Pink":"","Text":"[スカウトマン]もし、人生を変えるチャンスがあるとしたら...。やってみたいと思いませんか？(ギフンに向かって)"},{"Orange":"","Green":"","Pink":"","Text":"[ギフン]...借金まみれの俺に、都合のいイイ話があるわけ...!"},{"Orange":"","Green":"","Pink":"ALL lights OFF","Text":""},{"Orange":"","Green":"[主要な主役と一部のモブ](セリフなし)舞台登場","Pink":"","Text":""},{"Orange":"Change Screen [開始]","Green":"","Pink":"After Dialogue Lights ON","Text":""},{"Orange":"","Green":"","Pink":"","Text":"[フロントマン](登場)皆さん。ようこそ。公平な競争を行います。賞金は、456億ウォン。脱落者は即失格。つまり『死』です。"},{"Orange":"After Dialogue Screen OFF","Green":"","Pink":"After Dialogue Lights OFF","Text":""},{"Orange":"","Green":"[プレイヤー]がやがやする","Pink":"","Text":"[ギフン]うそだろ..."},{"Orange":"","Green":"","Pink":"","Text":"Scene2: Game1 だるまさんがころんだ【3分】"},{"Orange":"Change Screen [人形]","Green":"プレイヤーは並ぶ","Pink":"ALL lights ON","Text":""},{"Orange":"Change Screen [だるまさん]","Green":"","Pink":"","Text":"[フロントマン]最初のゲームは、「だるまさんがころんだ」です。制限時間内にゴールへ到達してください。動いたものは即脱落です。
@@ -119,6 +126,23 @@ function goPrev(){
 document.getElementById('nextBtn').addEventListener('click', goNext);
 document.getElementById('backBtn').addEventListener('click', goPrev);
 window.addEventListener('keydown', e=>{if(e.key==='ArrowRight') goNext(); if(e.key==='ArrowLeft') goPrev();});
+
+// ページジャンプ機能
+const pageJumpInput = document.getElementById('pageJumpInput');
+const pageJumpBtn = document.getElementById('pageJumpBtn');
+if (pageJumpBtn && pageJumpInput) {
+  pageJumpBtn.addEventListener('click', () => {
+    const val = parseInt(pageJumpInput.value, 10);
+    if (!isNaN(val) && val >= 1 && val <= pages.length) {
+      renderPage(val - 1);
+      writeIndexToFirebase(val - 1);
+    }
+  });
+  // Enterキーでもジャンプ
+  pageJumpInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') pageJumpBtn.click();
+  });
+}
 
 async function fetchRemote(){
   try{
