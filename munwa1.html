@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ピンチ&グー判定デモ</title>
+<style>
+  html,body { height:100%; margin:0; background:#000; }
+  #container { position:relative; width:100%; height:100vh; overflow:hidden; }
+  video#input_video {
+    transform: scaleX(-1);
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  canvas#output_canvas {
+    position:absolute;
+    left:0; top:0;
+    width:100%; height:100%;
+    pointer-events:none;
+    transform: scaleX(-1);
+  }
+  #flash {
+    position:absolute;
+    inset:0;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 200ms ease;
+  }
+  #status {
+    position:absolute;
+    left:8px; top:8px;
+    color:white;
+    background: rgba(0,0,0,0.4);
+    padding:6px 8px;
+    font-family:system-ui,Arial;
+    border-radius:6px;
+    font-size:13px;
+  }
+  /* プログレスバー */
+  #cooldownBar {
+    position:absolute;
+    left:0; bottom:0;
+    width:100%; height:20px;
+    background: rgba(255,255,255,0.2);
+    opacity:0;
+    transition: opacity 200ms ease;
+  }
+  #cooldownFill {
+    height:100%;
+    width:100%;
+    background: limegreen;
+    transition: width linear;
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <video id="input_video" autoplay playsinline></video>
+  <canvas id="output_canvas"></canvas>
+  <div id="flash"></div>
+  <div id="status">初期化中…</div>
+  <div id="cooldownBar"><div id="cooldownFill"></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+<script>
+const videoElement = document.getElementById('input_video');
+const canvasElement = document.getElementById('output_canvas');
+const canvasCtx = canvasElement.getContext('2d');
+const flash = document.getElementById('flash');
+const statusEl = document.getElementById('status');
+const cooldownBar = document.getElementById('cooldownBar');
+const cooldownFill = document.getElementById('cooldownFill');
+
+let lastActionTime = 0;
+const cooldownDuration = 1000; // ms
+let pendingPinchTimer = null;
+
+// --- Firebase RTDB 設定 ---
+const DB_BASE = 'https://couud-dashboard-default-rtdb.firebaseio.com';
+const DB_KEY  = 'nunhoa:1';
+const DB_URL  = `${DB_BASE}/${encodeURIComponent(DB_KEY)}.json`;
+
+async function updateDB(delta) {
+  try {
+    // 現在値を取得
+    const res = await fetch(DB_URL);
+    let current = await res.json();
+    if (typeof current !== "number") current = 0;
+
+    const newVal = current + delta;
+    await fetch(DB_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newVal)
+    });
+
+    console.log("DB updated:", current, "→", newVal);
+  } catch (err) {
+    console.error("DB update failed:", err);
+  }
+}
+
+function resizeCanvas() {
+  canvasElement.width = videoElement.videoWidth || window.innerWidth;
+  canvasElement.height = videoElement.videoHeight || window.innerHeight;
+}
+videoElement.addEventListener('loadeddata', resizeCanvas);
+window.addEventListener('resize', resizeCanvas);
+
+const hands = new Hands({
+  locateFile: (file) => {
+    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+  }
+});
+hands.setOptions({
+  maxNumHands: 1,
+  modelComplexity: 1,
+  minDetectionConfidence: 0.6,
+  minTrackingConfidence: 0.6
+});
+hands.onResults(onResults);
+
+const camera = new Camera(videoElement, {
+  onFrame: async () => {
+    await hands.send({image: videoElement});
+  },
+  width: 1280,
+  height: 720
+});
+camera.start().then(() => {
+  statusEl.textContent = 'カメラ起動中 — 手をカメラに向けてください';
+});
+
+function distance(a, b) {
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+function isFist(landmarks, handScale) {
+  const wrist = landmarks[0];
+  // 人差し指〜小指の指先
+  const fingerTips = [8, 12, 16, 20];
+  let folded = true;
+  for (let id of fingerTips) {
+    const d = distance(landmarks[id], wrist) / handScale;
+    if (d > 1.0) { folded = false; break; }
+  }
+  // 親指
+  const thumbTip = landmarks[4];
+  const indexBase = landmarks[5];
+  const thumbDist = distance(thumbTip, indexBase) / handScale;
+  if (thumbDist > 0.8) folded = false;
+  return folded;
+}
+
+function onResults(results) {
+  resizeCanvas();
+  canvasCtx.save();
+  canvasCtx.clearRect(0,0,canvasElement.width, canvasElement.height);
+
+  let detected = "なし";
+
+  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+    const landmarks = results.multiHandLandmarks[0];
+    drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {lineWidth:2});
+    drawLandmarks(canvasCtx, landmarks, {lineWidth:1});
+
+    // --- ふちチェック ---
+    const margin = 0.05; // 5%
+    const minX = Math.min(...landmarks.map(p => p.x));
+    const maxX = Math.max(...landmarks.map(p => p.x));
+    const minY = Math.min(...landmarks.map(p => p.y));
+    const maxY = Math.max(...landmarks.map(p => p.y));
+    const touchingEdge = (
+      minX < margin || maxX > 1 - margin ||
+      minY < margin || maxY > 1 - margin
+    );
+
+    if (touchingEdge) {
+      statusEl.textContent = "手がふちに触れています → アクション無視";
+      canvasCtx.restore();
+      return;
+    } else {
+      statusEl.textContent = "OK";
+    }
+
+    // --- ピンチ/グー判定 ---
+    const thumbTip = landmarks[4];
+    const indexTip = landmarks[8];
+    const wrist = landmarks[0];
+    const midMCP = landmarks[9];
+    const handScale = distance(wrist, midMCP) || 0.1;
+    const tipDist = distance(thumbTip, indexTip) / handScale;
+
+    const now = performance.now();
+    if (now - lastActionTime > cooldownDuration) {
+      if (tipDist < 0.5) {
+        if (!pendingPinchTimer) {
+          pendingPinchTimer = setTimeout(() => {
+            if (isFist(landmarks, handScale)) {
+              triggerFlash("blue");
+              detected = "fist";
+              updateDB(-1); // グー → -1
+            } else {
+              triggerFlash("red");
+              detected = "pinch";
+              updateDB(+1); // ピンチ → +1
+            }
+            lastActionTime = performance.now();
+            startCooldownBar();
+            pendingPinchTimer = null;
+          }, 100);
+        }
+      } else if (isFist(landmarks, handScale)) {
+        triggerFlash("blue");
+        detected = "fist";
+        updateDB(-1); // グー
+        lastActionTime = now;
+        startCooldownBar();
+      }
+    }
+  }
+
+  statusEl.textContent += ` | detected: ${detected}`;
+  canvasCtx.restore();
+}
+
+function triggerFlash(color) {
+  flash.style.background = color;
+  flash.style.transition = 'opacity 120ms ease';
+  flash.style.opacity = '0.8';
+  setTimeout(() => {
+    flash.style.transition = 'opacity 350ms ease-out';
+    flash.style.opacity = '0';
+  }, 120);
+}
+
+function startCooldownBar() {
+  cooldownBar.style.opacity = 1;
+  cooldownFill.style.transition = "none";
+  cooldownFill.style.width = "100%";
+  setTimeout(() => {
+    cooldownFill.style.transition = `width ${cooldownDuration}ms linear`;
+    cooldownFill.style.width = "0%";
+  }, 20);
+  setTimeout(() => {
+    cooldownBar.style.opacity = 0;
+  }, cooldownDuration);
+}
+</script>
+</body>
+</html>
