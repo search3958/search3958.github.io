@@ -1,0 +1,462 @@
+change-wallpaper.app {
+	btn1 {
+		clickcf: changeWallpaper1;
+		color: false;
+	}
+
+	btn2 {
+		clickcf: changeWallpaper2;
+		color: false;
+	}
+
+	btn3 {
+		clickcf: changeWallpaper3;
+	}
+	config {
+		x: 80;
+		y: 47;
+	}
+}
+
+power.app {
+	shutdown {
+		clickcf: shutdown;
+	}
+
+	reboot {
+		clickcf: reboot;
+	}
+	config {
+		x: 70;
+		y: 25;
+	}
+}
+
+lowfps.app {
+	close {
+		clickshell: closelowfps.app;
+	}
+
+	reboot {
+		clickcf: reboot;
+	}
+	config {
+		hideclose: true;
+	}
+}
+
+display-size.app {
+	4-3 {
+		clickcf: changeDisplaysize480360;
+		clickcf2: changewallpaper1;
+		delay: 0.1;
+	}
+
+	16-9a {
+		clickcf: changeDisplaysize480270;
+		clickcf2: changewallpaper3;
+		delay: 0.1;
+	}
+
+	16-9b {
+		clickcf: changeDisplaysize640360;
+		delay: 0.1;
+	}
+
+	reboot {
+		clickcf: reboot;
+	}
+
+	default {
+		clickcf: changeDisplaysize480360;
+		delay: 0.1;
+	}
+	config {
+		x: 78;
+		y: 53;
+	}
+}
+
+
+setting.app{
+	fstbtn1 {
+		page:1;
+		clickcf: setpage2;
+	}
+	fstbtn2 {
+		page:1;
+		clickcf: setpage3;
+	}
+	fstbtn3 {
+		page:1;
+		clickcf: setpage4;
+	}
+	fstbtn4 {
+		page:1;
+		clickcf: setpage5;
+	}
+
+
+	pg2back {
+		page:2;
+		clickcf: setpage1;
+	}
+	pg2120fps {
+		clickcf: setspeed4;
+		page: 2;
+	}
+	pg260fps {
+		clickcf: setspeed2;
+		page: 2;
+	}
+	pg230fps {
+		clickcf: setspeed1;
+		page: 2;
+	}
+	pg2light {
+		page: 2;
+		clickcf: change @display-mode @true;
+	}
+	pg2dark {
+		page: 2;
+		clickcf: change @display-mode @false;
+	}
+
+
+	pg3back {
+		page:3;
+		clickcf: setpage1;
+	}
+	pg3open {
+		clickshell: display-size.app;
+		page: 3;
+	}
+	pg3open {
+		clickshell: display-size.app;
+		page: 3;
+	}
+	pg3reset {
+		page: 3;
+		clickcf: changeDisplaysize480360;
+	}
+	pg3dae {
+		clickcf: changeSystemconfig28;
+		clickcf2: 100;
+		page: 3;
+		delay: 0.1;
+	}
+	pg3tong {
+		clickcf: changeSystemconfig28;
+		clickcf2: 90;
+		page: 3;
+		delay: 0.1;
+	}
+	pg3jag {
+		clickcf: changeSystemconfig28;
+		clickcf2: 80;
+		page: 3;
+		delay: 0.1;
+	}
+
+
+	pg4back {
+		page:4;
+		clickcf: setpage1;
+	}
+	pw {
+		clickcf: changeSystemconfig11;
+		clickshell: shell.app;
+		page: 4;
+	}
+	pg4sijag {
+		clickcf: deleteAppData;
+		page: 4;
+	}
+
+
+	pg5back {
+		page:5;
+		clickcf: setpage1;
+	}
+	config {
+		x: 65;
+		y: 70;
+	}
+}
+
+
+dockedit.app {
+	btn1 {
+		clickcf: changeSystemconfig1;
+		clickshell: cfshell.app;
+	}
+
+	btn2 {
+		clickcf: changeSystemconfig2;
+		clickshell: cfshell.app;
+	}
+
+	btn3 {
+		clickcf: changeSystemconfig3;
+		clickshell: cfshell.app;
+	}
+
+	btn4 {
+		clickcf: changeSystemconfig4;
+		clickshell: cfshell.app;
+	}
+
+	btn5 {
+		clickcf: changeSystemconfig5;
+		clickshell: cfshell.app;
+	}
+
+	btn6 {
+		clickcf: changeSystemconfig6;
+		clickshell: cfshell.app;
+	}
+	btn8 {
+		clickcf: reboot;
+	}
+	config {
+		x: 87;
+		y: 21;
+	}
+}
+
+fstset.app {
+	close {
+		clickshell: closefstset.app;
+	}
+
+	start {
+		delay: 0.05;
+		clickshell: setup.app;
+		clickshell2: closefstset.app;
+	}
+	config {
+		x: 68;
+		y: 46;
+	}
+}
+
+setup.app {
+	turbowarp {
+		page: 1;
+		clickcf: setpage2;
+	}
+	scratch {
+		page: 1;
+		clickcf: setpage3;
+	}
+	config {
+		hideclose: true;
+	}
+	
+	
+	640360 {
+		page: 2;
+		delay: 0.05;
+		clickcf2: setpage3;
+		clickcf: changeDisplaysize640360;
+	}
+	715536 {
+		page: 2;
+		delay: 0.05;
+		clickcf2: setpage3;
+		clickcf: changeDisplaysize715536;
+	}
+	480270 {
+		page: 2;
+		delay: 0.05;
+		clickcf2: setpage3;
+		clickcf: changeDisplaysize480270;
+	}
+	480360 {
+		page: 2;
+		delay: 0.05;
+		clickcf2: setpage3;
+		clickcf: changeDisplaysize480360;
+	}
+
+
+	60fps {
+		page: 3;
+		delay: 0.05;
+		clickcf: 60fpstrue;
+		clickcf2: setpage4;
+	}
+	30fps {
+		page: 3;
+		delay: 0.05;
+		lickcf: 60fpsfalse;
+		clickcf2: setpage4;
+	}
+
+
+	light {
+		page: 4;
+		delay: 0.1;
+		clickcf: change @display-mode @true;
+		clickcf2: setpage5;
+	}
+	dark {
+		page: 4;
+		delay: 0.1;
+		clickcf: change @display-mode @false;
+		clickcf2: setpage5;
+	}
+
+
+	reboot1 {
+		page: 5;
+		clickshell: closesetup.app;
+	}
+	reboot2 {
+		page: 5;
+		clickshell: closesetup.app;
+		clickcf: reboot;
+	}
+
+
+}
+
+
+settingplus.app {
+	btn1 {
+		clickcf: deleteAppData;
+	}
+
+	btn2 {
+		clickcf: changeSystemconfig29;
+		clickshell: cfshell.app;
+	}
+
+	btn3 {
+		clickcf: changeSystemconfig31;
+		clickshell: cfshell.app;
+	}
+	config {
+		x: 73;
+		y: 49;
+	}
+}
+
+installer.app {
+	btn {
+		clickcf: appInstall;
+		clickshell: cfshell.app;
+	}
+	config {
+		x: 56;
+		y: 17;
+	}
+}
+
+credit.app {
+	config {
+		x: 73;
+		y: 48;
+	}
+}
+
+customize.app {
+	0 {
+		clickcf: changeSystemconfig33;
+		delay: 0.1;
+		clickcf2: 0;
+		color: false;
+	}
+	25 {
+		clickcf: changeSystemconfig33;
+		delay: 0.1;
+		clickcf2: 25;
+		color: false;
+	}
+	60 {
+		clickcf: changeSystemconfig33;
+		delay: 0.1;
+		clickcf2: 60;
+		color: false;
+	}
+	95 {
+		clickcf: changeSystemconfig33;
+		delay: 0.1;
+		clickcf2: 95;
+		color: false;
+	}
+	125 {
+		clickcf: changeSystemconfig33;
+		delay: 0.1;
+		clickcf2: 125;
+		color: false;
+	}
+	140 {
+		clickcf: changeSystemconfig33;
+		delay: 0.1;
+		clickcf2: 140;
+		color: false;
+	}
+	config {
+		x: 83;
+		y: 39;
+	}
+}
+guiswitch.app {
+	cf {
+		clickcf: changeGuiService;
+		clickcf2: core @face @opal;
+		delay: 0.1;
+	}
+	ld {
+		clickcf: changeGuiService;
+		clickcf2: litedesk @2;
+		delay: 0.1;
+	}
+	reboot {
+		clickcf: deleteAppData;
+		clickcf2: reboot;
+		delay: 0.3;
+	}
+	config {
+		x: 73;
+		y: 42;
+	}
+}
+
+hint.app {
+	home {
+		clickcf: setpage1;
+	}
+	btna {
+		page: 1;
+		clickcf: setpagea;
+	}
+	btnb {
+		page: 1;
+		clickcf: setpageb;
+	}
+	btnc {
+		page: 1;
+		clickcf: setpagec;
+	}
+	btnd {
+		page: 1;
+		delay: 0.1;
+		clickshell: credit.app;
+		clickshell2: closehint.app;
+	}
+	config {
+		x: 79;
+		y: 48;
+	}
+}
+
+authority.app {
+	ok {
+		clickshell: closeauthority.app;
+	}
+	config {
+		hideclose: true;
+	}
+}
