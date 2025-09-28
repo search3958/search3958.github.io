@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<title>Client-side HF Inference (distilgpt2) — Demo</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto;padding:18px;max-width:900px;margin:auto}
+  label{display:block;margin-top:10px}
+  input[type="text"], input[type="password"], textarea, select {
+    width:100%; box-sizing:border-box; padding:8px; margin-top:6px;
+  }
+  button{margin-top:10px;padding:8px 12px}
+  #progress {width:100%;height:14px;background:#eee;border-radius:8px;overflow:hidden;margin-top:8px}
+  #progressFill{width:0%;height:100%;background:#4caf50;transition:width .15s}
+  pre{background:#f6f6f6;padding:12px;border-radius:6px;white-space:pre-wrap;min-height:160px}
+  .muted{color:#666;font-size:0.9rem;margin-top:6px}
+</style>
+</head>
+<body>
+  <h2>ブラウザ単独で試す：Hugging Face Inference API</h2>
+
+  <label>Model
+    <select id="model">
+      <option value="distilgpt2">distilgpt2 (recommended)</option>
+      <option value="gpt2">gpt2 (smaller)</option>
+    </select>
+  </label>
+
+  <label>HF API Token (will be stored in localStorage for convenience)
+    <input id="token" type="password" placeholder="hf_xxx..." />
+  </label>
+
+  <label>Prompt (English)
+    <textarea id="prompt" rows="4">Hello, how are you?</textarea>
+  </label>
+
+  <div>
+    <button id="genBtn">Generate</button>
+    <button id="clearTokenBtn">Clear saved token</button>
+    <span id="status" class="muted"></span>
+  </div>
+
+  <div id="progress"><div id="progressFill"></div></div>
+
+  <h3>Output</h3>
+  <pre id="output">—</pre>
+
+<script>
+(() => {
+  const tokenEl = document.getElementById('token');
+  const promptEl = document.getElementById('prompt');
+  const modelEl = document.getElementById('model');
+  const genBtn = document.getElementById('genBtn');
+  const clearTokenBtn = document.getElementById('clearTokenBtn');
+  const statusEl = document.getElementById('status');
+  const progressFill = document.getElementById('progressFill');
+  const outputEl = document.getElementById('output');
+
+  // load saved token if any
+  const SAVED_KEY = 'hf_inference_token_v1';
+  const saved = localStorage.getItem(SAVED_KEY);
+  if (saved) tokenEl.value = saved;
+
+  clearTokenBtn.addEventListener('click', () => {
+    localStorage.removeItem(SAVED_KEY);
+    tokenEl.value = '';
+    statusEl.textContent = 'Token cleared';
+  });
+
+  function setProgress(p){ progressFill.style.width = Math.max(0, Math.min(1, p))*100 + '%'; }
+
+  async function generate(){
+    const token = tokenEl.value.trim();
+    if (!token) { statusEl.textContent = 'Provide HF token.'; return; }
+    localStorage.setItem(SAVED_KEY, token);
+
+    const model = modelEl.value;
+    const prompt = promptEl.value || '';
+    outputEl.textContent = '';
+    statusEl.textContent = 'Requesting inference...';
+    genBtn.disabled = true;
+    setProgress(0.05);
+
+    try {
+      // HF Inference API endpoint
+      const url = `https://api-inference.huggingface.co/models/${encodeURIComponent(model)}`;
+      const body = {
+        inputs: prompt,
+        parameters: { max_new_tokens: 80, temperature: 0.8, top_p: 0.95, do_sample: true }
+      };
+
+      // show indeterminate progress animation during fetch
+      let anim = true;
+      let animPos = 0;
+      const animId = setInterval(()=> {
+        if (!anim) return;
+        animPos = (animPos + 0.04) % 1;
+        setProgress(0.2 + animPos*0.6); // 20%..80%
+      }, 120);
+
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      anim = false;
+      clearInterval(animId);
+
+      if (!resp.ok) {
+        const txt = await resp.text().catch(()=> null);
+        statusEl.textContent = `HTTP ${resp.status}`;
+        outputEl.textContent = 'Error response:\n' + (txt || resp.statusText);
+        setProgress(0);
+        genBtn.disabled = false;
+        return;
+      }
+
+      // HF returns JSON with generated text
+      const data = await resp.json();
+      // common shapes: [{generated_text: "..."}] or {generated_text: "..."}
+      let text = '';
+      if (Array.isArray(data) && data[0]?.generated_text) text = data[0].generated_text;
+      else if (data?.generated_text) text = data.generated_text;
+      else text = JSON.stringify(data, null, 2);
+
+      statusEl.textContent = 'Received. Rendering...';
+      setProgress(0.9);
+
+      // simulate streaming by outputting small chunks
+      const CHUNK = 6; // characters per step
+      for (let i=0; i<text.length; i+=CHUNK){
+        outputEl.textContent += text.slice(i, i+CHUNK);
+        // small throttle for streaming effect
+        await new Promise(r => setTimeout(r, 40));
+        setProgress(0.9 + 0.1*(i/text.length));
+      }
+
+      setProgress(1);
+      statusEl.textContent = 'Done';
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = 'Error: ' + (err.message || err);
+      outputEl.textContent = 'Error: ' + (err.stack || String(err));
+      setProgress(0);
+    } finally {
+      genBtn.disabled = false;
+      setTimeout(()=> setProgress(0), 800);
+    }
+  }
+
+  genBtn.addEventListener('click', generate);
+})();
+</script>
+</body>
+</html>
