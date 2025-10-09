@@ -1,13 +1,23 @@
 <!DOCTYPE html>
 <html>
 <meta charset="UTF-8">
-<title>Tool board</title>
+<title>ツールボード</title>
   <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="icon" href="https://search3958.github.io/favicon-newtab.svg">
+    <script>
+if ("paintWorklet" in CSS) {
+  const workletCode = `
+    const drawSquircle=(ctx,geom,radii,smooth,lineWidth,color)=>{const defaultFill=color;const lineWidthOffset=lineWidth/2;ctx.beginPath();ctx.lineTo(radii[0],lineWidthOffset);ctx.lineTo(geom.width-radii[1],lineWidthOffset);ctx.bezierCurveTo(geom.width-radii[1]/smooth,lineWidthOffset,geom.width-lineWidthOffset,radii[1]/smooth,geom.width-lineWidthOffset,radii[1]);ctx.lineTo(geom.width-lineWidthOffset,geom.height-radii[2]);ctx.bezierCurveTo(geom.width-lineWidthOffset,geom.height-radii[2]/smooth,geom.width-radii[2]/smooth,geom.height-lineWidthOffset,geom.width-radii[2],geom.height-lineWidthOffset);ctx.lineTo(radii[3],geom.height-lineWidthOffset);ctx.bezierCurveTo(radii[3]/smooth,geom.height-lineWidthOffset,lineWidthOffset,geom.height-radii[3]/smooth,lineWidthOffset,geom.height-radii[3]);ctx.lineTo(lineWidthOffset,radii[0]);ctx.bezierCurveTo(lineWidthOffset,radii[0]/smooth,radii[0]/smooth,lineWidthOffset,radii[0],lineWidthOffset);ctx.closePath();if(lineWidth){ctx.strokeStyle=defaultFill;ctx.lineWidth=lineWidth;ctx.stroke()}else{ctx.fillStyle=defaultFill;ctx.fill()}};class SquircleClass{static get contextOptions(){return{alpha:true}}static get inputProperties(){return["--squircle-radius","--squircle-radius-top-left","--squircle-radius-top-right","--squircle-radius-bottom-right","--squircle-radius-bottom-left","--squircle-smooth","--squircle-outline","--squircle-fill"]}paint(ctx,geom,properties){const smoothRatio=10;const distanceRatio=1.8;const squircleSmooth=parseFloat(properties.get("--squircle-smooth")*smoothRatio);const individualRadiiProps=SquircleClass.inputProperties.slice(1,5);let squircleRadii=individualRadiiProps.map(prop=>{const value=properties.get(prop);return value?parseInt(value,10)*distanceRatio:NaN});let shorthand_R;if(squircleRadii.some(isNaN)){const radiusRegex=/([0-9]+[a-z%]*)/g;const radius_shorthand=properties.get("--squircle-radius").toString();const matches=radius_shorthand.match(radiusRegex);if(matches){shorthand_R=matches.map(val=>parseInt(val,10)*distanceRatio);while(shorthand_R.length<4){if(shorthand_R.length===1){shorthand_R.push(shorthand_R[0])}else if(shorthand_R.length===2){shorthand_R=[shorthand_R[0],shorthand_R[1],shorthand_R[0],shorthand_R[1]]}else if(shorthand_R.length===3){shorthand_R=[shorthand_R[0],shorthand_R[1],shorthand_R[2],shorthand_R[1]]}}}else{const defaultRadius=squircleRadii.every(isNaN)?8*distanceRatio:0;shorthand_R=[defaultRadius,defaultRadius,defaultRadius,defaultRadius]}}squircleRadii=squircleRadii.map((val,i)=>isNaN(val)?shorthand_R[i]:val);const squrcleOutline=parseFloat(properties.get("--squircle-outline"),10);const squrcleColor=properties.get("--squircle-fill").toString();const isSmooth=()=>{if(typeof properties.get("--squircle-smooth")[0]!=="undefined"){if(squircleSmooth===0){return 1}return squircleSmooth}else{return 10}};const isOutline=()=>{if(squrcleOutline){return squrcleOutline}else{return 0}};const isColor=()=>{if(squrcleColor){return squrcleColor}else{return"#f45"}};const maxRadius=Math.max(...squircleRadii);if(maxRadius<geom.width/2&&maxRadius<geom.height/2){drawSquircle(ctx,geom,squircleRadii,isSmooth(),isOutline(),isColor())}else{const minRadius=Math.min(geom.width/2,geom.height/2);drawSquircle(ctx,geom,squircleRadii.map(()=>minRadius),isSmooth(),isOutline(),isColor())}}}if(typeof registerPaint!=="undefined"){registerPaint("squircle",SquircleClass)}
+  `;
+  const blob = new Blob([workletCode], { type: 'application/javascript' });
+  const blobURL = URL.createObjectURL(blob);
+  CSS.paintWorklet.addModule(blobURL);
+}
+</script>
   <script type="importmap">
     {
       "imports": {
@@ -182,13 +192,16 @@ pages
 <style>* {
   font-family: "Inter", serif
 }
-
+body{
+  background:#e8e9de;
+}
 :root {
-  --text-color: #0f0f0faa
+  --text-color: #0f0f0faa;
+  --primary:#4c662b;
 }
 
 .board-a {
-  background: #f4f4f4;
+  background:#f9faef;
   height: calc(100vh - 100px);
   width: calc(100vw - 120px);
   bottom: 0;
@@ -267,7 +280,7 @@ pages
 }
 
 .calculator {
-  background: #fff;
+  background: #eeefe3;
   padding: 16px;
   border-radius: 30px;
   width: 18vw;
@@ -279,7 +292,7 @@ pages
 .calc-display {
   width: calc(100% - 20px);
   height: 50px;
-  background: #f4f4f4;
+  background: #e2e3d8;
   border: none;
   outline: none;
   border-radius: 14px;
@@ -297,26 +310,27 @@ pages
 
 .calc-button {
   height: 50px;
-  background: #f0f0f0;
+  background: #dce7c8;
   border: none;
   border-radius: 14px;
   font-size: 1.2rem;
-  position: relative
+  position: relative;
+  color:#404a33;
 }
 
 .calc-button.operation {
-  background: #e5edff;
-  color: #001d35
+  background: #bcece7;
+  color: #1f4e4b
 }
 
 .calc-button.equal {
-  background: #0074ff;
+  background: var(--primary);
   color: #fff;
   grid-column: span 4
 }
 
 .note {
-  background: #fff;
+  background: #eeefe3;
   border-radius: 30px;
   padding: 16px;
   height: 348px;
@@ -326,7 +340,7 @@ pages
 }
 
 .shortcut {
-  background: #fff;
+  background: #eeefe3;
   border-radius: 30px;
   padding: 16px;
   height: 348px;
@@ -343,7 +357,7 @@ pages
   margin-top: 4px;
   padding: 8px;
   border: none;
-  background: #f4f4f4
+  background: #e2e3d8
 }
 
 .cut-text {
@@ -351,7 +365,7 @@ pages
   margin-right: 8px;
   border-radius: 14px;
   border: none;
-  background: #f4f4f4;
+  background: #e2e3d8;
   padding-left: 8px
 }
 
@@ -360,7 +374,7 @@ pages
   border-radius: 14px;
   border: none;
   position: relative;
-  background: #0074ff;
+  background: var(--primary);
   color: #fff
 }
 
@@ -381,7 +395,7 @@ pages
 }
 
 .stopwatch {
-  background: #fff;
+  background: #eeefe3;
   border-radius: 30px;
   padding: 16px;
   height: 348px;
@@ -401,13 +415,14 @@ pages
   height: 60px;
   border-radius: 30px;
   border: none;
-  background: #f0f0f0;
+  background: #bcece7;
+  color:#1f4e4b;
   position: relative;
   top: 70px
 }
 
 #stopwatch-startStopBtn {
-  background: #0074ff;
+  background: var(--primary);
   color: #fff
 }
 
@@ -516,11 +531,11 @@ pre {
   margin: 20px auto;
   position: relative;
   margin-top: 50px;
-  background: #0075ff
+  background: var(--primary)
 }
 
 .colorbox {
-  background: #fff;
+  background: #eeefe3;
   border-radius: 30px;
   padding: 16px;
   height: 348px;
@@ -543,12 +558,14 @@ pre {
   width: 130px;
   padding: 8px;
   text-align: center;
-  margin: 0 auto
+  margin: 0 auto;
+  border:none;
+  background:#e8e9de;
 }
 
 .board-b {
   display: none;
-  background: #f4f4f4;
+  background: #f9faef;
   height: calc(100vh - 100px);
   width: calc(100vw - 120px);
   bottom: 0;
@@ -590,7 +607,7 @@ pre {
 }
 
 .search-box {
-  background: #f4f4f4;
+  background: #f9faef;
   width: fit-content;
   position: fixed;
   top: 20px;
@@ -756,5 +773,5 @@ pre {
     background: #000
   }
 }</style>
-<script>function updateTime(){const displayTime=document.getElementById('timeDisplay');const now=new Date();const hours=now.getHours().toString().padStart(2,'0');const minutes=now.getMinutes().toString().padStart(2,'0');const seconds=now.getSeconds()+now.getMilliseconds()/1000;const degree=(seconds/60)*360;displayTime.style.background=`conic-gradient(from ${degree}deg, rgba(20, 127, 255, 1) 0deg, rgba(0, 108, 238, 1) 180deg, rgba(0, 87, 190, 1) 274deg, rgba(0, 63, 137, 1) 360deg)`;displayTime.textContent=`${hours}:${minutes}`;requestAnimationFrame(updateTime)} updateTime();const today=new Date();const weekdays=["SUN","MON","TUE","WED","THU","FRI","SAT"];const weekdayText=weekdays[today.getDay()];const dayOfMonth=today.getDate().toString().padStart(2,'0');document.querySelector('.date-a').textContent=weekdayText;document.querySelector('.date-b').textContent=dayOfMonth;const displayCalc=document.getElementById('display');const textBox=document.getElementById('myTextBox');function loadSavedData(){const savedValue=localStorage.getItem('calculatorDisplay');if(savedValue){displayCalc.value=savedValue} const savedText=localStorage.getItem('textBoxContent');if(savedText){textBox.value=savedText} for(let i=1;i<=6;i++){const savedText=localStorage.getItem(`textbox${i}`);if(savedText){document.getElementById(`textbox${i}`).value=savedText}}} function saveDisplay(){localStorage.setItem('calculatorDisplay',displayCalc.value)} function saveTextBoxData(){for(let i=1;i<=6;i++){let textbox=document.getElementById(`textbox${i}`);localStorage.setItem(`textbox${i}`,textbox.value)} localStorage.setItem('textBoxContent',textBox.value)} window.onload=loadSavedData;displayCalc.addEventListener('input',saveDisplay);textBox.addEventListener('input',saveTextBoxData);for(let i=1;i<=6;i++){document.getElementById(`textbox${i}`).addEventListener('input',saveTextBoxData)} function openURL(boxNumber){const content=document.getElementById(`textbox${boxNumber}`).value;if(content){let url=content;if(!/^https?:\/\//i.test(content)){url=`https://${url}`} window.open(url,'_blank')}else{alert('テキストボックスに内容がありません')}} function appendValue(value){const display=document.getElementById('display');display.value+=value} function clearDisplay(){const display=document.getElementById('display');display.value='';localStorage.removeItem('calculatorDisplay')} function calculate(){const display=document.getElementById('display');try{const result=eval(display.value);display.value=result;localStorage.setItem('calculatorDisplay',result)}catch(e){display.value='Error'}} let stopwatchStartTime;let stopwatchElapsedTime=0;let stopwatchTimerInterval;let isStopwatchRunning=!1;const stopwatchStartStopBtn=document.getElementById("stopwatch-startStopBtn");const stopwatchResetBtn=document.getElementById("stopwatch-resetBtn");const stopwatchTimeDisplay=document.getElementById("stopwatch-time");stopwatchStartStopBtn.addEventListener("click",()=>{if(isStopwatchRunning){clearInterval(stopwatchTimerInterval);isStopwatchRunning=!1;stopwatchStartStopBtn.textContent="開始"}else{stopwatchStartTime=Date.now()-stopwatchElapsedTime;stopwatchTimerInterval=setInterval(()=>{stopwatchElapsedTime=Date.now()-stopwatchStartTime;updateStopwatchTimeDisplay(stopwatchElapsedTime)},1000);isStopwatchRunning=!0;stopwatchStartStopBtn.textContent="停止"}});stopwatchResetBtn.addEventListener("click",()=>{clearInterval(stopwatchTimerInterval);isStopwatchRunning=!1;stopwatchElapsedTime=0;stopwatchStartStopBtn.textContent="開始";stopwatchTimeDisplay.textContent="00:00:00"});function updateStopwatchTimeDisplay(ms){const hours=String(Math.floor(ms/3600000)).padStart(2,'0');const minutes=String(Math.floor((ms%3600000)/60000)).padStart(2,'0');const seconds=String(Math.floor((ms%60000)/1000)).padStart(2,'0');stopwatchTimeDisplay.textContent=`${hours}:${minutes}:${seconds}`} const colorPicker=document.getElementById('color-picker');const hexInput=document.getElementById('hex-input');const colorBox=document.getElementById('color-box');const savedColor=localStorage.getItem('userpickcolorSub');if(savedColor){colorPicker.value=savedColor;hexInput.value=savedColor;colorBox.style.backgroundColor=savedColor} colorPicker.addEventListener('input',function(){const color=colorPicker.value;hexInput.value=color;colorBox.style.backgroundColor=color;localStorage.setItem('userpickcolorSub',color)});hexInput.addEventListener('input',function(){const color=hexInput.value;if(/^#[0-9A-Fa-f]{6}$/.test(color)){colorBox.style.backgroundColor=color;colorPicker.value=color;localStorage.setItem('userpickcolorSub',color)}});const radioA=document.getElementById('radio-a');const radioB=document.getElementById('radio-b');const boardA=document.querySelector('.board-a');const labelA=document.querySelector('.label-a');const labelB=document.querySelector('.label-b');const boardB=document.querySelector('.board-b');const title=document.querySelector('.title');function toggleBoards(){if(radioA.checked){boardA.style.display='block';boardA.style.position='fixed';boardB.style.display='none';labelA.style.fontVariationSettings='\'FILL\' 1,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelA.style.color='#0077ff';labelB.style.fontVariationSettings='\'FILL\' 0,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelB.style.color='#0f0f0faa';title.textContent='ダッシュボード'}else if(radioB.checked){boardA.style.display='none';boardB.style.display='block';boardB.style.position='fixed';title.textContent='ショートカット';labelA.style.fontVariationSettings='\'FILL\' 0,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelA.style.color='#0f0f0faa';labelB.style.fontVariationSettings='\'FILL\' 1,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelB.style.color='#0077ff'}} radioA.addEventListener('change',toggleBoards);radioB.addEventListener('change',toggleBoards);toggleBoards();class LinkBox extends HTMLElement{static get observedAttributes(){return['href','img']} constructor(){super();this.render()} attributeChangedCallback(){this.render()} render(){const href=this.getAttribute('href')||'#';const img=this.getAttribute('img')||'';this.innerHTML=`<div class="container"> <div class="box"> <a href="https://${href}"> <img class="shortcutimg" src="https://search3958.github.io/newtab/img/${img}" alt="${this.textContent}"> <md-ripple></md-ripple> </a> </div> <div>${this.textContent}</div> </div>`;this.addMouseEvents(this.querySelector('.container'))} addMouseEvents(container){const box=container.querySelector('.box');container.onmousemove=(e)=>{const{left,top,width,height}=box.getBoundingClientRect();box.style.transform=`rotateX(${-((e.clientY - top) - height / 2) / 6}deg) rotateY(${((e.clientX - left) - width / 2) / 6}deg)`};container.onmouseleave=()=>box.style.transform='rotateX(0) rotateY(0)'}} customElements.define('link-box',LinkBox);document.querySelectorAll('.container').forEach(container=>{container.onmousemove=(e)=>{const box=container.querySelector('.box');const{left,top,width,height}=box.getBoundingClientRect();box.style.transform=`rotateX(${-((e.clientY - top) - height / 2) / 6}deg) rotateY(${((e.clientX - left) - width / 2) / 6}deg)`;container.onmouseleave=()=>box.style.transform='rotateX(0) rotateY(0)'}})</script>
+<script>function updateTime(){const displayTime=document.getElementById('timeDisplay');const now=new Date();const hours=now.getHours().toString().padStart(2,'0');const minutes=now.getMinutes().toString().padStart(2,'0');const seconds=now.getSeconds()+now.getMilliseconds()/1000;const degree=(seconds/60)*360;displayTime.style.background=`conic-gradient(from ${degree}deg, rgba(20, 127, 255, 1) 0deg, rgba(0, 108, 238, 1) 180deg, rgba(0, 87, 190, 1) 274deg, rgba(0, 63, 137, 1) 360deg)`;displayTime.textContent=`${hours}:${minutes}`;requestAnimationFrame(updateTime)} updateTime();const today=new Date();const weekdays=["SUN","MON","TUE","WED","THU","FRI","SAT"];const weekdayText=weekdays[today.getDay()];const dayOfMonth=today.getDate().toString().padStart(2,'0');document.querySelector('.date-a').textContent=weekdayText;document.querySelector('.date-b').textContent=dayOfMonth;const displayCalc=document.getElementById('display');const textBox=document.getElementById('myTextBox');function loadSavedData(){const savedValue=localStorage.getItem('calculatorDisplay');if(savedValue){displayCalc.value=savedValue} const savedText=localStorage.getItem('textBoxContent');if(savedText){textBox.value=savedText} for(let i=1;i<=6;i++){const savedText=localStorage.getItem(`textbox${i}`);if(savedText){document.getElementById(`textbox${i}`).value=savedText}}} function saveDisplay(){localStorage.setItem('calculatorDisplay',displayCalc.value)} function saveTextBoxData(){for(let i=1;i<=6;i++){let textbox=document.getElementById(`textbox${i}`);localStorage.setItem(`textbox${i}`,textbox.value)} localStorage.setItem('textBoxContent',textBox.value)} window.onload=loadSavedData;displayCalc.addEventListener('input',saveDisplay);textBox.addEventListener('input',saveTextBoxData);for(let i=1;i<=6;i++){document.getElementById(`textbox${i}`).addEventListener('input',saveTextBoxData)} function openURL(boxNumber){const content=document.getElementById(`textbox${boxNumber}`).value;if(content){let url=content;if(!/^https?:\/\//i.test(content)){url=`https://${url}`} window.open(url,'_blank')}else{alert('テキストボックスに内容がありません')}} function appendValue(value){const display=document.getElementById('display');display.value+=value} function clearDisplay(){const display=document.getElementById('display');display.value='';localStorage.removeItem('calculatorDisplay')} function calculate(){const display=document.getElementById('display');try{const result=eval(display.value);display.value=result;localStorage.setItem('calculatorDisplay',result)}catch(e){display.value='Error'}} let stopwatchStartTime;let stopwatchElapsedTime=0;let stopwatchTimerInterval;let isStopwatchRunning=!1;const stopwatchStartStopBtn=document.getElementById("stopwatch-startStopBtn");const stopwatchResetBtn=document.getElementById("stopwatch-resetBtn");const stopwatchTimeDisplay=document.getElementById("stopwatch-time");stopwatchStartStopBtn.addEventListener("click",()=>{if(isStopwatchRunning){clearInterval(stopwatchTimerInterval);isStopwatchRunning=!1;stopwatchStartStopBtn.textContent="開始"}else{stopwatchStartTime=Date.now()-stopwatchElapsedTime;stopwatchTimerInterval=setInterval(()=>{stopwatchElapsedTime=Date.now()-stopwatchStartTime;updateStopwatchTimeDisplay(stopwatchElapsedTime)},1000);isStopwatchRunning=!0;stopwatchStartStopBtn.textContent="停止"}});stopwatchResetBtn.addEventListener("click",()=>{clearInterval(stopwatchTimerInterval);isStopwatchRunning=!1;stopwatchElapsedTime=0;stopwatchStartStopBtn.textContent="開始";stopwatchTimeDisplay.textContent="00:00:00"});function updateStopwatchTimeDisplay(ms){const hours=String(Math.floor(ms/3600000)).padStart(2,'0');const minutes=String(Math.floor((ms%3600000)/60000)).padStart(2,'0');const seconds=String(Math.floor((ms%60000)/1000)).padStart(2,'0');stopwatchTimeDisplay.textContent=`${hours}:${minutes}:${seconds}`} const colorPicker=document.getElementById('color-picker');const hexInput=document.getElementById('hex-input');const colorBox=document.getElementById('color-box');const savedColor=localStorage.getItem('userpickcolorSub');if(savedColor){colorPicker.value=savedColor;hexInput.value=savedColor;colorBox.style.backgroundColor=savedColor} colorPicker.addEventListener('input',function(){const color=colorPicker.value;hexInput.value=color;colorBox.style.backgroundColor=color;localStorage.setItem('userpickcolorSub',color)});hexInput.addEventListener('input',function(){const color=hexInput.value;if(/^#[0-9A-Fa-f]{6}$/.test(color)){colorBox.style.backgroundColor=color;colorPicker.value=color;localStorage.setItem('userpickcolorSub',color)}});const radioA=document.getElementById('radio-a');const radioB=document.getElementById('radio-b');const boardA=document.querySelector('.board-a');const labelA=document.querySelector('.label-a');const labelB=document.querySelector('.label-b');const boardB=document.querySelector('.board-b');const title=document.querySelector('.title');function toggleBoards(){if(radioA.checked){boardA.style.display='block';boardA.style.position='fixed';boardB.style.display='none';labelA.style.fontVariationSettings='\'FILL\' 1,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelA.style.color='var(--primary)';labelB.style.fontVariationSettings='\'FILL\' 0,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelB.style.color='#0f0f0faa';title.textContent='ダッシュボード'}else if(radioB.checked){boardA.style.display='none';boardB.style.display='block';boardB.style.position='fixed';title.textContent='ショートカット';labelA.style.fontVariationSettings='\'FILL\' 0,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelA.style.color='#0f0f0faa';labelB.style.fontVariationSettings='\'FILL\' 1,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelB.style.color='var(--primary)'}} radioA.addEventListener('change',toggleBoards);radioB.addEventListener('change',toggleBoards);toggleBoards();class LinkBox extends HTMLElement{static get observedAttributes(){return['href','img']} constructor(){super();this.render()} attributeChangedCallback(){this.render()} render(){const href=this.getAttribute('href')||'#';const img=this.getAttribute('img')||'';this.innerHTML=`<div class="container"> <div class="box"> <a href="https://${href}"> <img class="shortcutimg" src="https://search3958.github.io/newtab/img/${img}" alt="${this.textContent}"> <md-ripple></md-ripple> </a> </div> <div>${this.textContent}</div> </div>`;this.addMouseEvents(this.querySelector('.container'))} addMouseEvents(container){const box=container.querySelector('.box');container.onmousemove=(e)=>{const{left,top,width,height}=box.getBoundingClientRect();box.style.transform=`rotateX(${-((e.clientY - top) - height / 2) / 6}deg) rotateY(${((e.clientX - left) - width / 2) / 6}deg)`};container.onmouseleave=()=>box.style.transform='rotateX(0) rotateY(0)'}} customElements.define('link-box',LinkBox);document.querySelectorAll('.container').forEach(container=>{container.onmousemove=(e)=>{const box=container.querySelector('.box');const{left,top,width,height}=box.getBoundingClientRect();box.style.transform=`rotateX(${-((e.clientY - top) - height / 2) / 6}deg) rotateY(${((e.clientX - left) - width / 2) / 6}deg)`;container.onmouseleave=()=>box.style.transform='rotateX(0) rotateY(0)'}})</script>
 </html>

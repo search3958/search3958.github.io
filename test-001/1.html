@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Reflective Droplet by Arcaweb</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #f0f0f0;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="board"></canvas>
+
+  <script>
+    const canvas = document.getElementById('board');
+    const ctx = canvas.getContext('2d');
+
+    // === Responsive canvas ===
+    function resizeCanvas() {
+      canvas.width = window.innerWidth * devicePixelRatio;
+      canvas.height = window.innerHeight * devicePixelRatio;
+      ctx.scale(devicePixelRatio, devicePixelRatio);
+      updateBoardBuffer();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // === Background Image ===
+    const bgImg = new Image();
+    bgImg.src = '/imgs/newtab3-bg.webp';
+    let bgLoaded = false;
+    bgImg.onload = () => {
+      bgLoaded = true;
+      updateBoardBuffer();
+    };
+
+    const boardSize = 24;
+    const dark  = '#6b7280';
+    const light = '#d1d5db';
+
+    function drawBoard(ctxOverride) {
+      const context = ctxOverride || ctx;
+      const w = canvas.width / devicePixelRatio;
+      const h = canvas.height / devicePixelRatio;
+      if (bgLoaded) {
+        context.drawImage(bgImg, 0, 0, w, h);
+      } else {
+        context.fillStyle = "#f0f0f0";
+        context.fillRect(0, 0, w, h);
+      }
+    }
+
+    const buffer = document.createElement('canvas');
+    let bctx, boardBufferData = null;
+
+    function updateBoardBuffer() {
+      buffer.width = canvas.width;
+      buffer.height = canvas.height;
+      bctx = buffer.getContext('2d', { willReadFrequently: true });
+      drawBoard(bctx);
+      boardBufferData = bctx.getImageData(0, 0, buffer.width, buffer.height);
+    }
+
+    // === Droplet rendering (static position) ===
+    function drawDroplet(x, y) {
+      const width = canvas.width / devicePixelRatio / 3;
+      const height = width / 2;
+      const left = x - width / 2;
+      const top = y - height / 2;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(left, top, width, height, Math.min(width, height) / 4);
+      ctx.clip();
+
+      // Lens-like distortion effect
+      const gradient = ctx.createLinearGradient(left, top, left + width, top + height);
+      gradient.addColorStop(0, 'rgba(255,255,255,0.25)');
+      gradient.addColorStop(0.5, 'rgba(255,255,255,0.05)');
+      gradient.addColorStop(1, 'rgba(0,0,0,0.1)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(left, top, width, height);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // === Virtual Scroll Simulation ===
+    let virtualScroll = 0;
+    let scrollSpeed = 1.2; // adjust for faster/slower effect
+    let scrollDirection = 1;
+
+    function animate() {
+      const w = canvas.width / devicePixelRatio;
+      const h = canvas.height / devicePixelRatio;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Virtual scroll motion
+      virtualScroll += scrollSpeed * scrollDirection;
+
+      // Reverse direction occasionally
+      if (virtualScroll > h * 0.5 || virtualScroll < -h * 0.5) {
+        scrollDirection *= -1;
+      }
+
+      // Draw background with offset
+      if (bgLoaded) {
+        const offsetY = virtualScroll % (h * 2);
+        ctx.drawImage(bgImg, 0, offsetY - h, w, h);
+        ctx.drawImage(bgImg, 0, offsetY, w, h);
+      } else {
+        ctx.fillStyle = "#f0f0f0";
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      // Fixed droplet in the middle of screen
+      drawDroplet(w / 2, h / 2);
+
+      requestAnimationFrame(animate);
+    }
+
+    resizeCanvas();
+    animate();
+  </script>
+
+  <div style="position:fixed;bottom:0;">
+    <a href="https://www.arcaweb.ch" target="_blank">
+      <img src="https://search3958.github.io/newtab/bgimg/plate3.webp"
+        alt="Arcaweb: Sviluppo software e app mobile Ticino"
+        title="Sviluppo software e app mobile Ticino" height="30">
+    </a>
+  </div>
+</body>
+</html>
