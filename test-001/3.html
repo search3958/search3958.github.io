@@ -3,8 +3,6 @@
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 <style>
-
-
     :root {
       --accent: #0b84ff;
       --carousel-width: 290px;
@@ -12,6 +10,9 @@
       --slide-count: 5;
     }
 
+    ::-webkit-scrollbar {
+        display: none
+    }
     body{
         font-family: "M PLUS 2", sans-serif;
         margin:0px;
@@ -313,7 +314,7 @@ if ("paintWorklet" in CSS) {
                 <div class="card-title">ミッション</div>
                 日常のデジタル体験をより豊かで効率的にすることを目指しています。<br>使いやすさと美しさを両立するため、特にユーザー中心設計 、モダンなUI/UX 、パフォーマンス重視を重視しています。 
             </div>
-            <div class="aboutme-grid" style="border-radius:100px;height:200px;background:#FFE285;">
+            <div class="aboutme-grid" style="overflow:scroll;:100px;height:200px;background:#FFE285;">
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
      crossorigin="anonymous"></script>
 <ins class="adsbygoogle"
