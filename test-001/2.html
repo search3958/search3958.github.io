@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>uiscript-v2 Parser</title>
+<style>
+  uiscript-v2 {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- 👇 DSL構文をここに書くだけ -->
+<uiscript-v2>
+div class(main){
+  a href(#){
+    "Hello"br;"World"
+  };"こんにちは"
+};
+</uiscript-v2>
+
+<script>
+/**
+ * DSL構文をHTML文字列に変換する
+ */
+function parseDSLtoHTML(input) {
+  try {
+    if (typeof input !== "string" || input.trim() === "") {
+      console.warn("⚠️ 入力が空、または文字列ではありません。");
+      return "";
+    }
+
+    const parseBlock = (code) => {
+      let html = "";
+      let i = 0;
+
+      while (i < code.length) {
+        if (/\s/.test(code[i])) {
+          i++;
+          continue;
+        }
+
+        const tagMatch = /^[a-zA-Z0-9:-]+/.exec(code.slice(i));
+        if (!tagMatch) {
+          const textMatch = /^"([^"]*)"/.exec(code.slice(i));
+          if (textMatch) {
+            html += textMatch[1];
+            i += textMatch[0].length;
+          } else {
+            i++;
+          }
+          continue;
+        }
+
+        const tag = tagMatch[0];
+        i += tag.length;
+
+        // 属性
+        let attrs = "";
+        while (true) {
+          const attrMatch = /^\s*([a-zA-Z0-9:-]+)\(([^)]*)\)/.exec(code.slice(i));
+          if (!attrMatch) break;
+          const [, key, value] = attrMatch;
+          attrs += ` ${key}="${value.replace(/"/g, '&quot;')}"`;
+          i += attrMatch[0].length;
+        }
+
+        // コンテンツ
+        if (code[i] === "{") {
+          let depth = 1;
+          let j = i + 1;
+          while (j < code.length && depth > 0) {
+            if (code[j] === "{") depth++;
+            else if (code[j] === "}") depth--;
+            j++;
+          }
+          if (depth !== 0) {
+            console.error(`⚠️ タグ <${tag}> に対応する '}' が見つかりません。`);
+            break;
+          }
+          const inner = code.slice(i + 1, j - 1);
+          const innerHTML = parseBlock(inner);
+          html += `<${tag}${attrs}>${innerHTML}</${tag}>`;
+          i = j;
+        } else {
+          html += `<${tag}${attrs}></${tag}>`;
+        }
+
+        // セミコロンで次へ
+        const nextSemi = /^\s*;/.exec(code.slice(i));
+        if (nextSemi) i += nextSemi[0].length;
+      }
+
+      // 残りの文字列 (例: "こんにちは")
+      const extraTextMatch = /"([^"]*)"/g;
+      let text;
+      while ((text = extraTextMatch.exec(code)) !== null) {
+        html += text[1];
+      }
+
+      return html;
+    };
+
+    const result = parseBlock(input);
+    console.log("✅ HTML生成成功:", result);
+    return result;
+  } catch (e) {
+    console.error("❌ 解析エラー:", e);
+    return "";
+  }
+}
+
+/**
+ * カスタム要素 <uiscript-v2>
+ */
+class UIScriptV2 extends HTMLElement {
+  connectedCallback() {
+    const content = this.textContent.trim();
+    if (!content) {
+      console.warn("⚠️ <uiscript-v2> に内容がありません。スキップします。");
+      return;
+    }
+
+    console.log("🧩 <uiscript-v2> 解析開始");
+    const html = parseDSLtoHTML(content);
+
+    const container = document.createElement("div");
+    container.innerHTML = html;
+
+    if (this.nextSibling) {
+      this.parentNode.insertBefore(container, this.nextSibling);
+    } else {
+      this.parentNode.appendChild(container);
+    }
+
+    console.log("✅ <uiscript-v2> 処理完了: HTMLを挿入しました。");
+  }
+}
+
+customElements.define("uiscript-v2", UIScriptV2);
+</script>
+
+</body>
+</html>

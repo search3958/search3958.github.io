@@ -1,0 +1,369 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<style>
+
+
+    :root {
+      --accent: #0b84ff;
+      --carousel-width: 290px;
+      --carousel-height: 300px;
+      --slide-count: 5;
+    }
+
+    body{
+        font-family: "M PLUS 2", sans-serif;
+        margin:0px;
+        padding:0px;
+        background:#6b0000;
+        font-size:16px;
+        font-weight:450;
+        line-height: 1.5;
+    }
+    .card{
+        padding:24px;
+    }
+    .first{
+        background-image: url(https://search3958.github.io/newtab/bgimg/juche1.webp);
+        background-size: cover;
+        background-position: center;
+        color:#fff;
+        padding-top:88px;
+    }
+    h1{
+        filter:drop-shadow(0px 4px 14px  #000000);
+        font-family: "Space Grotesk";
+        font-weight:320;
+        font-size:48px;
+    }
+    h2{
+        filter:drop-shadow(0px 4px 14px  #000000);
+        font-weight:500;
+        font-size:24px;
+        color:#fffa;
+    }
+    .projects{
+        background:#fff;
+        display:flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: center;
+        gap:24px;
+    }
+    .card-title{
+        font-size:24px;
+        font-weight:500;
+    }
+
+    .carousel-container {
+      position: relative;
+      width: var(--carousel-width);
+    }
+
+    .carousel {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        width: 100%;
+        border-radius: 10px;
+        mask-image: paint(squircle);
+        --squircle-radius: 48px;
+        --squircle-smooth: 0.6;
+        background:#F6F6F6;
+    }
+    .carousel::before {
+        content: " ";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: var(--carousel-height);
+        background:#000;
+        mask-image: paint(squircle);
+        --squircle-radius: 48px;
+        --squircle-smooth: 0.5;
+        --squircle-outline: 4px;
+        pointer-events: none;  
+        z-index:4;
+    }
+
+    .slide {
+        flex: 0 0 calc(var(--carousel-width) - 48px);
+        height: calc(var(--carousel-height) - 48px);
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        color: #000000;
+        font-size: 1.5rem;
+        align-content: center;
+        flex-direction: column;
+        padding:24px;
+        font-weight:400;
+    }
+
+    /* scrollbar hidden */
+    .carousel::-webkit-scrollbar {
+      display: none;
+    }
+    .carousel {
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content:center;
+      width: 100%;
+      margin-top: 10px;
+    align-items: center;
+    flex-wrap: nowrap;
+    align-content: center;
+    gap:8px;
+
+    }
+
+    .nav-buttons button {
+      background: #EDEDED;
+      color: #000;
+      border: none;
+      padding: 8px;
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .indicators {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      background:#EDEDED;
+      padding:8px;
+      border-radius: 100px;
+    }
+
+    .indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #9B9B9B;
+      cursor: pointer;
+    }
+
+    .indicator.active {
+      background: #000;
+    }
+    .carousel-icon{
+        background:#FFC300;
+    padding: 16px 32px;
+        mask-image: paint(squircle);
+        --squircle-radius: 100px;
+        --squircle-smooth: 0.3;
+    }
+    .carousel-title{
+        font-size:32px;
+        font-family: "Space Grotesk";
+        font-weight:300;
+    }
+    .carousel-text{
+        font-size:16px;
+        font-weight:350;
+        color:#555;
+    }
+
+    .carousel-icon{
+        background:#FFC300;
+    padding: 16px 32px;
+        mask-image: paint(squircle);
+        --squircle-radius: 100px;
+        --squircle-smooth: 0.28;
+    }
+    .carousel-buttons{
+        width:100%;
+        display:flex;
+        gap:8px;
+    }
+    .carousel-button{
+        background:#D00000;
+        color:#fff;
+        width:100%;
+        border:none;
+        padding: 20px;
+        mask-image: paint(squircle);
+        --squircle-radius: 100px;
+        --squircle-smooth: 0.28;
+    }
+    .aboutme{
+        background:#FFC300;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        grid-column-gap: 0px;
+        grid-row-gap: 0px;
+        padding:0cqb;
+    }
+    .aboutme-grid{
+        padding:24px;
+    }
+</style>
+<script>
+if ("paintWorklet" in CSS) {
+  const workletCode = `
+    const drawSquircle=(ctx,geom,radii,smooth,lineWidth,color)=>{const defaultFill=color;const lineWidthOffset=lineWidth/2;ctx.beginPath();ctx.lineTo(radii[0],lineWidthOffset);ctx.lineTo(geom.width-radii[1],lineWidthOffset);ctx.bezierCurveTo(geom.width-radii[1]/smooth,lineWidthOffset,geom.width-lineWidthOffset,radii[1]/smooth,geom.width-lineWidthOffset,radii[1]);ctx.lineTo(geom.width-lineWidthOffset,geom.height-radii[2]);ctx.bezierCurveTo(geom.width-lineWidthOffset,geom.height-radii[2]/smooth,geom.width-radii[2]/smooth,geom.height-lineWidthOffset,geom.width-radii[2],geom.height-lineWidthOffset);ctx.lineTo(radii[3],geom.height-lineWidthOffset);ctx.bezierCurveTo(radii[3]/smooth,geom.height-lineWidthOffset,lineWidthOffset,geom.height-radii[3]/smooth,lineWidthOffset,geom.height-radii[3]);ctx.lineTo(lineWidthOffset,radii[0]);ctx.bezierCurveTo(lineWidthOffset,radii[0]/smooth,radii[0]/smooth,lineWidthOffset,radii[0],lineWidthOffset);ctx.closePath();if(lineWidth){ctx.strokeStyle=defaultFill;ctx.lineWidth=lineWidth;ctx.stroke()}else{ctx.fillStyle=defaultFill;ctx.fill()}};class SquircleClass{static get contextOptions(){return{alpha:true}}static get inputProperties(){return["--squircle-radius","--squircle-radius-top-left","--squircle-radius-top-right","--squircle-radius-bottom-right","--squircle-radius-bottom-left","--squircle-smooth","--squircle-outline","--squircle-fill"]}paint(ctx,geom,properties){const smoothRatio=10;const distanceRatio=1.8;const squircleSmooth=parseFloat(properties.get("--squircle-smooth")*smoothRatio);const individualRadiiProps=SquircleClass.inputProperties.slice(1,5);let squircleRadii=individualRadiiProps.map(prop=>{const value=properties.get(prop);return value?parseInt(value,10)*distanceRatio:NaN});let shorthand_R;if(squircleRadii.some(isNaN)){const radiusRegex=/([0-9]+[a-z%]*)/g;const radius_shorthand=properties.get("--squircle-radius").toString();const matches=radius_shorthand.match(radiusRegex);if(matches){shorthand_R=matches.map(val=>parseInt(val,10)*distanceRatio);while(shorthand_R.length<4){if(shorthand_R.length===1){shorthand_R.push(shorthand_R[0])}else if(shorthand_R.length===2){shorthand_R=[shorthand_R[0],shorthand_R[1],shorthand_R[0],shorthand_R[1]]}else if(shorthand_R.length===3){shorthand_R=[shorthand_R[0],shorthand_R[1],shorthand_R[2],shorthand_R[1]]}}}else{const defaultRadius=squircleRadii.every(isNaN)?8*distanceRatio:0;shorthand_R=[defaultRadius,defaultRadius,defaultRadius,defaultRadius]}}squircleRadii=squircleRadii.map((val,i)=>isNaN(val)?shorthand_R[i]:val);const squrcleOutline=parseFloat(properties.get("--squircle-outline"),10);const squrcleColor=properties.get("--squircle-fill").toString();const isSmooth=()=>{if(typeof properties.get("--squircle-smooth")[0]!=="undefined"){if(squircleSmooth===0){return 1}return squircleSmooth}else{return 10}};const isOutline=()=>{if(squrcleOutline){return squrcleOutline}else{return 0}};const isColor=()=>{if(squrcleColor){return squrcleColor}else{return"#f45"}};const maxRadius=Math.max(...squircleRadii);if(maxRadius<geom.width/2&&maxRadius<geom.height/2){drawSquircle(ctx,geom,squircleRadii,isSmooth(),isOutline(),isColor())}else{const minRadius=Math.min(geom.width/2,geom.height/2);drawSquircle(ctx,geom,squircleRadii.map(()=>minRadius),isSmooth(),isOutline(),isColor())}}}if(typeof registerPaint!=="undefined"){registerPaint("squircle",SquircleClass)}
+  `;
+  const blob = new Blob([workletCode], { type: 'application/javascript' });
+  const blobURL = URL.createObjectURL(blob);
+  CSS.paintWorklet.addModule(blobURL);
+}
+</script>
+<body>
+    <div class="first card">
+        <h1>@Search3958</h1>
+        <h2>
+            私はSentaroです。<br>とにかく、いろんなの作ってます！
+        </h2>
+    </div>
+    <div class="projects card">
+        <div>
+            <div class="card-title">主なプロジェクトはこちらです！</div>
+            <p>どうですか？色々ありますよね。<br>その中でも、特にNewtabは高頻度でアップデートしています。<br>いつか、数と品質でGoogleを超えたいです。</p>
+        </div>
+        <div>
+  <div class="carousel-container">
+    <div class="carousel" id="carousel">
+        <div class="slide">
+            <div class="carousel-icon"><span class="material-symbols-outlined" style="font-size:32px;">web</span></div>
+            <div class="carousel-title">Newtab 5</div>
+            <div class="carousel-text">革命的な新しいタブページ体験。美しいデザインと実用性を兼ね備えた次世代の新しいタブ。</div>
+            <div class="carousel-buttons">
+                <button class="carousel-button" style="background:#000" onclick="window.location.href='https://search3958.github.io/i/newtab/'">
+                    詳細
+                </button>
+                <button class="carousel-button" onclick="window.location.href='https://search3958.github.io/newtab/?value=try'">
+                    使う
+                </button>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="carousel-icon"><span class="material-symbols-outlined" style="font-size:32px;">extension</span></div>
+            <div class="carousel-title">ToolBoard</div>
+            <div class="carousel-text">日常で使える便利ツールを一箇所に集約。生産性向上のための新たな選択肢を提供します。</div>
+            <div class="carousel-buttons">
+                <button class="carousel-button" onclick="window.location.href='https://search3958.github.io/toolboard'">
+                    使う
+                </button>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="carousel-icon"><span class="material-symbols-outlined" style="font-size:32px;">palette</span></div>
+            <div class="carousel-title">thinkSocial</div>
+            <div class="carousel-text">色情報も共有できるプラットフォーム。従来のSNSとは一線を画した体験をお楽しみください。</div>
+            <div class="carousel-buttons">
+                <button class="carousel-button" onclick="window.location.href='https://sns.thinking-grp.org/'">
+                    使う
+                </button>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="carousel-icon"><span class="material-symbols-outlined" style="font-size:32px;">business_center</span></div>
+            <div class="carousel-title">Tools</div>
+            <div class="carousel-text">一番最初に作られた最もシンプルなツール集。たまに使いたくなるツールを集結。</div>
+            <div class="carousel-buttons">
+                <button class="carousel-button" onclick="window.location.href='https://search3958.github.io/tools'">
+                    使う
+                </button>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="carousel-icon"><span class="material-symbols-outlined" style="font-size:32px;">cards_star</span></div>
+            <div class="carousel-title">Images</div>
+            <div class="carousel-text">ここにある画像は商用利用除き自由に使用できます。ただし、クレジット表記は必須です。</div>
+            <div class="carousel-buttons">
+                <button class="carousel-button" onclick="window.location.href='https://search3958.github.io/project/images/'">
+                    使う
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="nav-buttons">
+      <button id="prev">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+    <div class="indicators">
+      <div class="indicator active"></div>
+      <div class="indicator"></div>
+      <div class="indicator"></div>
+      <div class="indicator"></div>
+      <div class="indicator"></div>
+    </div>
+      <button id="next">
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </div>
+         </div>
+        </div>
+    </div>
+
+    <div class="aboutme card">
+            <div class="aboutme-grid">
+                <div class="card-title">私の特徴</div>
+                とにかく、自分が欲しいと思ったらすぐに作ってます。<br>また、可能な限りみんなが使いやすく便利なものを作るように心がけています。
+            </div>
+            <div class="aboutme-grid" style="background:#FCA800;">
+                <div class="card-title">ミッション</div>
+                日常のデジタル体験をより豊かで効率的にすることを目指しています。<br>使いやすさと美しさを両立するため、特にユーザー中心設計 、モダンなUI/UX 、パフォーマンス重視を重視しています。 
+            </div>
+            <div class="aboutme-grid" style="border-radius:100px;height:200px;background:#FFE285;">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
+     crossorigin="anonymous"></script>
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-format="autorelaxed"
+     data-ad-client="ca-pub-6151036058675874"
+     data-ad-slot="3689564308"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+            </div>
+            <div class="aboutme-grid" style="background:#D00000;color:#fff;">
+                <div class="card-title">ミッション</div>
+                最新のウェブ技術を活用し、高品質で美しいアプリケーションを構築しています。 <br>私は主にWeb系とFlutterを扱うことができます。
+            </div>
+    </div>
+</body>
+
+
+  <script>
+    const carousel = document.getElementById('carousel');
+    const indicators = document.querySelectorAll('.indicator');
+    const slides = document.querySelectorAll('.slide');
+    let currentIndex = 0;
+
+    function updateIndicators() {
+      indicators.forEach((ind, i) => ind.classList.toggle('active', i === currentIndex));
+    }
+
+    document.getElementById('next').addEventListener('click', () => {
+      if (currentIndex < slides.length - 1) {
+        currentIndex++;
+        carousel.scrollTo({ left: currentIndex * carousel.offsetWidth, behavior: 'smooth' });
+        updateIndicators();
+      }
+    });
+
+    document.getElementById('prev').addEventListener('click', () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        carousel.scrollTo({ left: currentIndex * carousel.offsetWidth, behavior: 'smooth' });
+        updateIndicators();
+      }
+    });
+
+    indicators.forEach((ind, i) => {
+      ind.addEventListener('click', () => {
+        currentIndex = i;
+        carousel.scrollTo({ left: currentIndex * carousel.offsetWidth, behavior: 'smooth' });
+        updateIndicators();
+      });
+    });
+  </script>
