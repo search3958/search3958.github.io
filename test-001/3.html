@@ -3,6 +3,10 @@
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 <style>
+    *{
+        line-height: 1.5;
+        font-family: "M PLUS 2", sans-serif;
+    }
     :root {
       --accent: #0b84ff;
       --carousel-width: 290px;
@@ -14,13 +18,11 @@
         display: none
     }
     body{
-        font-family: "M PLUS 2", sans-serif;
         margin:0px;
         padding:0px;
         background:#6b0000;
         font-size:16px;
         font-weight:450;
-        line-height: 1.5;
     }
     .card{
         padding:24px;
@@ -230,6 +232,63 @@
         color:#000;
         text-decoration: none;
     }
+
+    .contact-button{
+        background:#fff;
+        color:#000;
+        border:none;
+        padding: 32px;
+        mask-image: paint(squircle);
+        --squircle-radius: 100px;
+        --squircle-smooth: 0.28;
+        font-weight:500;
+        font-size:18px;
+    }
+    .contact{
+        background-image: url(https://search3958.github.io/imgs/v6-contact.webp);
+        background-size: cover;
+        background-position: center;
+        color:#fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding:32px 24px;
+    }
+    .header {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 1000;
+        background: #0000006b;
+        padding: 16px 24px;
+        border-radius: 100px;
+        backdrop-filter: blur(8px);
+        display: flex;
+        gap: 24px;
+        align-items: center;
+        border: #0005 solid 2px;
+        color: #fff;
+        font-size:24px;
+        font-family: "Space Grotesk";
+    }
+    .subh {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 1000;
+        background: #0000006b;
+        padding: 25px;
+        border-radius: 100px;
+        backdrop-filter: blur(8px);
+        display: flex;
+        gap: 24px;
+        align-items: center;
+        border: #0005 solid 2px;
+    }
+    a{
+        color: #fff;
+        text-decoration: none;
+        }
 </style>
 <script>
 if ("paintWorklet" in CSS) {
@@ -242,7 +301,29 @@ if ("paintWorklet" in CSS) {
 }
 </script>
 <body>
-    <div class="first card">
+    <div class="header">
+
+<svg width="28" height="42" viewBox="0 0 14 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#paint0_angular_1213_4_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 -0.007 -0.007 0 7 14)"><foreignObject x="-1142.86" y="-1142.86" width="2285.71" height="2285.71"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(255, 255, 255, 0) 0deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:0.48"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:0.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:0.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:-7.3467944781187983e-14,&#34;m01&#34;:-14.000000953674316,&#34;m02&#34;:14.000000953674316,&#34;m10&#34;:-14.000000953674316,&#34;m11&#34;:9.3440164460056874e-13,&#34;m12&#34;:21.0},&#34;opacity&#34;:0.47999998927116394,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+<g clip-path="url(#paint1_angular_1213_4_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.007 0.007 0 7 7)"><foreignObject x="-1142.86" y="-1142.86" width="2285.71" height="2285.71"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(255, 255, 255, 0) 0deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:0.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:0.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:7.5182454662911513e-14,&#34;m01&#34;:14.000000953674316,&#34;m02&#34;:7.9580786405131221e-13,&#34;m10&#34;:14.000000953674316,&#34;m11&#34;:-9.3611609349592007e-13,&#34;m12&#34;:1.5418777365994174e-12},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+<rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)" fill="url(#paint2_radial_1213_4)" style="mix-blend-mode:screen"/>
+<defs>
+<clipPath id="paint0_angular_1213_4_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)"/></clipPath><clipPath id="paint1_angular_1213_4_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)"/></clipPath><radialGradient id="paint2_radial_1213_4" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(8.5 7) rotate(180) scale(8.5)">
+<stop offset="0.625016" stop-color="white" stop-opacity="0"/>
+<stop offset="0.754825" stop-color="white" stop-opacity="0.0761952"/>
+<stop offset="0.846173" stop-color="white" stop-opacity="0.228586"/>
+<stop offset="1" stop-color="white"/>
+</radialGradient>
+</defs>
+</svg>
+3958
+    </div>
+    <div class="subh">
+<a href="https://search3958.github.io/">ホーム</a>
+<a href="https://search3958.github.io/">Newtab</a>
+<a href="https://search3958.github.io/">ツール</a>
+    </div>
+        <div class="first card">
         <h1>@Search3958</h1>
         <h2>
             私はSentaroです。<br>とにかく、いろんなの作ってます！
@@ -351,7 +432,7 @@ if ("paintWorklet" in CSS) {
 </script>
             </div>
             <div class="aboutme-grid" style="background:#D00000;color:#fff;">
-                <div class="card-title">ミッション</div>
+                <div class="card-title">技術スタック</div>
                 最新のウェブ技術を活用し、高品質で美しいアプリケーションを構築しています。 <br>私は主にWeb系とFlutterを扱うことができます。
             </div>
     </div>
@@ -401,9 +482,18 @@ if ("paintWorklet" in CSS) {
             </script>
         </div>
     </div>
+
+    <div class="contact card">
+        <div>
+            <div class="card-title">問い合わせ</div>
+            <p>何か伝えることがありましたら<br>ご遠慮なくどうぞ！</p>
+        </div>
+
+                <button class="contact-button" onclick="window.location.href='https://search3958.github.io/newtab/?value=try'">
+                    フォームを表示
+                </button>
+    </div>
 </body>
-
-
   <script>
     const carousel = document.getElementById('carousel');
     const indicators = document.querySelectorAll('.indicator');

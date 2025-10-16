@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カスタムSVGによる歪みデモ</title>
+<style>
+  body {
+    font-family: sans-serif;
+    background: #111;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+  }
+  .svg-wrapper {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+  }
+  .svg-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  svg {
+    width: 200px;
+    height: 200px;
+    border-radius: 8px;
+    background: #222;
+  }
+  .label {
+    font-size: 14px;
+    color: #ccc;
+  }
+</style>
+</head>
+<body>
+
+<h2>SVG フィルター デモ：外部SVGを歪みマップに利用</h2>
+
+<div class="svg-wrapper">
+  <!-- 元のSVG -->
+  <div class="svg-box">
+    <svg id="source-svg" viewBox="0 0 193 110">
+      <rect width="193" height="110" fill="#7A7A7A"/>
+      <g filter="url(#filter0_f_1191_7)">
+        <rect x="33" y="26" width="126" height="54" rx="27" fill="#FF0000"/>
+      </g>
+      <g filter="url(#filter1_f_1191_7)">
+        <rect x="51" y="36" width="89" height="34" rx="17" fill="#2200FF"/>
+      </g>
+      <g filter="url(#filter2_f_1191_7)">
+        <rect x="71" y="45" width="50" height="16" rx="8" fill="#00FF5E"/>
+      </g>
+      <defs>
+        <filter id="filter0_f_1191_7" x="21.6" y="14.6" width="148.8" height="76.8" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+          <feGaussianBlur stdDeviation="5.7"/>
+        </filter>
+        <filter id="filter1_f_1191_7" x="39.6" y="24.6" width="111.8" height="56.8" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+          <feGaussianBlur stdDeviation="5.7"/>
+        </filter>
+        <filter id="filter2_f_1191_7" x="59.6" y="33.6" width="72.8" height="38.8" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+          <feGaussianBlur stdDeviation="5.7"/>
+        </filter>
+      </defs>
+    </svg>
+    <div class="label">歪みマップ元SVG</div>
+  </div>
+
+  <!-- 歪ませる対象 -->
+  <div class="svg-box">
+    <svg id="distort-demo">
+      <defs>
+        <filter id="displacementFilter">
+          <!-- feImageで上のSVGを使う -->
+          <feImage id="displaceImage" xlink:href="" result="imgMap" preserveAspectRatio="xMidYMid slice" />
+          <feDisplacementMap in="SourceGraphic" in2="imgMap" scale="50" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+      </defs>
+      <rect x="0" y="0" width="200" height="200" fill="#4fc3f7" filter="url(#displacementFilter)" />
+    </svg>
+    <div class="label">feDisplacementMap による歪み</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  try {
+    const sourceSvg = document.getElementById('source-svg');
+    const displaceImage = document.getElementById('displaceImage');
+    const distortSvg = document.getElementById('distort-demo');
+
+    if (!sourceSvg) throw new Error("source-svg が見つかりません。");
+    if (!displaceImage) throw new Error("feImage(displaceImage) が見つかりません。");
+    if (!distortSvg) throw new Error("distort-demo が見つかりません。");
+
+    // SVGをData URIに変換
+    const svgData = new XMLSerializer().serializeToString(sourceSvg);
+    const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+
+    displaceImage.setAttribute('xlink:href', svgBase64);
+    console.log("✅ SVG画像を feImage に適用しました。");
+
+    // アニメーション（緩やかにscaleを変化）
+    const filter = distortSvg.querySelector('#displacementFilter feDisplacementMap');
+    if (!filter) throw new Error("feDisplacementMap が見つかりません。");
+
+    let frame = 0;
+    function animate() {
+      const scale = 40 + Math.sin(frame * 0.02) * 20;
+      filter.setAttribute('scale', scale.toFixed(2));
+      frame++;
+      requestAnimationFrame(animate);
+    }
+    animate();
+    console.log("🎞️ アニメーション開始: scale値を動的変更中。");
+
+  } catch (err) {
+    console.error("❌ エラー:", err.message);
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>非線形スケールと緩やか非線形ピッチのレイヤー描画</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #mainCanvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mainCanvas"></canvas>
+    
+    <script>
+        /*
+          実装要旨：
+          - LAYER_COUNT = 60（固定）
+          - スケール変化には t^20 のイージング (SCALE_GAMMA) を適用（外側で急峻）
+          - マスクピッチには t^2.0 のイージング (MASK_GAMMA) を適用（内側まで変化を分配）
+        */
+
+        (async function MainCanvasLayerMaskApp() {
+          'use strict'; 
+
+          // --- 定数定義 ---
+          const CONFIG = {
+            CANVAS_ID: 'mainCanvas',
+            IMAGE_SRC: 'https://search3958.github.io/newtab/bgimg/glass1.webp',
+            LAYER_COUNT: 60, 
+            SCALE_GAMMA: 20.0,  // スケール計算用の急峻なべき乗指数
+            MASK_GAMMA: 2.0,    // マスクインデックス計算用の緩やかなべき乗指数 👈 修正点
+            SCALE: {
+              OUTER: 3.0,
+              INNER: 0.9
+            }
+          };
+
+          const SVG_PATH_DATA =
+            "M86.5718 6.65671C91.1371 2.91847 93.4198 1.04935 95.9775 0.385733C97.9597 -0.128577 100.04 -0.128577 102.023 0.385733C104.58 1.04935 106.863 2.91847 111.428 6.6567L114.671 9.31174C117.272 11.442 118.573 12.5071 120.051 13.1651C121.204 13.6784 122.431 14.0071 123.686 14.1392C125.296 14.3085 126.955 14.0364 130.273 13.4924L134.409 12.8143C140.231 11.8595 143.143 11.3821 145.69 12.0863C147.663 12.632 149.465 13.6723 150.925 15.1088C152.808 16.9624 153.85 19.7224 155.935 25.2424L157.415 29.163C158.603 32.3086 159.197 33.8813 160.148 35.1905C160.89 36.2116 161.788 37.1096 162.81 37.8516C164.119 38.8029 165.691 39.3969 168.837 40.5847L172.758 42.0653C178.278 44.1498 181.038 45.1921 182.891 47.0753C184.328 48.5348 185.368 50.3367 185.914 52.3105C186.618 54.8573 186.14 57.7687 185.186 63.5915L184.508 67.727C183.964 71.0451 183.692 72.7041 183.861 74.3135C183.993 75.5688 184.322 76.7956 184.835 77.9487C185.493 79.4271 186.558 80.7279 188.688 83.3294L191.343 86.5718C195.082 91.1371 196.951 93.4198 197.614 95.9775C198.129 97.9597 198.129 100.04 197.614 102.023C196.951 104.58 195.082 106.863 191.343 111.428L188.688 114.671C186.558 117.272 185.493 118.573 184.835 120.051C184.322 121.204 183.993 122.431 183.861 123.686C183.692 125.296 183.964 126.955 184.508 130.273L185.186 134.409C186.14 140.231 186.618 143.143 185.914 145.69C185.368 147.663 184.328 149.465 182.891 150.925C181.038 152.808 178.278 153.85 172.758 155.935L168.837 157.415C165.691 158.603 164.119 159.197 162.81 160.148C161.788 160.89 160.89 161.788 160.148 162.81C159.197 164.119 158.603 165.691 157.415 168.837L155.935 172.758C153.85 178.278 152.808 181.038 150.925 182.891C149.465 184.328 147.663 185.368 145.69 185.914C143.143 186.618 140.231 186.14 134.409 185.186L130.273 184.508C126.955 183.964 125.296 183.692 123.686 183.861C122.431 183.993 121.204 184.322 120.051 184.835C118.573 185.493 117.272 186.558 114.671 188.688L111.428 191.343C106.863 195.082 104.58 196.951 102.023 197.614C100.04 198.129 97.9597 198.129 95.9775 197.614C93.4198 196.951 91.1371 195.082 86.5718 191.343L83.3294 188.688C80.7279 186.558 79.4271 185.493 77.9487 184.835C76.7956 184.322 75.5688 183.993 74.3135 183.861C72.7041 183.692 71.0451 183.964 67.727 184.508L63.5915 185.186C57.7687 186.14 54.8573 186.618 52.3105 185.914C50.3367 185.368 48.5348 184.328 47.0753 182.891C45.1921 181.038 44.1498 178.278 42.0653 172.758L40.5847 168.837C39.3969 165.691 38.8029 164.119 37.8516 162.81C37.1096 161.788 36.2116 160.89 35.1905 160.148C33.8813 159.197 32.3086 158.603 29.163 157.415L25.2424 155.935C19.7224 153.85 16.9624 152.808 15.1088 150.925C13.6723 149.465 12.632 147.663 12.0863 145.69C11.3821 143.143 11.8595 140.231 12.8143 134.409L13.4924 130.273C14.0364 126.955 14.3085 125.296 14.1392 123.686C14.0071 122.431 13.6784 121.204 13.1651 120.051C12.5071 118.573 11.442 117.272 9.31175 114.671L6.65671 111.428C2.91847 106.863 1.04935 104.58 0.385733 102.023C-0.128577 100.04 -0.128577 97.9597 0.385733 95.9775C1.04935 93.4198 2.91847 91.1371 6.65670 86.5718L9.31174 83.3294C11.442 80.7279 12.5071 79.4271 13.1651 77.9487C13.6784 76.7956 14.0071 75.5688 14.1392 74.3135C14.3085 72.7041 14.0364 71.0451 13.4924 67.727L12.8143 63.5915C11.8595 57.7687 11.3821 54.8573 12.0863 52.3105C12.632 50.3367 13.6723 48.5348 15.1088 47.0753C16.9624 45.1921 19.7224 44.1498 25.2424 42.0653L29.163 40.5847C32.3086 39.3969 33.8813 38.8029 35.1905 37.8516C36.2116 37.1096 37.1096 36.2116 37.8516 35.1905C38.8029 33.8813 39.3969 32.3086 40.5847 29.163L42.0652 25.2424C44.1498 19.7224 45.1921 16.9624 47.0753 15.1088C48.5348 13.6723 50.3367 12.632 52.3105 12.0863C54.8573 11.3821 57.7687 11.8595 63.5915 12.8143L67.727 13.4924C71.0451 14.0364 72.7041 14.3085 74.3135 14.1392C75.5688 14.0071 76.7956 13.6784 77.9487 13.1651C79.4271 12.5071 80.7279 11.442 83.3294 9.31175L86.5718 6.65671Z";
+          const VIEW_BOX = { W: 198, H: 198 };
+
+          // --- ユーティリティ関数 ---
+
+          function safeGetElementById(id) {
+            const element = document.getElementById(id);
+            if (!element) return null;
+            return element;
+          }
+
+          function easeOutPower(t, gamma) {
+            return Math.pow(t, gamma);
+          }
+
+          // --- アプリケーション本体 ---
+
+          const mainCanvas = safeGetElementById(CONFIG.CANVAS_ID);
+          if (!mainCanvas) return;
+
+          const mainCtx = mainCanvas.getContext('2d');
+          if (!mainCtx) return;
+
+          function resizeMainCanvas() {
+            const w = window.innerWidth | 0, h = window.innerHeight | 0;
+            if (mainCanvas.width === w && mainCanvas.height === h) return;
+            mainCanvas.width = w;
+            mainCanvas.height = h;
+          }
+          window.addEventListener('resize', resizeMainCanvas);
+          resizeMainCanvas();
+
+          const imageLoader = new Image();
+          imageLoader.crossOrigin = 'anonymous'; 
+          imageLoader.src = CONFIG.IMAGE_SRC;
+
+          try {
+            await imageLoader.decode();
+          } catch (e) {
+            console.warn('⚠️ 画像 decode に失敗しましたが、処理を続行します:', e);
+          }
+
+          let shapePath;
+          try {
+            shapePath = new Path2D(SVG_PATH_DATA);
+          } catch (e) {
+            console.error('❌ Path2D オブジェクトの生成失敗:', e);
+            return;
+          }
+
+          const W = mainCanvas.width, H = mainCanvas.height;
+          const maskCanvas = document.createElement('canvas');
+          maskCanvas.width = W; maskCanvas.height = H;
+          const maskCtx = maskCanvas.getContext('2d');
+          if (!maskCtx) return;
+
+          // 6. ベースマスクの描画と2値化
+          const fitScale = Math.min(W / VIEW_BOX.W, H / VIEW_BOX.H) * 0.9;
+          const centerX = W / 2, centerY = H / 2;
+
+          maskCtx.clearRect(0, 0, W, H);
+          maskCtx.save();
+          maskCtx.translate(centerX, centerY);
+          maskCtx.scale(fitScale, fitScale);
+          maskCtx.translate(-VIEW_BOX.W / 2, -VIEW_BOX.H / 2);
+          maskCtx.fillStyle = '#fff';
+          maskCtx.fill(shapePath);
+          maskCtx.restore();
+
+          const baseImgData = maskCtx.getImageData(0, 0, W, H).data;
+          const baseMask = new Uint8Array(W * H);
+          let baseCount = 0;
+          for (let i = 0, j = 3; i < W * H; i++, j += 4) {
+            if (baseImgData[j] > 128) {
+              baseMask[i] = 1;
+              baseCount++;
+            } else {
+              baseMask[i] = 0;
+            }
+          }
+
+          if (baseCount === 0) {
+            console.error('❌ 初期マスクが空です。');
+            if (imageLoader.complete && imageLoader.naturalWidth) {
+              mainCtx.drawImage(imageLoader, 0, 0, W, H);
+            }
+            return;
+          }
+          console.log(`🔹 基本マスク生成成功: 塗りピクセル=${baseCount}`);
+
+          // 7. エロージョン処理でマスク配列を生成
+          const MAX_ERODE_STEPS = 1000;
+          const masks = [baseMask];
+
+          function erodeOnce(srcMask, width, height) {
+            const dstMask = new Uint8Array(width * height);
+            for (let y = 1; y < height - 1; y++) {
+              let idx = y * width + 1;
+              for (let x = 1; x < width - 1; x++, idx++) {
+                if (srcMask[idx] === 0) { dstMask[idx] = 0; continue; }
+                const top = idx - width, bot = idx + width;
+                if (
+                  srcMask[top - 1] && srcMask[top] && srcMask[top + 1] &&
+                  srcMask[idx - 1] && srcMask[idx + 1] &&
+                  srcMask[bot - 1] && srcMask[bot] && srcMask[bot + 1]
+                ) dstMask[idx] = 1;
+                else dstMask[idx] = 0;
+              }
+            }
+            return dstMask;
+          }
+
+          let currentMask = baseMask;
+          for (let step = 1; step <= MAX_ERODE_STEPS; step++) {
+            const nextMask = erodeOnce(currentMask, W, H);
+            const sum = nextMask.reduce((s, v) => s + v, 0);
+
+            if (sum === 0) {
+              break;
+            }
+
+            masks.push(nextMask);
+            currentMask = nextMask;
+          }
+          const maxMaskIndex = masks.length - 1;
+          console.log(`🔸 マスク配列生成完了: masks count=${masks.length} (K=${maxMaskIndex})`);
+
+          // 8. メイン描画ループの準備
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = W; tempCanvas.height = H;
+          const tempCtx = tempCanvas.getContext('2d');
+          if (!tempCtx) return;
+
+          // メインキャンバスのクリアと背景描画
+          mainCtx.clearRect(0, 0, W, H);
+          if (imageLoader.complete && imageLoader.naturalWidth) {
+            mainCtx.drawImage(imageLoader, 0, 0, W, H);
+          } else {
+            mainCtx.fillStyle = '#000';
+            mainCtx.fillRect(0, 0, W, H);
+          }
+
+          // 9. レイヤーの描画（外側 $i=0$ -> 内側 $i=L-1$）
+          for (let i = 0; i < CONFIG.LAYER_COUNT; i++) {
+            // レイヤーの線形位置 t (0 から 1)
+            const t = (CONFIG.LAYER_COUNT <= 1) ? 0 : (i / (CONFIG.LAYER_COUNT - 1));
+
+            // 1. マスクインデックスの決定: 緩やかな非線形位置 (t^2.0) を使用
+            const easedT_Mask = easeOutPower(t, CONFIG.MASK_GAMMA); // 👈 修正点
+            const maskIdx = Math.round(maxMaskIndex * easedT_Mask);
+            const currentMask = masks[Math.min(maskIdx, maxMaskIndex)];
+
+            // 2. スケールファクターの計算: 急峻な非線形位置 (t^20.0) を使用
+            const easedT_Scale = easeOutPower(t, CONFIG.SCALE_GAMMA); 
+            const scaleFactor = CONFIG.SCALE.OUTER * (1 - easedT_Scale) + CONFIG.SCALE.INNER * easedT_Scale;
+
+            // tempCanvas にスケールされた画像を描画
+            tempCtx.clearRect(0, 0, W, H);
+            if (imageLoader.complete && imageLoader.naturalWidth) {
+              const drawW = Math.round(W * scaleFactor);
+              const drawH = Math.round(H * scaleFactor);
+              const dx = Math.round((W - drawW) / 2);
+              const dy = Math.round((H - drawH) / 2);
+              tempCtx.drawImage(imageLoader, dx, dy, drawW, drawH);
+            } else {
+              tempCtx.fillStyle = '#222';
+              tempCtx.fillRect(0, 0, W, H);
+            }
+
+            // マスクの適用（ImageDataを操作）
+            const tempImgData = tempCtx.getImageData(0, 0, W, H);
+            const tempPixels = tempImgData.data;
+            for (let p = 0, q = 3; p < W * H; p++, q += 4) {
+              if (currentMask[p]) {
+                tempPixels[q] = 255; 
+              } else {
+                tempPixels[q] = 0; 
+              }
+            }
+            tempCtx.putImageData(tempImgData, 0, 0);
+
+            // mainCanvas に重ねて描画
+            mainCtx.drawImage(tempCanvas, 0, 0);
+          }
+
+          console.log('✅ 描画完了: スケールt^20（急峻）、マスクt^2（緩やか）');
+
+        })();
+    </script>
+</body>
+</html>

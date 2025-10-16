@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>メタボールレンズ（WebGL/GLSL版 - ガラスエフェクト最終調整）</title>
+<style>
+html, body {
+  margin:0; height:100%; overflow:hidden; background:#000;
+}
+canvas { width:100%; height:100%; display:block; cursor:none; }
+</style>
+</head>
+<body>
+<canvas id="lensCanvas"></canvas>
+
+<script id="vs" type="x-shader/x-vertex">
+attribute vec2 position;
+varying vec2 vUv;
+
+void main() {
+    vUv = position * 0.5 + 0.5; // [-1, 1] -> [0, 1] に変換
+    gl_Position = vec4(position, 0.0, 1.0);
+}
+</script>
+
+<script id="fs" type="x-shader/x-fragment">
+precision highp float;
+
+uniform sampler2D uTexture;
+uniform vec2 uResolution;
+uniform vec2 uMouse;
+uniform float uTime;
+
+varying vec2 vUv;
+
+const float RADIUS = 200.0;
+const float RADIUS_SQ = RADIUS * RADIUS;
+const float ZOOM = 5.0; // ズームを強調
+const float THRESHOLD = 1.0;
+const float LENS_STRENGTH = 0.5; // 屈折の強さをUVスケールで調整
+const float CHROMATIC_ABERRATION_STRENGTH = 0.01;
+
+// メタボールの強度vを計算する関数
+float getMetaballValue(vec2 coord, vec2 p1, vec2 p2) {
+    vec2 d1 = coord - p1;
+    vec2 d2 = coord - p2;
+    float distSq1 = dot(d1, d1) + 1.0;
+    float distSq2 = dot(d2, d2) + 1.0;
+    return RADIUS_SQ / distSq1 + RADIUS_SQ / distSq2;
+}
+
+void main() {
+    vec2 coord = vUv * uResolution;
+    vec2 center = uResolution * 0.5;
+
+    // 1. メタボール強度計算
+    float v = getMetaballValue(coord, center, uMouse);
+
+    if (v > THRESHOLD) {
+        float t = min(v / 5.0, 1.0); // 0-1の範囲に正規化
+
+        // 共通の中心を計算
+        vec2 meanCenter = (center + uMouse) / 2.0;
+        vec2 dirFromCenter = coord - meanCenter; // 中心からピクセルへのベクトル
+        float distFromCenter = length(dirFromCenter);
+
+        // 2. 拡大効果 (ズーム)
+        // 中心に近いほどズームが強くかかる
+        float currentZoom = 1.0 + (ZOOM - 1.0) * pow(t, 4.0);
+        vec2 zoomedUv = (vUv - 0.5) / currentZoom + 0.5;
+        
+        // 3. 屈折効果 (ガラスのように像を歪ませる)
+        
+        // tの2乗で強度を決め、外周に向かって強くなるように調整
+        float warpFactor = pow(t, 2.0) * LENS_STRENGTH; 
+        
+        // 屈折オフセットの方向：中心から外側へ向かう方向
+        vec2 refractDir = normalize(dirFromCenter);
+
+        // 屈折オフセット (UV座標系での距離に変換し、安全な値に収める)
+        // distFromCenterを画面解像度で割り、UVスケールに変換
+        float distUv = distFromCenter / uResolution.x;
+        vec2 refractOffset = refractDir * warpFactor * distUv;
+
+        // 最終的なテクスチャ座標: 拡大後の位置を、屈折によってさらにずらす
+        vec2 finalUv = zoomedUv - refractOffset;
+
+        // 4. 色収差と簡易ブラー
+        float chromaticStrength = pow(t, 3.0) * CHROMATIC_ABERRATION_STRENGTH;
+        vec4 color = vec4(0.0);
+        
+        // R (赤): 屈折方向に少しシフト (色分散)
+        vec2 uv_r = finalUv + refractDir * chromaticStrength;
+        color.r = texture2D(uTexture, uv_r).r;
+
+        // G (緑): シフトなし
+        color.g = texture2D(uTexture, finalUv).g;
+
+        // B (青): 屈折方向と逆（中心側）に少しシフト
+        vec2 uv_b = finalUv - refractDir * chromaticStrength;
+        color.b = texture2D(uTexture, uv_b).b;
+
+        // 簡易的なハイライト効果 (t>0.6で適用)
+        if (t > 0.6) {
+             // 元の light/screen 合成を模倣し、外周の輝きを出す
+             float boost = pow(t - 0.6, 2.0) * 0.5;
+             color.rgb += texture2D(uTexture, finalUv).rgb * boost;
+             color = clamp(color, 0.0, 1.0);
+        }
+
+        gl_FragColor = color;
+
+    } else {
+        // 閾値以下の場合は背景をそのまま表示
+        gl_FragColor = texture2D(uTexture, vUv);
+    }
+}
+</script>
+
+<script>
+const IMG_SRC = "https://search3958.github.io/imgs/v6-first.webp";
+
+// --- WebGL ユーティリティ関数 ---
+
+function loadTexture(gl, url) {
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    // プレースホルダーとして黒を設定。これが「黒いメタボール」の原因になり得る。
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                  new Uint8Array([0, 0, 0, 255]));
+
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.onload = () => {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+        // テクスチャパラメータ: クランプ（CLAMP_TO_EDGE）で[0, 1]外の色が端の色になる
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    };
+    image.src = url;
+    return texture;
+}
+
+function initShader(gl, type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        const errorLog = gl.getShaderInfoLog(shader);
+        console.error('An error occurred compiling the shaders: ' + errorLog);
+        
+        const shaderType = type === gl.VERTEX_SHADER ? 'VERTEX SHADER' : 'FRAGMENT SHADER';
+        console.error(`--- FAILED ${shaderType} SOURCE ---`);
+        source.split('\n').forEach((line, index) => {
+            console.error(`${index + 1}: ${line}`);
+        });
+        console.error(`---------------------------------`);
+        
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
+}
+
+function initProgram(gl, vsSource, fsSource) {
+    const vertexShader = initShader(gl, gl.VERTEX_SHADER, vsSource);
+    const fragmentShader = initShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+    if (!vertexShader || !fragmentShader) {
+        console.error('Shader program initialization aborted due to failed shader compilation.');
+        return null;
+    }
+
+    const shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.linkProgram(shaderProgram);
+
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        console.error('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
+        return null;
+    }
+    return shaderProgram;
+}
+
+
+// --- メイン初期化とレンダリング ---
+
+const canvas = document.getElementById('lensCanvas');
+const gl = canvas.getContext('webgl');
+if (!gl) {
+    alert('WebGLを初期化できません。ブラウザが対応していない可能性があります。');
+}
+
+const vsSource = document.getElementById('vs').textContent;
+const fsSource = document.getElementById('fs').textContent;
+const shaderProgram = initProgram(gl, vsSource, fsSource);
+
+if (!shaderProgram) {
+    throw new Error("WebGL initialization failed.");
+}
+
+gl.useProgram(shaderProgram);
+
+// 頂点バッファの設定 (画面全体を覆う四角形)
+const positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+const positions = [
+    -1.0,  1.0,
+     1.0,  1.0,
+    -1.0, -1.0,
+     1.0, -1.0,
+];
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+const positionLoc = gl.getAttribLocation(shaderProgram, 'position');
+gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(positionLoc);
+
+// Uniforms
+const uTextureLoc = gl.getUniformLocation(shaderProgram, 'uTexture');
+const uResolutionLoc = gl.getUniformLocation(shaderProgram, 'uResolution');
+const uMouseLoc = gl.getUniformLocation(shaderProgram, 'uMouse');
+const uTimeLoc = gl.getUniformLocation(shaderProgram, 'uTime');
+
+// テクスチャの設定
+const texture = loadTexture(gl, IMG_SRC);
+gl.uniform1i(uTextureLoc, 0);
+
+let mouseX = canvas.width/2, mouseY = canvas.height/2;
+document.addEventListener("mousemove", e => { mouseX=e.clientX; mouseY=e.clientY; });
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+}
+window.addEventListener("resize", resize);
+resize();
+
+let startTime = performance.now();
+
+function render(now) {
+    const time = (now - startTime) / 1000.0;
+    
+    // Uniformsの更新
+    gl.uniform2f(uResolutionLoc, canvas.width, canvas.height);
+    // マウス座標は左上原点のピクセル座標系で渡す
+    gl.uniform2f(uMouseLoc, mouseX, canvas.height - mouseY); 
+    gl.uniform1f(uTimeLoc, time);
+
+    // 描画
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    requestAnimationFrame(render);
+}
+
+render(startTime);
+</script>
+</body>
+</html>
