@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript/CSS コード軽量化・整形ツール | Minify & Beautify Online Tool</title>
+    <link rel="icon" href="https://search3958.github.io/icons/search3958.svg">
+    
+    <meta name="description" content="無料のオンラインコード軽量化・整形ツール。JavaScript (JS) と CSS のコードをワンクリックで高速にMinify（圧縮）およびBeautify（整形）します。開発効率向上に役立ちます。">
+    
+    <meta property="og:title" content="JavaScript/CSS コード軽量化・整形ツール">
+    <meta property="og:description" content="JavaScript (JS) と CSS のコードをワンクリックで高速にMinify（圧縮）およびBeautify（整形）します。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify-css.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300;1,300&family=M+PLUS+2:wght@400&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+      "imports": {
+        "@material/web/": "https://esm.run/@material/web/"
+      }
+    }
+  </script>
+  <script type="module">
+    import '@material/web/all.js';
+    import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
+
+    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+  </script>
+    <style>
+        *{
+
+    font-family: "M PLUS 2", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.5;
+        }
+        :root{
+            --md-ripple-hover-color:#0000;
+            --md-sys-color-primary: color(display-p3 0.126 0 0.797 / 1);
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px; 
+            background-color: #f2f2f2;
+            min-height: 100vh;
+            padding-top:120px;
+        }
+
+        ::-webkit-scrollbar {
+    display: none;
+}
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            color: #090909;
+            padding: 20px;
+            font-size: 2em;
+            position:fixed;
+            z-index:100;
+            top:0;
+            left:0;
+            width:calc(100vw - 24px);
+            background:#fffb;
+            backdrop-filter: blur(24px);
+            display:flex;
+            gap:8px;
+        }
+        h3{
+            margin-top:8px;
+        }
+        /* 選択項目の統合グループ */
+        .selection-group {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+            background-color: #ffffff;
+            mask-image: paint(squircle);
+            --squircle-radius: 32px;
+            --squircle-smooth: 0.4;
+        }
+
+        .selection-box {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .separator {
+            width: 1px;
+            background-color: #e0e0e0;
+            align-self: stretch;
+            margin: 0 10px;
+        }
+
+        /* 選択ボタンの Segmented buttons スタイル */
+        .btn-group {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+}
+
+.btn-group button {
+    flex: 1; 
+    position:relative;
+    padding: 16px;
+    margin: 0;
+    cursor: pointer;
+    border: none;
+    border-right: 1px solid #b1b1b1;
+    background-color: #dedede;
+    --md-ripple-pressed-color:#fff;
+    color: #2c3e50;
+    font-weight: 600;
+    transition: all 0.6s cubic-bezier(.23,.81,0,1);
+    border-radius: 8px;
+}
+
+.btn-group button:last-child {
+    border-right: none;
+}
+
+.btn-group button:hover {
+    /* ホバーされたボタンは、他のボタン(flex-grow: 1)よりも大きくスペースを占有 */
+    flex-grow: 1.2; 
+    background-color: #bababa; 
+}
+        .btn-group button.active {
+            background-color: var(--md-sys-color-primary);
+            color: white;
+            box-shadow: none;
+            border-radius:26.5px;
+        }
+.btn-group button.active:hover {
+    background-color: color(display-p3 0.252 0.157 1 / 1);
+}
+
+        /* 2. 入力コードとクリアボタンの横並び */
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        /* テキストエリア */
+        #inputCode {
+            width: calc(100% - 12px);
+            min-height: 250px;
+            padding: 24px;
+            border: none;
+            mask-image: paint(squircle);
+            --squircle-radius: 32px;
+            --squircle-smooth: 0.4;
+            font-family: 'Google Sans Code', monospace;
+            font-size: 14px;
+            box-sizing: border-box;
+            resize: vertical;
+            border:none;
+            margin:6px;
+            margin-bottom:0px;
+            outline:none;
+        }
+        .textarea-wrapper{
+            background:#fff;
+            mask-image: paint(squircle);
+            --squircle-radius: 38px;
+            --squircle-smooth: 0.43;
+            padding:0px;
+            display:block;
+            transition:all 0.2s ease;
+        }
+        .textarea-wrapper:focus-within {
+            background:var(--md-sys-color-primary);
+        }
+
+        /* アクションボタン（クリア） */
+        #clearButton {
+            padding: 16px 24px;
+            border: none;
+            mask-image: paint(squircle);
+            --squircle-radius: 32px;
+            --squircle-smooth: 0.3;
+            cursor: pointer;
+            font-weight: 600;
+            background-color: color(display-p3 0.677 0 0.021 / 1);
+            color: white;
+            transition: background-color 0.2s;
+            --md-ripple-pressed-color:#f00;
+        }
+        #clearButton:hover {
+            background-color: color(display-p3 0.51 0 0.02);
+        }
+
+        /* 4. 結果を更新ボタンのデザイン調整 */
+        .update-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0 30px 0;
+        }
+        #updateButton {
+            padding: 16px 24px;
+            border: none; /* 緑の枠線 */
+            mask-image: paint(squircle);
+            --squircle-radius: 32px;
+            --squircle-smooth: 0.3;
+            background-color: var(--md-sys-color-primary);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            --md-ripple-pressed-color:#fff;
+        }
+        #updateButton:hover {
+    background-color: color(display-p3 0.252 0.157 1 / 1);
+        }
+
+        /* 3. result-areaの調整 */
+        .result-area {
+            padding: 0; /* 内部パディングは #resultOutput に移譲 */
+            border-radius: 0;
+            background-color: transparent; /* 背景なし */
+            box-shadow: none; /* シャドウなし */
+        }
+        #resultOutput {
+            position: relative;
+            background-color: #232f3e; 
+            color: #d8d8d8; 
+            min-height: 150px;
+            padding: 24px;
+            border: none;
+            mask-image: paint(squircle);
+            --squircle-radius: 32px;
+            --squircle-smooth: 0.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            cursor: text;
+            font-family: 'Google Sans Code', monospace;
+            font-size: 14px;
+            user-select: all;
+            border: none; /* 控えめな境界線を追加 */
+    height: 300px;
+    overflow: scroll;
+        }
+        .copy-button {
+            /* スタイルは維持 */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 8px 15px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            opacity: 0.9;
+        }
+        
+        /* 自動更新スイッチのスタイル調整 */
+        .label-switch {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            color: #000;
+            cursor: pointer;
+            gap:16px;
+        }
+
+        /* 画面幅が小さい時のレスポンシブ対応 */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .selection-group { flex-direction: column; gap: 10px; padding: 15px; }
+            .separator { width: 100%; height: 1px; margin: 10px 0; }
+            .selection-box { width: 100%; }
+            .update-controls { flex-direction: column; align-items: stretch; gap: 10px; }
+        }
+    </style>
+    <script>
+if ("paintWorklet" in CSS) {
+  const workletCode = `
+    const drawSquircle=(ctx,geom,radii,smooth,lineWidth,color)=>{const defaultFill=color;const lineWidthOffset=lineWidth/2;ctx.beginPath();ctx.lineTo(radii[0],lineWidthOffset);ctx.lineTo(geom.width-radii[1],lineWidthOffset);ctx.bezierCurveTo(geom.width-radii[1]/smooth,lineWidthOffset,geom.width-lineWidthOffset,radii[1]/smooth,geom.width-lineWidthOffset,radii[1]);ctx.lineTo(geom.width-lineWidthOffset,geom.height-radii[2]);ctx.bezierCurveTo(geom.width-lineWidthOffset,geom.height-radii[2]/smooth,geom.width-radii[2]/smooth,geom.height-lineWidthOffset,geom.width-radii[2],geom.height-lineWidthOffset);ctx.lineTo(radii[3],geom.height-lineWidthOffset);ctx.bezierCurveTo(radii[3]/smooth,geom.height-lineWidthOffset,lineWidthOffset,geom.height-radii[3]/smooth,lineWidthOffset,geom.height-radii[3]);ctx.lineTo(lineWidthOffset,radii[0]);ctx.bezierCurveTo(lineWidthOffset,radii[0]/smooth,radii[0]/smooth,lineWidthOffset,radii[0],lineWidthOffset);ctx.closePath();if(lineWidth){ctx.strokeStyle=defaultFill;ctx.lineWidth=lineWidth;ctx.stroke()}else{ctx.fillStyle=defaultFill;ctx.fill()}};class SquircleClass{static get contextOptions(){return{alpha:true}}static get inputProperties(){return["--squircle-radius","--squircle-radius-top-left","--squircle-radius-top-right","--squircle-radius-bottom-right","--squircle-radius-bottom-left","--squircle-smooth","--squircle-outline","--squircle-fill"]}paint(ctx,geom,properties){const smoothRatio=10;const distanceRatio=1.8;const squircleSmooth=parseFloat(properties.get("--squircle-smooth")*smoothRatio);const individualRadiiProps=SquircleClass.inputProperties.slice(1,5);let squircleRadii=individualRadiiProps.map(prop=>{const value=properties.get(prop);return value?parseInt(value,10)*distanceRatio:NaN});let shorthand_R;if(squircleRadii.some(isNaN)){const radiusRegex=/([0-9]+[a-z%]*)/g;const radius_shorthand=properties.get("--squircle-radius").toString();const matches=radius_shorthand.match(radiusRegex);if(matches){shorthand_R=matches.map(val=>parseInt(val,10)*distanceRatio);while(shorthand_R.length<4){if(shorthand_R.length===1){shorthand_R.push(shorthand_R[0])}else if(shorthand_R.length===2){shorthand_R=[shorthand_R[0],shorthand_R[1],shorthand_R[0],shorthand_R[1]]}else if(shorthand_R.length===3){shorthand_R=[shorthand_R[0],shorthand_R[1],shorthand_R[2],shorthand_R[1]]}}}else{const defaultRadius=squircleRadii.every(isNaN)?8*distanceRatio:0;shorthand_R=[defaultRadius,defaultRadius,defaultRadius,defaultRadius]}}squircleRadii=squircleRadii.map((val,i)=>isNaN(val)?shorthand_R[i]:val);const squrcleOutline=parseFloat(properties.get("--squircle-outline"),10);const squrcleColor=properties.get("--squircle-fill").toString();const isSmooth=()=>{if(typeof properties.get("--squircle-smooth")[0]!=="undefined"){if(squircleSmooth===0){return 1}return squircleSmooth}else{return 10}};const isOutline=()=>{if(squrcleOutline){return squrcleOutline}else{return 0}};const isColor=()=>{if(squrcleColor){return squrcleColor}else{return"#f45"}};const maxRadius=Math.max(...squircleRadii);if(maxRadius<geom.width/2&&maxRadius<geom.height/2){drawSquircle(ctx,geom,squircleRadii,isSmooth(),isOutline(),isColor())}else{const minRadius=Math.min(geom.width/2,geom.height/2);drawSquircle(ctx,geom,squircleRadii.map(()=>minRadius),isSmooth(),isOutline(),isColor())}}}if(typeof registerPaint!=="undefined"){registerPaint("squircle",SquircleClass)}
+  `;
+  const blob = new Blob([workletCode], { type: 'application/javascript' });
+  const blobURL = URL.createObjectURL(blob);
+  CSS.paintWorklet.addModule(blobURL);
+}
+</script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+<a href="https://search3958.github.io">
+<svg width="57" height="57" viewBox="0 0 14 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#paint0_angular_1200_9_clip_path)" data-figma-skip-parse="true"><g transform="matrix(4.17232e-10 -0.009 -0.009 -4.17232e-10 7 14)"><foreignObject x="-1111.11" y="-1111.11" width="2222.22" height="2222.22"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(0, 17, 88, 1) 0deg,rgba(0, 38, 190, 1) 181.711deg,rgba(0, 95, 255, 1) 290.751deg,rgba(145, 216, 255, 1) 349.598deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 5)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.069023430347442627,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.14902342855930328,&#34;b&#34;:0.74511718750,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.37382256984710693,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:0.85023075342178345,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.069023430347442627,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.14902342855930328,&#34;b&#34;:0.74511718750,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.37382256984710693,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:0.85023075342178345,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:8.3446485632521217e-07,&#34;m01&#34;:-18.0,&#34;m02&#34;:15.999999046325684,&#34;m10&#34;:-18.0,&#34;m11&#34;:-8.3446400367392926e-07,&#34;m12&#34;:23.0},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+<g clip-path="url(#paint1_angular_1200_9_clip_path)" data-figma-skip-parse="true"><g transform="matrix(4.17233e-10 0.009 0.009 -4.17234e-10 7 5)"><foreignObject x="-1111.11" y="-1111.11" width="2222.22" height="2222.22"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(0, 17, 88, 1) 0deg,rgba(0, 38, 190, 1) 181.711deg,rgba(0, 95, 255, 1) 290.751deg,rgba(145, 216, 255, 1) 349.598deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.069023430347442627,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.14902342855930328,&#34;b&#34;:0.74511718750,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.37382256984710693,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:0.85023075342178345,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.069023430347442627,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.14902342855930328,&#34;b&#34;:0.74511718750,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.37382256984710693,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:0.85023075342178345,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:8.3446667531461571e-07,&#34;m01&#34;:18.000001907348633,&#34;m02&#34;:-2.0000011920928955,&#34;m10&#34;:18.000001907348633,&#34;m11&#34;:-8.3446792586983065e-07,&#34;m12&#34;:-4.0},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+<rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 5)" fill="url(#paint2_radial_1200_9)" fill-opacity="0.9" style="mix-blend-mode:screen"/>
+<defs>
+<clipPath id="paint0_angular_1200_9_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 5)"/></clipPath><clipPath id="paint1_angular_1200_9_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)"/></clipPath><radialGradient id="paint2_radial_1200_9" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(7.5 7) rotate(180) scale(7.5)">
+<stop offset="0.504753"/>
+<stop offset="0.692311" stop-color="#001B4A"/>
+<stop offset="0.807642" stop-color="#0043B2"/>
+<stop offset="0.971105" stop-color="#92D9FF"/>
+<stop offset="1" stop-color="#F3FFBF"/>
+</radialGradient>
+</defs>
+</svg>
+</a>
+
+コード軽量化・整形ツール</div>
+
+        <div class="selection-group">
+            
+            <div class="selection-box">
+                <h3>コードの種類</h3>
+                <div class="btn-group" id="codeTypeGroup">
+                    <button data-type="js" class="active">JavaScript<md-ripple></md-ripple></button>
+                    <button data-type="css">CSS<md-ripple></md-ripple></button>
+                </div>
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="selection-box">
+                <h3>実行する処理</h3>
+                <div class="btn-group" id="modeGroup">
+                    <button data-mode="minify" class="active">軽量化<md-ripple></md-ripple></button>
+                    <button data-mode="beautify">整形<md-ripple></md-ripple></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="input-header">
+                <h2>コードを入力</h2>
+                <button id="clearButton">クリア<md-ripple></md-ripple></button>
+            </div>
+            
+            <div class="textarea-wrapper">
+  <textarea id="inputCode" placeholder="ここにJavaScriptまたはCSSコードを入力してください..."></textarea>
+</div>
+        </div>
+
+        <div class="update-controls">
+            <button id="updateButton" style="display: block;">結果を更新<md-ripple></md-ripple></button>
+            <label class="label-switch" for="autoUpdateCheckbox">
+  <md-checkbox touch-target="autoUpdateCheckbox" id="autoUpdateCheckbox"></md-checkbox>
+  結果を自動更新
+</label>
+
+        </div>
+
+        <div class="result-area">
+            <h2>結果</h2>
+            <div id="resultOutput" title="クリックで全選択できます">
+                コードが入力されていません。
+                <button id="copyButton" class="copy-button">コピー 📋</button>
+            </div>
+            <p id="errorDisplay" style="color: #e74c3c; margin-top: 10px; font-weight: 600;"></p>
+        </div>
+
+    </div>
+
+    <script>
+        // DOM要素の取得
+        const codeTypeGroup = document.getElementById('codeTypeGroup');
+        const modeGroup = document.getElementById('modeGroup');
+        const inputCode = document.getElementById('inputCode');
+        const resultOutput = document.getElementById('resultOutput');
+        const clearButton = document.getElementById('clearButton');
+        const autoUpdateCheckbox = document.getElementById('autoUpdateCheckbox');
+        const updateButton = document.getElementById('updateButton');
+        const copyButton = document.getElementById('copyButton');
+        const errorDisplay = document.getElementById('errorDisplay');
+
+        // 状態変数 (デフォルトを false に変更)
+        let codeType = 'js'; 
+        let mode = 'minify'; 
+        let autoUpdate = false; // ★★★ デフォルトを false に変更 ★★★
+        
+        // 処理ロジック (Minify / Beautify) は変更なし
+        function minifyJs(code) {
+            let minified = code.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '').trim();
+            minified = minified.replace(/[\n\r\t]/g, ' '); 
+            minified = minified.replace(/\s{2,}/g, ' ');   
+            minified = minified.replace(/\s*([;,\{\}\(\)\:])\s*/g, '$1'); 
+            return minified;
+        }
+
+        function minifyCss(code) {
+            let minified = code.replace(/\/\*[\s\S]*?\*\//g, '').trim();
+            minified = minified.replace(/[\n\r\t]/g, ''); 
+            minified = minified.replace(/\s{2,}/g, ' ');   
+            minified = minified.replace(/\s*([;\{\}:,])\s*/g, '$1'); 
+            minified = minified.replace(/;}/g, '}'); 
+            return minified;
+        }
+        
+        function beautifyJs(code) {
+            return js_beautify(code, { indent_size: 4, indent_char: ' ', space_in_empty_paren: true });
+        }
+
+        function beautifyCss(code) {
+            return css_beautify(code, { indent_size: 4, indent_char: ' ' });
+        }
+
+        // 結果を更新するメイン処理
+        function updateResult() {
+            errorDisplay.textContent = ''; 
+            let code = inputCode.value.trim();
+
+            if (!code) {
+                resultOutput.textContent = 'コードが入力されていません。';
+                return;
+            }
+
+            try {
+                let result = '';
+                if (mode === 'minify') {
+                    result = codeType === 'js' ? minifyJs(code) : minifyCss(code);
+                } else {
+                    result = codeType === 'js' ? beautifyJs(code) : beautifyCss(code);
+                }
+                resultOutput.textContent = result;
+            } catch (e) {
+                errorDisplay.textContent = '処理中にエラーが発生しました: ' + e.message;
+                resultOutput.textContent = '';
+            }
+        }
+        
+        // --- イベントハンドラ ---
+
+        // 選択ボタンのハンドラ (自動更新がオンの場合のみ updateResult を実行)
+        const selectionHandler = (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const group = e.currentTarget;
+                group.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                if (group.id === 'codeTypeGroup') {
+                    codeType = e.target.dataset.type;
+                } else if (group.id === 'modeGroup') {
+                    mode = e.target.dataset.mode;
+                }
+                
+                if (autoUpdate) updateResult();
+            }
+        };
+
+        codeTypeGroup.addEventListener('click', selectionHandler);
+        modeGroup.addEventListener('click', selectionHandler);
+
+        // テキストエリアの入力処理（自動更新）
+        inputCode.addEventListener('input', () => {
+            if (autoUpdate) {
+                updateResult();
+            }
+        });
+
+        // テキストクリアボタン
+        clearButton.addEventListener('click', () => {
+            inputCode.value = '';
+            if (autoUpdate) updateResult();
+        });
+
+        // 自動更新スイッチ
+        autoUpdateCheckbox.addEventListener('change', (e) => {
+            autoUpdate = e.target.checked;
+            // 自動更新をオンにした場合、すぐに結果を更新
+            if (autoUpdate) updateResult();
+        });
+        
+        // 結果更新ボタン（手動更新時）
+        updateButton.addEventListener('click', updateResult);
+
+        // 結果の全選択とコピーボタンの処理
+        resultOutput.addEventListener('click', () => {
+            if (window.getSelection && document.createRange) {
+                const range = document.createRange();
+                range.selectNodeContents(resultOutput);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+        
+        // コピーボタン
+        copyButton.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            copyTextToClipboard(resultOutput.textContent);
+        });
+        
+        // クリップボードへのコピー処理
+        function copyTextToClipboard(text) {
+            // ... (コピー処理のロジックは変更なし) ...
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text)
+                    .then(() => alert('結果をクリップボードにコピーしました！'))
+                    .catch(err => {
+                        console.error('コピーに失敗しました (Clipboard API)', err);
+                        fallbackCopyTextToClipboard(text);
+                    });
+            } else {
+                fallbackCopyTextToClipboard(text);
+            }
+        }
+
+        // フォールバック用のコピー処理
+        function fallbackCopyTextToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed'; 
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('結果をクリップボードにコピーしました！');
+            } catch (err) {
+                alert('コピーに失敗しました。ブラウザのコンソールを確認してください。');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // 初期化処理
+        document.addEventListener('DOMContentLoaded', () => {
+            // デフォルトの autoUpdate=false に合わせてチェックボックスを未チェックに
+            autoUpdateCheckbox.checked = autoUpdate; 
+            // ページロード時にも結果を一度更新して初期メッセージを表示
+            updateResult(); 
+        });
+    </script>
+
+</body>
+</html>

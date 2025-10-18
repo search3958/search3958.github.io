@@ -15,18 +15,61 @@
     import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
 
     document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
-  </script>
+    
+    const tabs = document.querySelector('md-tabs');
+    const tabPanels = document.querySelectorAll('[role="tabpanel"]');
+
+    // タブコンテンツの切り替え関数 (変更なし)
+    function switchTabContent(event) {
+        const activeIndex = event.target.activeTabIndex;
+
+        tabPanels.forEach((panel, index) => {
+            if (index === activeIndex) {
+                // アクティブなパネル: .hideクラスを削除して表示
+                panel.classList.remove('hide');
+            } else {
+                // 非アクティブなパネル: .hideクラスを追加して非表示
+                panel.classList.add('hide');
+            }
+        });
+    }
+
+    // 初期化関数を修正 (home-pのみ表示)
+    function initializeTabs() {
+        tabPanels.forEach((panel, index) => {
+            if (index === 0) {
+                // 最初のパネル（home-p）は表示
+                panel.classList.remove('hide');
+            } else {
+                // それ以外のパネルは非表示
+                panel.classList.add('hide');
+            }
+        });
+    }
+
+    // md-tabsの'change'イベントにリスナーを追加
+    tabs.addEventListener('change', switchTabContent);
+    
+    // ページロード時にタブの初期状態を設定
+    initializeTabs();
+</script>
 <body>
 
     <style>
         *{
-            font-family: "Roboto", "Noto Sans JP", sans-serif;
+            font-family: "Roboto",'Cheonrima', "Noto Sans JP", sans-serif;
   line-height: 1.5;
         }
+        @font-face {
+  font-family: 'Cheonrima';
+  src: url('https://search3958.github.io/Cheonrima.ttf') format('truetype');
+  font-display: swap;
+}
         body{
             margin:0px;
             padding:0px;
             background:var(--md-sys-color-background);
+            color:var(--md-sys-color-on-background);
         }
         :root{--md-sys-color-primary:rgb(170 199 255);--md-sys-color-surface-tint:rgb(170 199 255);--md-sys-color-on-primary:rgb(10 48 95);--md-sys-color-primary-container:rgb(40 71 119);--md-sys-color-on-primary-container:rgb(214 227 255);--md-sys-color-secondary:rgb(190 198 220);--md-sys-color-on-secondary:rgb(40 49 65);--md-sys-color-secondary-container:rgb(62 71 89);--md-sys-color-on-secondary-container:rgb(218 226 249);--md-sys-color-tertiary:rgb(221 188 224);--md-sys-color-on-tertiary:rgb(63 40 68);--md-sys-color-tertiary-container:rgb(87 62 92);--md-sys-color-on-tertiary-container:rgb(250 216 253);--md-sys-color-error:rgb(255 180 171);--md-sys-color-on-error:rgb(105 0 5);--md-sys-color-error-container:rgb(147 0 10);--md-sys-color-on-error-container:rgb(255 218 214);--md-sys-color-background:rgb(17 19 24);--md-sys-color-on-background:rgb(226 226 233);--md-sys-color-surface:rgb(17 19 24);--md-sys-color-on-surface:rgb(226 226 233);--md-sys-color-surface-variant:rgb(68 71 78);--md-sys-color-on-surface-variant:rgb(196 198 208);--md-sys-color-outline:rgb(142 144 153);--md-sys-color-outline-variant:rgb(68 71 78);--md-sys-color-shadow:rgb(0 0 0);--md-sys-color-scrim:rgb(0 0 0);--md-sys-color-inverse-surface:rgb(226 226 233);--md-sys-color-inverse-on-surface:rgb(46 48 54);--md-sys-color-inverse-primary:rgb(65 95 145);--md-sys-color-primary-fixed:rgb(214 227 255);--md-sys-color-on-primary-fixed:rgb(0 27 62);--md-sys-color-primary-fixed-dim:rgb(170 199 255);--md-sys-color-on-primary-fixed-variant:rgb(40 71 119);--md-sys-color-secondary-fixed:rgb(218 226 249);--md-sys-color-on-secondary-fixed:rgb(19 28 43);--md-sys-color-secondary-fixed-dim:rgb(190 198 220);--md-sys-color-on-secondary-fixed-variant:rgb(62 71 89);--md-sys-color-tertiary-fixed:rgb(250 216 253);--md-sys-color-on-tertiary-fixed:rgb(40 19 46);--md-sys-color-tertiary-fixed-dim:rgb(221 188 224);--md-sys-color-on-tertiary-fixed-variant:rgb(87 62 92);--md-sys-color-surface-dim:rgb(17 19 24);--md-sys-color-surface-bright:rgb(55 57 62);--md-sys-color-surface-container-lowest:rgb(12 14 19);--md-sys-color-surface-container-low:rgb(25 28 32);--md-sys-color-surface-container:rgb(29 32 36);--md-sys-color-surface-container-high:rgb(40 42 47);--md-sys-color-surface-container-highest:rgb(51 53 58)}
         
@@ -36,62 +79,86 @@
             width:100vw;
 
         }
-        .home{
-
+        #home-p {
     background-size: cover;
     background-position: center;
-    background-image: 
-    linear-gradient(to bottom, rgba(0, 0, 154, 0.516), rgb(0, 0, 154), rgb(0, 0, 154)),
-    url("https://search3958.github.io/newtab/bgimg/aibg2.webp");
-    height:100%;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 154, 0.516), rgb(0, 0, 154), rgb(0, 0, 154)), url(https://search3958.github.io/newtab/bgimg/aibg5.webp);
+    height: calc(100vh - 96px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    padding: 48px 0px;
+        }
+        #home-p .head{
+            font-size:52px;
+        }
+        #home-p .subhead{
+            font-size:24px;
+        }
+
+        #movie-p {
+    background:#f00;
+    height: calc(100vh - 96px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    padding: 48px 0px;
+        }
+        .hide{
+            display: none !important;;
         }
     </style>
     
 </head>
-<div class="home">
+<div id="home-p" role="tabpanel" aria-labelledby="home">
 
-    aaa
-
+    <div class="head">平壌</div>
+    <div class="subhead">に向けてだた今出発します</div>
 </div>
 
+<div id="movie-p" role="tabpanel" aria-labelledby="movie">
+aaaa
+</div>
 
-    <md-tabs class="bottomtab">
-  <md-primary-tab>
+    <md-tabs class="bottomtab" aria-label="Content to view">
+  <md-primary-tab id="home" aria-controls="home-p">
     <md-icon slot="icon"><span class="material-symbols-outlined">
     home
     </span></md-icon>
     概要
   </md-primary-tab>
   
-  <md-primary-tab>
+  <md-primary-tab id="movie" aria-controls="movie-p">
     <md-icon slot="icon"><span class="material-symbols-outlined">
     movie
     </span></md-icon>
     エンターテイメント
   </md-primary-tab>
-  
-  <md-primary-tab>
+
+  <md-primary-tab id="travel" aria-controls="travel-p">
     <md-icon slot="icon"><span class="material-symbols-outlined">
     travel
     </span></md-icon>
     フライト情報
   </md-primary-tab>
   
-  <md-primary-tab>
+  <md-primary-tab id="restaurant" aria-controls="restaurant-p">
     <md-icon slot="icon"><span class="material-symbols-outlined">
     restaurant
     </span></md-icon>
     お食事和お飲み物
   </md-primary-tab>
   
-  <md-primary-tab>
+  <md-primary-tab id="android_wifi_3_bar" aria-controls="android_wifi_3_bar-p">
     <md-icon slot="icon"><span class="material-symbols-outlined">
     android_wifi_3_bar
     </span></md-icon>
     Wi-Fi
   </md-primary-tab>
   
-  <md-primary-tab>
+  <md-primary-tab id="airlines" aria-controls="airlines-p">
     <md-icon slot="icon"><span class="material-symbols-outlined">
     airlines
     </span></md-icon>
