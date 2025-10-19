@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字数・行数カウンター | Character Count Tool</title>
+    <link rel="icon" href="https://search3958.github.io/icons/search3958.svg">
+    
+    <meta name="description" content="無料の文字数カウンター。入力されたテキストの文字数（空白含む、空白除く）と行数を即座に表示します。">
+    
+    <meta property="og:title" content="文字数・行数カウンター">
+    <meta property="og:description" content="テキストの文字数を（空白含む、空白除く）と行数を即座に表示します。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300;1,300&family=M+PLUS+2:wght@400&display=swap" rel="stylesheet">
+    
+    <script type="importmap">
+    {
+      "imports": {
+        "@material/web/": "https://esm.run/@material/web/"
+      }
+    }
+    </script>
+    <script type="module">
+        import '@material/web/all.js';
+        import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
+        document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+    </script>
+
+    <style>
+        /* 不要な要素のスタイルを削除し、必要な部分のみ残しました */
+        :root{--md-sys-color-primary:color(display-p3 0.126 0 0.797 / 1);--md-sys-color-primary-hover:color(display-p3 0.252 0.157 1 / 1);--md-sys-color-error:color(display-p3 0.677 0 0.021 / 1);--md-sys-color-error-hover:color(display-p3 0.51 0 0.02);--md-ripple-hover-color:#0000;--md-ripple-pressed-color-light:#fff;--md-ripple-pressed-color-error:#f00;--sys-color-background:#f2f2f2;--sys-color-surface:#ffffff;--sys-color-surface-container:#fffb;--sys-color-outline:#e0e0e0;--sys-color-on-background:#090909;--sys-color-on-surface:#2c3e50;--sys-color-on-surface-variant:#b1b1b1;--sys-color-input-background:#fff;--sys-color-input-focus-outline:var(--md-sys-color-primary);--sys-color-placeholder:#6c757d;--sys-color-inactive-button:#dedede;--sys-color-inactive-button-hover:#bababa}
+        @media (prefers-color-scheme:dark){:root{--md-sys-color-primary:color(display-p3 0.201 0.249 1 / 1);--md-sys-color-primary-hover:color(display-p3 0.045 0.152 0.814 / 1);--md-sys-color-error:color(display-p3 0.9 0.2 0.1 / 1);--md-sys-color-error-hover:color(display-p3 0.7 0.1 0.05 / 1);--sys-color-background:#121212;--sys-color-surface:#1e1e1e;--sys-color-surface-container:#1e1e1e99;--sys-color-outline:#3a3a3a;--sys-color-on-background:#ffffff;--sys-color-on-surface:#cccccc;--sys-color-on-surface-variant:#787878;--sys-color-input-background:#282828;--sys-color-input-focus-outline:var(--md-sys-color-primary);--sys-color-inactive-button:#3a3a3a;--sys-color-inactive-button-hover:#4a4a4a}}
+        
+        *{font-family:"M PLUS 2",sans-serif;font-weight:400;font-style:normal;line-height:1.5}
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:20px;background-color:var(--sys-color-background);min-height:100vh;padding-top:120px}
+        ::-webkit-scrollbar{display:none}
+        .container{max-width:1200px;margin:0 auto}
+        .header{color:var(--sys-color-on-background);padding:20px;font-size:2em;position:fixed;z-index:100;top:0;left:0;width:calc(100vw - 24px);background:var(--sys-color-surface-container);backdrop-filter:blur(24px);display:flex;gap:8px}
+        h2{color:var(--sys-color-on-background);margin-top:8px}
+        
+        /* selection-group 関連のスタイルを復活させつつ、リアルタイム情報部分は削除 */
+        .selection-group{display:flex;gap:20px;align-items:flex-start;margin-bottom:30px;padding:20px;background-color:var(--sys-color-surface);mask-image:paint(squircle);--squircle-radius:32px;--squircle-smooth:0.4}
+        .selection-box{flex:1;min-width:0}
+        .btn-group{display:flex;width:100%;overflow:hidden}
+        .btn-group button{flex:1;position:relative;padding:16px;margin:0;cursor:pointer;border:none;border-right:1px solid var(--sys-color-on-surface-variant);background-color:var(--sys-color-inactive-button);--md-ripple-pressed-color:var(--md-ripple-pressed-color-light);color:var(--sys-color-on-surface);font-weight:600;transition:all 0.6s cubic-bezier(.23,.81,0,1);border-radius:8px}
+        .btn-group button:last-child{border-right:none}
+        .btn-group button:hover{flex-grow:1.2;background-color:var(--sys-color-inactive-button-hover)}
+        .btn-group button.active{background-color:var(--md-sys-color-primary);color:white;box-shadow:none;border-radius:26px} /* active時の border-radius を box に合わせました */
+        .btn-group button.active:hover{background-color:var(--md-sys-color-primary-hover)}
+
+        .input-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+        #inputCode{width:calc(100% - 12px);min-height:250px;padding:24px;border:none;mask-image:paint(squircle);--squircle-radius:32px;--squircle-smooth:0.4;font-family:'Google Sans Code',monospace;font-size:14px;box-sizing:border-box;resize:vertical;border:none;margin:6px;margin-bottom:0px;outline:none;background:var(--sys-color-input-background);color:var(--sys-color-on-background)}
+        #inputCode::placeholder{color:var(--sys-color-placeholder)}
+        .textarea-wrapper{background:var(--sys-color-input-background);mask-image:paint(squircle);--squircle-radius:38px;--squircle-smooth:0.43;padding:0px;display:block;transition:all 0.2s ease}
+        .textarea-wrapper:focus-within{background:var(--sys-color-input-focus-outline)}
+        #clearButton{padding:16px 24px;border:none;mask-image:paint(squircle);--squircle-radius:32px;--squircle-smooth:0.3;cursor:pointer;font-weight:600;background-color:var(--md-sys-color-error);color:white;transition:background-color 0.2s;--md-ripple-pressed-color:var(--md-ripple-pressed-color-error)}
+        #clearButton:hover{background-color:var(--md-sys-color-error-hover)}
+        
+        #errorDisplay{color:var(--md-sys-color-error)}
+
+        @media (max-width:768px){
+            body{padding:10px;padding-top:120px}
+            .selection-group{flex-direction:column;gap:10px;padding:15px}
+        }
+    </style>
+
+    <script>
+        // paint workletのコードはそのまま残します（装飾のため）
+        if ("paintWorklet" in CSS) {
+            const workletCode = `
+                const drawSquircle=(ctx,geom,radii,smooth,lineWidth,color)=>{const defaultFill=color;const lineWidthOffset=lineWidth/2;ctx.beginPath();ctx.lineTo(radii[0],lineWidthOffset);ctx.lineTo(geom.width-radii[1],lineWidthOffset);ctx.bezierCurveTo(geom.width-radii[1]/smooth,lineWidthOffset,geom.width-lineWidthOffset,radii[1]/smooth,geom.width-lineWidthOffset,radii[1]);ctx.lineTo(geom.width-lineWidthOffset,geom.height-radii[2]);ctx.bezierCurveTo(geom.width-lineWidthOffset,geom.height-radii[2]/smooth,geom.width-radii[2]/smooth,geom.height-lineWidthOffset,geom.width-radii[2],geom.height-lineWidthOffset);ctx.lineTo(radii[3],geom.height-lineWidthOffset);ctx.bezierCurveTo(radii[3]/smooth,geom.height-lineWidthOffset,lineWidthOffset,geom.height-radii[3]/smooth,lineWidthOffset,geom.height-radii[3]);ctx.lineTo(lineWidthOffset,radii[0]);ctx.bezierCurveTo(lineWidthOffset,radii[0]/smooth,radii[0]/smooth,lineWidthOffset,radii[0],lineWidthOffset);ctx.closePath();if(lineWidth){ctx.strokeStyle=defaultFill;ctx.lineWidth=lineWidth;ctx.stroke()}else{ctx.fillStyle=defaultFill;ctx.fill()}};class SquircleClass{static get contextOptions(){return{alpha:true}}static get inputProperties(){return["--squircle-radius","--squircle-radius-top-left","--squircle-radius-top-right","--squircle-radius-bottom-right","--squircle-radius-bottom-left","--squircle-smooth","--squircle-outline","--squircle-fill"]}paint(ctx,geom,properties){const smoothRatio=10;const distanceRatio=1.8;const squircleSmooth=parseFloat(properties.get("--squircle-smooth")*smoothRatio);const individualRadiiProps=SquircleClass.inputProperties.slice(1,5);let squircleRadii=individualRadiiProps.map(prop=>{const value=properties.get(prop);return value?parseInt(value,10)*distanceRatio:NaN});let shorthand_R;if(squircleRadii.some(isNaN)){const radiusRegex=/([0-9]+[a-z%]*)/g;const radius_shorthand=properties.get("--squircle-radius").toString();const matches=radius_shorthand.match(radiusRegex);if(matches){shorthand_R=matches.map(val=>parseInt(val,10)*distanceRatio);while(shorthand_R.length<4){if(shorthand_R.length===1){shorthand_R.push(shorthand_R[0])}else if(shorthand_R.length===2){shorthand_R=[shorthand_R[0],shorthand_R[1],shorthand_R[0],shorthand_R[1]]}else if(shorthand_R.length===3){shorthand_R=[shorthand_R[0],shorthand_R[1],shorthand_R[2],shorthand_R[1]]}}}else{const defaultRadius=squircleRadii.every(isNaN)?8*distanceRatio:0;shorthand_R=[defaultRadius,defaultRadius,defaultRadius,defaultRadius]}}squircleRadii=squircleRadii.map((val,i)=>isNaN(val)?shorthand_R[i]:val);const squrcleOutline=parseFloat(properties.get("--squircle-outline"),10);const squrcleColor=properties.get("--squircle-fill").toString();const isSmooth=()=>{if(typeof properties.get("--squircle-smooth")[0]!=="undefined"){if(squircleSmooth===0){return 1}return squircleSmooth}else{return 10}};const isOutline=()=>{if(squrcleOutline){return squrcleOutline}else{return 0}};const isColor=()=>{if(squrcleColor){return squrcleColor}else{return"#f45"}};const maxRadius=Math.max(...squircleRadii);if(maxRadius<geom.width/2&&maxRadius<geom.height/2){drawSquircle(ctx,geom,squircleRadii,isSmooth(),isOutline(),isColor())}else{const minRadius=Math.min(geom.width/2,geom.height/2);drawSquircle(ctx,geom,squircleRadii.map(()=>minRadius),isSmooth(),isOutline(),isColor())}}}if(typeof registerPaint!=="undefined"){registerPaint("squircle",SquircleClass)}
+            `;
+            const blob = new Blob([workletCode], { type: 'application/javascript' });
+            const blobURL = URL.createObjectURL(blob);
+            CSS.paintWorklet.addModule(blobURL);
+        }
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="https://search3958.github.io">
+                <svg width="57" height="57" viewBox="0 0 14 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clip-path="url(#paint0_angular_1200_9_clip_path)" data-figma-skip-parse="true"><g transform="matrix(4.17232e-10 -0.009 -0.009 -4.17232e-10 7 14)"><foreignObject x="-1111.11" y="-1111.11" width="2222.22" height="2222.22"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(0, 17, 88, 1) 0deg,rgba(0, 38, 190, 1) 181.711deg,rgba(0, 95, 255, 1) 290.751deg,rgba(145, 216, 255, 1) 349.598deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 5)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.069023430347442627,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.14902342855930328,&#34;b&#34;:0.74511718750,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.37382256984710693,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:0.85023075342178345,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.069023430347442627,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.14902342855930328,&#34;b&#34;:0.74511718750,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.37382256984710693,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:0.85023075342178345,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:8.3446485632521217e-07,&#34;m01&#34;:-18.0,&#34;m02&#34;:15.999999046325684,&#34;m10&#34;:-18.0,&#34;m11&#34;:-8.3446400367392926e-07,&#34;m12&#34;:23.0},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+                    <g clip-path="url(#paint1_angular_1200_9_clip_path)" data-figma-skip-parse="true"><g transform="matrix(4.17233e-10 0.009 0.009 -4.17234e-10 7 5)"><foreignObject x="-1111.11" y="-1111.11" width="2222.22" height="2222.22"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(0, 17, 88, 1) 0deg,rgba(0, 38, 190, 1) 181.711deg,rgba(0, 95, 255, 1) 290.751deg,rgba(145, 216, 255, 1) 349.598deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.069023430347442627,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.14902342855930328,&#34;b&#34;:0.74511718750,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.37382256984710693,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:0.85023075342178345,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.069023430347442627,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.14902342855930328,&#34;b&#34;:0.74511718750,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.37382256984710693,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:0.85023075342178345,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:8.3446667531461571e-07,&#34;m01&#34;:18.000001907348633,&#34;m02&#34;:-2.0000011920928955,&#34;m10&#34;:18.000001907348633,&#34;m11&#34;:-8.3446792586983065e-07,&#34;m12&#34;:-4.0},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+                    <rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 5)" fill="url(#paint2_radial_1200_9)" fill-opacity="0.9" style="mix-blend-mode:screen"/>
+                    <defs>
+                        <clipPath id="paint0_angular_1200_9_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 5)"/></clipPath><clipPath id="paint1_angular_1200_9_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)"/></clipPath><radialGradient id="paint2_radial_1200_9" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(7.5 7) rotate(180) scale(7.5)">
+                            <stop offset="0.504753"/>
+                            <stop offset="0.692311" stop-color="#001B4A"/>
+                            <stop offset="0.807642" stop-color="#0043B2"/>
+                            <stop offset="0.971105" stop-color="#92D9FF"/>
+                            <stop offset="1" stop-color="#F3FFBF"/>
+                        </radialGradient>
+                    </defs>
+                </svg>
+            </a>
+            文字数カウンター
+        </div>
+
+        <div class="selection-group">
+            <div class="selection-box">
+                <h3>カウントモード</h3>
+                <div class="btn-group" id="countModeGroup">
+                    <button data-mode="all" class="active">空白含む<md-ripple></md-ripple></button>
+                    <button data-mode="no-space">空白除く<md-ripple></md-ripple></button>
+                </div>
+            </div>
+            </div>
+
+        <div class="controls">
+            <div class="input-header">
+                <h2 id="inputHeader">現在 0 文字 / 1 行</h2>
+                <button id="clearButton">クリア<md-ripple></md-ripple></button>
+            </div>
+            
+            <div class="textarea-wrapper">
+                <textarea id="inputCode" placeholder="ここにカウントしたいテキストを入力してください..."></textarea>
+            </div>
+        </div>
+        
+        <p id="errorDisplay" style="color: var(--md-sys-color-error); margin-top: 10px; font-weight: 600;"></p>
+
+    </div>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
+     crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-format="autorelaxed"
+         data-ad-client="ca-pub-6151036058675874"
+         data-ad-slot="2183688121"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+
+    <script>
+        // DOM要素の取得
+        const inputCode = document.getElementById('inputCode');
+        const clearButton = document.getElementById('clearButton');
+        const inputHeader = document.getElementById('inputHeader');
+        const countModeGroup = document.getElementById('countModeGroup');
+        const errorDisplay = document.getElementById('errorDisplay');
+
+        // 現在選択されているモードを保持
+        let currentMode = 'all'; 
+
+        /**
+         * 文字数をカウントしてヘッダーを更新する関数
+         */
+        function updateHeader() {
+            errorDisplay.textContent = '';
+            let text = inputCode.value;
+            let count;
+            
+            // 選択されたモードに応じて文字数を計算
+            if (currentMode === 'all') {
+                count = text.length; // 空白含む
+            } else {
+                count = text.replace(/\s/g, '').length; // 空白除く (スペース、タブ、改行を除く)
+            }
+            
+            // 行数
+            const lineCount = text ? text.split('\n').length : 1;
+            
+            // ヘッダーを更新
+            inputHeader.innerHTML = `現在 ${count.toLocaleString()} 文字 / ${lineCount.toLocaleString()} 行`;
+        }
+
+        /**
+         * カウントモード変更時の処理
+         */
+        countModeGroup.addEventListener('click', (event) => {
+            const button = event.target.closest('button');
+            if (button && button.dataset.mode) {
+                // アクティブクラスの切り替え
+                document.querySelectorAll('#countModeGroup button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+
+                // モードの更新とヘッダー再描画
+                currentMode = button.dataset.mode;
+                updateHeader();
+            }
+        });
+
+        // イベントリスナーの設定
+        inputCode.addEventListener('input', updateHeader);
+        
+        // クリアボタンの動作
+        clearButton.addEventListener('click', () => {
+            inputCode.value = '';
+            updateHeader(); // クリア後にヘッダーもリセット
+        });
+
+        // ページロード時の初期化処理
+        document.addEventListener('DOMContentLoaded', () => {
+            updateHeader(); // 初回起動時のヘッダー表示
+        });
+    </script>
+
+</body>
+</html>
