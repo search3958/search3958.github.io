@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>利用規約未同意</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 40px; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h2>お客様は利用規約に同意していないため<br>サービスをご利用いただけません。</h2>
+  <button id="agreeBtn">利用規約に同意する</button>
+
+  <script>
+    document.getElementById('agreeBtn').addEventListener('click', () => {
+      localStorage.removeItem('termsAccepted'); // 同意済みとみなすために削除
+      window.location.href = 'https://search3958.github.io/';
+    });
+  </script>
+</body>
+</html>
