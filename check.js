@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     const text = await response.text();
 
-    if (text.length < 70) {
+    if (text.length < 740) {
       console.log('スクリプトは偽り');
       window.location.href = 'https://search3958.github.io/aderror.html';
       return;
