@@ -1,21 +1,33 @@
-document.addEventListener('DOMContentLoaded', function () {
-  // 1. 利用規約未同意チェック
+document.addEventListener('DOMContentLoaded', async function () {
   if (localStorage.getItem('termsAccepted') === 'false') {
+    console.log('利用規約未同意');
     window.location.href = 'https://search3958.github.io/entry.html';
-    return; // 以降の処理を中断
+    return;
   }
 
-  // 2. 広告スクリプト読み込み試行
   const adScriptUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874';
-  const script = document.createElement('script');
-  script.src = adScriptUrl;
-  script.async = true;
 
-  script.onerror = function () {
-    // 広告読み込み失敗 → aderror.html へ
+  try {
+    const response = await fetch(adScriptUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const text = await response.text();
+
+    if (text.length < 70) {
+      console.log('スクリプトは偽り');
+      window.location.href = 'https://search3958.github.io/aderror.html';
+      return;
+    }
+
+    console.log(`スクリプト取得成功・${text.length}文字`);
+    const script = document.createElement('script');
+    script.textContent = text;
+    document.head.appendChild(script);
+
+  } catch (error) {
+    // CORS エラー、ネットワークエラー、404 などすべてここに来る
+    console.log('アクセス不可能');
     window.location.href = 'https://search3958.github.io/aderror.html';
-  };
-
-  // onload は特に何もしない（成功時は継続）
-  document.head.appendChild(script);
+  }
 });
