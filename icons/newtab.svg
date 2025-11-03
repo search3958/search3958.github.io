@@ -1,6 +1,24 @@
-<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="100" height="100" rx="50" fill="white"/>
-<path d="M39.6338 28.3662C39.6338 22.6411 44.2749 18 50 18C55.7251 18 60.3662 22.6411 60.3662 28.3662V70.7324C60.3662 76.4575 55.7251 81.0986 50 81.0986C44.2749 81.0986 39.6338 76.4575 39.6338 70.7324V28.3662Z" fill="#374F66"/>
-<path d="M39.6338 50C39.6338 44.2749 44.2749 39.6338 50 39.6338H71.6338C77.3589 39.6338 82 44.2749 82 50C82 55.7251 77.3589 60.3662 71.6338 60.3662H50C44.2749 60.3662 39.6338 55.7251 39.6338 50Z" fill="#374F66"/>
-<rect x="18" y="39.6338" width="20.7324" height="20.7324" rx="10.3662" fill="#A6BAD3"/>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1291_4)">
+<rect width="256" height="256" rx="128" fill="white" fill-opacity="0.91"/>
+<g filter="url(#filter0_d_1291_4)">
+<g clip-path="url(#paint0_angular_1291_4_clip_path)" data-figma-skip-parse="true"><g transform="matrix(-0.187 0.00314265 0.00241191 0.143518 187 125)"><foreignObject x="-1016.95" y="-1016.95" width="2033.9" height="2033.9"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(0, 17, 88, 1) 0deg,rgba(0, 38, 190, 1) 181.711deg,rgba(0, 95, 255, 1) 290.751deg,rgba(145, 216, 255, 1) 349.598deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="256.286" height="256.286" rx="128.143" transform="matrix(1 0 0 -1 0 256.285)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.069023430347442627,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.14902342855930328,&#34;b&#34;:0.74511718750,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.37382256984710693,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:0.85023075342178345,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.069023430347442627,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.14902342855930328,&#34;b&#34;:0.74511718750,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.37382256984710693,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:0.85023075342178345,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:-374.0,&#34;m01&#34;:4.8238201141357422,&#34;m02&#34;:371.58810424804688,&#34;m10&#34;:6.2853093147277832,&#34;m11&#34;:287.03579711914062,&#34;m12&#34;:-21.660545349121094},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+<path d="M123 56L178.03 111.033C186.03 119.034 190.03 123.034 190.029 128.004C190.029 132.975 186.029 136.975 178.029 144.974L123 200" stroke="white" stroke-width="3" stroke-linecap="round"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_1291_4" x="-16" y="-8.00012" width="288.286" height="288.286" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="8"/>
+<feGaussianBlur stdDeviation="8"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1291_4"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1291_4" result="shape"/>
+</filter>
+<clipPath id="paint0_angular_1291_4_clip_path"><rect width="256.286" height="256.286" rx="128.143" transform="matrix(1 0 0 -1 0 256.285)"/></clipPath><clipPath id="clip0_1291_4">
+<rect width="256" height="256" rx="128" fill="white"/>
+</clipPath>
+</defs>
 </svg>
