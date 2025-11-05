@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>動的SVGマスク（liquid-glass）</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-image: url('https://search3958.github.io/newtab/bgimg/3958Glass1.webp');
+      background-size: cover;
+      background-position: center;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .liquid-glass {
+      position: relative;
+      border-radius: 40px;
+      overflow: hidden;
+      display: flex;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .liquid-glass::before {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      content: '';
+      backdrop-filter: blur(2px) brightness(1.15);
+      z-index: 100;
+      border-radius: inherit;
+      background: #ffffff44;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="liquid-glass" style="width: 320px; height: 240px;">
+    Element 1
+  </div>
+
+  <div class="liquid-glass" style="width: 250px; height: 200px;">
+    Element 2
+  </div>
+
+  <div class="liquid-glass" style="width: 400px; height: 90px;">
+    Element 3
+  </div>
+
+  <script>
+    // SVGマスクを動的に生成
+    function createBorderMask(w, h, radius, border) {
+      const innerW = w - border * 2;
+      const innerH = h - border * 2;
+      const innerRadius = Math.max(radius - border, 0);
+
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
+          <defs>
+            <mask id="m">
+              <rect width="${w}" height="${h}" rx="${radius}" ry="${radius}" fill="white"/>
+              <rect x="${border}" y="${border}" width="${innerW}" height="${innerH}" 
+                    rx="${innerRadius}" ry="${innerRadius}" fill="black"/>
+            </mask>
+          </defs>
+          <rect width="${w}" height="${h}" mask="url(#m)" />
+        </svg>
+      `;
+      return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+    }
+
+    // リキッドガラス効果を適用
+    function applyLiquidGlassEffect(container) {
+      const outerCount = 20;
+      const outerStep = 2;
+      const borderThickness = 6;
+
+      // マスク要素を格納
+      const masks = [];
+
+      // マスクを生成・追加
+      function updateMasks() {
+        // 既存のマスクを削除
+        masks.forEach(mask => mask.remove());
+        masks.length = 0;
+
+        const computedStyle = window.getComputedStyle(container);
+        const width = parseFloat(computedStyle.width);
+        const height = parseFloat(computedStyle.height);
+        const borderRadius = parseFloat(computedStyle.borderRadius) || 0;
+
+        for (let i = 0; i < outerCount; i++) {
+          const inset = i * outerStep;
+          const normalizedPosition = (outerCount - i) / outerCount;
+          const blur = Math.pow(normalizedPosition, 3.5) * 60;
+
+          const currentWidth = width - inset * 2;
+          const currentHeight = height - inset * 2;
+          const currentRadius = Math.max(borderRadius - inset, 0);
+
+          if (currentWidth <= 0 || currentHeight <= 0) continue;
+
+          const mask = document.createElement('div');
+          mask.className = 'mask';
+          mask.style.position = 'absolute';
+          mask.style.inset = `${inset}px`;
+          mask.style.width = `${currentWidth}px`;
+          mask.style.height = `${currentHeight}px`;
+          mask.style.borderRadius = `${currentRadius}px`;
+          mask.style.backdropFilter = `blur(${blur}px)`;
+          mask.style.webkitBackdropFilter = `blur(${blur}px)`;
+          mask.style.pointerEvents = 'none';
+          mask.style.zIndex = `${outerCount - i}`;
+          mask.style.mask = createBorderMask(currentWidth, currentHeight, currentRadius, borderThickness);
+          mask.style.webkitMask = createBorderMask(currentWidth, currentHeight, currentRadius, borderThickness);
+
+          container.appendChild(mask);
+          masks.push(mask);
+        }
+      }
+
+      // 初回生成
+      updateMasks();
+
+      // リサイズ監視（即応）
+      const resizeObserver = new ResizeObserver(() => {
+        updateMasks();
+      });
+      resizeObserver.observe(container);
+
+      // クリーンアップ用に保存
+      container._resizeObserver = resizeObserver;
+    }
+
+    // 全ての要素に適用
+    document.querySelectorAll('.liquid-glass').forEach(el => {
+      applyLiquidGlassEffect(el);
+    });
+  </script>
+</body>
+</html>
