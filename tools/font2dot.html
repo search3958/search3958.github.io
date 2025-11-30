@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDFフォントプレビューア - C言語出力対応</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .upload-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .input-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .font-grid {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            gap: 2px;
+            width: fit-content;
+            margin: 0 auto;
+        }
+        .cell {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .cell:hover {
+            background-color: #e6f3ff;
+        }
+        .selected {
+            background-color: #007bff;
+            color: white;
+        }
+        .character-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .grid-8x8 {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
+            width: 160px;
+            height: 160px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .pixel {
+            width: 18px;
+            height: 18px;
+            border: 1px solid #ddd;
+        }
+        .pixel.on {
+            background-color: #000;
+        }
+        .info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        input[type="text"] {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 200px;
+            text-align: center;
+            margin: 5px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output-section {
+            margin-top: 30px;
+        }
+        .filter-section {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BDFフォントプレビューア - C言語出力対応</h1>
+        
+        <div class="upload-section">
+            <input type="file" id="bdfFile" accept=".bdf">
+            <br>
+            <button onclick="loadBDF()">BDFファイルを読み込む</button>
+        </div>
+        
+        <div class="filter-section">
+            <label>含める文字: </label>
+            <input type="text" id="filterText" placeholder="例: ABC123">
+            <button onclick="applyFilter()">フィルター適用</button>
+        </div>
+        
+        <div class="input-section">
+            <input type="text" id="textInput" placeholder="文字を入力" maxlength="1">
+            <br>
+            <button onclick="previewText()">テキストプレビュー</button>
+            <button onclick="clearPreview()">クリア</button>
+        </div>
+        
+        <div class="preview-section">
+            <div class="font-grid" id="fontGrid"></div>
+            
+            <div class="character-preview">
+                <div class="grid-8x8" id="characterPreview"></div>
+                <div class="info" id="charInfo">文字を選択してください</div>
+            </div>
+        </div>
+        
+        <div class="output-section">
+            <h3>C言語用フォントデータ (8x8)</h3>
+            <textarea id="outputCode" readonly></textarea>
+            <button onclick="copyToClipboard()">クリップボードにコピー</button>
+        </div>
+    </div>
+
+    <script>
+        let bdfData = {};
+        let filteredChars = {};
+        
+        function loadBDF() {
+            const fileInput = document.getElementById('bdfFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('ファイルを選択してください');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                bdfData = parseBDF(content);
+                renderFontGrid();
+                applyFilter();
+            };
+            reader.readAsText(file);
+        }
+        
+        function parseBDF(content) {
+            const lines = content.split('\n');
+            const chars = {};
+            let currentChar = null;
+            let inBitmap = false;
+            let bitmapData = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                if (line.startsWith('STARTCHAR')) {
+                    currentChar = { name: line.split(' ')[1], encoding: 0, bitmap: [] };
+                } else if (line.startsWith('ENCODING')) {
+                    currentChar.encoding = parseInt(line.split(' ')[1]);
+                } else if (line.startsWith('BBX')) {
+                    const parts = line.split(' ');
+                    currentChar.width = parseInt(parts[1]);
+                    currentChar.height = parseInt(parts[2]);
+                    currentChar.xoffset = parseInt(parts[3]);
+                    currentChar.yoffset = parseInt(parts[4]);
+                } else if (line.startsWith('BITMAP')) {
+                    inBitmap = true;
+                    bitmapData = [];
+                } else if (line.startsWith('ENDCHAR')) {
+                    if (currentChar) {
+                        currentChar.bitmap = bitmapData;
+                        chars[currentChar.encoding] = currentChar;
+                    }
+                    currentChar = null;
+                    inBitmap = false;
+                } else if (inBitmap && line) {
+                    // 16進数のビットマップデータをパース
+                    const hex = line.padEnd(2, '0');
+                    const byte = parseInt(hex, 16);
+                    bitmapData.push(byte);
+                }
+            }
+            
+            return chars;
+        }
+        
+        function renderFontGrid() {
+            const grid = document.getElementById('fontGrid');
+            grid.innerHTML = '';
+            
+            // 0x0000から0x01FFまでの文字を表示
+            for (let i = 0; i <= 0xFF; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.textContent = i.toString(16).toUpperCase().padStart(2, '0');
+                
+                if (bdfData[i]) {
+                    cell.style.backgroundColor = '#c8e6c9';
+                    cell.onclick = () => selectCharacter(i);
+                } else {
+                    cell.style.backgroundColor = '#f5f5f5';
+                    cell.style.cursor = 'default';
+                }
+                
+                grid.appendChild(cell);
+            }
+        }
+        
+        function selectCharacter(encoding) {
+            const charData = bdfData[encoding];
+            if (!charData) return;
+            
+            // 8x8グリッドをクリア
+            const preview = document.getElementById('characterPreview');
+            preview.innerHTML = '';
+            
+            // 8x8グリッドを描画
+            for (let y = 0; y < 8; y++) {
+                for (let x = 0; x < 8; x++) {
+                    const pixel = document.createElement('div');
+                    pixel.className = 'pixel';
+                    
+                    if (charData.bitmap[y] !== undefined) {
+                        // ビットマップデータからピクセルを決定
+                        const byte = charData.bitmap[y];
+                        const bit = (byte >> (7 - x)) & 1;
+                        if (bit) {
+                            pixel.classList.add('on');
+                        }
+                    }
+                    
+                    preview.appendChild(pixel);
+                }
+            }
+            
+            // 文字情報を表示
+            const info = document.getElementById('charInfo');
+            info.textContent = `文字: ${String.fromCharCode(encoding)} (U+${encoding.toString(16).toUpperCase().padStart(4, '0')}) - エンコーディング: ${encoding}`;
+            
+            // 選択状態を更新
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.classList.remove('selected');
+            });
+            document.querySelectorAll('.cell').forEach((cell, index) => {
+                if (parseInt(cell.textContent, 16) === encoding) {
+                    cell.classList.add('selected');
+                }
+            });
+        }
+        
+        function previewText() {
+            const textInput = document.getElementById('textInput');
+            const char = textInput.value;
+            
+            if (!char) {
+                alert('文字を入力してください');
+                return;
+            }
+            
+            const charCode = char.charCodeAt(0);
+            selectCharacter(charCode);
+        }
+        
+        function clearPreview() {
+            document.getElementById('characterPreview').innerHTML = '';
+            document.getElementById('charInfo').textContent = 'プレビューをクリアしました';
+            document.getElementById('textInput').value = '';
+            
+            // 選択状態を解除
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.classList.remove('selected');
+            });
+        }
+        
+        function applyFilter() {
+            const filterText = document.getElementById('filterText').value;
+            filteredChars = {};
+            
+            for (let i = 0; i < filterText.length; i++) {
+                const char = filterText[i];
+                const charCode = char.charCodeAt(0);
+                if (bdfData[charCode]) {
+                    filteredChars[charCode] = bdfData[charCode];
+                }
+            }
+            
+            generateCCode();
+        }
+        
+        function generateCCode() {
+            const outputCode = document.getElementById('outputCode');
+            let code = '';
+            
+            // 構造体定義
+            code += 'typedef struct {\n';
+            code += '    uint8_t encoding;\n';
+            code += '    uint8_t bitmap[8];\n';
+            code += '} FontChar;\n\n';
+            
+            // フォントデータ配列
+            code += 'const FontChar fontData[] = {\n';
+            
+            const sortedEncodings = Object.keys(filteredChars).map(Number).sort((a, b) => a - b);
+            
+            for (let i = 0; i < sortedEncodings.length; i++) {
+                const encoding = sortedEncodings[i];
+                const charData = filteredChars[encoding];
+                
+                // 8行のビットマップデータを16進数形式で出力
+                const bitmapHex = charData.bitmap.map(byte => '0x' + byte.toString(16).padStart(2, '0')).join(', ');
+                
+                code += `    {0x${encoding.toString(16).padStart(2, '0').toUpperCase()}, {${bitmapHex}}}, // '${String.fromCharCode(encoding)}'\n`;
+            }
+            
+            code += '};\n';
+            
+            outputCode.value = code;
+        }
+        
+        function copyToClipboard() {
+            const outputCode = document.getElementById('outputCode');
+            outputCode.select();
+            document.execCommand('copy');
+            alert('クリップボードにコピーしました！');
+        }
+    </script>
+</body>
+</html>
+

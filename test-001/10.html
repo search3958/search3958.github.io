@@ -1,0 +1,1414 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500">
+    <title>HTML Preview</title>
+    <style rel="stylesheet" crossorigin="">@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500");@import url("https://api.fontshare.com/css?f[]=syne@400,500&display=swap");@import url("https://fonts.googleapis.com/css2?family=Noto Sans JP:wght@400;700");@import url("https://api.fontshare.com/css?f[]=noto sans jp@400,700&display=swap");@import url("https://fonts.googleapis.com/css2?family=Work Sans:wght@400;700");@import url("https://api.fontshare.com/css?f[]=work sans@400,700&display=swap");@import url("https://fonts.googleapis.com/css2?family=Sen:wght@400;700");@import url("https://api.fontshare.com/css?f[]=sen@400,700&display=swap");@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;700");@import url("https://api.fontshare.com/css?f[]=sora@400,700&display=swap");@import url("https://fonts.googleapis.com/css2?family=M PLUS 2:wght@400;500;700");@import url("https://api.fontshare.com/css?f[]=m plus 2@400,500,700&display=swap");/*
+  1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+  2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+  */
+
+*,
+::before,
+::after {
+  box-sizing: border-box; /* 1 */
+  border-width: 0; /* 2 */
+  border-style: solid; /* 2 */
+  border-color: #e5e7eb; /* 2 */
+}
+
+::before,
+::after {
+  --tw-content: "";
+}
+
+/*
+  1. Use a consistent sensible line-height in all browsers.
+  2. Prevent adjustments of font size after orientation changes in iOS.
+  3. Use a more readable tab size.
+  4. Use the user's configured sans font-family by default.
+  5. Use the user's configured sans font-feature-settings by default.
+  6. Use the user's configured sans font-variation-settings by default.
+  7. Disable tap highlights on iOS
+  */
+
+html,
+:host {
+  line-height: 1.5; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */ /* 3 */
+  tab-size: 4; /* 3 */
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
+  font-feature-settings: normal; /* 5 */
+  font-variation-settings: normal; /* 6 */
+  -webkit-tap-highlight-color: transparent; /* 7 */
+}
+
+/*
+  1. Remove the margin in all browsers.
+  2. Inherit line-height from html so users can set them as a class directly on the html element.
+  */
+
+body {
+  margin: 0; /* 1 */
+  line-height: inherit; /* 2 */
+}
+
+/*
+  1. Add the correct height in Firefox.
+  2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+  3. Ensure horizontal rules are visible by default.
+  */
+
+hr {
+  height: 0; /* 1 */
+  color: inherit; /* 2 */
+  border-top-width: 1px; /* 3 */
+}
+
+/*
+  Add the correct text decoration in Chrome, Edge, and Safari.
+  */
+
+abbr:where([title]) {
+  -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted;
+}
+
+/*
+  Remove the default font size and weight for headings.
+  */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
+  Reset links to optimize for opt-in styling instead of opt-out.
+  */
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/*
+  Add the correct font weight in Edge and Safari.
+  */
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+/*
+  1. Use the user's configured mono font-family by default.
+  2. Use the user's configured mono font-feature-settings by default.
+  3. Use the user's configured mono font-variation-settings by default.
+  4. Correct the odd em font sizing in all browsers.
+  */
+
+code,
+kbd,
+samp,
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
+  font-feature-settings: normal; /* 2 */
+  font-variation-settings: normal; /* 3 */
+  font-size: 1em; /* 4 */
+}
+
+/*
+  Add the correct font size in all browsers.
+  */
+
+small {
+  font-size: 80%;
+}
+
+/*
+  Prevent sub and sup elements from affecting the line height in all browsers.
+  */
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/*
+  1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+  2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+  3. Remove gaps between table borders by default.
+  */
+
+table {
+  text-indent: 0; /* 1 */
+  border-color: inherit; /* 2 */
+  border-collapse: collapse; /* 3 */
+}
+
+/*
+  1. Change the font styles in all browsers.
+  2. Remove the margin in Firefox and Safari.
+  3. Remove default padding in all browsers.
+  */
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  font-weight: inherit; /* 1 */
+  line-height: inherit; /* 1 */
+  letter-spacing: inherit; /* 1 */
+  color: inherit; /* 1 */
+  margin: 0; /* 2 */
+  padding: 0; /* 3 */
+}
+
+/*
+  Remove the inheritance of text transform in Edge and Firefox.
+  */
+
+button,
+select {
+  text-transform: none;
+}
+
+/*
+  1. Correct the inability to style clickable types in iOS and Safari.
+  2. Remove default button styles.
+  */
+
+button,
+input:where([type="button"]),
+input:where([type="reset"]),
+input:where([type="submit"]) {
+  -webkit-appearance: button; /* 1 */
+  background-color: transparent; /* 2 */
+  background-image: none; /* 2 */
+}
+
+/*
+  Use the modern Firefox focus style for all focusable elements.
+  */
+
+:-moz-focusring {
+  outline: auto;
+}
+
+/*
+  Remove the additional :invalid styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+  */
+
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+/*
+  Add the correct vertical alignment in Chrome and Firefox.
+  */
+
+progress {
+  vertical-align: baseline;
+}
+
+/*
+  Correct the cursor style of increment and decrement buttons in Safari.
+  */
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/*
+  1. Correct the odd appearance in Chrome and Safari.
+  2. Correct the outline style in Safari.
+  */
+
+[type="search"] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/*
+  Remove the inner padding in Chrome and Safari on macOS.
+  */
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/*
+  1. Correct the inability to style clickable types in iOS and Safari.
+  2. Change font properties to inherit in Safari.
+  */
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/*
+  Add the correct display in Chrome and Safari.
+  */
+
+summary {
+  display: list-item;
+}
+
+/*
+  Removes the default spacing and border for appropriate elements.
+  */
+
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+ol,
+ul,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+  Reset default styling for dialogs.
+  */
+dialog {
+  padding: 0;
+}
+
+/*
+  Prevent resizing textareas horizontally by default.
+  */
+
+textarea {
+  resize: vertical;
+}
+
+/*
+  1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+  2. Set the default placeholder color to the user's configured gray 400 color.
+  */
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 1; /* 1 */
+  color: #9ca3af; /* 2 */
+}
+
+/*
+  Set the default cursor for buttons.
+  */
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+/*
+  Make sure disabled buttons don't get the pointer cursor.
+  */
+:disabled {
+  cursor: default;
+}
+
+/*
+  1. Make replaced elements display: block by default. (https://github.com/mozdevs/cssremedy/issues/14)
+  2. Add vertical-align: middle to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+     This can trigger a poorly considered lint error in some tools but is included by design.
+  */
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block; /* 1 */
+  vertical-align: middle; /* 2 */
+}
+
+/*
+  Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+  */
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make elements with the HTML hidden attribute stay hidden by default */
+[hidden] {
+  display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+p,
+ol,
+ul {
+  margin: 0px;
+}
+button {
+  padding: 0px;
+}
+ol,
+ul {
+  padding-inline-start: 1.5em;
+}
+input {
+  background-image: none;
+  background-color: transparent;
+}
+.common-29,
+.frame-wrapper,
+.frame-background,
+.frame-background-1,
+.frame-background-2 {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  z-index: 0;
+}
+.common-30,
+.frame-bg-rectangle,
+.frame-rectangle {
+  position: absolute;
+  left: 18px;
+}
+.common-28,
+.frame-bg-rectangle,
+.frame-rectangle {
+  transform: rotate(90deg) scaleX(1) scaleY(-1);
+  transform-origin: top left;
+}
+.common-27,
+.frame-frame-1,
+.frame-component-9,
+.frame-tt-rectangle {
+  background-position: center;
+  background-size: cover;
+}
+.common-11,
+.frame-t-bg-rectangle-399rectangle,
+.frame-t-rectangle,
+.frame-tt-ui-ux {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+.common-12,
+.frame-t-hanul-1234web-creator-webp,
+.frame-t-12 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 19px;
+}
+.common-13,
+.frame-tt-frame-199frame,
+.frame-t-frame,
+.frame-t-frame-2,
+.frame-t-frame-4 {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.common-14,
+.frame-t-rectangle-408toolboard-t3d-space-tthinksocial-ttools-trectangle,
+.frame-frame-5,
+.frame-t-ui-ux,
+.frame-ttt-t13t42t3766785t {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.common-15,
+.frame-t-3,
+.frame-t-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.common-16,
+.frame-ttt-bg-rectangle-399rectangle-401haneul,
+.frame-tt,
+.frame-t-frame-3 {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.common-17,
+.frame-t-home-products-newtab-tools,
+.frame-frame-3,
+.frame-t-2,
+.frame-tttt-t13t42t3766785t,
+.frame-t-t13t,
+.frame-t-9,
+.frame-tt-rectangle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.common-18,
+.frame-tt-rectangle-408toolboard-t3d-space-tthinksocial-ttools-trectangle-409t,
+.frame-ttt-ui-ux-group {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+.common-19,
+.frame-frame-2,
+.frame-t-frame-199frame {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.common-20,
+.frame-t-6,
+.frame-t-3d-space-1,
+.frame-t-m3gen-ui-script-tools,
+.frame-t-newtab-techpick,
+.frame-t-3958thinksocial {
+  display: flex;
+  align-items: center;
+  gap: 19px;
+}
+.common-21,
+.frame-frame-4,
+.frame-frame-7 {
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+.common-22,
+.frame-frame,
+.frame-t-frame-1,
+.frame-tt-newtab-techpick-10thanul-1234web-creator-webp-t,
+.frame-t-13 {
+  display: flex;
+  flex-direction: column;
+}
+.common-23,
+.frame-t,
+.frame-t-4,
+.frame-tttt-ui-ux-group,
+.frame-t-11 {
+  display: flex;
+  align-items: flex-end;
+}
+.common-24,
+.frame-t-1,
+.frame-t-5 {
+  display: flex;
+  align-items: center;
+}
+.common-25,
+.frame-frame-1,
+.frame-frame-8 {
+  flex-direction: column;
+  gap: 10px;
+}
+.common-26,
+.frame-frame-6,
+.frame-component-39 {
+  justify-content: center;
+  align-items: center;
+}
+.common-5,
+.frame-t-6,
+.frame-component-22,
+.frame-component-24 {
+  color: #00000091;
+  font-size: 14px;
+  font-family: Sen, ui-sans-serif, system-ui, sans-serif;
+}
+.common-6,
+.frame-component-7,
+.frame-component-14,
+.frame-component-17,
+.frame-component-28 {
+  font-size: 20px;
+  font-family: Sen, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+}
+.common-7,
+.frame-t-frame-199frame,
+.frame-component-12 {
+  font-size: 9px;
+  font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  text-align: center;
+}
+.common-8,
+.frame-t-rectangle-408toolboard-t3d-space-tthinksocial-ttools-trectangle,
+.frame-web-p,
+.frame-component-13 {
+  color: #000000b2;
+  font-size: 14px;
+}
+.common-9,
+.frame-component-21,
+.frame-component-23,
+.frame-t-9 {
+  font-size: 28px;
+  font-weight: 700;
+}
+.common-10,
+.frame-component,
+.frame-component-1 {
+  font-family: "Noto Sans JP", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+}
+.common-1,
+.frame-frame-4,
+.frame-frame-7,
+.frame-frame-8 {
+  display: flex;
+  background-color: whitesmoke;
+}
+.common-2,
+.frame-frame-6,
+.frame-rectangle-3 {
+  display: flex;
+  background-color: firebrick;
+}
+.common-3,
+.frame-frame-1,
+.frame-component-39 {
+  display: flex;
+  color: white;
+}
+.common-4,
+.frame-t-bg-rectangle-399rectangle,
+.frame-wrapper,
+.frame-bg-rectangle,
+.frame-rectangle {
+  width: 18px;
+  height: 18px;
+}
+.frame-frame {
+  background-color: white;
+  width: 100%;
+  line-height: normal;
+  gap: 1.4px;
+}
+.frame-frame-1 {
+  background-image: url("blob:https://app.firejet.io/ea280808-4425-424f-876c-12e340d98c41");
+  padding-bottom: 22px;
+}
+.frame-frame-2 {
+  align-items: flex-end;
+  row-gap: 7px;
+  background-color: #ffffff0f;
+  column-gap: 10px;
+  padding-bottom: 17px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-top: 12px;
+  -webkit-backdrop-filter: blur(1.6px);
+          backdrop-filter: blur(1.6px);
+  font-family: Syne, ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+}
+.frame-ttt-bg-rectangle-399rectangle-401haneul {
+  gap: 10px;
+}
+.frame-t-bg-rectangle-399rectangle {
+  padding-top: 6.3px;
+  position: relative;
+}
+.frame-wrapper {
+  border-bottom-left-radius: 10000px;
+  border-bottom-right-radius: 10000px;
+  border-top-left-radius: 10000px;
+  border-top-right-radius: 10000px;
+}
+.frame-bg-rectangle {
+  border-bottom-left-radius: 10000px;
+  border-bottom-right-radius: 10000px;
+  background-image: conic-gradient(
+    rgba(88, 0, 0, 1),
+    rgba(190, 0, 0, 1) 50%,
+    rgba(255, 0, 0, 1) 81%,
+    rgba(255, 148, 71, 1) 97%,
+    rgba(255, 219, 59, 1)
+  );
+  border-top-left-radius: 10000px;
+  border-top-right-radius: 10000px;
+}
+.frame-wrapper-1 {
+  border-bottom-left-radius: 10000px;
+  border-bottom-right-radius: 10000px;
+  margin-top: -6.32px;
+  width: 18px;
+  height: 11px;
+  border-top-left-radius: 10000px;
+  border-top-right-radius: 10000px;
+  z-index: 2;
+  position: relative;
+}
+.frame-background {
+  background-image: radial-gradient(
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(74, 0, 0, 0.9) 69%,
+    rgba(178, 0, 0, 0.9) 81%,
+    rgba(255, 163, 71, 0.9) 97%,
+    rgba(255, 204, 53, 0.9)
+  );
+  mix-blend-mode: screen;
+  border-top-left-radius: 10000px;
+  border-bottom-left-radius: 10000px;
+  border-top-right-radius: 10000px;
+  border-bottom-right-radius: 10000px;
+}
+.frame-rectangle {
+  border-bottom-left-radius: 10000px;
+  border-bottom-right-radius: 10000px;
+  border-top-left-radius: 10000px;
+  border-top-right-radius: 10000px;
+}
+.frame-ha-neul {
+  font-weight: 500;
+}
+.frame-t-home-products-newtab-tools {
+  gap: 12px;
+}
+.frame-t {
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-top: 37px;
+}
+.frame-component {
+  font-size: 14px;
+}
+.frame-t-1 {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.frame-component-1 {
+  font-size: 27px;
+}
+.frame-tt-frame-199frame {
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-top: 37px;
+}
+.frame-t-frame-199frame {
+  align-items: center;
+  row-gap: 13px;
+  column-gap: 64px;
+  font-weight: 700;
+}
+.frame-component-2 {
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+  background-color: firebrick;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+.frame-frame-3 {
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  padding-bottom: 7px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 7px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+  position: relative;
+}
+.frame-background-1 {
+  background-image: rgba(129, 129, 129, 1);
+  mix-blend-mode: color-dodge;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  text-align: center;
+}
+.frame-background-2 {
+  background-image: rgba(255, 255, 255, 0.2);
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  text-align: center;
+}
+.frame-component-3 {
+  z-index: 1;
+  text-align: center;
+}
+.frame-tt {
+  padding-top: 13px;
+}
+.frame-t-2 {
+  font-family: Sen, ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+  gap: 14px;
+}
+.frame-t-frame {
+  padding-top: 13px;
+}
+.frame-frame-4 {
+  padding-bottom: 27px;
+  padding-left: 22px;
+  padding-right: 114px;
+  padding-top: 16px;
+  font-family: Sora, ui-sans-serif, system-ui, sans-serif;
+  gap: 8px;
+}
+.frame-new-tab-1 {
+  font-size: 14px;
+  padding-top: 9px;
+  align-self: stretch;
+}
+.frame-tt-rectangle-408toolboard-t3d-space-tthinksocial-ttools-trectangle-409t {
+  align-self: stretch;
+}
+.frame-t-rectangle-408toolboard-t3d-space-tthinksocial-ttools-trectangle {
+  gap: 9px;
+}
+.frame-rectangle-1 {
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+  background-color: firebrick;
+  width: 60px;
+  height: 1.5px;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+}
+.frame-tool-board {
+  align-self: stretch;
+}
+.frame-t-3d-space {
+  align-self: stretch;
+  max-width: 110px;
+  padding-top: 11px;
+}
+.frame-t-thinksocial {
+  align-self: stretch;
+  max-width: 110px;
+  padding-top: 11px;
+}
+.frame-t-tools {
+  align-self: stretch;
+  max-width: 110px;
+  padding-top: 11px;
+}
+.frame-t-rectangle {
+  padding-top: 11px;
+}
+.frame-rectangle-2 {
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+  background-color: #0000000f;
+  width: 110px;
+  height: 2px;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+}
+.frame-component-8 {
+  align-self: stretch;
+}
+.frame-t-3 {
+  width: 218px;
+}
+.frame-component-9 {
+  border-style: solid;
+  border-color: #00000047;
+  border-top-width: 2px;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+  border-right-width: 2px;
+  border-bottom-left-radius: 52px;
+  border-bottom-right-radius: 52px;
+  background-image: url("blob:https://app.firejet.io/e1440e76-c67b-4693-a2c6-a83a8c75ab1e");
+  width: 233px;
+  padding-top: 27px;
+  border-top-left-radius: 52px;
+  border-top-right-radius: 52px;
+  display: flex;
+  gap: 57px;
+}
+.frame-t-group {
+  width: 61px;
+  height: 56px;
+}
+.frame-group {
+  margin-right: 32px;
+  margin-bottom: -17px;
+  width: 105px;
+  height: 105px;
+}
+.frame-t-frame-1 {
+  align-items: center;
+  height: 154px;
+}
+.frame-frame-5 {
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  margin-bottom: -25px;
+  background-color: #ffffffa3;
+  width: 207px;
+  height: 179px;
+  padding-bottom: 16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 16px;
+  justify-content: center;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  filter: drop-shadow(0px 0px 20px rgba(0, 0, 0, 0.14));
+  -webkit-backdrop-filter: blur(7.1px);
+          backdrop-filter: blur(7.1px);
+  font-size: 11px;
+  color: #00000093;
+  line-height: 1.5;
+  gap: 10px;
+}
+.frame-new-tab-2 {
+  font-size: 19px;
+  color: black;
+}
+.frame-component-10 {
+  align-self: stretch;
+  display: flex;
+  align-items: flex-start;
+}
+.frame-list {
+  list-style-type: disc;
+}
+.frame-component-11 {
+  align-self: stretch;
+}
+.frame-text {
+  color: darkorange;
+}
+.frame-frame-6 {
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  align-self: stretch;
+  padding-bottom: 7px;
+  padding-left: 7px;
+  padding-right: 7px;
+  padding-top: 7px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+}
+.frame-component-12 {
+  color: white;
+}
+.frame-web-p {
+  padding-top: 12px;
+  align-self: stretch;
+}
+.frame-component-13 {
+  padding-top: 12px;
+  align-self: stretch;
+}
+.frame-t-4 {
+  padding-left: 26px;
+  padding-right: 26px;
+  padding-top: 20px;
+}
+.frame-tttt-ui-ux-group {
+  padding-left: 26px;
+  padding-top: 21px;
+  justify-content: flex-end;
+}
+.frame-ttt-ui-ux-group {
+  flex-grow: 1;
+  flex-wrap: wrap;
+  gap: 19px;
+}
+.frame-tt-ui-ux {
+  padding-top: 8.4px;
+}
+.frame-t-ui-ux {
+  width: 240px;
+  font-family: Sen, ui-sans-serif, system-ui, sans-serif;
+  gap: 20px;
+}
+.frame-component-15 {
+  font-weight: 700;
+}
+.frame-ui-ux {
+  align-self: stretch;
+  font-size: 11px;
+}
+.frame-group-1 {
+  width: 179px;
+  height: 162px;
+}
+.frame-t-5 {
+  padding-left: 26px;
+  padding-right: 26px;
+}
+.frame-component-16 {
+  font-family: Sen, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+}
+.frame-web-flutter-c {
+  font-size: 11px;
+  font-family: Sora, ui-sans-serif, system-ui, sans-serif;
+  padding-left: 26px;
+  padding-right: 26px;
+  padding-top: 22px;
+}
+.frame-t-frame-2 {
+  padding-top: 20px;
+}
+.frame-frame-7 {
+  padding-bottom: 28px;
+  padding-left: 26px;
+  padding-right: 16px;
+  padding-top: 28px;
+  gap: 30px;
+}
+.frame-tttt-t13t42t3766785t {
+  align-self: stretch;
+  flex-wrap: wrap;
+  font-family: Sora, ui-sans-serif, system-ui, sans-serif;
+  gap: 18px;
+}
+.frame-component-18 {
+  width: 151px;
+  font-size: 13px;
+  line-height: 1.36;
+}
+.frame-ttt-t13t42t3766785t {
+  gap: 5.3px;
+}
+.frame-component-19 {
+  width: 107px;
+}
+.frame-component-20 {
+  width: 107px;
+}
+.frame-t-7 {
+  flex-grow: 1;
+  max-width: 127px;
+}
+.frame-component-22 {
+  width: 107px;
+}
+.frame-t-8 {
+  flex-grow: 1;
+  max-width: 127px;
+}
+.frame-component-23 {
+  align-self: stretch;
+}
+.frame-component-24 {
+  text-align: center;
+}
+.frame-component-25 {
+  width: 127px;
+}
+.frame-component-26 {
+  width: 127px;
+}
+.frame-t-10 {
+  align-self: stretch;
+  max-width: 253px;
+  padding-top: 14px;
+}
+.frame-component-27 {
+  font-size: 14px;
+  color: #00000091;
+}
+.frame-t-11 {
+  padding-left: 26px;
+  padding-right: 26px;
+  padding-top: 28px;
+}
+.frame-t-frame-3 {
+  padding-left: 26px;
+  padding-right: 35px;
+  padding-top: 14px;
+}
+.frame-frame-8 {
+  border-bottom-left-radius: 26px;
+  border-bottom-right-radius: 26px;
+  flex-grow: 1;
+  padding-bottom: 24px;
+  padding-left: 24px;
+  padding-right: 44px;
+  padding-top: 24px;
+  justify-content: center;
+  border-top-left-radius: 26px;
+  border-top-right-radius: 26px;
+  font-family: Sora, ui-sans-serif, system-ui, sans-serif;
+  font-size: 17px;
+}
+.frame-tt-newtab-techpick-10thanul-1234web-creator-webp-t {
+  gap: 10px;
+}
+.frame-t-12 {
+  padding-right: 8px;
+}
+.frame-t-frame-4 {
+  padding-top: 28px;
+}
+.frame-tt-rectangle {
+  font-family: "M PLUS 2", ui-sans-serif, system-ui, sans-serif;
+  background-image: url("blob:https://app.firejet.io/d215f897-7d52-46c2-9b02-eef08c78d173");
+  padding-left: 26px;
+  padding-right: 33px;
+  padding-top: 35px;
+  padding-bottom: 35px;
+  gap: 91px;
+}
+.frame-t-13 {
+  flex-grow: 1;
+  max-width: 192px;
+  gap: 14px;
+}
+.frame-component-37 {
+  font-size: 20px;
+  font-weight: 700;
+}
+.frame-component-38 {
+  font-size: 13px;
+  font-weight: 500;
+}
+.frame-para-9 {
+  margin-bottom: 3px;
+}
+.frame-rectangle-3 {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  align-items: center;
+  flex-direction: column;
+  width: 122px;
+  padding-bottom: 3px;
+  padding-top: 3px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+.frame-component-39 {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+@media (min-width: 454px) {
+  .frame-frame-2 {
+    flex-wrap: nowrap;
+  }
+  .frame-t-frame-199frame {
+    flex-wrap: nowrap;
+  }
+  .frame-ttt-ui-ux-group {
+    flex-wrap: nowrap;
+  }
+  .frame-tttt-t13t42t3766785t {
+    flex-wrap: nowrap;
+  }
+}
+</style>
+  <style>
+        html {
+          scrollbar-gutter: stable;
+        }
+      </style>
+</head>
+  <body style="margin: 0px">
+    <!-- This only removes default margins in our renderer iframe, you may remove -->
+    <div id="firejet-html-app">
+      <div class="frame-frame">
+        <div class="frame-frame-1">
+          <div class="frame-frame-2">
+            <div class="frame-ttt-bg-rectangle-399rectangle-401haneul">
+              <div class="frame-t-bg-rectangle-399rectangle">
+                <div class="frame-wrapper">
+                  <div class="frame-bg-rectangle"></div>
+                </div>
+                <div class="frame-wrapper-1">
+                  <div class="frame-background"></div>
+                  <div class="frame-rectangle"></div>
+                </div>
+              </div>
+              <div class="frame-ha-neul">HaNeul</div>
+            </div>
+            <div class="frame-t-home-products-newtab-tools">
+              <div>Home</div>
+              <div>Products</div>
+              <div>NewTab</div>
+              <div>Tools</div>
+            </div>
+          </div>
+          <div class="frame-t">
+            <div class="frame-component">無限の可能性のために</div>
+          </div>
+          <div class="frame-t-1">
+            <div class="frame-component-1">作業効率化を</div>
+          </div>
+          <div class="frame-tt-frame-199frame">
+            <div class="frame-t-frame-199frame">
+              <div class="frame-component-2">ツール一覧を確認</div>
+              <div class="frame-frame-3">
+                <div class="frame-background-1"></div>
+                <div class="frame-background-2"></div>
+                <div class="frame-component-3">私について</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="frame-tt">
+          <div class="frame-t-2">
+            <div>利用規約</div>
+            <div>プライバシーポリシー</div>
+            <div>マイアカウント</div>
+          </div>
+        </div>
+        <div class="frame-t-frame">
+          <div class="frame-frame-4">
+            <div class="frame-component-7">主なプロジェクト一覧</div>
+            <div class="frame-tt-rectangle-408toolboard-t3d-space-tthinksocial-ttools-trectangle-409t">
+              <div class="frame-t-rectangle-408toolboard-t3d-space-tthinksocial-ttools-trectangle">
+                 <div class="frame-new-tab-1">NewTab 5</div>
+                <div class="frame-rectangle-1"></div>
+                <div class="frame-tool-board">ToolBoard</div>
+                <div class="frame-t-3d-space"><div>3D Space</div></div>
+                <div class="frame-t-thinksocial"><div>thinkSocial</div></div>
+                <div class="frame-t-tools"><div>Tools</div></div>
+                <div class="frame-t-rectangle">
+                  <div class="frame-rectangle-2"></div>
+                </div>
+                <div class="frame-component-8">文字カウンター</div>
+              </div>
+              <div class="frame-t-3">
+                <div class="frame-component-9">
+                  <div class="frame-t-group">
+                    <object data="blob:https://app.firejet.io/6e7e71f6-f216-40e3-a561-3ec66f703588" class="frame-group"></object>
+                  </div>
+                  <div class="frame-t-frame-1">
+                    <div class="frame-frame-5">
+                      <div class="frame-new-tab-2">NewTab 5</div>
+                      <div class="frame-component-10">
+                        <ul class="frame-list">
+                          <li>革命的な新しいタブページ体験</li>
+                          <li>
+                            美しいデザインと実用性を兼ね備えた次世代の新しいタブ。
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="frame-component-11">
+                        <span>価格: <span class="frame-text">無料 </span>/
+                          無制限</span>
+                      </div>
+                      <div class="frame-frame-6">
+                        <div class="frame-component-12">使用開始</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="frame-web-p">WebP変換</div>
+            <div class="frame-component-13">コード軽量化</div>
+          </div>
+        </div>
+        <div class="frame-t-4">
+          <div class="frame-component-14">私について</div>
+        </div>
+        <div class="frame-tttt-ui-ux-group">
+          <div class="frame-ttt-ui-ux-group">
+            <div class="frame-tt-ui-ux">
+              <div class="frame-t-ui-ux">
+                <div class="frame-component-15">ミッション</div>
+                <div class="frame-ui-ux">
+                  <span><p>
+                      日常のデジタル体験をより豊かで効率的にすることを目指しています。
+                    </p>
+                    <p>
+                      使いやすさと美しさを両立するため、特にユーザー中心設計
+                      、モダンなUI/UX 、パフォーマンス重視を重視しています。
+                    </p></span>
+                </div>
+              </div>
+            </div>
+            <object data="blob:https://app.firejet.io/bbe68595-1548-4844-9de3-1cc2744e2298" class="frame-group-1"></object>
+          </div>
+        </div>
+        <div class="frame-t-5">
+          <div class="frame-component-16">技術スタック</div>
+        </div>
+        <div class="frame-web-flutter-c">
+          <span><p>
+              最新のウェブ技術を活用し、高品質で美しいアプリケーションを構築しています。
+            </p>
+            <p>
+              私は主にWeb系とFlutter，C言語の一部を扱うことができます。
+            </p></span>
+        </div>
+        <div class="frame-t-frame-2">
+          <div class="frame-frame-7">
+            <div class="frame-component-17">信頼できる品質</div>
+            <div class="frame-tttt-t13t42t3766785t">
+              <div class="frame-component-18">
+                <span><p>
+                    私は日常のちょっとした作業の手間を減らし，よりスマートに作業を効率化するためにサービスを無料で提供しています。
+                  </p>
+                  <p>
+                    常に新しい技術が使用されているため、ユーザーのニーズや時代の変化に合わせて、より直感的でスマートな体験を提供し続けています。
+                  </p></span>
+              </div>
+              <div class="frame-ttt-t13t42t3766785t">
+                <div class="frame-t-6">
+                  <div class="frame-component-19">表示回数</div>
+                  <div class="frame-component-20">イベント数</div>
+                </div>
+                <div class="frame-t-t13t">
+                  <div class="frame-t-7">
+                    <div class="frame-component-21">1.3万+</div>
+                    <div class="frame-component-22">セッション</div>
+                  </div>
+                  <div class="frame-t-8">
+                    <div class="frame-component-23">4.2万+</div>
+                    <div class="frame-component-24">エンゲージメント率</div>
+                  </div>
+                </div>
+                <div class="frame-t-9">
+                  <div class="frame-component-25">3,766</div>
+                  <div class="frame-component-26">78.5%</div>
+                </div>
+                <div class="frame-t-10">
+                  <div class="frame-component-27">
+                    2025.1.1から2025.11.9までの情報
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="frame-t-11">
+          <div class="frame-component-28">他のサービス一覧</div>
+        </div>
+        <div class="frame-t-frame-3">
+          <div class="frame-frame-8">
+            <div class="frame-t-3d-space-1">
+              <div>ツールボード</div>
+              <div>3D Space</div>
+              <div>クソゲー広場</div>
+            </div>
+            <div class="frame-t-m3gen-ui-script-tools">
+              <div>M3 Gen</div>
+              <div>UI Script</div>
+              <div>Tools</div>
+              <div>火原台</div>
+            </div>
+            <div class="frame-tt-newtab-techpick-10thanul-1234web-creator-webp-t">
+              <div class="frame-t-newtab-techpick">
+                <div>Newtab</div>
+                <div>ドキュメント</div>
+                <div>TechPick 10</div>
+              </div>
+              <div class="frame-t-hanul-1234web-creator-webp">
+                <div>Hanul(1234)</div>
+                <div>Web Creator</div>
+                <div>WebP変換</div>
+              </div>
+              <div class="frame-t-12">
+                <div>ドキュメント</div>
+                <div>カウンター</div>
+                <div>コード軽量化</div>
+              </div>
+            </div>
+            <div class="frame-t-3958thinksocial">
+              <div>3958アカウント</div>
+              <div>thinkSocial</div>
+            </div>
+          </div>
+        </div>
+        <div class="frame-t-frame-4">
+          <div class="frame-tt-rectangle">
+            <div class="frame-t-13">
+              <div class="frame-component-37">問い合わせ</div>
+              <div class="frame-component-38">
+                <span><p class="frame-para-9">何か伝えることがありましたら</p>
+                  <p>ご遠慮なくどうぞ！</p></span>
+              </div>
+            </div>
+            <div class="frame-rectangle-3">
+              <div class="frame-component-39"><p>フォームを表示</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+
+
+
+</body></html>
