@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>シンプルタイマー | Simple Timer</title>
+<link rel="canonical" href="https://search3958.github.io/tools/timer/ja.html">
+<meta name="description" content="シンプルで美しい、Material Design採用のタイマー。全画面表示、テーマカラー変更などカスタマイズ対応。">
+<meta name="theme-color" content="#BE0000">
+<meta name="robots" content="noindex, nofollow"> <link rel="icon" href="https://search3958.github.io/icons/search3958.svg">
+
+
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Simple Timer | オンラインスタイマー">
+    <meta property="og:description" content="シンプルで美しいタイマーツール。テーマカラーなどをカスタマイズ可能。">
+    <meta property="og:site_name" content="Simple Timer">
+    <meta property="og:url" content="https://search3958.github.io/tools/timer/ja.html">
+    <meta property="og:image" content="https://search3958.github.io/icons/search3958.svg">
+    <meta property="og:locale" content="ja_JP">
+    <link rel="icon" href="https://search3958.github.io/icons/search3958.svg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Simple Timer">
+    <meta name="twitter:description" content="シンプルで美しいタイマーツール。全画面対応。">
+    <meta name="twitter:image" content="https://search3958.github.io/icons/search3958.svg">
+
+    <script type="application/ld+json">
+    {
+      "@type": "WebSite",
+      "name": "タイマー",
+      "url": "https://search3958.github.io/tools/timer/ja.html",
+      "description": "おしゃれで高機能なオンラインタイマーツール",
+      "inLanguage": "ja"
+    }
+    </script>
+
+<style>
+    :root{--primary:#BE0000;--background:#F4F4F4;--surface:#ffffff;--on-surface:#121212;--on-surface-variant:#454746;--outline:#747775;--radius-container:28px;--radius-button:20px;--radius-full:9999px;--font-base:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--font-clock:var(--font-base);--background-light:#F4F4F4;--surface-light:#ffffff;--on-surface-light:#121212;--on-surface-variant-light:#454746;--outline-light:#747775;--background-dark:#121212;--surface-dark:#1F1F1F;--on-surface-dark:#E0E0E0;--on-surface-variant-dark:#A0A0A0;--outline-dark:#404040}.dark-mode{--background:var(--background-dark);--surface:var(--surface-dark);--on-surface:var(--on-surface-dark);--on-surface-variant:var(--on-surface-variant-dark);--outline:var(--outline-dark)}.font-mono{--font-clock:ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace}*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}body{font-family:var(--font-base);background-color:var(--background);color:var(--on-surface);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;transition:background-color 0.3s}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}button{cursor:pointer;border:none;background:none;font-family:inherit}.app-title{position:absolute;top:32px;left:32px;font-size:1.5rem;font-weight:700;color:var(--on-surface);z-index:10;display:flex;align-items:center}.stopwatch-container{text-align:center;padding:2rem;width:100%;max-width:800px}.time-display{font-family:var(--font-clock);font-size:clamp(3rem,15vw,10rem);font-weight:700;line-height:1;letter-spacing:-0.02em;display:flex;justify-content:center;align-items:baseline;gap:0.1em;font-feature-settings:"tnum";transition:font-family 0.3s}.time-input{background-color:#ffffff;color:#000000;border:9px solid #afafaf69;border-radius:16px;width:fit-content;text-align:center;font-family:inherit;font-size:inherit;font-weight:inherit;padding:0;margin:0;-moz-appearance:textfield}.time-input::-webkit-outer-spin-button,.time-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.time-input:focus{outline:4px solid var(--primary);border-color:var(--primary)}.time-input:disabled{opacity:1;cursor:default;border-color:transparent}.time-part{color:var(--on-surface)}.fab-container{position:absolute;top:24px;right:24px;display:flex;gap:12px;z-index:10}.fab{background-color:var(--surface);color:var(--on-surface);width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 8px rgba(0,0,0,0.05),0 1px 3px rgba(0,0,0,0.1);transition:transform 0.2s cubic-bezier(0.2,0.0,0,1.0),box-shadow 0.2s,background-color 0.3s,color 0.3s}.fab:hover{transform:scale(1.05);box-shadow:0 6px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.12)}.dark-mode .fab{box-shadow:0 4px 8px rgba(255,255,255,0.05),0 1px 3px rgba(255,255,255,0.1)}.dark-mode .fab:hover{box-shadow:0 6px 12px rgba(255,255,255,0.08),0 2px 4px rgba(255,255,255,0.12)}.fab:active{transform:scale(0.95)}.fab svg{width:24px;height:24px;fill:currentColor}.fullscreen-active body{transition:background-color 0s}.fullscreen-active .app-title{display:none}.controls-container{display:flex;gap:20px;justify-content:center;margin-top:40px}.control-btn{width:auto;height:auto;padding:24px 32px;min-width:120px;border-radius:var(--radius-button);display:flex;align-items:center;justify-content:center;gap:8px;font-size:1rem;font-weight:600;box-shadow:0 4px 8px rgba(0,0,0,0.05),0 1px 3px rgba(0,0,0,0.1);transition:transform 0.2s,box-shadow 0.2s,background-color 0.3s,color 0.3s}.dark-mode .control-btn{box-shadow:0 4px 8px rgba(255,255,255,0.05),0 1px 3px rgba(255,255,255,0.1)}.control-btn:hover{transform:scale(1.05)}.control-btn:active{transform:scale(0.95)}.control-btn svg{width:24px;height:24px;fill:currentColor}.primary-btn{background-color:var(--primary);color:var(--surface)}.monotone-btn{background-color:var(--surface);color:var(--on-surface);border:none}.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,0.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s ease;z-index:100;padding:20px}.modal-overlay.active{opacity:1;pointer-events:auto}.modal-card{background-color:var(--surface);border-radius:var(--radius-container);padding:32px;width:100%;max-width:400px;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1),0 10px 10px -5px rgba(0,0,0,0.04);transform:translateY(20px);transition:transform 0.3s cubic-bezier(0.2,0.0,0,1.0),background-color 0.3s,color 0.3s;display:flex;flex-direction:column;gap:24px}.modal-overlay.active .modal-card{transform:translateY(0)}.modal-header{display:flex;justify-content:space-between;align-items:center}.modal-title{font-size:1.5rem;font-weight:600;color:var(--on-surface)}.close-btn{padding:8px;border-radius:var(--radius-full);color:var(--on-surface-variant);transition:background-color 0.2s}.close-btn:hover{background-color:rgba(var(--on-surface-light),0.05)}.dark-mode .close-btn:hover{background-color:rgba(var(--on-surface-dark),0.05)}.menu-list{list-style:none;display:flex;flex-direction:column;gap:8px}.menu-link{display:flex;align-items:center;padding:16px 20px;text-decoration:none;color:var(--on-surface);background-color:var(--background);border-radius:var(--radius-button);font-weight:500;transition:background-color 0.2s}.menu-link:hover{background-color:#e0e0e0}.dark-mode .menu-link:hover{background-color:#333333}.setting-group{margin-bottom:24px}.setting-label{display:block;margin-bottom:12px;font-size:0.9rem;color:var(--on-surface-variant);font-weight:600}.color-options{display:flex;gap:16px;justify-content:center}.color-btn{width:48px;height:48px;border-radius:var(--radius-full);position:relative;transition:transform 0.2s}.color-btn:hover{transform:scale(1.1)}.color-btn[aria-selected="true"]::after{content:'';position:absolute;top:-4px;right:-4px;bottom:-4px;left:-4px;border:2px solid var(--on-surface);border-radius:inherit}.font-options,.toggle-group{display:grid;grid-template-columns:1fr 1fr;gap:10px}.toggle-group{grid-template-columns:1fr}.font-btn,.toggle-btn{padding:12px;border:1px solid var(--outline);border-radius:var(--radius-button);font-size:0.9rem;color:var(--on-surface);background-color:var(--surface);transition:background-color 0.2s,border-color 0.2s,color 0.2s}.font-btn.active,.toggle-btn.active{background-color:var(--on-surface);color:var(--surface);border-color:var(--on-surface)}.switch-container{display:flex;align-items:center;justify-content:space-between;padding:12px 0}.switch-label{font-weight:500}.switch{position:relative;display:inline-block;width:48px;height:24px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:var(--outline);transition:.4s;border-radius:24px}.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background-color:var(--surface);transition:.4s;border-radius:50%}input:checked + .slider{background-color:var(--primary)}input:checked + .slider:before{transform:translateX(24px)}@media (max-width:600px){.app-title{display:none}.fab-container{top:16px;right:16px;gap:8px}.modal-card{padding:24px;border-radius:20px}.time-display{flex-direction:row;align-items:center;font-size:16vw}.time-hhmm{font-size:1em;margin-bottom:-0.1em}.time-mm{font-size:1em;margin-bottom:-0.1em}.time-ss{font-size:1em;margin-top:0}.controls-container{margin-top:20px;gap:10px}.control-btn{width:auto;height:auto;padding:12px 24px;min-width:100px;font-size:0.9rem}}.time-separator{color:var(--on-surface)}@media (max-width:600px) and (orientation:portrait){.fullscreen-active .stopwatch-container{min-height:100vh;justify-content:center}}iframe,ins{position:fixed;bottom:0;left:0;width:100vw;height:130px;max-height:130px!important;background:#fff9}#alarm-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background-color:var(--primary);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}#alarm-overlay.active{opacity:1;pointer-events:auto}.alarm-time{color:#ffffff;font-size:clamp(4rem,20vw,15rem);font-weight:700;font-family:var(--font-clock);font-feature-settings:"tnum"}.alarm-close-btn{margin-top:32px;background-color:#ffffff;color:#000000;font-size:1.5rem;font-weight:600;padding:16px 48px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:transform 0.1s}.alarm-close-btn:hover{transform:scale(1.05)}.alarm-close-btn:active{transform:scale(0.95)}.sound-select{width:100%;padding:12px;border-radius:var(--radius-button);border:1px solid var(--outline);background-color:var(--background);color:var(--on-surface);font-size:1rem;margin-bottom:8px}.license-text{font-size:0.8rem;color:var(--on-surface-variant);line-height:1.4}.license-text a{color:var(--primary);text-decoration:underline}
+</style>
+</head>
+<body>
+
+<h1 class="app-title">
+<svg class="logo-svg" width="32" height="32" viewBox="0 0 14 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#paint0_angular_1417_5_clip_path)" data-figma-skip-parse="true"><g transform="matrix(-0.007 2.38419e-10 2.38418e-10 0.007 7 14)"><foreignObject x="-1142.86" y="-1142.86" width="2285.71" height="2285.71"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(88, 0, 0, 1) 0deg,rgba(190, 0, 0, 1) 181.711deg,rgba(255, 0, 0, 1) 290.751deg,rgba(255, 145, 145, 1) 349.598deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)" data-figma-gradient-fill="{&quot;type&quot;:&quot;GRADIENT_ANGULAR&quot;,&quot;stops&quot;:[{&quot;color&quot;:{&quot;r&quot;:0.34511718153953552,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.0},{&quot;color&quot;:{&quot;r&quot;:0.74511718750,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.50475275516510010},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.80764156579971313},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:0.57208782434463501,&quot;b&quot;:0.57208782434463501,&quot;a&quot;:1.0},&quot;position&quot;:0.97110533714294434},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:1.0,&quot;b&quot;:1.0,&quot;a&quot;:1.0},&quot;position&quot;:1.0}],&quot;stopsVar&quot;:[{&quot;color&quot;:{&quot;r&quot;:0.34511718153953552,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.0},{&quot;color&quot;:{&quot;r&quot;:0.74511718750,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.50475275516510010},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.80764156579971313},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:0.57208782434463501,&quot;b&quot;:0.57208782434463501,&quot;a&quot;:1.0},&quot;position&quot;:0.97110533714294434},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:1.0,&quot;b&quot;:1.0,&quot;a&quot;:1.0},&quot;position&quot;:1.0}],&quot;transform&quot;:{&quot;m00&quot;:-14.0,&quot;m01&quot;:4.7683604975645721e-07,&quot;m02&quot;:14.0,&quot;m10&quot;:4.7683732873338158e-07,&quot;m11&quot;:14.0,&quot;m12&quot;:6.9999995231628418},&quot;opacity&quot;:1.0,&quot;blendMode&quot;:&quot;NORMAL&quot;,&quot;visible&quot;:true}"></rect>
+<g clip-path="url(#paint1_angular_1417_5_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0.007 -2.46698e-10 -2.46699e-10 -0.007 7 7)"><foreignObject x="-1142.86" y="-1142.86" width="2285.71" height="2285.71"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(88, 0, 0, 1) 0deg,rgba(190, 0, 0, 1) 181.711deg,rgba(255, 0, 0, 1) 290.751deg,rgba(255, 147, 71, 1) 349.598deg,rgba(255, 219, 59, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)" data-figma-gradient-fill="{&quot;type&quot;:&quot;GRADIENT_ANGULAR&quot;,&quot;stops&quot;:[{&quot;color&quot;:{&quot;r&quot;:0.34511718153953552,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.0},{&quot;color&quot;:{&quot;r&quot;:0.74511718750,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.50475275516510010},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.80764156579971313},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:0.58000427484512329,&quot;b&quot;:0.28000730276107788,&quot;a&quot;:1.0},&quot;position&quot;:0.97110533714294434},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:0.85929673910140991,&quot;b&quot;:0.23252780735492706,&quot;a&quot;:1.0},&quot;position&quot;:1.0}],&quot;stopsVar&quot;:[{&quot;color&quot;:{&quot;r&quot;:0.34511718153953552,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.0},{&quot;color&quot;:{&quot;r&quot;:0.74511718750,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.50475275516510010},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:0.0,&quot;b&quot;:0.0,&quot;a&quot;:1.0},&quot;position&quot;:0.80764156579971313},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:0.58000427484512329,&quot;b&quot;:0.28000730276107788,&quot;a&quot;:1.0},&quot;position&quot;:0.97110533714294434},{&quot;color&quot;:{&quot;r&quot;:1.0,&quot;g&quot;:0.85929673910140991,&quot;b&quot;:0.23252780735492706,&quot;a&quot;:1.0},&quot;position&quot;:1.0}],&quot;transform&quot;:{&quot;m00&quot;:14.000000953674316,&quot;m01&quot;:-4.9339809038428939e-07,&quot;m02&quot;:-3.4106756174878683e-07,&quot;m10&quot;:-4.9339649876856129e-07,&quot;m11&quot;:-14.000000953674316,&quot;m12&quot;:14.000000953674316},&quot;opacity&quot;:1.0,&quot;blendMode&quot;:&quot;NORMAL&quot;,&quot;visible&quot;:true}"></rect>
+<rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)" fill="url(#paint2_radial_1417_5)" fill-opacity="0.9"></rect>
+<defs>
+<clipPath id="paint0_angular_1417_5_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)"></rect></clipPath><clipPath id="paint1_angular_1417_5_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)"></rect></clipPath><radialGradient id="paint2_radial_1417_5" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(8.5 7) rotate(180) scale(8.5 9.93252)">
+<stop offset="0.615427" stop-color="#F3FFBF" stop-opacity="0"></stop>
+<stop offset="1" stop-color="#F3FFBF"></stop>
+</radialGradient>
+</defs>
+</svg>
+タイマー</h1>
+
+<nav class="fab-container">
+<button class="fab" onclick="toggleFullscreen()" aria-label="全画面表示の切り替え">
+<svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+</button>
+<button class="fab" onclick="openModal('menu-modal')" aria-label="メニューを開く">
+<svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+</button>
+<button class="fab" onclick="openModal('settings-modal')" aria-label="設定を開く">
+<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84a.484.484 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.27.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+</button>
+</nav>
+
+<main class="stopwatch-container">
+<div class="time-display">
+    <input type="number" id="time-hh" class="time-input" value="00" min="0" max="99" placeholder="00" onblur="formatInput(this)">
+    <span class="time-separator">:</span>
+    <input type="number" id="time-mm" class="time-input" value="00" min="0" max="59" placeholder="00" onblur="formatInput(this, 59)">
+    <span class="time-separator">:</span>
+    <input type="number" id="time-ss" class="time-input" value="00" min="0" max="59" placeholder="00" onblur="formatInput(this, 59)">
+</div>
+<div class="controls-container">
+<button id="reset-btn" class="control-btn monotone-btn" onclick="resetTimer()" aria-label="リセット">
+<svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+<span>リセット</span>
+</button>
+<button id="start-pause-btn" class="control-btn primary-btn" onclick="startPauseTimer()" aria-label="開始">
+<svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+<svg id="pause-icon" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+<span id="start-pause-text">開始</span>
+</button>
+</div>
+</main>
+
+
+<div id="menu-modal" class="modal-overlay" onclick="closeModal(event, 'menu-modal')">
+<div class="modal-card">
+<div class="modal-header">
+<h2 class="modal-title">メニュー</h2>
+<button class="close-btn" onclick="closeModal(null, 'menu-modal')" aria-label="閉じる">
+<svg width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+</button>
+</div>
+<ul class="menu-list">
+<li><a href="https://search3958.github.io/" class="menu-link">私について</a></li>
+<li><a href="https://search3958.github.io/tools/dclock/ja.html" class="menu-link">デジタル時計</a></li>
+<li><a href="https://search3958.github.io/tools/aclock/ja.html" class="menu-link">アナログ時計</a></li>
+<li><a href="https://search3958.github.io/tools/timer/ja.html" class="menu-link">タイマー</a></li>
+                <li><a href="https://search3958.github.io/tools/stopwatch/ja.html" class="menu-link">ストップウォッチ</a></li>
+<li><a href="https://search3958.github.io/tools/counter.html" class="menu-link">文字カウンター</a></li>
+</ul>
+</div>
+</div>
+
+<div id="settings-modal" class="modal-overlay" onclick="closeModal(event, 'settings-modal')">
+<div class="modal-card">
+<div class="modal-header">
+<h2 class="modal-title">設定</h2>
+<button class="close-btn" onclick="closeModal(null, 'settings-modal')" aria-label="閉じる">
+<svg width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+</button>
+</div>
+
+<div class="setting-group">
+<span class="setting-label">通知音</span>
+<select id="sound-select" class="sound-select" onchange="saveSoundPreference()">
+    <option value="Phobos.ogg">Phobos (デフォルト)</option>
+    <option value="Dione.ogg">Dione</option>
+    <option value="Sedna.ogg">Sedna</option>
+    <option value="Timer.ogg">Timer</option>
+</select>
+<p class="license-text">
+    Sound files from <a href="https://github.com/EvilScout/Lineage-OS-Sounds" target="_blank" rel="noopener">Lineage-OS-Sounds</a>.<br>
+    Licensed under <a href="https://github.com/EvilScout/Lineage-OS-Sounds/blob/main/LICENSE" target="_blank" rel="noopener">Apache License 2.0</a>.
+</p>
+</div>
+
+<div class="setting-group">
+<span class="setting-label">表示テーマ</span>
+<div class="toggle-group">
+<button id="theme-auto" class="toggle-btn" onclick="setDarkMode('auto')">OSに合わせる</button>
+<button id="theme-light" class="toggle-btn" onclick="setDarkMode('light')">ライトモード</button>
+<button id="theme-dark" class="toggle-btn" onclick="setDarkMode('dark')">ダークモード</button>
+</div>
+</div>
+
+<div class="setting-group">
+<span class="setting-label">テーマカラー</span>
+<div class="color-options">
+<button class="color-btn" style="background-color: #BE0000;" onclick="setTheme('#BE0000')" aria-label="レッド"></button>
+<button class="color-btn" style="background-color: #545657;" onclick="setTheme('#545657')" aria-label="グレー"></button>
+<button class="color-btn" style="background-color: #0025c9;" onclick="setTheme('#0025c9')" aria-label="ブルー"></button>
+<button class="color-btn" style="background-color: #fcba03;" onclick="setTheme('#fcba03')" aria-label="パープル"></button>
+</div>
+</div>
+
+<div class="setting-group">
+<span class="setting-label">時計フォント</span>
+<div class="font-options">
+<button class="font-btn" id="font-mono" onclick="setFont('mono')">Monospace</button>
+<button class="font-btn" id="font-sans" onclick="setFont('sans')">Sans-Serif</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="alarm-overlay">
+    <div class="alarm-time">00:00:00</div>
+    <button class="alarm-close-btn" onclick="stopAlarm()">閉じる</button>
+</div>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874" crossorigin="anonymous"></script><ins class="adsbygoogle" style="display:block;height:130px;" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-6151036058675874" data-ad-slot="3356431274"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+<script>
+const hhInput = document.getElementById('time-hh');const mmInput = document.getElementById('time-mm');const ssInput = document.getElementById('time-ss');const startPauseBtn = document.getElementById('start-pause-btn');const playIcon = document.getElementById('play-icon');const pauseIcon = document.getElementById('pause-icon');const startPauseText = document.getElementById('start-pause-text');const alarmOverlay = document.getElementById('alarm-overlay');const soundSelect = document.getElementById('sound-select');let timerInterval = null;let isRunning = false;let totalSeconds = 0;let endTime = 0;let audio = new Audio();const BASE_SOUND_URL = 'https://search3958.github.io/tools/timer/';function loadSound(){const selectedSound = localStorage.getItem('timer_sound')|| 'Phobos.ogg';soundSelect.value = selectedSound;audio.src = BASE_SOUND_URL + selectedSound;audio.loop = true;}function saveSoundPreference(){const selectedSound = soundSelect.value;localStorage.setItem('timer_sound',selectedSound);audio.src = BASE_SOUND_URL + selectedSound;}function formatInput(input,maxVal){let val = parseInt(input.value);if(isNaN(val)|| val < 0)val = 0;if(maxVal && val > maxVal)val = maxVal;input.value = String(val).padStart(2,'0');if(!isRunning){calculateTotalSeconds();}}function calculateTotalSeconds(){const h = parseInt(hhInput.value)|| 0;const m = parseInt(mmInput.value)|| 0;const s = parseInt(ssInput.value)|| 0;totalSeconds = h * 3600 + m * 60 + s;}function updateDisplay(secondsRemaining){if(secondsRemaining < 0)secondsRemaining = 0;const h = Math.floor(secondsRemaining / 3600);const m = Math.floor((secondsRemaining % 3600)/ 60);const s = secondsRemaining % 60;hhInput.value = String(h).padStart(2,'0');mmInput.value = String(m).padStart(2,'0');ssInput.value = String(s).padStart(2,'0');}function setInputsDisabled(disabled){hhInput.disabled = disabled;mmInput.disabled = disabled;ssInput.disabled = disabled;}function startTimer(){calculateTotalSeconds();if(totalSeconds <= 0)return;audio.load();endTime = Date.now()+ totalSeconds * 1000;isRunning = true;setInputsDisabled(true);playIcon.style.display = 'none';pauseIcon.style.display = 'block';startPauseBtn.setAttribute('aria-label','一時停止');startPauseText.textContent = '一時停止';timerInterval = setInterval(()=>{const remaining = Math.ceil((endTime - Date.now())/ 1000);if(remaining <= 0){updateDisplay(0);triggerAlarm();}else{updateDisplay(remaining);}},100);}function pauseTimer(){clearInterval(timerInterval);isRunning = false;setInputsDisabled(false);calculateTotalSeconds();playIcon.style.display = 'block';pauseIcon.style.display = 'none';startPauseBtn.setAttribute('aria-label','開始');startPauseText.textContent = '開始';}function resetTimer(){pauseTimer();hhInput.value = "00";mmInput.value = "00";ssInput.value = "00";totalSeconds = 0;stopAlarm();}function startPauseTimer(){if(isRunning){pauseTimer();}else{startTimer();}}function triggerAlarm(){pauseTimer();hhInput.value = "00";mmInput.value = "00";ssInput.value = "00";alarmOverlay.classList.add('active');audio.play().catch(e => console.log('Audio play failed:',e));}function stopAlarm(){alarmOverlay.classList.remove('active');audio.pause();audio.currentTime = 0;}loadSound();
+// --- Common Functions (Fullscreen, Modal, Settings) ---
+function toggleFullscreen(){const body = document.body;const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;if(isFullscreen){if(document.exitFullscreen){document.exitFullscreen();}else if(document.mozCancelFullScreen){document.mozCancelFullScreen();}else if(document.webkitExitFullscreen){document.webkitExitFullscreen();}else if(document.msExitFullscreen){document.msExitFullscreen();}}else{if(body.requestFullscreen){body.requestFullscreen();}else if(body.mozRequestFullScreen){body.mozRequestFullScreen();}else if(body.webkitRequestFullscreen){body.webkitRequestFullscreen();}else if(body.msRequestFullscreen){body.msRequestFullscreen();}}}document.addEventListener('fullscreenchange',onFullscreenChange);document.addEventListener('webkitfullscreenchange',onFullscreenChange);document.addEventListener('mozfullscreenchange',onFullscreenChange);document.addEventListener('MSFullscreenChange',onFullscreenChange);function onFullscreenChange(){const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;const root = document.documentElement;const STORAGE_DARK_MODE_KEY = 'stopwatch_dark_mode';document.body.classList.toggle('fullscreen-active',isFullscreen);if(isFullscreen){root.classList.add('dark-mode');}else{const restoredMode = localStorage.getItem(STORAGE_DARK_MODE_KEY)|| 'auto';setDarkMode(restoredMode,false);}}function openModal(id){document.getElementById(id).classList.add('active');}function closeModal(event,id){if(!event || event.target.id === id || event.target.closest('.close-btn')){document.getElementById(id).classList.remove('active');}}const root = document.documentElement;const rootStyle = root.style;const PREFERS_DARK_MEDIA_QUERY = window.matchMedia('(prefers-color-scheme:dark)');const STORAGE_COLOR_KEY = 'stopwatch_color';const STORAGE_FONT_KEY = 'stopwatch_font';const STORAGE_DARK_MODE_KEY = 'stopwatch_dark_mode';const FONT_MONO_CLASS = 'font-mono';const savedColor = localStorage.getItem(STORAGE_COLOR_KEY)|| '#BE0000';const savedFont = localStorage.getItem(STORAGE_FONT_KEY)|| 'sans';const savedDarkMode = localStorage.getItem(STORAGE_DARK_MODE_KEY)|| 'auto';setTheme(savedColor,false);setFont(savedFont,false);setDarkMode(savedDarkMode,false);PREFERS_DARK_MEDIA_QUERY.addEventListener('change',(event)=>{if(localStorage.getItem(STORAGE_DARK_MODE_KEY)=== 'auto'){applyDarkMode(event.matches);}});function setTheme(color,save = true){rootStyle.setProperty('--primary',color);document.querySelector('meta[name="theme-color"]').setAttribute('content',color);document.querySelectorAll('.color-btn').forEach(btn =>{btn.setAttribute('aria-selected','false');if(btn.getAttribute('style').includes(color)){btn.setAttribute('aria-selected','true');}});if(save)localStorage.setItem(STORAGE_COLOR_KEY,color);}function setFont(type,save = true){if(type === 'mono'){root.classList.add(FONT_MONO_CLASS);document.getElementById('font-mono').classList.add('active');document.getElementById('font-sans').classList.remove('active');}else{root.classList.remove(FONT_MONO_CLASS);document.getElementById('font-mono').classList.remove('active');document.getElementById('font-sans').classList.add('active');}if(save)localStorage.setItem(STORAGE_FONT_KEY,type);}function applyDarkMode(isDark){root.classList.toggle('dark-mode',isDark);}function setDarkMode(mode,save = true){let isDark = false;document.getElementById('theme-auto').classList.remove('active');document.getElementById('theme-light').classList.remove('active');document.getElementById('theme-dark').classList.remove('active');if(mode === 'auto'){isDark = PREFERS_DARK_MEDIA_QUERY.matches;document.getElementById('theme-auto').classList.add('active');}else if(mode === 'dark'){isDark = true;document.getElementById('theme-dark').classList.add('active');}else{isDark = false;document.getElementById('theme-light').classList.add('active');}applyDarkMode(isDark);if(save)localStorage.setItem(STORAGE_DARK_MODE_KEY,mode);}
+</script>
+</body>
+</html>
