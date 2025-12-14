@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Canvas Metaball to CSS Mask (修正済み)</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        #masked-box {
+            width: 300px;
+            height: 300px;
+            background-color: #ff6f61; 
+            border: 5px solid #cc0000; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            
+            border-radius: 20px;
+            mask-image: none;
+            -webkit-mask-image: none;
+            transition: border-radius 0.3s ease-out;
+            mask-repeat: no-repeat;
+            -webkit-mask-repeat: no-repeat;
+        }
+
+        #metaball-canvas {
+            display: none;
+        }
+
+        .controls {
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        
+        label {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="metaball-canvas" width="300" height="300"></canvas>
+
+    <div id="masked-box">
+        Metaball Mask
+    </div>
+
+    <div class="controls">
+        <button id="toggle-button">メタボール ON</button>
+        <label for="slider">ぼかし量 (Blur):</label>
+        <input type="range" id="slider" min="10" max="40" step="1" value="25">
+        <span id="slider-value">25</span>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('metaball-canvas');
+        const ctx = canvas.getContext('2d');
+        const maskedBox = document.getElementById('masked-box');
+        const toggleButton = document.getElementById('toggle-button');
+        const slider = document.getElementById('slider');
+        const sliderValueSpan = document.getElementById('slider-value');
+        
+        const W = canvas.width;
+        const H = canvas.height;
+        let isMetaballActive = true; 
+        
+        // メタボールの定義 (3つの円)
+        const circles = [
+            { x: W / 3, y: H / 2, r: 60 },
+            { x: W * 2 / 3, y: H / 2, r: 60 },
+            { x: W / 2, y: H / 3, r: 60 }
+        ];
+
+        /* Canvas上にメタボール形状を描画し、Data URIを返す
+         */
+        function drawMetaballs(blurAmount) {
+            ctx.clearRect(0, 0, W, H);
+            
+            // 1. ぼかし（ポテンシャル場生成）
+            // CanvasRenderingContext2D.filter を使用し、円の集合を一括でぼかす
+            ctx.filter = `blur(${blurAmount}px)`;
+            ctx.fillStyle = 'black'; 
+            
+            // すべての円を描画
+            circles.forEach(circle => {
+                ctx.beginPath();
+                ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // 2. しきい値処理 (ピクセル操作)
+            ctx.filter = 'none'; // フィルターをリセット
+            
+            // ぼかし後の画像を新しい一時Canvasにコピーして、ぼかしの影響を固定
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = W;
+            tempCanvas.height = H;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(canvas, 0, 0); // ぼかし後の画像をコピー
+            
+            const imageData = tempCtx.getImageData(0, 0, W, H);
+            const data = imageData.data;
+            
+            const threshold = 100; // しきい値の調整はここで行う
+
+            for (let i = 0; i < data.length; i += 4) {
+                // R, G, B の平均を計算 (グレースケールと仮定)
+                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                
+                let color;
+                if (avg > threshold) {
+                    // しきい値を超えた部分は白 (maskの見える部分)
+                    color = 255;
+                } else {
+                    // しきい値以下の部分は黒 (maskの隠れる部分)
+                    color = 0;
+                }
+
+                data[i] = color;     // R
+                data[i + 1] = color; // G
+                data[i + 2] = color; // B
+                data[i + 3] = 255;   // Alpha (不透明)
+            }
+
+            // 処理後のピクセルデータを最終Canvasに戻す
+            ctx.putImageData(imageData, 0, 0);
+
+            // 3. Canvasをmask-image用のData URIに変換
+            return canvas.toDataURL('image/png');
+        }
+
+        /* maskの適用/解除
+         */
+        function applyMask() {
+            if (isMetaballActive) {
+                const blurAmount = parseFloat(slider.value);
+                const dataUri = drawMetaballs(blurAmount);
+                
+                // **【重要】クエリパラメータを追加し、強制的に更新させる**
+                const uniqueUri = dataUri + `?t=${Date.now()}`;
+                
+                // mask-imageプロパティにData URIを適用
+                maskedBox.style.maskImage = `url('${uniqueUri}')`;
+                maskedBox.style.webkitMaskImage = `url('${uniqueUri}')`;
+                maskedBox.style.borderRadius = '0';
+                toggleButton.textContent = 'メタボール OFF';
+                
+            } else {
+                // maskを解除し、通常の角丸に戻す
+                maskedBox.style.maskImage = 'none';
+                maskedBox.style.webkitMaskImage = 'none';
+                maskedBox.style.borderRadius = '20px';
+                toggleButton.textContent = 'メタボール ON';
+            }
+        }
+
+        /* イベントリスナー
+         */
+        toggleButton.addEventListener('click', () => {
+            isMetaballActive = !isMetaballActive;
+            applyMask();
+        });
+
+        slider.addEventListener('input', () => {
+            const value = parseFloat(slider.value);
+            sliderValueSpan.textContent = value;
+            if (isMetaballActive) {
+                applyMask();
+            }
+        });
+
+        // 初期実行
+        applyMask();
+        sliderValueSpan.textContent = slider.value;
+    </script>
+</body>
+</html>

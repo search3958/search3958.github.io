@@ -1,824 +1,282 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search3958・ツール</title><link rel="preconnect" href="https://fonts.googleapis.com">
-
-  <link rel="canonical" href="https://search3958.github.io/">
-  <meta name="description" content="私が作った便利なツール集です。日常の作業を効率化する多彩な機能をお試しください。">
-  <meta property="og:title" content="Search3958 - Tools">
-  <meta property="og:description" content="私が作った便利なツール集です。日常の作業を効率化する多彩な機能をお試しください。">
-  <meta property="og:url" content="https://search3958.github.io">
-  <meta property="og:type" content="website">
-  <link rel="icon" href="https://search3958.github.io/icons/search3958.svg">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@100..900&family=Noto+Sans+JP:wght@100..900&family=Unbounded:wght@200..900&display=swap" rel="stylesheet">
-    <script type="importmap">
-    {
-      "imports": {
-        "@material/web/": "https://esm.run/@material/web/"
-      }
-    }
-  </script>
-  <script type="module">
-    import '@material/web/all.js';
-    import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
-
-    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
-  </script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Albert Sans","Zen Kaku Gothic New",sans-serif;
-            line-height: 1.5;
-        }
-        :root{
-          --md-ripple-hover-color:#0000;
-          --header-width: 279px;
-    --header-expanded-width: 279px;
-          --section-raius:64px;
-          --mac-color:#fff;
-        }
-        body {
-            height: calc(fit-content - 40px);
-            background: #F3EFF6;
-        }
-        a{
-          color:#000;
-    text-decoration: none;
-        }
-        h1{
-          font-family: "Unbounded", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-size:3.5em;
-  margin-bottom:24px;
-  position:relative;
-  top:130px;
-  z-index:6;
-    color: #A2A2A2;
-    mix-blend-mode: plus-lighter; 
-    animation: h1anm 1s cubic-bezier(.62,0,0,1) forwards;
-      animation-delay: 1.3s;
-        }
-
-    @keyframes h1anm {
-      to {
-        top:0px;
-      }
-    }
-.toph2 {
-    position: relative;
-  top:130px;
-        opacity: 0;
-    z-index: 6;
-    font-weight: bold;
-    color: #888;
-    mix-blend-mode: plus-lighter;
-    animation: h2anm 1s cubic-bezier(.62,0,0,1) forwards;
-      animation-delay: 1.4s;
-      filter:blur(8px);
-}
-    @keyframes h2anm {
-      to {
-        top:-16px;
-        opacity: 1;
-        filter:blur(0px);
-      }
-    }
-
-        #lensFx_canvas {
-            position: fixed;
-            top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-            width: var(--header-width);
-            height: 80px;
-            border-radius: 40px;
-            z-index: 10;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    --smooth-corners: 8,3;
-  mask-image: paint(smooth-corners);
-  -webkit-mask-image: paint(smooth-corners);
-  
-        }
-        .header {
-            position: fixed;
-            top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-            width: var(--header-width);
-            height: 80px;
-            border-radius: 40px;
-            z-index: 11;
-            transition: all 0.6s cubic-bezier(.2,0,0,1);
-            background: #aaa;
-            backdrop-filter: blur(4px);
-            gap: 16px;
-            padding: 0 16px;
-    mix-blend-mode: overlay;
-    --smooth-corners: 8,3;
-  mask-image: paint(smooth-corners);
-  -webkit-mask-image: paint(smooth-corners);
-        }
-
-        .header-ctn {
-            position: fixed;
-            top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-            width: var(--header-width);
-            height: 80px;
-            border-radius: 40px;
-            z-index: 12;
-            background: none;
-            display: flex;
-            flex-wrap: nowrap;
-            white-space: nowrap;
-            align-items: center;
-            gap: 16px;
-            padding: 0 16px;
-            background:#fff6;
-   box-shadow: 0px 8px 32px 0px rgba(0, 0, 0, 0.22);
-        }
-
-        .first{
-              background-size: cover;
-    background-position: center;
-          background-image:
-  linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
-  url(https://search3958.github.io/newtab/bgimg/m3x5.webp);
-            padding:32px;
-          padding-top:120px;
-          position:relative;
-          color:#fff;
-            border-radius: var(--section-raius);
-            margin:10px;
-            --smooth-corners: 3,3;
-  mask-image: paint(smooth-corners);
-  -webkit-mask-image: paint(smooth-corners);
-        }
-
-        .section{
-          background:#FFFFFF;
-            padding:32px;
-          position:relative;
-          color:#000;
-            margin:10px;
-            --smooth-corners: 3,3;
-  mask-image: paint(smooth-corners);
-  -webkit-mask-image: paint(smooth-corners);
-        }
-
-        .prg-blur {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 300px;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.01);
-       border-radius: calc(var(--section-raius) + 2px);
-
-}
-
-.prg-blur::before {
-  position: absolute;
-  inset: 0;
-  content: "";
-  backdrop-filter: blur(0.7rem);
-  mask-image: linear-gradient(
-    to bottom,
-    rgb(0 0 0 / 0%) 0%,
-    rgb(0 0 0 / 4.9%) 7.75%,
-    rgb(0 0 0 / 10.4%) 11.25%,
-    rgb(0 0 0 / 45%) 23.55%,
-    rgb(0 0 0 / 55%) 26.45%,
-    rgb(0 0 0 / 89.6%) 38.75%,
-    rgb(0 0 0 / 95.1%) 42.25%,
-    rgb(0 0 0 / 100%) 50%
-  );
-
-     border-radius: calc(var(--section-raius) + 2px);
-}
-
-.prg-blur::after {
-  position: absolute;
-  inset: 0;
-  top: 25%;
-  content: "";
-  backdrop-filter: blur(0.7rem);
-  mask-image: linear-gradient(
-    to bottom,
-    rgb(0 0 0 / 0%) 0%,
-    rgb(0 0 0 / 4.9%) 15.5%,
-    rgb(0 0 0 / 10.4%) 22.5%,
-    rgb(0 0 0 / 45%) 47.1%,
-    rgb(0 0 0 / 55%) 52.9%,
-    rgb(0 0 0 / 89.6%) 77.5%,
-    rgb(0 0 0 / 95.1%) 91.9%,
-    rgb(0 0 0 / 100%) 100%
-  );
-
-   border-radius: calc(var(--section-raius) + 2px);
-}
-.btnflex{
-  position:relative;
-}
-svg{
-  height:50px;
-  width:50px;
-  position:relative;
-  top:3px;
-}
-.header-toggle{
-  border-radius:100px;
-  height:60px;
-  border:none;
-  background:none;
-}
-.material-symbols-rounded{
-  margin-top:-10px;
-  position:relative;
-  top:8px;
-}
-.headbtn{
-  padding:8px 12px;
-  border-radius:100px;
-  border:none;
-background:#777;
-position:relative;
-top:162px;
-    mix-blend-mode: plus-lighter;
-    color:#777;
-    animation: btnanm 1s cubic-bezier(.62,0,0,1) forwards;
-      animation-delay: 1.5s;
-      filter:blur(8px);
-        opacity: 0;
-}
-
-    @keyframes btnanm {
-      to {
-        top:0px;
-        opacity: 1;
-        filter:blur(0px);
-      }
-    }
-.headbtn.xi{
-  padding:8px 12px;
-  border-radius:100px;
-  border:none;
-background:none;
-    mix-blend-mode: multiply;
-    color:#222;
-    transform: translate(-100%, 0px);
-}
-.hda{
-  color:#000;
-}
-h3{
-  font-size:24px;
-}
-.scrollcard{
-  border-radius:16px;
-  margin-top:8px;
-  display:flex;
-inline-size: 100%;
-overflow:scroll;
-gap:16px;
-}
-.card{
-  background:#F5F1F8;
-  padding:16px;
-  width:240px;
-            --smooth-corners: 7,10;
-  mask-image: paint(smooth-corners);
-  -webkit-mask-image: paint(smooth-corners);
-  flex-shrink: 0;
-}
-.card-icon{
-  background-image: linear-gradient(90deg, #F3C0FF, #D9AAFF);
-  width:fit-content;
-  padding:16px;
-  border-radius:16px;
-
-            --smooth-corners: 3;
-  mask-image: paint(smooth-corners);
-  -webkit-mask-image: paint(smooth-corners);
-}
-.card-title{
-  font-family: "Unbounded", sans-serif;
-  font-weight: 250;
-  font-size:1.9em;
-}
-.card-text{
-  color:#555555;
-  margin-top:8px;
-}
-.card-img{
-font-size:32px;
-color:#3b3b3b;
-    mix-blend-mode: multiply;
-}
-.card-btn{
-  background:#E8C8FF;
-  color:#290940;
-  border:none;
-inline-size: 100%;
-padding:16px;
-margin-top:8px;
-  border-radius:16px;
-            --smooth-corners: 13,3;
-  mask-image: paint(smooth-corners);
-  -webkit-mask-image: paint(smooth-corners);
-}
-
-.flex{
-  display:flex;
-}
-.nae-card{
-  background:#F5F1F8;
-inline-size: 100%;
-  padding:16px;
-  border-radius:32px;
-  margin-top:8px;
-}
-.icon-btn{
-  background:none;
-  border:none;
-}
-.icon-btn{
-  display:block;
-}
-footer{
- padding:40px;
- background:#fff;
- padding-bottom:80px;
-            --smooth-corners: 1;
-  mask-image: paint(smooth-corners);
-  -webkit-mask-image: paint(smooth-corners);
-          font-family: "Unbounded", sans-serif;
-          color:#AEA0AE;
-          text-align: center;
-}
-.footer{
-  height:104px;
-  overflow:hidden;
-}
-.contact{
-  background-size: cover;
-    background-position: center;
-          background-image:
-  linear-gradient(#fff8, #fff8),
-  url(https://search3958.github.io/newtab/bgimg/circle5.webp);
-  display:flex;
-            padding:48px;
-            justify-content: space-between;
-  
-}
-.contactbtn{
-  background:#E8C8FF;
-  color:#290940;
-  border:none;
-padding:32px;
-  border-radius:16px;
-            --smooth-corners: 9.7,5.1;
-  mask-image: paint(smooth-corners);
-  -webkit-mask-image: paint(smooth-corners);
-}
-.contacth3{
-  padding-top:8px;
-}
+    <title>Tools - Search3958の便利なウェブツール集</title>
+<meta name="description" content="Sentaro（Search3958）が開発した、日常の作業を効率化する無料のウェブツール集。ToolBoard、3D Space、各種ユーティリティ、そして開発者向けのHTML要素辞書を提供しています。">
+<meta name="keywords" content="Sentaro, Search3958, Webツール, ツール集, 生産性向上, 効率化, ユーティリティ, ToolBoard, 3D Space, HTML要素辞書, 無料ツール">
+<meta name="author" content="Sentaro (@Search3958)">
+<meta property="og:title" content="Sentaro Tools - 作業を「とにかく便利に」するツール集">
+<meta property="og:description" content="Sentaro（Search3958）が開発した、日常の作業を効率化する無料のウェブツール集。ToolBoard、3D Space、各種ユーティリティ、そして開発者向けのHTML要素辞書を提供しています。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://search3958.github.io/i/tools/"><meta property="og:site_name" content="Sentaro Tools">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@Search3958_dev"><meta name="twitter:title" content="Sentaro Tools - 作業を「とにかく便利に」するツール集">
+<meta name="twitter:description" content="Sentaro（Search3958）が開発した、日常の作業を効率化する無料のウェブツール集。ToolBoard、3D Space、各種ユーティリティ、そして開発者向けのHTML要素辞書を提供しています。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" href="https://search3958.github.io/icons/search3958.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7N56NHPY3C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-7N56NHPY3C');
+</script>
+    <style>:root{--primary:#BE0000;--primary-container:#ffdad6;--on-primary:#ffffff;--background:#F4F4F4;--surface:#ffffff;--surface-variant:#e1e2e1;--on-surface:#1b1b1b;--on-surface-variant:#444746;--outline:#747775;--glass-bg:rgba(255,255,255,0.9);--glass-border:rgba(255,255,255,0.5);--radius-s:12px;--radius-m:20px;--radius-l:28px;--radius-xl:40px;--spacing-section:120px}@media (prefers-color-scheme:dark){:root{--background:#121212;--surface:#1e1e1e;--surface-variant:#2c2c2c;--on-surface:#e2e2e2;--on-surface-variant:#c4c7c5;--primary-container:#410002;--outline:#8e918f;--glass-bg:rgba(30,30,30,0.85);--glass-border:rgba(255,255,255,0.1)}}*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Google Sans','Noto Sans JP',sans-serif;background-color:var(--background);color:var(--on-surface);line-height:1.6;overflow-x:hidden;transition:background-color 0.3s,color 0.3s}a{text-decoration:none;color:inherit}ul{list-style:none}.container{max-width:1200px;margin:0 auto;padding:0 24px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:0 24px;height:48px;border-radius:24px;font-weight:700;transition:all 0.3s cubic-bezier(0.2,0.0,0,1);border:none;cursor:pointer;font-size:1rem}.btn-primary{background-color:var(--primary);color:var(--on-primary);box-shadow:0 4px 8px rgba(190,0,0,0.2)}.btn-primary:hover{box-shadow:0 6px 12px rgba(190,0,0,0.3);transform:translateY(-2px)}.btn-tonal{background-color:var(--surface-variant);color:var(--on-surface)}.btn-tonal:hover{filter:brightness(0.95)}@keyframes rotate-blob{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.1)}100%{transform:rotate(360deg) scale(1)}}.fade-in-up{opacity:0;transform:translateY(30px);transition:opacity 0.8s ease,transform 0.8s cubic-bezier(0.2,0,0,1)}.fade-in-up.visible{opacity:1;transform:translateY(0)}header{position:fixed;top:20px;left:50%;transform:translateX(-50%);width:calc(100% - 48px);max-width:1200px;height:64px;background:var(--glass-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:32px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.05);border:1px solid var(--glass-border)}.logo-container{display:flex;align-items:center;gap:12px;font-weight:900;font-size:1.2rem;color:var(--on-surface);letter-spacing:-0.5px}.logo-svg{height:32px;width:auto}@media (prefers-color-scheme:dark){.logo-svg{filter:invert(0)}}.nav-links{display:flex;gap:8px}.nav-links a{padding:8px 16px;border-radius:20px;font-size:0.9rem;font-weight:500;transition:background 0.2s}.nav-links a:hover{background-color:var(--surface-variant)}.hero{padding-top:180px;padding-bottom:100px;min-height:80vh;display:flex;flex-direction:column;justify-content:center}.hero h1{font-size:clamp(3rem,8vw,6rem);font-weight:900;line-height:1.1;margin-bottom:24px;letter-spacing:-2px;color:var(--on-surface)}.hero h1 span{color:var(--primary)}.hero p{font-size:1.25rem;color:var(--on-surface-variant);max-width:600px;margin-bottom:40px}.projects-section{padding:var(--spacing-section) 0}.section-title{font-size:2.5rem;margin-bottom:40px;font-weight:700}.project-interface{display:grid;grid-template-columns:1fr 1.2fr;gap:32px;min-height:450px}.project-list{display:flex;flex-direction:column;gap:12px}.project-item{padding:20px 24px;background:var(--surface);border-radius:var(--radius-m);cursor:pointer;transition:all 0.3s cubic-bezier(0.2,0,0,1);border:1px solid transparent}.project-item:hover{background:var(--surface-variant);transform:translateX(10px)}.project-item.active{background:var(--primary);color:var(--on-primary);box-shadow:0 10px 20px rgba(190,0,0,0.2)}.project-item.active .sub-tag{color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.2)}.project-item.active .material-symbols-rounded{color:#fff}.project-name{font-weight:700;font-size:1.1rem;display:flex;justify-content:space-between;align-items:center}.sub-tag{font-size:0.8rem;font-weight:normal;color:var(--on-surface-variant);background:var(--surface-variant);padding:2px 8px;border-radius:8px}.project-preview{background:var(--surface);border-radius:var(--radius-l);corner-shape:superellipse;padding:40px;display:flex;flex-direction:column;justify-content:center;position:relative;box-shadow:0 20px 40px rgba(0,0,0,0.05);overflow:hidden;z-index:1}.project-preview::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;background:var(--primary);opacity:0.08;border-radius:50%;z-index:-1;animation:rotate-blob 20s linear infinite;corner-shape:superellipse(1.6)}.preview-content{opacity:0;transform:translateY(20px);transition:all 0.4s ease}.preview-content.show{opacity:1;transform:translateY(0)}.preview-title{font-size:2.5rem;font-weight:900;margin-bottom:16px;color:var(--primary)}.preview-desc{font-size:1.1rem;color:var(--on-surface-variant);margin-bottom:32px;line-height:1.8}.preview-meta{display:flex;align-items:center;gap:16px;margin-bottom:32px;font-weight:500}.badge{background:#e8f5e9;color:#1b5e20;padding:6px 12px;border-radius:8px;font-size:0.9rem}@media (prefers-color-scheme:dark){.badge{background:#0f3513;color:#a4f3a9}}.about-section{padding:var(--spacing-section) 0}.about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}.about-card{background:var(--surface);padding:32px;border-radius:var(--radius-l);box-shadow:0 4px 20px rgba(0,0,0,0.02);transition:transform 0.3s}.about-card:hover{transform:translateY(-5px)}.about-icon{font-size:40px;color:var(--primary);margin-bottom:20px;font-variation-settings:'FILL' 1}.about-card h3{font-size:1.5rem;margin-bottom:16px}.about-card p{color:var(--on-surface-variant)}.quality-section{padding:var(--spacing-section) 0}.quality-container{background-image:url('https://search3958.github.io/newtab/bgimg/3958Glass4.webp');background-size:cover;background-position:center;border-radius:var(--radius-xl);corner-shape:superellipse;overflow:hidden;position:relative}.quality-overlay{background-color:rgba(255,255,255,0.9);backdrop-filter:blur(32px) brightness(105%);-webkit-backdrop-filter:blur(32px) brightness(105%);padding:80px 40px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;color:#1b1b1b}@media (prefers-color-scheme:dark){.quality-overlay{background-color:rgba(255,255,255,0.85)}.quality-text h2,.quality-text p,.stat-label,.stat-note{color:#1b1b1b !important}}.quality-text h2{font-size:2.5rem;margin-bottom:24px;color:inherit}.quality-text p{margin-bottom:16px;font-size:1.1rem;opacity:0.8}.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}.stat-card{background:rgba(255,255,255,0.6);box-shadow:0 4px 20px rgba(0,0,0,0.05);padding:24px;border-radius:var(--radius-m);text-align:center;border:1px solid rgba(255,255,255,0.5)}.stat-number{display:block;font-size:2.5rem;font-weight:900;color:var(--primary);margin-bottom:8px}.stat-label{font-size:0.9rem;opacity:0.7}.stat-note{grid-column:1 / -1;text-align:center;font-size:0.8rem;opacity:0.6;margin-top:16px}.all-projects{padding:var(--spacing-section) 0}.chip-container{display:flex;flex-wrap:wrap;gap:12px}.project-chip{background:var(--surface);padding:12px 24px;border-radius:100px;font-weight:500;border:1px solid var(--outline);transition:all 0.2s;cursor:pointer;color:var(--on-surface);opacity:0.8;border-color:transparent;box-shadow:0 2px 8px rgba(0,0,0,0.05)}.project-chip:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-container);opacity:1}.contact-section{padding:80px 0 120px;text-align:center}.contact-box{background:var(--primary-container);padding:60px 24px;border-radius:var(--radius-xl);corner-shape:superellipse;color:#410002}@media (prefers-color-scheme:dark){.contact-box{color:#ffdad6}}.contact-box h2{margin-bottom:24px}footer{background:var(--surface);padding:40px 0;border-top:1px solid var(--surface-variant)}.footer-content{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}.footer-links{display:flex;gap:24px}.footer-links a{color:var(--on-surface-variant);font-size:0.9rem}@media (max-width:768px){.project-interface{grid-template-columns:1fr}.project-preview{min-height:300px}.quality-overlay{grid-template-columns:1fr;padding:40px 24px}.hero h1{font-size:3rem}header{padding:0 16px}.nav-links{display:none}}
     </style>
 </head>
 <body>
-
-    <canvas id="lensFx_canvas" data-html2canvas-ignore="true"></canvas>
-<div class="header" data-html2canvas-ignore="true">
-</div>
-
-<div class="header-ctn" data-html2canvas-ignore="true">
-  <button class="header-toggle" onclick="window.location.href='https://search3958.github.io/'"> 
-
-<svg xmlns="http://www.w3.org/2000/svg" width="10" height="13" viewBox="0 0 10 13" fill="none">
-<path d="M0.68103 4.55652C0.68103 2.17122 2.6147 0.237549 5 0.237549C7.3853 0.237549 9.31897 2.17122 9.31897 4.55652C9.31897 6.94182 7.3853 8.87549 5 8.87549C2.6147 8.87549 0.68103 6.94182 0.68103 4.55652Z" fill="url(#paint0_radial_547_63)"/>
-<foreignObject x="-3.31897" y="0.124512" width="16.6379" height="16.6379"><div xmlns="http://www.w3.org/1999/xhtml" style="clip-path:url(#bgblur_0_547_63_clip_path);height:100%;width:100%"></div></foreignObject><path data-figma-bg-blur-radius="4" d="M0.68103 8.44348C0.68103 6.05818 2.6147 4.12451 5 4.12451C7.3853 4.12451 9.31897 6.05818 9.31897 8.44348C9.31897 10.8288 7.3853 12.7625 5 12.7625C2.6147 12.7625 0.68103 10.8288 0.68103 8.44348Z" fill="url(#paint1_radial_547_63)"/>
+    <header>
+        <div class="logo-container">
+            <svg class="logo-svg" width="14" height="21" viewBox="0 0 14 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#paint0_angular_1417_5_clip_path)" data-figma-skip-parse="true"><g transform="matrix(-0.007 2.38419e-10 2.38418e-10 0.007 7 14)"><foreignObject x="-1142.86" y="-1142.86" width="2285.71" height="2285.71"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(88, 0, 0, 1) 0deg,rgba(190, 0, 0, 1) 181.711deg,rgba(255, 0, 0, 1) 290.751deg,rgba(255, 145, 145, 1) 349.598deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.34511718153953552,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.74511718750,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.57208782434463501,&#34;b&#34;:0.57208782434463501,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.34511718153953552,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.74511718750,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.57208782434463501,&#34;b&#34;:0.57208782434463501,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#43;1.0}],&#34;transform&#34;:{&#34;m00&#34;:-14.0,&#34;m01&#34;:4.7683604975645721e-07,&#34;m02&#34;:14.0,&#34;m10&#34;:4.7683732873338158e-07,&#34;m11&#34;:14.0,&#34;m12&#34;:6.9999995231628418},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+<g clip-path="url(#paint1_angular_1417_5_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0.007 -2.46698e-10 -2.46699e-10 -0.007 7 7)"><foreignObject x="-1142.86" y="-1142.86" width="2285.71" height="2285.71"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(88, 0, 0, 1) 0deg,rgba(190, 0, 0, 1) 181.711deg,rgba(255, 0, 0, 1) 290.751deg,rgba(255, 147, 71, 1) 349.598deg,rgba(255, 219, 59, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.34511718153953552,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.74511718750,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.58000427484512329,&#34;b&#34;:0.28000730276107788,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.85929673910140991,&#34;b&#34;:0.23252780735492706,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.34511718153953552,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.74511718750,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.58000427484512329,&#34;b&#34;:0.28000730276107788,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.85929673910140991,&#34;b&#34;:0.23252780735492706,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:14.000000953674316,&#34;m01&#34;:-4.9339809038428939e-07,&#34;m02&#34;:-3.4106756174878683e-07,&#34;m10&#34;:-4.9339649876856129e-07,&#34;m11&#34;:-14.000000953674316,&#34;m12&#34;:14.000000953674316},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+<rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)" fill="url(#paint2_radial_1417_5)" fill-opacity="0.9"/>
 <defs>
-<clipPath id="bgblur_0_547_63_clip_path" transform="translate(3.31897 -0.124512)"><path d="M0.68103 8.44348C0.68103 6.05818 2.6147 4.12451 5 4.12451C7.3853 4.12451 9.31897 6.05818 9.31897 8.44348C9.31897 10.8288 7.3853 12.7625 5 12.7625C2.6147 12.7625 0.68103 10.8288 0.68103 8.44348Z"/>
-</clipPath><radialGradient id="paint0_radial_547_63" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(5 8.87549) rotate(-90) scale(9.57372 9.57372)">
-<stop stop-color="#0000"/>
-<stop offset="1" stop-color="#0009"/>
-</radialGradient>
-<radialGradient id="paint1_radial_547_63" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(5 12.7625) rotate(-90) scale(9.57372 9.57372)">
-<stop stop-color="#545454"/>
-<stop offset="1" stop-color="#0003"/>
+<clipPath id="paint0_angular_1417_5_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)"/></clipPath><clipPath id="paint1_angular_1417_5_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)"/></clipPath><radialGradient id="paint2_radial_1417_5" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(8.5 7) rotate(180) scale(8.5 9.93252)">
+<stop offset="0.615427" stop-color="#F3FFBF" stop-opacity="0"/>
+<stop offset="1" stop-color="#F3FFBF"/>
 </radialGradient>
 </defs>
 </svg>
-
-  </button>
-  <a class="hda" href="https://search3958.github.io/">概要</a>
-  <a class="hda" href="https://search3958.github.io/i/newtab/">Newtab</a>
-  <a class="hda" href="https://search3958.github.io/i/tools/">ツール</a>
-</div>
-  
-  <div class="first smooth">
-
-    <div class="prg-blur"></div>
-    <h1>Tools</h1>
-    <h2 class="toph2">3つの便利なツールを使って<br>作業を効率化しましょう！</h2>
-    <div class="btnflex">
-      <button class="headbtn" onclick="window.location.href='https://search3958.github.io/3dspace/'">3D Spaceを試す
-        <span class="material-symbols-rounded">
-arrow_outward
-</span><md-ripple></md-ripple></button>
-<button class="headbtn xi" onclick="window.location.href='https://search3958.github.io/3dspace/'">3D Spaceを試す
-        <span class="material-symbols-rounded">
-arrow_outward
-</span><md-ripple></md-ripple></button>
+            <span>Sentaro</span>
+        </div>
+        <nav class="nav-links">
+            <a href="https://search3958.github.io/">ホーム</a>
+            <a href="https://search3958.github.io/i/newtab/">Newtab</a>
+            <a href="https://search3958.github.io/i/tools/">ツール</a>
+            <a href="https://github.com/search3958" target="_blank">GitHub</a>
+        </nav>
+    </header>
+    <div class="container">
+        <section id="hero" class="hero fade-in-up">
+            <h1>いつもの作業を<br>とにかく<span>便利に</span></h1>
+            <p>日常のちょっとしたタスクからクリエイティブな作業まで、効率を最大化する無料のウェブツールを提供します。</p>
+            <div style="display: flex; gap: 16px;">
+                <button class="btn btn-primary" onclick="document.getElementById('projects').scrollIntoView({behavior: 'smooth'})">おすすめツールを見る</button>
+                <button class="btn btn-tonal" onclick="window.open('https://search3958.github.io/3dspace/', '_blank')">3D Spaceを試す</button>
+            </div>
+        </section>
+        <section id="projects" class="projects-section fade-in-up">
+            <h2 class="section-title">注目のツール</h2>
+            <div class="project-interface">
+                <div class="project-list" id="projectList">
+                    </div>
+                <div class="project-preview">
+                    <div class="preview-content" id="previewContent">
+                        <div class="preview-title" id="pTitle">ToolBoard</div>
+                        <div class="preview-desc" id="pDesc">生産性向上のためのツールを一つに集約。タイマー、ストップウォッチ、カレンダーなど、仕事や学習に必要な機能がすぐに使えます。</div>
+                        <div class="preview-meta">
+                            <span class="badge" id="pPrice">無料 / 無制限</span>
+                        </div>
+                        <button class="btn btn-primary" id="pBtn">使用開始</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="about-section fade-in-up">
+            <h2 class="section-title">Toolsのコンセプト</h2>
+            <div class="about-grid">
+                <div class="about-card">
+                    <span class="material-symbols-rounded about-icon">rocket_launch</span>
+                    <h3>即時性と効率性</h3>
+                    <p>全てのツールは、ユーザーが思い立った瞬間にすぐに使えるよう設計されています。複雑な設定は不要で、作業のボトルネックを解消します。</p>
+                </div>
+                <div class="about-card">
+                    <span class="material-symbols-rounded about-icon">palette</span>
+                    <h3>モダンなUI/UX</h3>
+                    <p>視覚的な美しさと直感的な操作性を追求。特に「3D Space」など、モダンで立体感のあるデザインは、快適で新しいデジタル体験を提供します。</p>
+                </div>
+                <div class="about-card">
+                    <span class="material-symbols-rounded about-icon">touch_app</span>
+                    <h3>タッチ操作への最適化</h3>
+                    <p>スマートフォンやタブレットなど、タッチデバイスでの使用を考慮したデザイン。移動中や様々な環境でもスムーズに操作できます。</p>
+                </div>
+            </div>
+        </section>
+        <section class="quality-section fade-in-up">
+            <div class="quality-container">
+                <div class="quality-overlay">
+                    <div class="quality-text">
+                        <h2>ツール開発へのこだわり</h2>
+                        <p>Sentaroのツールは、単なる機能提供に留まらず、ユーザーの体験価値を最大化することを重視しています。常に最新のウェブ技術を活用し、高いパフォーマンスと安定性を実現しています。</p>
+                        <p>特にWeb開発者や学習者向けには、専門的な作業をサポートする「HTML要素辞書」などのリファレンスツールも提供し、幅広いニーズに応えています。</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number">1.3万+</span>
+                            <span class="stat-label">ツールの表示回数</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">4.2万+</span>
+                            <span class="stat-label">イベント総数</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">3,766</span>
+                            <span class="stat-label">ユニークセッション</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">78.5%</span>
+                            <span class="stat-label">高いエンゲージメント率</span>
+                        </div>
+                        <div class="stat-note">※2025.1.1から2025.11.9までのToolBoard関連情報</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="all-projects" class="all-projects fade-in-up">
+            <h2 class="section-title">全ツールラインナップ</h2>
+            <div class="chip-container">
+                <a class="project-chip" href="https://search3958.github.io/toolboard">ToolBoard</a>
+                <a class="project-chip" href="https://search3958.github.io/3dspace">3D Space</a>
+                <a class="project-chip" href="https://search3958.github.io/tools">Tools (シンプルコレクション)</a>
+                <a class="project-chip" href="https://search3958.github.io/dictionary/html/">HTML要素辞書</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/timer/ja.html">タイマー</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/stopwatch/ja.html">ストップウォッチ</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/dclock/ja.html">デジタル時計</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/aclock/ja.html">アナログ時計</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/counter.html">文字カウンター</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/webp.html">WebP変換</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/smallcode.html">コード軽量化</a>
+                <a class="project-chip" href="https://search3958.github.io/webmaker">WebCreator</a>
+                <a class="project-chip" href="https://search3958.github.io/uiscript/">UI Script</a>
+                <a class="project-chip" href="https://search3958.github.io/m3color">M3 Gen</a>
+                <a class="project-chip" href="https://search3958.github.io/project/htmlos/1/">Hanul1234</a>
+            </div>
+        </section>
+        <section id="contact" class="contact-section fade-in-up">
+            <div class="contact-box">
+                <h2>ツールの改善要望やご意見がありましたらお気軽にお寄せください！</h2>
+                <button class="btn btn-primary" style="background-color: #410002; color: #fff;" onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform?usp=sharing&ouid=116246090197695118669'">フィードバックを送る</button>
+            </div>
+        </section>
     </div>
-  </div>
-
-  <div class="section smooth">
-    <h3>主なプロジェクト</h3>
-    <div class="scrollcard">
-
-      <div class="card">
-        <div class="card-icon"><span class="material-symbols-rounded card-img">backup_table</span></div>
-        <div class="card-title">ToolBoard</div>
-        <div class="card-text">生産性向上のための新たな選択肢を提供します。</div>
-        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/toolboard'">使う</button>
-      </div>
-      
-      <div class="card">
-        <div class="card-icon"><span class="material-symbols-rounded card-img">head_mounted_device</span></div>
-        <div class="card-title">3D Space</div>
-        <div class="card-text">タッチ操作でもかなり使いやすいです！</div>
-        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/3dspace'">使う</button>
-      </div>
-      
-      <div class="card">
-        <div class="card-icon"><span class="material-symbols-rounded card-img">data_table</span></div>
-        <div class="card-title">Tools</div>
-        <div class="card-text">一番最初に作られた最もシンプルなツール集。</div>
-        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/tools'">使う</button>
-      </div>
-      
-      <div class="card">
-        <div class="card-icon"><span class="material-symbols-rounded card-img">design_services</span></div>
-        <div class="card-title">Creator</div>
-        <div class="card-text">誰でも簡易的なサイトを作れます。</div>
-        <button class="card-btn" onclick="window.location.href='https://search3958.github.io/webmaker'">使う</button>
-      </div>
-      
-    </div>
-  </div>
-
-  <div class="section smooth">
-    <h3>3D Spaceを使おう</h3>
-
-      <div class="nae-card">
-        <h4>3D Spaceは以下の機能を備えています。</h4>
-        ・タッチ操作しやすいデザイン<br>
-・モダンで立体感もあるなデザイン<br>
-・すぐに使用可能なツール<br>
-・ウィンドウ操作可能      </div>
-  </div>
-
-
-  <div class="section smooth contact">
-    <h3 class="contacth3">何か私に伝えることが<br>ありますか？</h3>
-<button class="contactbtn" onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform?usp=sharing&ouid=116246090197695118669'">フォームを表示</button>
-      
-  </div>
-
-<script>
-
-  const lensFx_canvas   = document.getElementById("lensFx_canvas");
-  const lensFx_ctx      = lensFx_canvas.getContext("2d");
-  const debugInfo       = document.getElementById("debugInfo");
-
-  const LAYERS           = 13;
-  const MIN_ZOOM         = 1.8;
-  const MAX_ZOOM         = 1;
-  const SHRINK_STEP      = 5.5;
-  const CAPTURE_INTERVAL = 1000;
-  const SCROLL_CAPTURE_INTERVAL = 5000;
-
-  let lensFx_img     = null;
-  let scrollOffsetY  = 0;
-  let captureTimer   = null;
-  let autoUpdate     = true;
-  let showDebug      = false;
-  let isScrolling    = false;
-  let scrollTimeout  = null;
-
-  function safeInverseEasing(t) {
-    const ε = 0.05;
-    const v = 1/(t+ε) - 1/ε;
-    const maxV = 1/(1+ε) - 1/ε;
-    return v/maxV;
-  }
-
-  function radiusEasing(t) {
-    return 0.3 + 0.7*(1 - t*t);
-  }
-
-  function updateCanvasSize(canvas, ctx) {
-    const rect = canvas.getBoundingClientRect();
-    const dpr  = window.devicePixelRatio||1;
-    canvas.width  = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.scale(dpr,dpr);
-  }
-
-  function getRadius(canvas) {
-    return parseFloat(getComputedStyle(canvas).borderRadius) || 0;
-  }
-
-  function drawLens(img, ctx, canvasElem) {
-    if (!img) return;
-    
-    const imgW = img.width;
-    const imgH = img.height;
-    const rect = canvasElem.getBoundingClientRect();
-    const wLens = rect.width;
-    const hLens = rect.height;
-    const radius = getRadius(canvasElem);
-
-    const canvasScreenX = rect.left;
-    const canvasScreenY = rect.top + scrollOffsetY;
-
-    const viewportW = window.innerWidth;
-    const viewportH = document.documentElement.scrollHeight;
-    
-    const scaleX = imgW / viewportW;
-    const scaleY = imgH / viewportH;
-    
-    const imgCenterX = (viewportW / 2) * scaleX;
-    const imgCenterY = canvasScreenY * scaleY + (hLens/2) * scaleY;
-
-    ctx.clearRect(0, 0, canvasElem.width, canvasElem.height);
-
-    if (showDebug) {
-      debugInfo.innerHTML = `
-        Canvas位置: (${canvasScreenX.toFixed(0)}, ${canvasScreenY.toFixed(0)})<br>
-        画像サイズ: ${imgW} x ${imgH}<br>
-        ビューポート: ${viewportW} x ${viewportH}<br>
-        スケール: ${scaleX.toFixed(3)} x ${scaleY.toFixed(3)}<br>
-        画像上中心: (${imgCenterX.toFixed(0)}, ${imgCenterY.toFixed(0)})
-      `;
-    }
-
-    for (let i = 0; i < LAYERS; i++) {
-      const t = i / (LAYERS - 1);
-      const zoom = MIN_ZOOM + safeInverseEasing(t) * (MAX_ZOOM - MIN_ZOOM);
-      const w = wLens - i * SHRINK_STEP;
-      const h = hLens - i * SHRINK_STEP;
-      const dx = (wLens - w) / 2;
-      const dy = (hLens - h) / 2;
-      
-      // 拡大する範囲を計算
-      const sw = (w / zoom) * scaleX;
-      const sh = (h / zoom) * scaleY;
-      const sx = imgCenterX - sw / 2;
-      const sy = imgCenterY - sh / 2;
-      
-      const rad = radius * radiusEasing(t);
-
-      // クリッピングパスを作成
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(dx + rad, dy);
-      ctx.lineTo(dx + w - rad, dy);
-      ctx.quadraticCurveTo(dx + w, dy, dx + w, dy + rad);
-      ctx.lineTo(dx + w, dy + h - rad);
-      ctx.quadraticCurveTo(dx + w, dy + h, dx + w - rad, dy + h);
-      ctx.lineTo(dx + rad, dy + h);
-      ctx.quadraticCurveTo(dx, dy + h, dx, dy + h - rad);
-      ctx.lineTo(dx, dy + rad);
-      ctx.quadraticCurveTo(dx, dy, dx + rad, dy);
-      ctx.closePath();
-      ctx.clip();
-
-      // 画像を描画
-      ctx.drawImage(img, sx, sy, sw, sh, dx, dy, w, h);
-      ctx.restore();
-
-    }
-  }
-
-  function renderAll() {
-    updateCanvasSize(lensFx_canvas, lensFx_ctx);
-    drawLens(lensFx_img, lensFx_ctx, lensFx_canvas);
-  }
-
-  async function captureFullPage() {
-  try {
-    const fullW = document.documentElement.scrollWidth;
-    const fullH = document.documentElement.scrollHeight;
-    const canvas = await html2canvas(document.body, {
-      useCORS: true,
-      allowTaint: true,
-      scale: 1,
-      width: fullW,
-      height: fullH,
-      scrollX: 0,
-      scrollY: 0,
-      backgroundColor: null,
-
-      // ← ★ここから追加
-      onclone: (clonedDoc) => {
-        const targets = clonedDoc.querySelectorAll('h1, .toph2');
-        const rootStyles = getComputedStyle(clonedDoc.documentElement);
-        const macColor = rootStyles.getPropertyValue('--mac-color').trim();
-        targets.forEach(el => {
-          el.style.color = macColor;
-          el.style.top = 0;
-          el.style.opacity = 1;
-          el.style.filter = null;
+    <footer>
+        <div class="container footer-content">
+            <div class="logo-container" style="font-size:1rem;">Sentaro(@Search3958)</div>
+            <div class="footer-links">
+                <a href="http://search3958.github.io/policies/trems.html" target="_blank">利用規約</a>
+                <a href="http://search3958.github.io/policies/privacy.html" target="_blank">プライバシーポリシー</a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Data for Interactive Projects Section (Updated URLs for Tools Focus)
+        const projects = [
+            { 
+                name: "ToolBoard", 
+                desc: "生産性向上のためのツールを一つに集約。タイマー、ストップウォッチ、カレンダーなど、仕事や学習に必要な機能がすぐに使えます。",
+                tag: "Productivity",
+                url: "https://search3958.github.io/toolboard"
+            },
+            { 
+                name: "3D Space", 
+                desc: "Webブラウザ上で動作する没入型の3D空間体験。タッチ操作に最適化されたモダンなインターフェースが特徴です。",
+                tag: "UX/3D",
+                url: "https://search3958.github.io/3dspace/"
+            },
+            { 
+                name: "HTML要素辞書", 
+                desc: "Web開発者・学習者向けの必須リファレンス。主要なHTML要素を網羅し、素早く正確な情報を提供します。",
+                tag: "Developer",
+                url: "https://search3958.github.io/dictionary/html/"
+            },
+            { 
+                name: "WebP変換", 
+                desc: "画像を次世代フォーマットWebPへドラッグ&ドロップで瞬時に変換。Webサイトの高速化に貢献します。",
+                tag: "Utility",
+                url: "https://search3958.github.io/tools/webp.html"
+            },
+            { 
+                name: "コード軽量化", 
+                desc: "HTML, CSS, JSを圧縮（Minify）してWebサイトのパフォーマンスを向上させます。",
+                tag: "Utility",
+                url: "https://search3958.github.io/tools/smallcode.html"
+            },
+            { 
+                name: "文字カウンター", 
+                desc: "リアルタイムで文字数・行数・段落数をカウントするシンプルで高機能なツール。",
+                tag: "Utility",
+                url: "https://search3958.github.io/tools/counter.html"
+            },
+            { 
+                name: "Tools (シンプル)", 
+                desc: "最初に作られた最もシンプルなツール集。基本的なユーティリティを求める方向けのコレクションです。",
+                tag: "Collection",
+                url: "https://search3958.github.io/tools"
+            }
+        ];
+        const listContainer = document.getElementById('projectList');
+        const pContent = document.getElementById('previewContent');
+        const pTitle = document.getElementById('pTitle');
+        const pDesc = document.getElementById('pDesc');
+        const pBtn = document.getElementById('pBtn');
+        
+        // Function to update preview content
+        const updatePreview = (proj, item) => {
+            // Remove active class from all
+            document.querySelectorAll('.project-item').forEach(el => el.classList.remove('active'));
+            item.classList.add('active');
+            
+            // Animate Content Change
+            pContent.classList.remove('show');
+            
+            setTimeout(() => {
+                pTitle.innerHTML = proj.name.replace(/\*\*(.*?)\*\*/g, '<span>$1</span>'); // Apply bolding to HTML element dictionary
+                pDesc.innerText = proj.desc;
+                
+                // Update Button action
+                pBtn.onclick = () => window.location.href = proj.url;
+                
+                pContent.classList.add('show');
+            }, 200);
+        };
+        
+        // Render List
+        projects.forEach((proj, index) => {
+            const item = document.createElement('div');
+            item.className = `project-item ${index === 0 ? 'active' : ''}`;
+            const displayName = proj.name.replace(/\*\*(.*?)\*\*/g, '$1'); // Remove bold markers for the list item
+            item.innerHTML = `
+                <div class="project-name">
+                    ${displayName}
+                    <span class="sub-tag">${proj.tag}</span>
+                </div>
+            `;
+            
+            // Hover/Click Event
+            item.addEventListener('mouseenter', () => updatePreview(proj, item));
+            item.addEventListener('click', () => updatePreview(proj, item));
+            
+            listContainer.appendChild(item);
         });
-        const targets2 = clonedDoc.querySelectorAll('.headbtn');
-        targets2.forEach(el => {
-          el.style.background = macColor;
+        
+        // Initialize Animation state & button (set to the first project)
+        updatePreview(projects[0], document.querySelector('.project-item:first-child'));
+        
+        // Scroll Animation Observer
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Run once
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            observer.observe(el);
         });
-        const targets3 = clonedDoc.querySelectorAll('.toph2');
-        targets3.forEach(el => {
-          el.style.top = "-16px";
-        });
-      }
-    });
-
-    const img = new Image();
-    img.onload = () => {
-      lensFx_img = img;
-      renderAll();
-    };
-    img.src = canvas.toDataURL();
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-
-  // コントロール関数
-  function updateLensEffect() {
-    captureFullPage();
-  }
-
-  function toggleAutoUpdate() {
-    autoUpdate = !autoUpdate;
-    if (autoUpdate) {
-      captureTimer = setInterval(captureFullPage, CAPTURE_INTERVAL);
-    } else {
-      clearInterval(captureTimer);
-    }
-  }
-
-  function toggleDebug() {
-    showDebug = !showDebug;
-    debugInfo.style.display = showDebug ? 'block' : 'none';
-    if (showDebug) {
-      renderAll();
-    }
-  }
-
-  // 初期化
-  captureFullPage();
-  updateCaptureTimer();
-
-  window.addEventListener("scroll", () => {
-    scrollOffsetY = window.scrollY;
-    renderAll();
-    
-    // スクロール中の処理
-    isScrolling = true;
-    clearTimeout(scrollTimeout);
-    // ↓ ここで必ずintervalをクリア
-    clearInterval(captureTimer);
-    updateCaptureTimer();
-
-    scrollTimeout = setTimeout(() => {
-      isScrolling = false;
-      updateCaptureTimer();
-    }, 150);
-  });
-
-  function updateCaptureTimer() {
-    // 既存のintervalを必ずクリア
-    if (captureTimer) {
-      clearInterval(captureTimer);
-      captureTimer = null;
-    }
-    if (autoUpdate) {
-      const interval = isScrolling ? SCROLL_CAPTURE_INTERVAL : CAPTURE_INTERVAL;
-      captureTimer = setInterval(captureFullPage, interval);
-    }
-  }
-
-  window.addEventListener("resize", renderAll);
-  
-  // ResizeObserver
-  if (window.ResizeObserver) {
-    const resizeObserver = new ResizeObserver(() => {
-      syncWidth();
-    });
-    
-    // headerとcanvasの両方を監視
-    resizeObserver.observe(header);
-    resizeObserver.observe(lensFx_canvas);
-  }
-
-
-  const header = document.querySelector('.header');
-  let isExpanded = false;
-
-// headerの幅をlensFx_canvasに同期させる関数
-function syncWidth() {
-  lensFx_canvas.style.width = `${header.offsetWidth}px`;
-  renderAll();
-}
-
-// ResizeObserverの設定
-if (window.ResizeObserver) {
-  const resizeObserver = new ResizeObserver(() => {
-    syncWidth();
-  });
-  
-  // headerとcanvasの両方を監視
-  resizeObserver.observe(header);
-  resizeObserver.observe(lensFx_canvas);
-}
-
-// MutationObserverの設定
-const mutationObserver = new MutationObserver(() => {
-  syncWidth();
-});
-
-// headerのstyle属性の変更を監視
-mutationObserver.observe(header, {
-  attributes: true,
-  attributeFilter: ['style']
-});
-
-// 初期同期
-syncWidth();
-
-// ヘッダーの開閉処理を追加
-const headerToggle = document.querySelector('.header-toggle');
-
-headerToggle.addEventListener('click', () => {
-  header.classList.toggle('active');
-  syncWidth(); // 既存の同期関数を呼び出し
-});
-</script>
-<script>
-function updateSmoothCorners() {
-  // 対象: .smooth クラスを持つ要素
-  const elements = document.querySelectorAll('.smooth');
-
-  elements.forEach(el => {
-    // 現在の computed style で --smooth-corners が使われているかチェック
-    const style = getComputedStyle(el);
-    const hasSmoothCorners = style.getPropertyValue('--smooth-corners');
-
-    if (hasSmoothCorners !== '') {
-      const height = el.offsetHeight;
-      const width = el.offsetWidth;
-      const smoothValue = `${(width / 50).toFixed(2)}, ${(height / 50).toFixed(2)}`;
-      el.style.setProperty('--smooth-corners', smoothValue);
-    }
-  });
-}
-
-// 初回実行
-updateSmoothCorners();
-
-// ウィンドウサイズ変更時にも再計算
-window.addEventListener('resize', updateSmoothCorners);
-
-// DOM追加時にも対応（必要なら）
-const observer = new MutationObserver(updateSmoothCorners);
-observer.observe(document.body, { childList: true, subtree: true });
-</script>
-<script>
-  if (CSS && 'paintWorklet' in CSS) CSS.paintWorklet.addModule('https://unpkg.com/smooth-corners')
-</script>
-
-<div class="footer">
-<footer class="smooth">
-  © Search 3958
-</footer>
-</div>
-
-
-  <script src="https://search3958.github.io/check.js"></script>
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
+     crossorigin="anonymous"></script>
+     <script src="search3958.github.io/check.js"></script>
 </body>
 </html>

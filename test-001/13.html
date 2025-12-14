@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 回転可能 ベルトコンベア パズル (7x7)</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #1a1a2e;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            perspective: 1500px; /* 3D空間の基点 */
+            overflow: hidden; /* ズレを防ぐ */
+        }
+
+        h1 {
+            color: #64ffda;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+            margin-bottom: 20px;
+        }
+
+        /* --- 3D ボードコンテナ (回転対象) --- */
+        #board-container {
+            /* 初期傾きを設定 */
+            transform: rotateX(60deg) rotateZ(45deg); 
+            transform-style: preserve-3d;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+            transition: box-shadow 0.5s;
+            cursor: grab; /* ドラッグできるカーソル */
+        }
+        #board-container:active {
+            cursor: grabbing;
+        }
+
+        /* ゲームボードのスタイル */
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(7, 60px);
+            grid-template-rows: repeat(7, 60px);
+            border: 5px solid #333;
+            background-color: #2e2e4f;
+            transform-style: preserve-3d;
+        }
+
+        /* セルの基本スタイル */
+        .cell {
+            width: 60px;
+            height: 60px;
+            box-sizing: border-box;
+            border: 1px solid #444;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background-color: #1f1f3a;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            transform-style: preserve-3d;
+        }
+        /* 特殊なセルのスタイル */
+        .warp1 { background-color: #8a2be2; } 
+        .spawner { background-color: #3cb371; } 
+        .seller { background-color: #dc143c; } 
+
+        /* 矢印（コンベア）のスタイル */
+        .arrow-indicator {
+            position: absolute;
+            font-size: 30px;
+            color: #64ffda;
+            line-height: 1;
+            transform: translateZ(5px);
+            transition: transform 0.3s ease-out, color 0.3s;
+        }
+        .cell.up .arrow-indicator { transform: translateZ(5px) rotateZ(0deg); }
+        .cell.right .arrow-indicator { transform: translateZ(5px) rotateZ(90deg); }
+        .cell.down .arrow-indicator { transform: translateZ(5px) rotateZ(180deg); }
+        .cell.left .arrow-indicator { transform: translateZ(5px) rotateZ(270deg); }
+        
+        /* --- 荷物（パッケージ）のアニメーション強化 --- */
+        .package {
+            position: absolute;
+            width: 70%;
+            height: 70%;
+            background-color: #a0522d;
+            border: 3px solid #5d2b0e;
+            border-radius: 5px;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            
+            /* セルから浮き上がらせる */
+            transform: translateZ(15px); 
+            /* 荷物が移動する際のアニメーション時間 (JavaScriptと同期) */
+            transition: transform 0.2s ease-out; 
+        }
+
+        /* 移動中のバウンスアニメーション */
+        .moving {
+            animation: move-bounce 0.8s infinite alternate ease-in-out;
+        }
+        @keyframes move-bounce {
+            from { transform: translateZ(15px) scale(1); }
+            to { transform: translateZ(25px) scale(1.05); }
+        }
+
+        /* UI要素のスタイル */
+        #controls {
+            margin-top: 50px; 
+            text-align: center;
+        }
+        #inventory {
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .control-buttons button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #64ffda;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            margin: 0 5px;
+        }
+        .control-buttons button:hover {
+            background-color: #4ee6c1;
+        }
+        .control-buttons button:active {
+            transform: scale(0.95);
+        }
+        
+        .paused-state {
+            background-color: #ffcc00 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>3D 回転可能 ベルトコンベア パズル (7x7)</h1>
+
+    <div id="controls">
+        <div id="inventory">荷物: 0個</div>
+        <div class="control-buttons">
+            <button id="place-package">📦 中央に置く</button>
+            <button id="toggle-game" class="paused-state">▶ 再生</button>
+        </div>
+        <p>（ボードをドラッグすると回転します。空のマスをクリックでコンベアの向きが変わります）</p>
+    </div>
+
+    <div id="board-container">
+        <div id="game-board">
+            </div>
+    </div>
+
+    <script>
+        // --- ゲーム定数 ---
+        const BOARD_SIZE = 7;
+        const CENTER_POS = { row: Math.floor(BOARD_SIZE / 2), col: Math.floor(BOARD_SIZE / 2) };
+        const directions = ['right', 'down', 'left', 'up'];
+        const MOVE_SPEED_MS = 800; 
+
+        // --- DOM要素 ---
+        const gameBoardEl = document.getElementById('game-board');
+        const boardContainer = document.getElementById('board-container');
+        const placePackageBtn = document.getElementById('place-package');
+        const toggleGameBtn = document.getElementById('toggle-game');
+        const inventoryEl = document.getElementById('inventory');
+        
+        // --- ゲーム状態 ---
+        let board = []; 
+        let specialCells = {}; 
+        let packagePosition = null; 
+        let inventory = 1; // 初期荷物
+        let gameInterval = null; 
+        let isPaused = true; // 初期状態は一時停止
+
+        // --- 3D回転状態 ---
+        let isDragging = false;
+        let startX, startY;
+        let rotateX = 60; // 初期値
+        let rotateZ = 45; // 初期値
+        const ROTATE_SENSITIVITY = 0.5;
+
+        // --- 特殊なマスの座標 ---
+        specialCells['warp1_A'] = { row: 0, col: 0 }; 
+        specialCells['warp1_B'] = { row: 6, col: 6 };
+        specialCells['spawner'] = { row: 6, col: 0 }; 
+        specialCells['seller'] = { row: 0, col: 6 }; 
+
+        // --- 初期化 ---
+        function initBoard() {
+            // ボードのセル生成処理（前バージョンと同じ）
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                board[r] = [];
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    board[r][c] = 'right';
+
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell', 'right');
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    cell.id = `cell-${r}-${c}`;
+
+                    const arrow = document.createElement('div');
+                    arrow.classList.add('arrow-indicator');
+                    arrow.textContent = '▶';
+                    cell.appendChild(arrow);
+
+                    if ((r === specialCells['warp1_A'].row && c === specialCells['warp1_A'].col) ||
+                        (r === specialCells['warp1_B'].row && c === specialCells['warp1_B'].col)) {
+                        cell.classList.add('warp1');
+                    } else if (r === specialCells['spawner'].row && c === specialCells['spawner'].col) {
+                        cell.classList.add('spawner');
+                    } else if (r === specialCells['seller'].row && c === specialCells['seller'].col) {
+                        cell.classList.add('seller');
+                    }
+
+                    cell.addEventListener('click', toggleConveyorDirection);
+                    gameBoardEl.appendChild(cell);
+                }
+            }
+        }
+        
+        // --- 3D回転処理 ---
+        function updateBoardRotation() {
+            boardContainer.style.transform = `rotateX(${rotateX}deg) rotateZ(${rotateZ}deg)`;
+        }
+
+        boardContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            boardContainer.style.transition = 'none'; // 回転中はトランジションを無効化
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+
+            // X軸回転 (上下ドラッグ)
+            rotateX += dy * ROTATE_SENSITIVITY;
+            // Z軸回転 (左右ドラッグ)
+            rotateZ -= dx * ROTATE_SENSITIVITY;
+
+            // X軸の角度制限 (水平より少し上から真上まで)
+            rotateX = Math.min(100, Math.max(20, rotateX)); 
+
+            startX = e.clientX;
+            startY = e.clientY;
+            
+            updateBoardRotation();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                boardContainer.style.transition = 'transform 0.5s ease'; // ドラッグ終了後にトランジションを戻す
+            }
+        });
+
+        // --- ゲーム制御関数 ---
+
+        function toggleGame() {
+            isPaused = !isPaused;
+            if (!isPaused && packagePosition !== null) {
+                // 再生
+                toggleGameBtn.textContent = "⏸ 一時停止";
+                toggleGameBtn.classList.remove('paused-state');
+                gameInterval = setInterval(movePackage, MOVE_SPEED_MS);
+            } else {
+                // 一時停止 or 荷物なし
+                toggleGameBtn.textContent = "▶ 再生";
+                toggleGameBtn.classList.add('paused-state');
+                if (gameInterval) {
+                    clearInterval(gameInterval);
+                    gameInterval = null;
+                }
+            }
+        }
+
+        function placePackage() {
+            if (inventory <= 0) {
+                alert("荷物がありません。生成マス (左下) へ移動させてください。");
+                return;
+            }
+            
+            if (packagePosition !== null) {
+                alert("既に荷物が置かれています。");
+                return;
+            }
+
+            // 初期配置を中央 (3, 3) に設定
+            packagePosition = { row: CENTER_POS.row, col: CENTER_POS.col };
+            inventory--;
+            updateInventoryDisplay();
+
+            const startCellEl = document.getElementById(`cell-${CENTER_POS.row}-${CENTER_POS.col}`);
+            const packageEl = document.createElement('div');
+            packageEl.classList.add('package', 'moving');
+            packageEl.id = 'current-package';
+            packageEl.textContent = '📦';
+            startCellEl.appendChild(packageEl);
+            
+            // 荷物を置いた後、自動的に再生
+            if (isPaused) {
+                toggleGame();
+            }
+        }
+
+        function movePackage() {
+            if (packagePosition === null || isPaused) {
+                // 荷物が消えるか一時停止されたらclearIntervalは別の場所で実行される
+                return;
+            }
+
+            let { row: r, col: c } = packagePosition;
+            const currentCellEl = document.getElementById(`cell-${r}-${c}`);
+            const currentDir = board[r][c];
+            let nextR = r;
+            let nextC = c;
+            let isSpecialAction = false; 
+
+            // 1. 移動先の決定
+            switch (currentDir) {
+                case 'up': nextR--; break;
+                case 'down': nextR++; break;
+                case 'left': nextC--; break;
+                case 'right': nextC++; break;
+            }
+            
+            // 2. 特殊マスの判定（現在のマスで判定）
+            let newR = nextR;
+            let newC = nextC;
+            
+            // a. ワープ
+            if (r === specialCells['warp1_A'].row && c === specialCells['warp1_A'].col) {
+                newR = specialCells['warp1_B'].row;
+                newC = specialCells['warp1_B'].col;
+                isSpecialAction = true;
+                flashCell(currentCellEl, '#ff00ff');
+            } else if (r === specialCells['warp1_B'].row && c === specialCells['warp1_B'].col) {
+                newR = specialCells['warp1_A'].row;
+                newC = specialCells['warp1_A'].col;
+                isSpecialAction = true;
+                flashCell(currentCellEl, '#ff00ff');
+            } 
+            
+            // b. 生成マス
+            else if (r === specialCells['spawner'].row && c === specialCells['spawner'].col) {
+                inventory++;
+                updateInventoryDisplay();
+                removePackage(currentCellEl, true); // 成功時の削除
+                flashCell(currentCellEl, '#00ff00');
+                return; 
+            } 
+            
+            // c. 売却マス
+            else if (r === specialCells['seller'].row && c === specialCells['seller'].col) {
+                console.log("荷物売却！");
+                removePackage(currentCellEl, true); // 成功時の削除
+                flashCell(currentCellEl, '#ff4500');
+                return;
+            }
+
+            // 3. 盤面外の判定
+            if (newR < 0 || newR >= BOARD_SIZE || newC < 0 || newC >= BOARD_SIZE) {
+                console.log("荷物がボード外へ落下しました");
+                removePackage(currentCellEl, false); // 失敗時の削除
+                return;
+            }
+
+            // 4. 荷物の位置を更新し、DOMを移動
+            packagePosition = { row: newR, col: newC };
+            const nextCellEl = document.getElementById(`cell-${newR}-${newC}`);
+            const packageEl = document.getElementById('current-package');
+            
+            if (packageEl) {
+                // 移動アニメーションをトリガーするために一度親から外し、新しい親に追加
+                packageEl.parentElement.removeChild(packageEl); 
+                nextCellEl.appendChild(packageEl);
+                
+                // ワープした場合や、アニメーションをリフレッシュしたい場合
+                if (isSpecialAction) {
+                    packageEl.classList.remove('moving');
+                    void packageEl.offsetWidth; 
+                    packageEl.classList.add('moving');
+                }
+            } else {
+                removePackage(currentCellEl, false);
+            }
+        }
+
+        function removePackage(cellEl, isSuccess) {
+            const packageEl = document.getElementById('current-package');
+            if (packageEl) {
+                // アニメーションを一時停止し、消滅アニメーションを実行
+                packageEl.classList.remove('moving');
+                if (isSuccess) {
+                    // 成功時は小さく消える
+                    packageEl.style.transform = 'translateZ(30px) scale(0)';
+                } else {
+                    // 落下時は遠ざかる
+                    packageEl.style.transform = 'translateZ(100px) scale(0.5)'; 
+                }
+                cellEl.appendChild(packageEl); 
+                
+                setTimeout(() => {
+                    if (packageEl.parentElement) {
+                        packageEl.parentElement.removeChild(packageEl);
+                    }
+                    packagePosition = null;
+                    // 荷物がなくなったら自動的に一時停止
+                    if (!isPaused) {
+                        toggleGame();
+                    }
+                }, 500);
+            }
+        }
+
+        // --- ユーティリティ ---
+        function toggleConveyorDirection(event) {
+            // ... (前バージョンと同じ)
+            const cellEl = event.currentTarget;
+            const r = parseInt(cellEl.dataset.row);
+            const c = parseInt(cellEl.dataset.col);
+
+            if (cellEl.classList.contains('warp1') || cellEl.classList.contains('spawner') || cellEl.classList.contains('seller')) {
+                cellEl.style.transform = 'translateZ(10px) scale(1.05)';
+                setTimeout(() => cellEl.style.transform = 'translateZ(0) scale(1)', 100);
+                return;
+            }
+
+            const currentDir = board[r][c];
+            const currentIndex = directions.indexOf(currentDir);
+            const nextIndex = (currentIndex + 1) % directions.length;
+            const nextDir = directions[nextIndex];
+
+            cellEl.classList.remove(currentDir);
+            cellEl.classList.add(nextDir);
+            board[r][c] = nextDir;
+        }
+        
+        function flashCell(cellEl, color) {
+            const originalBg = cellEl.style.backgroundColor;
+            cellEl.style.backgroundColor = color;
+            cellEl.style.transform = 'translateZ(10px)';
+            setTimeout(() => {
+                cellEl.style.backgroundColor = originalBg;
+                cellEl.style.transform = 'translateZ(0)';
+            }, 300);
+        }
+
+        function updateInventoryDisplay() {
+            inventoryEl.textContent = `荷物: ${inventory}個`;
+        }
+
+
+        // --- メイン実行 ---
+        initBoard(); 
+        updateInventoryDisplay();
+
+        // イベントリスナー設定
+        placePackageBtn.addEventListener('click', placePackage);
+        toggleGameBtn.addEventListener('click', toggleGame);
+
+        console.log("3D回転機能と再生/一時停止機能が追加されました。");
+    </script>
+</body>
+</html>
