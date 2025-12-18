@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Dictionary Length Filter (3-5 chars)</title>
+</head>
+<body>
+
+  <input type="file" id="dict-file-input" accept=".txt">
+  <button id="dict-run-btn">処理してダウンロード</button>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ===============================
+     設定
+  =============================== */
+  const MODULE_NAME = 'dictAsyncDownloadFilter';
+  const MIN_LENGTH = 3; // 1, 2文字を削除するため3以上に設定
+  const MAX_LENGTH = 7; // 6文字以上を削除
+  const OUTPUT_FILE_SUFFIX = '_filtered_3to5';
+
+  /* ===============================
+     ログ
+  =============================== */
+  function log(type, message, data = null) {
+    const prefix = `[${MODULE_NAME}]`;
+    data !== null
+      ? console[type](`${prefix} ${message}`, data)
+      : console[type](`${prefix} ${message}`);
+  }
+
+  /* ===============================
+     要素取得（nullチェック）
+  =============================== */
+  function getEl(selector) {
+    const el = document.querySelector(selector);
+    if (!el) {
+      log('error', `要素が見つかりません: ${selector}`);
+      return null;
+    }
+    log('info', `要素取得成功: ${selector}`);
+    return el;
+  }
+
+  /* ===============================
+     非同期ファイル読み込み
+  =============================== */
+  function readTextFileAsync(file) {
+    return new Promise((resolve, reject) => {
+      if (!(file instanceof File)) {
+        reject(new Error('Fileオブジェクトではありません'));
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        log('info', 'ファイル読み込み成功');
+        resolve(reader.result);
+      };
+
+      reader.onerror = () => {
+        reject(new Error('ファイル読み込み失敗'));
+      };
+
+      log('info', 'ファイル読み込み開始', file.name);
+      reader.readAsText(file);
+    });
+  }
+
+  /* ===============================
+     辞書フィルタ処理
+  =============================== */
+  function filterDictionary(text, minLen, maxLen) {
+    if (typeof text !== 'string') {
+      log('error', '入力が文字列ではありません');
+      return '';
+    }
+
+    // 改行で分割し、空行を除去するためのトリミングを考慮
+    const lines = text.split(/\r?\n/);
+    log('info', '総行数', lines.length);
+
+    const filtered = lines.filter(line => {
+      const target = line.trim(); // 前後の空白を無視して判定
+      const len = target.length;
+
+      // 条件：3文字以上 かつ 6文字未満 (3, 4, 5文字)
+      const keep = len >= minLen && len < maxLen;
+
+      log(
+        keep ? 'log' : 'warn',
+        `"${target}" (${len}文字) → ${keep ? '保持' : '削除'}`
+      );
+
+      return keep;
+    });
+
+    log('info', '残った行数', filtered.length);
+    return filtered.join('\n');
+  }
+
+  /* ===============================
+     txtダウンロード（表示なし）
+  =============================== */
+  function downloadTextFile(text, originalName) {
+    if (typeof text !== 'string') {
+      log('error', 'ダウンロード内容が不正');
+      return;
+    }
+
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    if (!a) {
+      log('error', 'a要素の生成に失敗');
+      return;
+    }
+
+    const baseName = originalName.replace(/\.txt$/i, '');
+    a.href = url;
+    a.download = `${baseName}${OUTPUT_FILE_SUFFIX}.txt`;
+    a.style.display = 'none';
+
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    log('info', 'ダウンロード完了', a.download);
+  }
+
+  /* ===============================
+     初期化
+  =============================== */
+  async function init() {
+    const fileInput = getEl('#dict-file-input');
+    const runBtn = getEl('#dict-run-btn');
+
+    if (!fileInput || !runBtn) {
+      log('error', '初期化失敗');
+      return;
+    }
+
+    runBtn.addEventListener('click', async () => {
+      log('info', '処理開始');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        log('error', 'ファイルが選択されていません');
+        alert('ファイルを選択してください');
+        return;
+      }
+
+      const file = fileInput.files[0];
+
+      try {
+        const text = await readTextFileAsync(file);
+        // ここで MIN_LENGTH と MAX_LENGTH を渡す
+        const filteredText = filterDictionary(text, MIN_LENGTH, MAX_LENGTH);
+        downloadTextFile(filteredText, file.name);
+
+        log('info', '全処理正常終了');
+      } catch (err) {
+        log('error', err.message);
+        alert('エラーが発生しました: ' + err.message);
+      }
+    });
+
+    log('info', '初期化完了');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+
+</body>
+</html>

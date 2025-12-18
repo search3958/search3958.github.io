@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>テキスト5分割ツール</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        .container { border: 2px dashed #ccc; padding: 20px; border-radius: 8px; text-align: center; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        #status { margin-top: 20px; color: #555; }
+        .info { font-size: 0.9em; color: #666; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <h2>テキスト5分割ツール</h2>
+    <p class="info">ファイルを読み込み、行数に基づいて均等に5つのファイルへ分割してダウンロードします。</p>
+
+    <div class="container">
+        <input type="file" id="fileInput" accept=".txt"><br><br>
+        <button id="processBtn">分割してダウンロード</button>
+    </div>
+
+    <div id="status"></div>
+
+    <script>
+        document.getElementById('processBtn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('fileInput');
+            const status = document.getElementById('status');
+            
+            if (!fileInput.files.length) {
+                alert('ファイルを選択してください');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const text = e.target.result;
+                // 改行で分割（空行も維持するため単純に \n で split）
+                const lines = text.split(/\r?\n/);
+                const totalLines = lines.length;
+                
+                // 1ファイルあたりの行数を計算（端数は切り上げ）
+                const linesPerFile = Math.ceil(totalLines / 5);
+                
+                status.innerHTML = `総行数: ${totalLines} 行<br>1ファイルあたり約 ${linesPerFile} 行で分割します...`;
+
+                for (let i = 0; i < 5; i++) {
+                    const start = i * linesPerFile;
+                    const end = Math.min(start + linesPerFile, totalLines);
+                    
+                    // 範囲内の行を取り出して結合
+                    const chunk = lines.slice(start, end).join('\n');
+                    
+                    // ファイル名を作成
+                    const fileName = `${file.name.replace('.txt', '')}_part${i + 1}.txt`;
+                    
+                    // ダウンロード実行
+                    downloadFile(chunk, fileName);
+
+                    if (end >= totalLines) break; // テキストが終了したら停止
+                }
+                
+                status.innerHTML += '<br><strong>完了しました！</strong>';
+            };
+
+            reader.readAsText(file);
+        });
+
+        function downloadFile(content, fileName) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

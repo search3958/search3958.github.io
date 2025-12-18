@@ -11,10 +11,11 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;font-family: 'M PLUS 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      corner-shape: superellipse(1.5);
     }
 
     body {
-      background-color: #dbdce0;
+      background-color: #efefef;
       font-family: 'M PLUS 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       height: 100vh;
       display: flex;
@@ -24,7 +25,7 @@
 
     .dialog {
       background-color: #fff;
-      border-radius: 32px;
+      border-radius: 48px;
       padding: 32px;
       max-width: 500px;
       width: 90%;
@@ -40,10 +41,10 @@
     }
 
     #agreeBtn {
-      background-color: #0d5ad5;
+      background-color: #000000;
       color: white;
       border: none;
-      border-radius: 18px;
+      border-radius: 24px;
       padding: 12px 24px;
       font-size: 16px;
       font-weight: 500;
@@ -55,26 +56,29 @@
       opacity: 0.9;
     }
 
-    .links {
+    p,.links {
       margin-top: 28px;
-      font-size: 13px;
+      font-size: 14px;
+      color:#5F6368
     }
 
     .links a {
-      color: #5F6368;
+      color: #008f66;
       text-decoration: none;
       margin: 0 8px;
     }
 
     .links a:hover {
       text-decoration: underline;
+      color: #09af6e;
     }
   </style>
 </head>
 <body>
   <div class="dialog">
-    <h2>お客様は利用規約への同意を撤回しているため<br>本サービスをご利用いただけません。</h2>
-
+    <h2>同意を撤回しています</h2>
+    <p>お客様は利用規約への同意を撤回しているため本サービスをご利用いただけません。<br>
+    ご利用いただくには利用規約に同意していただく必要があります。</p>
     <div class="links">
       <a href="https://search3958.github.io/policies/trems.html" target="_blank" rel="noopener">利用規約</a>と
       <a href="https://search3958.github.io/policies/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>をご確認ください。

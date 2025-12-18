@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>3単語全結合（セキュリティ対応版）</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
+        .card { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .status-box { background: #fffbe6; border: 1px solid #ffe58f; padding: 15px; border-radius: 8px; margin: 20px 0; }
+        #log { background: #222; color: #34a853; padding: 10px; height: 120px; overflow-y: auto; font-family: monospace; font-size: 12px; margin-top: 10px; }
+        button { background: #1a73e8; color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; }
+        button:disabled { background: #ccc; }
+        #resumeBtn { background: #ff4d4f; display: none; margin-top: 10px; }
+        .stat { font-size: 18px; font-weight: bold; color: #1a73e8; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>3単語 全パターン結合</h2>
+    <p>2GBごとに分割し、安全に保存します。</p>
+
+    <input type="file" id="fileInput" accept=".txt">
+    <hr>
+    <button id="startBtn">1. 処理を開始する</button>
+    <button id="resumeBtn">2. 次の保存先を指定して続行</button>
+
+    <div class="status-box">
+        <div>生成済み: <span id="totalLines" class="stat">0</span> パターン</div>
+        <div>現在のファイル: <span id="curSize" class="stat">0</span> MB</div>
+        <div id="log">ログ: 準備完了</div>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const startBtn = document.getElementById('startBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+    const log = document.getElementById('log');
+    const curSizeDisp = document.getElementById('curSize');
+    const totalLinesDisp = document.getElementById('totalLines');
+
+    const MAX_PART_SIZE = 6 * 1024 * 1024 * 1024; 
+    const BATCH_SIZE = 30000;
+
+    let writable;
+    let fileCount = 1;
+    let currentPartBytes = 0;
+    let totalLines = 0;
+    let words = [];
+    let state = { i: 0, j: 0, k: 0 }; // どこまで処理したか保存
+
+    function addLog(msg) {
+        log.innerHTML += `> ${msg}<br>`;
+        log.scrollTop = log.scrollHeight;
+    }
+
+    // 保存先を選択してWritableストリームを作る
+    async function getWritable() {
+        try {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: `patterns_part${fileCount}.txt`
+            });
+            fileCount++;
+            currentPartBytes = 0;
+            return await handle.createWritable();
+        } catch (e) {
+            addLog("保存がキャンセルされました。");
+            return null;
+        }
+    }
+
+    async function runProcess() {
+        startBtn.style.display = 'none';
+        resumeBtn.style.display = 'none';
+        
+        const encoder = new TextEncoder();
+        let batchBuffer = "";
+        let batchCount = 0;
+        const n = words.length;
+
+        // 再開可能な3重ループ
+        for (; state.i < n; state.i++) {
+            for (; state.j < n; state.j++) {
+                for (; state.k < n; state.k++) {
+                    
+                    batchBuffer += words[state.i] + words[state.j] + words[state.k] + "\n";
+                    batchCount++;
+                    totalLines++;
+
+                    if (batchCount >= BATCH_SIZE) {
+                        const data = encoder.encode(batchBuffer);
+
+                        // 2GBを超えそうな場合
+                        if (currentPartBytes + data.length > MAX_PART_SIZE) {
+                            await writable.close();
+                            addLog("2GBに達しました。次のファイルを作成してください。");
+                            resumeBtn.style.display = 'block'; // ボタンを表示して待機
+                            return; // 一旦関数を抜ける
+                        }
+
+                        await writable.write(data);
+                        currentPartBytes += data.length;
+                        batchBuffer = "";
+                        batchCount = 0;
+
+                        if (totalLines % 5000 === 0) {
+                            totalLinesDisp.textContent = totalLines.toLocaleString();
+                            curSizeDisp.textContent = Math.floor(currentPartBytes / (1024 * 1024));
+                        }
+                    }
+                }
+                state.k = 0; // 内側のループをリセット
+            }
+            state.j = 0; // 中間のループをリセット
+        }
+
+        if (batchBuffer) await writable.write(encoder.encode(batchBuffer));
+        await writable.close();
+        addLog("🎉 全ての処理が完了しました！");
+    }
+
+    startBtn.addEventListener('click', async () => {
+        if (!fileInput.files[0]) return alert('ファイルを選択してください');
+        
+        const text = await fileInput.files[0].text();
+        words = text.split(/\r?\n/).map(s => s.trim()).filter(s => s !== "");
+        addLog(`${words.length}単語読み込み完了。`);
+
+        writable = await getWritable();
+        if (writable) runProcess();
+    });
+
+    resumeBtn.addEventListener('click', async () => {
+        writable = await getWritable();
+        if (writable) runProcess();
+    });
+</script>
+</body>
+</html>
