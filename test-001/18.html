@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material 3 Analyzer - 834k</title>
+    <script src="https://unpkg.com/@zip.js/zip.js/dist/zip.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --md-sys-color-primary: #0061A4;
+            --md-sys-color-surface: #FDFCFF;
+            --md-sys-color-surface-container: #F3F4F9;
+            --md-sys-color-on-surface: #1A1C1E;
+            --md-sys-color-outline: #74777F;
+            --md-sys-color-success: #2E7D32;
+        }
+
+        body {
+            font-family: 'Google Sans', sans-serif;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.6s ease;
+        }
+
+        /* 2,000件ごとの背景色アニメーション */
+        body.pulse-active {
+            background-color: #D1E4FF;
+        }
+
+        .card {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 28px;
+            padding: 32px;
+            width: 100%;
+            max-width: 540px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        h1 { font-size: 24px; font-weight: 500; margin: 0 0 8px 0; text-align: center; }
+        .subtitle { font-size: 12px; color: var(--md-sys-color-outline); text-align: center; margin-bottom: 24px; }
+
+        /* Stats Section */
+        .main-stat {
+            background: white;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .main-stat .val {
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface);
+            display: block;
+            line-height: 1;
+        }
+        .main-stat .lab { font-size: 12px; font-weight: 500; color: var(--md-sys-color-primary); text-transform: uppercase; margin-top: 8px; display: block; }
+
+        .sub-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .sub-item { background: white; padding: 12px; border-radius: 16px; text-align: center; }
+        .sub-item .val { font-size: 18px; font-weight: 700; display: block; }
+        .sub-item .lab { font-size: 10px; color: var(--md-sys-color-outline); }
+
+        /* Logs */
+        #log-box {
+            background: #1C1B1F;
+            color: #E6E1E5;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11px;
+            padding: 16px;
+            border-radius: 16px;
+            height: 150px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Inputs & Buttons */
+        .field { background: white; border: 1px solid var(--md-sys-color-outline); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; }
+        .field label { display: block; font-size: 11px; font-weight: 700; color: var(--md-sys-color-primary); }
+        input[type="file"] { width: 100%; border: none; font-size: 13px; margin-top: 4px; }
+
+        .btn {
+            background-color: var(--md-sys-color-primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 100px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        .match-banner {
+            display: none;
+            background: var(--md-sys-color-success);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 16px;
+            text-align: center;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>ZIP Analyzer</h1>
+    <p class="subtitle">Material 3 UI | Total Skip: 834,000</p>
+
+    <div id="setup-ui">
+        <div class="field">
+            <label>ZIP ARCHIVE</label>
+            <input type="file" id="zip-file" accept=".zip">
+        </div>
+        <div class="field">
+            <label>DICTIONARY (.TXT)</label>
+            <input type="file" id="pass-list" accept=".txt">
+        </div>
+        <button id="start-btn" class="btn">解析を開始する</button>
+    </div>
+
+    <div id="monitor-ui" style="display:none;">
+        <div class="main-stat">
+            <span id="stat-count" class="val">0</span>
+            <span class="lab">Tested Passwords</span>
+        </div>
+
+        <div class="sub-stats">
+            <div class="sub-item">
+                <span id="stat-speed" class="val">0</span>
+                <span class="lab">Speed / 0.5s</span>
+            </div>
+            <div class="sub-item">
+                <span id="stat-total" class="val">0</span>
+                <span class="lab">Read (Skip)</span>
+            </div>
+            <div class="sub-item">
+                <span id="stat-found" class="val" style="color:var(--md-sys-color-success)">0</span>
+                <span class="lab">Matches</span>
+            </div>
+        </div>
+
+        <div id="log-box"></div>
+        <div id="match-banner" class="match-banner"></div>
+    </div>
+</div>
+
+<script>
+    const workerCode = `
+        importScripts('https://unpkg.com/@zip.js/zip.js/dist/zip.min.js');
+        let target = null;
+        self.onmessage = async (e) => {
+            const { type, zipBlob, batch } = e.data;
+            if (type === 'init') {
+                const reader = new zip.ZipReader(new zip.BlobReader(zipBlob));
+                const entries = await reader.getEntries();
+                target = entries.find(el => !el.directory);
+                self.postMessage({ type: 'ready' });
+            } 
+            else if (type === 'process') {
+                for (let pwd of batch) {
+                    try {
+                        await target.getData(new zip.BlobWriter(), { password: pwd });
+                        self.postMessage({ type: 'found', password: pwd });
+                    } catch (err) {}
+                    self.postMessage({ type: 'update' });
+                }
+                self.postMessage({ type: 'done' });
+            }
+        };
+    `;
+
+    const SKIP_TOTAL = 834000;
+    const THREADS = Math.max(1, Math.floor((navigator.hardwareConcurrency || 4) / 3));
+
+    let workers = [], states = [], tested = 0, feeding = false;
+    let lastTested = 0;
+
+    function addLog(msg, color = null) {
+        const logBox = document.getElementById('log-box');
+        const div = document.createElement('div');
+        div.textContent = "> " + msg;
+        if (color) div.style.color = color;
+        logBox.appendChild(div);
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    // 0.5秒ごとの速度計測
+    setInterval(() => {
+        if (!feeding) return;
+        const currentSpeed = tested - lastTested;
+        document.getElementById('stat-speed').textContent = currentSpeed.toLocaleString();
+        lastTested = tested;
+    }, 500);
+
+    document.getElementById('start-btn').onclick = async () => {
+        const zf = document.getElementById('zip-file').files[0];
+        const pf = document.getElementById('pass-list').files[0];
+        if(!zf || !pf) return alert("ファイルを選択してください");
+
+        document.getElementById('setup-ui').style.display = 'none';
+        document.getElementById('monitor-ui').style.display = 'block';
+
+        const blob = new Blob([workerCode], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+
+        for (let i=0; i<THREADS; i++) {
+            const w = new Worker(url);
+            w.postMessage({ type: 'init', zipBlob: zf });
+            w.onmessage = (e) => {
+                const d = e.data;
+                const idx = workers.indexOf(w);
+                if (d.type === 'ready') {
+                    states[idx] = 'idle';
+                    if (states.every(s => s === 'idle') && !feeding) startFeeding(pf);
+                }
+                if (d.type === 'update') {
+                    tested++;
+                    document.getElementById('stat-count').textContent = tested.toLocaleString();
+                    if (tested > 0 && tested % 2000 === 0) {
+                        document.body.classList.add('pulse-active');
+                        setTimeout(() => document.body.classList.remove('pulse-active'), 400);
+                        addLog(`Progress: ${tested.toLocaleString()} candidates tested.`);
+                    }
+                }
+                if (d.type === 'found') {
+                    document.getElementById('stat-found').textContent = "1";
+                    const banner = document.getElementById('match-banner');
+                    banner.style.display = 'block';
+                    banner.textContent = "FOUND: " + d.password;
+                    addLog("MATCH DISCOVERED: " + d.password, "#81C784");
+                }
+                if (d.type === 'done') {
+                    states[idx] = 'idle';
+                    dispatch();
+                }
+            };
+            workers.push(w);
+            states.push('init');
+        }
+    };
+
+    let iter = null, eof = false;
+
+    async function startFeeding(file) {
+        feeding = true;
+        addLog(`Skipping ${SKIP_TOTAL.toLocaleString()} lines...`);
+        iter = getIter(file);
+        dispatch();
+    }
+
+    async function* getIter(file) {
+        const reader = file.stream().getReader();
+        const dec = new TextDecoder();
+        let left = '', count = 0;
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const lines = (left + dec.decode(value)).split(/\r?\n/);
+            left = lines.pop();
+            for (const l of lines) {
+                count++;
+                if (count % 10000 === 0) {
+                    document.getElementById('stat-total').textContent = count.toLocaleString();
+                }
+                if (count > SKIP_TOTAL) yield l.trim();
+            }
+        }
+        eof = true;
+    }
+
+    async function dispatch() {
+        for (let i=0; i<workers.length; i++) {
+            if (states[i] === 'idle') {
+                let b = [];
+                for (let j=0; j<300; j++) {
+                    const { value, done } = await iter.next();
+                    if (done) { eof = true; break; }
+                    if (value && value.length === 11) b.push(value);
+                }
+                if (b.length > 0) {
+                    states[i] = 'busy';
+                    workers[i].postMessage({ type: 'process', batch: b });
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>

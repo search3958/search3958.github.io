@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M3 Expressive Utilities</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wdth,wght,ROND@6..144,25..151,1..1000,0..100&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+        :root {
+            --md-sys-color-primary: #004a77;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #c2e7ff;
+            --md-sys-color-on-primary-container: #001d35;
+            --md-sys-color-secondary: #535f70;
+            --md-sys-color-surface: #f8f9ff;
+            --md-sys-color-surface-container: #eef2fa;
+            --md-sys-color-outline-variant: #c2c7cf;
+            --font-google: 'Google Sans Flex', sans-serif;
+            --easing-expressive: cubic-bezier(0.4, 0, 0.2, 1.4);
+            --radius-expressive: 32px;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: var(--font-google);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--md-sys-color-surface);
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: var(--radius-expressive);
+            padding: 32px;
+            transition: transform 0.2s ease;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 1.4rem;
+            color: var(--md-sys-color-primary);
+            margin-bottom: 20px;
+        }
+
+        /* --- Calculator --- */
+        .calc-display-container { margin-bottom: 16px; text-align: right; }
+        #calcDisplay {
+            width: 100%; background: transparent; border: none; font-size: 3.5rem;
+            text-align: right; color: var(--md-sys-color-primary); padding: 10px; outline: none;
+        }
+        .calc-row { display: flex; gap: 8px; margin-bottom: 8px; width: 100%; }
+        .calc-btn {
+            flex: 1; height: 64px; border: none; border-radius: 24px; background: white;
+            font-size: 1.4rem; font-weight: 400; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: all 0.3s cubic-bezier(.34,.24,0,1), background 0.2s;
+            overflow: hidden; min-width: 40px;
+            font-variation-settings:"wdth" 100,"ROND" 0;
+        }
+        .calc-btn:active { flex: 1.4; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-primary); font-variation-settings:"wdth" 120,"ROND" 100;font-weight: 800; }
+        .calc-btn.op { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
+        .calc-btn.action { background: var(--md-sys-color-primary); color: white; }
+
+        /* --- Rail Layout --- */
+        .rail-layout { display: flex; gap: 24px; }
+        .internal-rail { display: flex; flex-direction: column; gap: 8px; border-right: 1px solid rgba(0,0,0,0.05); padding-right: 12px;}
+        .rail-btn {
+            background: transparent; border: none; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 12px 0; width: 72px; color: var(--md-sys-color-secondary); font-size: 0.75rem; font-weight: 700;
+        }
+        .rail-btn .icon-box {
+            width: 5px; height: 32px; display: flex; align-items: center; justify-content: center;
+            border-radius: 100px; transition: all 0.4s cubic-bezier(.34,.24,0,1);
+        }
+        .rail-btn.active .icon-box { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); width: 64px; }
+
+        /* --- Universal UI elements --- */
+        .time-display { font-size: 4rem; font-weight: 400; color: var(--md-sys-color-primary); margin: 20px 0; text-align: center; }
+        .primary-pill { background: var(--md-sys-color-primary); color: white; padding: 16px 32px; border-radius: 100px; border: none; font-weight: 700; cursor: pointer; transition: transform 0.2s; }
+        .primary-pill:active { transform: scale(0.95); }
+        .hidden { display: none !important; }
+        .m3-input { width: 100%; padding: 16px; border-radius: 20px; border: 2px solid var(--md-sys-color-primary-container); font-size: 1.2rem; margin-bottom: 12px; outline: none; background: white; }
+        
+        /* --- Text Counter --- */
+        .counter-stats { display: flex; gap: 16px; margin-top: 12px; }
+        .stat-chip { background: white; padding: 8px 16px; border-radius: 12px; font-size: 0.9rem; font-weight: 700; color: var(--md-sys-color-primary); }
+
+        /* --- Color Picker --- */
+        .color-grid { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        #colorPreview { width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .color-input-wrapper { display: flex; align-items: center; gap: 12px; width: 100%; }
+        input[type="color"] { -webkit-appearance: none; border: none; width: 64px; height: 64px; border-radius: 16px; cursor: pointer; background: none; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 16px; }
+    </style>
+</head>
+<body>
+
+    <h1 style="width: 100%; max-width: 600px; margin-bottom: 8px;">Expressive</h1>
+
+    <section class="card">
+        <div class="card-header"><span class="material-symbols-outlined">schedule</span> Digital Clock</div>
+        <div id="clockDisplay" class="time-display" style="font-weight: 700; margin: 0;">00:00:00</div>
+        <div id="dateDisplay" style="text-align: center; color: var(--md-sys-color-secondary); font-weight: 700;">YYYY/MM/DD</div>
+    </section>
+
+    <section class="card">
+        <div class="card-header"><span class="material-symbols-outlined">calculate</span> Calculator</div>
+        <div class="calc-display-container"><input type="text" id="calcDisplay" readonly placeholder="0"></div>
+        <div class="calc-row">
+            <button class="calc-btn op" onclick="calc('C')">C</button>
+            <button class="calc-btn op" onclick="calc('(')">(</button>
+            <button class="calc-btn op" onclick="calc(')')">)</button>
+            <button class="calc-btn op" onclick="calc('/')">÷</button>
+        </div>
+        <div class="calc-row">
+            <button class="calc-btn" onclick="calc('7')">7</button>
+            <button class="calc-btn" onclick="calc('8')">8</button>
+            <button class="calc-btn" onclick="calc('9')">9</button>
+            <button class="calc-btn op" onclick="calc('*')">×</button>
+        </div>
+        <div class="calc-row">
+            <button class="calc-btn" onclick="calc('4')">4</button>
+            <button class="calc-btn" onclick="calc('5')">5</button>
+            <button class="calc-btn" onclick="calc('6')">6</button>
+            <button class="calc-btn op" onclick="calc('-')">-</button>
+        </div>
+        <div class="calc-row">
+            <button class="calc-btn" onclick="calc('1')">1</button>
+            <button class="calc-btn" onclick="calc('2')">2</button>
+            <button class="calc-btn" onclick="calc('3')">3</button>
+            <button class="calc-btn op" onclick="calc('+')">+</button>
+        </div>
+        <div class="calc-row">
+            <button class="calc-btn" style="flex: 2;" onclick="calc('0')">0</button>
+            <button class="calc-btn" onclick="calc('.')">.</button>
+            <button class="calc-btn action" onclick="calc('=')">=</button>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="rail-layout">
+            <nav class="internal-rail">
+                <button class="rail-btn active" onclick="switchTab(this, 'sw')">
+                    <div class="icon-box"><span class="material-symbols-outlined">timer</span></div>Stopwatch
+                </button>
+                <button class="rail-btn" onclick="switchTab(this, 'tm')">
+                    <div class="icon-box"><span class="material-symbols-outlined">hourglass_empty</span></div>Timer
+                </button>
+            </nav>
+            <div class="rail-content" style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div id="view-sw">
+                    <div id="swDisplay" class="time-display">00:00.00</div>
+                    <div style="display: flex; gap: 12px; justify-content: center;">
+                        <button class="primary-pill" id="swBtn" onclick="toggleSW()">Start</button>
+                        <button class="primary-pill" style="background: var(--md-sys-color-surface-container); color: var(--md-sys-color-primary);" onclick="resetSW()">Reset</button>
+                    </div>
+                </div>
+                <div id="view-tm" class="hidden" style="width: 100%;">
+                    <input type="number" id="tmInput" class="m3-input" placeholder="Minutes">
+                    <div id="tmDisplay" class="time-display">00:00</div>
+                    <div style="display: flex; gap: 12px; justify-content: center;">
+                        <button class="primary-pill" onclick="startTimer()">Set Timer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-header"><span class="material-symbols-outlined">edit_note</span> Text Counter</div>
+        <textarea id="textInput" class="m3-input" style="height: 120px; resize: none;" placeholder="Type here..." oninput="countText()"></textarea>
+        <div class="counter-stats">
+            <div class="stat-chip">Characters: <span id="charCount">0</span></div>
+            <div class="stat-chip">Words: <span id="wordCount">0</span></div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-header"><span class="material-symbols-outlined">palette</span> Color Picker</div>
+        <div class="color-grid">
+            <div id="colorPreview"></div>
+            <div class="color-input-wrapper">
+                <input type="color" id="colorInput" value="#004a77" oninput="updateColor(this.value)">
+                <input type="text" id="colorHex" class="m3-input" style="margin-bottom: 0; font-family: monospace;" value="#004a77" readonly>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // --- Navigation ---
+        function switchTab(btn, id) {
+            const layout = btn.closest('.rail-layout');
+            layout.querySelectorAll('.rail-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            layout.querySelector('#view-sw').classList.toggle('hidden', id !== 'sw');
+            layout.querySelector('#view-tm').classList.toggle('hidden', id !== 'tm');
+        }
+
+        // --- Digital Clock Logic ---
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clockDisplay').textContent = `${h}:${m}:${s}`;
+            
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' };
+            document.getElementById('dateDisplay').textContent = now.toLocaleDateString('ja-JP', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- Calculator Logic ---
+        let expression = "";
+        function calc(v) {
+            const display = document.getElementById('calcDisplay');
+            if (v === 'C') expression = "";
+            else if (v === '=') {
+                try { 
+                    const res = eval(expression.replace('÷', '/').replace('×', '*'));
+                    expression = String(res);
+                } catch { expression = "Error"; }
+            } else expression += v;
+            display.value = expression || "0";
+        }
+
+        // --- Stopwatch Logic ---
+        let swStart, swElapsed = 0, swInterval;
+        function toggleSW() {
+            const btn = document.getElementById('swBtn');
+            if (swInterval) {
+                clearInterval(swInterval); swInterval = null; btn.textContent = "Start";
+            } else {
+                swStart = Date.now() - swElapsed;
+                swInterval = setInterval(() => {
+                    swElapsed = Date.now() - swStart;
+                    const d = new Date(swElapsed);
+                    const m = String(d.getUTCMinutes()).padStart(2, '0');
+                    const s = String(d.getUTCSeconds()).padStart(2, '0');
+                    const ms = String(Math.floor(d.getUTCMilliseconds()/10)).padStart(2, '0');
+                    document.getElementById('swDisplay').textContent = `${m}:${s}.${ms}`;
+                }, 30);
+                btn.textContent = "Stop";
+            }
+        }
+        function resetSW() {
+            clearInterval(swInterval); swInterval = null; swElapsed = 0;
+            document.getElementById('swDisplay').textContent = "00:00.00";
+            document.getElementById('swBtn').textContent = "Start";
+        }
+
+        // --- Timer Logic ---
+        let tmInterval;
+        function startTimer() {
+            clearInterval(tmInterval);
+            let totalSec = (parseInt(document.getElementById('tmInput').value) || 0) * 60;
+            if (totalSec <= 0) return;
+            const display = document.getElementById('tmDisplay');
+            tmInterval = setInterval(() => {
+                totalSec--;
+                const m = String(Math.floor(totalSec / 60)).padStart(2, '0');
+                const s = String(totalSec % 60).padStart(2, '0');
+                display.textContent = `${m}:${s}`;
+                if (totalSec <= 0) { clearInterval(tmInterval); display.textContent = "End!"; }
+            }, 1000);
+        }
+
+        // --- Text Counter Logic ---
+        function countText() {
+            const text = document.getElementById('textInput').value;
+            document.getElementById('charCount').textContent = text.length;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            document.getElementById('wordCount').textContent = words;
+        }
+
+        // --- Color Picker Logic ---
+        function updateColor(val) {
+            document.getElementById('colorPreview').style.backgroundColor = val;
+            document.getElementById('colorHex').value = val.toUpperCase();
+        }
+        updateColor('#004a77'); // Initial call
+    </script>
+</body>
+</html>

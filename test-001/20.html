@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Visualizer</title>
+    <style>
+        body {
+            font-family: sans-serif; /* システムフォントを使用しつつ、Google Sansに近いクリーンな印象に */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+        h2 { margin-top: 0; font-size: 1.2rem; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        /* 加速度バーのスタイル */
+        .bar-container { margin: 15px 0; }
+        .label { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: bold; }
+        .bar-outer { background: #eee; height: 12px; border-radius: 6px; overflow: hidden; position: relative; }
+        .bar-inner { height: 100%; width: 0%; transition: width 0.1s ease-out; background: #4285f4; }
+        
+        /* ジャイロ（角度）のスタイル */
+        .gyro-container { display: flex; justify-content: space-around; text-align: center; }
+        .gyro-item { flex: 1; }
+        .circle-outer {
+            width: 80px; height: 80px; border: 3px solid #34a853; border-radius: 50%;
+            margin: 10px auto; position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .needle {
+            width: 2px; height: 40px; background: #ea4335; position: absolute; bottom: 50%;
+            transform-origin: bottom center;
+        }
+        
+        button {
+            padding: 12px 24px; font-size: 1rem; background: #1a73e8; color: white;
+            border: none; border-radius: 25px; cursor: pointer; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Sensor Visualizer</h1>
+
+    <button id="request-btn">センサーを開始する</button>
+
+    <div class="card">
+        <h2>加速度 (m/s²)</h2>
+        <div class="bar-container">
+            <div class="label">X軸 <span id="val-ax">0.00</span></div>
+            <div class="bar-outer"><div id="bar-ax" class="bar-inner"></div></div>
+        </div>
+        <div class="bar-container">
+            <div class="label">Y軸 <span id="val-ay">0.00</span></div>
+            <div class="bar-outer"><div id="bar-ay" class="bar-inner"></div></div>
+        </div>
+        <div class="bar-container">
+            <div class="label">Z軸 <span id="val-az">0.00</span></div>
+            <div class="bar-outer"><div id="bar-az" class="bar-inner"></div></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>ジャイロ (角度)</h2>
+        <div class="gyro-container">
+            <div class="gyro-item">
+                <div>Alpha (方位)</div>
+                <div class="circle-outer"><div id="needle-alpha" class="needle"></div></div>
+                <div id="val-alpha">0°</div>
+            </div>
+            <div class="gyro-item">
+                <div>Beta (前後)</div>
+                <div class="circle-outer"><div id="needle-beta" class="needle"></div></div>
+                <div id="val-beta">0°</div>
+            </div>
+            <div class="gyro-item">
+                <div>Gamma (左右)</div>
+                <div class="circle-outer"><div id="needle-gamma" class="needle"></div></div>
+                <div id="val-gamma">0°</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const requestBtn = document.getElementById('request-btn');
+
+        // 加速度更新関数
+        function updateAccel(event) {
+            const axes = ['x', 'y', 'z'];
+            axes.forEach(axis => {
+                const val = event.accelerationIncludingGravity[axis] || 0;
+                document.getElementById(`val-a${axis}`).innerText = val.toFixed(2);
+                // バーの表示（最大値を20として計算）
+                const percentage = Math.min(Math.abs(val) / 20 * 100, 100);
+                document.getElementById(`bar-a${axis}`).style.width = percentage + '%';
+            });
+        }
+
+        // ジャイロ更新関数
+        function updateGyro(event) {
+            const angles = { alpha: event.alpha, beta: event.beta, gamma: event.gamma };
+            for (let key in angles) {
+                const val = angles[key] || 0;
+                document.getElementById(`val-${key}`).innerText = Math.round(val) + '°';
+                document.getElementById(`needle-${key}`).style.transform = `rotate(${val}deg)`;
+            }
+        }
+
+        // 許可リクエスト処理
+        requestBtn.addEventListener('click', () => {
+            // iOS 13+ のためのパーミッションリクエスト
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            startSensors();
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                // Androidや古いブラウザ
+                startSensors();
+            }
+        });
+
+        function startSensors() {
+            window.addEventListener('devicemotion', updateAccel);
+            window.addEventListener('deviceorientation', updateGyro);
+            requestBtn.style.display = 'none'; // 開始後はボタンを隠す
+        }
+    </script>
+</body>
+</html>

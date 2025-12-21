@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>11文字抽出ツール</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; line-height: 1.6; }
+        .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        .upload-area { margin-bottom: 20px; padding: 20px; border: 2px dashed #007bff; text-align: center; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        button:disabled { background: #ccc; }
+        #status { margin-top: 10px; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>11文字抽出ツール</h2>
+    <p>txtファイルをアップロードすると、11文字の行だけを残してダウンロードします。</p>
+    
+    <div class="upload-area">
+        <input type="file" id="fileInput" accept=".txt"><br><br>
+        <button id="processBtn" disabled>処理してダウンロード</button>
+    </div>
+    
+    <div id="status"></div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const processBtn = document.getElementById('processBtn');
+    const status = document.getElementById('status');
+
+    // ファイルが選択されたらボタンを有効化
+    fileInput.addEventListener('change', () => {
+        processBtn.disabled = !fileInput.files.length;
+        status.textContent = "";
+    });
+
+    processBtn.addEventListener('click', () => {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            const content = e.target.result;
+            
+            // 行ごとに分割し、11文字の行だけを抽出
+            // 空白文字（スペースなど）を含めない場合は .trim() を検討してください
+            const lines = content.split(/\r?\n/);
+            const filteredLines = lines.filter(line => line.length === 11);
+
+            if (filteredLines.length === 0) {
+                status.textContent = "条件に合う（11文字の）単語が見つかりませんでした。";
+                return;
+            }
+
+            // 再び改行で結合
+            const resultText = filteredLines.join('\n');
+            
+            // ダウンロード処理
+            downloadFile(resultText, "filtered_11_characters.txt");
+            status.textContent = `完了！ ${filteredLines.length}個の単語を抽出しました。`;
+        };
+
+        reader.readAsText(file);
+    });
+
+    function downloadFile(text, fileName) {
+        const blob = new Blob([text], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+</script>
+
+</body>
+</html>
