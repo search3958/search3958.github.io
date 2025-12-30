@@ -49,7 +49,6 @@
             margin-bottom: 24px;
         }
 
-        /* --- アイコン専用のアニメーション管理 --- */
         .icon-animation {
             position: absolute;
             top: 0; left: 0; right: 0;
@@ -59,7 +58,7 @@
         }
         .icon-animation.hide {
             opacity: 0;
-            transform: translateY(-10px); /* 上に小さくなって消える */
+            transform: translateY(-10px);
             pointer-events: none;
         }
         span.material-icons {
@@ -67,7 +66,6 @@
             color: var(--primary);
         }
 
-        /* --- テキスト専用のアニメーション管理 --- */
         .text-animation {
             position: absolute;
             left: 0; right: 0;
@@ -79,11 +77,10 @@
         .text-animation.hide {
             opacity: 0;
             filter: blur(4px);
-            transform: translateY(10px); /* 下からふわっと出るための準備 */
+            transform: translateY(10px);
             pointer-events: none;
         }
 
-        /* テキストの配置固定 */
         #titleWrapper { top: 0px; }
         #descWrapper { top: 56px; }
 
@@ -183,23 +180,28 @@
 
     langItems.forEach(item => {
         item.addEventListener('click', () => {
-            const data = i18n[item.dataset.value];
+            const val = item.dataset.value;
+            const data = i18n[val];
 
+            // 1. 言語ボタンを押した瞬間に即座に localStorage に保存
+            localStorage.setItem('selectedLang', val);
+
+            // 2. 選択状態のUI更新
             langItems.forEach(i => i.classList.remove('selected'));
             item.classList.add('selected');
 
-            // 1. まずアイコンを隠し、テキストも一旦隠す（アニメーション開始）
+            // 3. アニメーション演出
             iconWrapper.classList.add('hide');
             titleWrapper.classList.add('hide');
             descWrapper.classList.add('hide');
 
             setTimeout(() => {
-                // 2. 中身を書き換える
+                // 中身の書き換え
                 titleText.textContent = data.title;
                 descText.textContent = data.desc;
                 nextBtn.textContent = data.btn;
 
-                // 3. カードを広げて、テキストのみを表示させる（アイコンはhideのまま）
+                // カード展開と表示
                 card.classList.add('expanded');
                 nextBtn.classList.add('show');
                 
@@ -212,11 +214,14 @@
     nextBtn.addEventListener('click', () => {
         const selected = document.querySelector('.lang-item.selected')?.dataset.value;
         if (!selected) return;
-        if (window.location.search === "" || window.location.search === "?") {
+
+        // リダイレクト処理（保存は既に完了済み）
+        const currentSearch = window.location.search;
+        if (currentSearch === "" || currentSearch === "?") {
             window.location.href = "https://search3958.github.io/";
         } else {
-            localStorage.setItem('selectedLang', selected);
-            window.location.href = window.location.pathname + window.location.search;
+            // パラメータがある場合は維持してリロード
+            window.location.href = window.location.pathname + currentSearch;
         }
     });
 </script>
