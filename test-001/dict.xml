@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+    <lang id="ja">
+        <text key="h1">こんにちは</text>
+        <text key="p1">これはテストです。</text>
+        <text key="btn">保存</text>
+    </lang>
+
+    <lang id="en">
+        <text key="h1">Hello</text>
+        <text key="p1">This is a test.</text>
+        <text key="btn">Save</text>
+    </lang>
+
+    <lang id="zh-CN">
+        <title>你好</title>
+        <text key="h1">你好</text>
+        <text key="p1">这是一个测试。</text>
+        <text key="btn">保存</text>
+    </lang>
+
+    <lang id="zh-TW">
+        <text key="h1">你好</text>
+        <text key="p1">這是一個測試。</text>
+        <text key="btn">儲存</text>
+    </lang>
+
+    <lang id="ko">
+        <text key="h1">안녕하세요</text>
+        <text key="p1">이것은 테스트입니다.</text>
+        <text key="btn">저장</text>
+    </lang>
+
+    <lang id="ko-KP">
+        <text key="h1">안녕하십니까</text>
+        <text key="p1">이것은 시험입니다.</text>
+        <text key="btn">저장</text>
+    </lang>
+</dictionary>
