@@ -212,18 +212,22 @@
     });
 
     nextBtn.addEventListener('click', () => {
-        const selected = document.querySelector('.lang-item.selected')?.dataset.value;
-        if (!selected) return;
+    const selected = document.querySelector('.lang-item.selected')?.dataset.value;
+    if (!selected) return;
 
-        // リダイレクト処理（保存は既に完了済み）
-        const currentSearch = window.location.search;
-        if (currentSearch === "" || currentSearch === "?") {
-            window.location.href = "https://search3958.github.io/";
-        } else {
-            // パラメータがある場合は維持してリロード
-            window.location.href = window.location.pathname + currentSearch;
-        }
-    });
+    // 1. URLパラメータから "next" の値を取得
+    const params = new URLSearchParams(window.location.search);
+    const redirectTo = params.get('next'); // 例: ?next=dashboard なら "dashboard" が入る
+
+    if (redirectTo) {
+        // 2. リダイレクト先が指定されている場合は、そこへ移動
+        // セキュリティのため、外部サイトへの強制リダイレクトを防ぐチェックを入れるのが一般的です
+        window.location.href = redirectTo;
+    } else {
+        // 3. 指定がない場合のデフォルト移動先
+        window.location.href = "https://search3958.github.io/";
+    }
+});
 </script>
 
 </body>
