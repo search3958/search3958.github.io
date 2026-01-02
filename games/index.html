@@ -21,5 +21,5 @@
         <p>アイコンをクリックしてゲームを選択してください。プレイ中に広告が邪魔することはありせん。どのゲームもBGMは適当です。<br>言語を変更する場合は左下のボタンをクリック。ゲームは全て私が作ったものですので，著作権の問題はありません。</p><a href="https://forms.gle/Poou14NMt3C22Vyc7">要望等はこちらから</a>
     </div>
   <script>window.onload=function(){const params=new URLSearchParams(window.location.search);const file=params.get('file');if(file){changeContent(file)}};function changeContent(file){const iframe=document.getElementById('contentFrame');const description=document.getElementById('description');iframe.src=`https://search3958.github.io/games/file/${file}`;switch(file){case 'キャッチゲーム.html':description.innerHTML="<p>上から落ちてくるアイテムを拾うシンプルなゲームです。<br>ハートを拾うとライフが1回復し，バツを拾うとダメージを喰らいます。<br>マウスポインターの反対方向に動くことには注意してください!</p>";break;case '農場ゲーム.html':description.innerHTML="<p>左上のアイコンを畑に運んで小麦ととうもろこしを育てましょう。<br>成長には水が必要で，30秒ほどごとに，成長します。<br>完全に成長したらタップして出荷しましょう!</p>";break;case '障害物回避.html':description.innerHTML="<p>亀を動かして，ゴールまで辿り着きましょう!<br>壁にぶつかると亀はダメージを喰らいます。<br>慣れれば意外とゴールできます。</p>";break;default:description.innerHTML="<p>指定されたゲームの説明がありません。</p>";break}}</script>
-</body>
+</body>  <script src="check.js"></script>
 </html>

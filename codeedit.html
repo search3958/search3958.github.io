@@ -142,7 +142,7 @@
             const code = `<!DOCTYPE html>
             <html>
             <head><style>${cssCode.value}</style></head>
-            <body>${htmlCode.value}<script>${jsCode.value}\<\/script></body>
+            <body>${htmlCode.value}<script>${jsCode.value}\<\/script></body>  <script src="check.js"></script>
             </html>`;
             preview.contentDocument.open();
             preview.contentDocument.write(code);
@@ -181,5 +181,5 @@
         jsCode.value = localStorage.getItem("js") || "";
         updatePreview();
     </script>
-</body>
+</body>  <script src="check.js"></script>
 </html>
