@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Storage Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fira+Code:wght@400&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .code-font { font-family: 'Fira Code', monospace; }
+        
+        /* アコーディオンの基本アニメーション */
+        .acc-content {
+            display: none;
+            border-left: 2px solid #e2e8f0;
+            margin-left: 0.75rem;
+        }
+        .acc-item.open > .acc-content { display: block; }
+        .acc-item.open > button .chevron { transform: rotate(180deg); }
+
+        /* JSONツリー用のスタイル */
+        .json-node { margin-left: 1.5rem; border-left: 1px dashed #cbd5e1; }
+        .json-key { color: #4f46e5; font-weight: 500; }
+        .json-string { color: #059669; }
+        .json-number { color: #d97706; }
+        .json-boolean { color: #2563eb; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="flex justify-between items-end mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-800">Storage Explorer</h1>
+                <p class="text-slate-500 text-sm">LocalStorage & IndexedDB 階層ビューアー</p>
+            </div>
+            <button onclick="initExplorer()" class="bg-white border border-slate-200 px-4 py-2 rounded-lg shadow-sm hover:bg-slate-50 transition flex items-center gap-2">
+                <i data-lucide="refresh-cw" class="w-4 h-4 text-indigo-600"></i> 再読み込み
+            </button>
+        </header>
+
+        <div class="space-y-8">
+            <section>
+                <div class="flex items-center gap-2 mb-4 text-slate-500">
+                    <i data-lucide="database" class="w-5 h-5"></i>
+                    <h2 class="font-bold uppercase tracking-widest text-xs">LocalStorage</h2>
+                </div>
+                <div id="ls-root" class="space-y-2"></div>
+            </section>
+
+            <section>
+                <div class="flex items-center gap-2 mb-4 text-slate-500">
+                    <i data-lucide="box" class="w-5 h-5"></i>
+                    <h2 class="font-bold uppercase tracking-widest text-xs">IndexedDB</h2>
+                </div>
+                <div id="idb-root" class="space-y-2"></div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. ヘルパー関数 ---
+        const createEl = (tag, classes, html) => {
+            const el = document.createElement(tag);
+            if (classes) el.className = classes;
+            if (html) el.innerHTML = html;
+            return el;
+        };
+
+        const createAccItem = (title, typeLabel, icon = 'folder') => {
+            const item = createEl('div', 'acc-item');
+            const btn = createEl('button', 'w-full flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 transition shadow-sm mb-1');
+            btn.onclick = () => item.classList.toggle('open');
+            
+            btn.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i data-lucide="${icon}" class="w-4 h-4 text-slate-400"></i>
+                    <span class="font-medium text-slate-700">${title}</span>
+                    ${typeLabel ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">${typeLabel}</span>` : ''}
+                </div>
+                <i data-lucide="chevron-down" class="chevron w-4 h-4 text-slate-400 transition-transform"></i>
+            `;
+            const content = createEl('div', 'acc-content pb-2');
+            item.appendChild(btn);
+            item.appendChild(content);
+            return { item, content };
+        };
+
+        // --- 2. JSONをアコーディオンに変換する再帰関数 ---
+        function renderJsonTree(data, container) {
+            if (data !== null && typeof data === 'object') {
+                Object.entries(data).forEach(([key, value]) => {
+                    if (typeof value === 'object' && value !== null) {
+                        const { item, content } = createAccItem(key, Array.isArray(value) ? 'Array' : 'Object', 'code');
+                        item.querySelector('button').classList.remove('bg-white', 'border', 'shadow-sm'); // ネスト内はシンプルに
+                        item.querySelector('button').classList.add('py-1', 'px-2', 'hover:bg-indigo-50');
+                        container.appendChild(item);
+                        renderJsonTree(value, content);
+                    } else {
+                        const row = createEl('div', 'flex items-center gap-2 py-1 px-4 text-sm code-font');
+                        let valStyle = 'json-string';
+                        if (typeof value === 'number') valStyle = 'json-number';
+                        if (typeof value === 'boolean') valStyle = 'json-boolean';
+                        
+                        row.innerHTML = `<span class="json-key">${key}:</span> <span class="${valStyle}">${JSON.stringify(value)}</span>`;
+                        container.appendChild(row);
+                    }
+                });
+            }
+        }
+
+        // --- 3. LocalStorage の描画 ---
+        function renderLocalStorage() {
+            const root = document.getElementById('ls-root');
+            root.innerHTML = '';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const raw = localStorage.getItem(key);
+                let parsed;
+                try { parsed = JSON.parse(raw); } catch (e) { parsed = raw; }
+
+                const { item, content } = createAccItem(key, typeof parsed === 'object' ? 'JSON' : 'STRING', 'file-text');
+                root.appendChild(item);
+
+                if (typeof parsed === 'object') {
+                    renderJsonTree(parsed, content);
+                } else {
+                    content.innerHTML = `<div class="p-3 text-sm text-slate-600 code-font">${raw}</div>`;
+                }
+            }
+        }
+
+        // --- 4. IndexedDB の描画 ---
+        async function renderIndexedDB() {
+            const root = document.getElementById('idb-root');
+            root.innerHTML = '';
+            
+            // 全てのDBを取得（ブラウザ互換性のための処理）
+            if (!window.indexedDB.databases) {
+                root.innerHTML = '<p class="text-sm p-4 text-slate-400">お使いのブラウザはDB列挙APIをサポートしていません</p>';
+                return;
+            }
+
+            const dbs = await window.indexedDB.databases();
+            if (dbs.length === 0) {
+                root.innerHTML = '<p class="text-sm p-4 text-slate-400 text-center">データベースが見つかりません</p>';
+            }
+
+            dbs.forEach(dbInfo => {
+                const { item: dbItem, content: dbContent } = createAccItem(dbInfo.name, 'DB', 'database');
+                root.appendChild(dbItem);
+
+                // DBを開いてストア名を取得
+                const request = indexedDB.open(dbInfo.name);
+                request.onsuccess = (e) => {
+                    const db = e.target.result;
+                    Array.from(db.objectStoreNames).forEach(storeName => {
+                        const { item: storeItem, content: storeContent } = createAccItem(storeName, 'Store', 'layers');
+                        dbContent.appendChild(storeItem);
+
+                        // データの取得
+                        const transaction = db.transaction(storeName, 'readonly');
+                        const store = transaction.objectStore(storeName);
+                        store.getAll().onsuccess = (ev) => {
+                            const records = ev.target.result;
+                            records.forEach((rec, idx) => {
+                                const { item: recItem, content: recContent } = createAccItem(`Record [${idx}]`, 'Object', 'hash');
+                                storeContent.appendChild(recItem);
+                                renderJsonTree(rec, recContent);
+                            });
+                        };
+                    });
+                };
+            });
+        }
+
+        // --- 初期化処理 ---
+        function initExplorer() {
+            // テスト用データの注入（データが空の場合）
+            if (localStorage.length === 0) {
+                localStorage.setItem('settings', JSON.stringify({ theme: 'dark', user: { id: 1, roles: ['admin', 'editor'] } }));
+            }
+            
+            renderLocalStorage();
+            renderIndexedDB().then(() => {
+                lucide.createIcons();
+            });
+        }
+
+        window.onload = initExplorer;
+    </script>
+</body>
+</html>

