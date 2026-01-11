@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Ultimate Dot Editor - Base128 FW-RLE Full-Featured</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --primary: #007bff; --bg: #f4f7f9; }
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); padding: 20px; color: #333; margin: 0; }
+  .main-container { display: flex; flex-direction: column; gap: 20px; max-width: 1200px; margin: 0 auto; padding-bottom: 50px; }
+  .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  h3 { margin-top: 0; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444; }
+  #text-input { width: 100%; height: 100px; padding: 12px; box-sizing: border-box; font-size: 15px; border: 1px solid #ddd; border-radius: 8px; resize: vertical; margin-bottom: 10px; }
+  .top-layout { display: grid; grid-template-columns: 400px 1fr; gap: 20px; }
+  .control-panel { display: flex; flex-direction: column; gap: 12px; }
+  .control-panel label { display: flex; justify-content: space-between; font-size: 13px; align-items: center; font-weight: 600; }
+  .control-panel input[type="range"] { width: 180px; }
+  .preview-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #1a1a1a; border-radius: 8px; }
+  .focus-grid { display: grid; grid-template-columns: repeat(12, 18px); grid-template-rows: repeat(17, 18px); gap: 1px; background: #333; }
+  .dot-cell-large { width: 18px; height: 18px; background: #222; }
+  #status-text { font-size: 12px; margin-bottom: 5px; color: #666; font-family: monospace; }
+  #progress-bar-bg { width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+  #progress-bar-fill { width: 0%; height: 100%; background: var(--primary); transition: width 0.1s; }
+  #output-area { width: 100%; height: 350px; font-family: 'SFMono-Regular', Consolas, monospace; margin-top: 10px; padding: 12px; box-sizing: border-box; font-size: 15px; background: #000; color: #0f0; border: none; border-radius: 8px; white-space: pre; overflow-y: scroll; }
+  #previews-wrapper { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; max-height: 250px; overflow-y: auto; background: #f0f0f0; padding: 12px; border-radius: 8px; border: 1px solid #ddd; }
+  .char-preview-unit { background: #fff; border: 1px solid #ccc; padding: 2px; border-radius: 3px; }
+  .preview-grid-small { display: grid; grid-template-columns: repeat(12, 3px); grid-template-rows: repeat(17, 3px); }
+  .dot-cell-small { width: 3px; height: 3px; }
+  .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+  .btn-primary:disabled { background: #bbb; }
+</style>
+</head>
+<body>
+
+<div class="main-container">
+  <div class="card">
+    <h3>1. 入力テキスト</h3>
+    <textarea id="text-input" placeholder="文字を入力...">あいうAB</textarea>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span id="char-count-info" style="font-size: 12px; color: #888;">Unique Chars: 0</span>
+      <button id="start-btn" class="btn-primary">圧縮変換・全機能実行</button>
+    </div>
+  </div>
+
+  <div class="top-layout">
+    <div class="card control-panel">
+      <h3>2. パラメータ設定と進捗</h3>
+      <label>フォント
+        <select id="font-select" style="width:180px; padding:4px;">
+          <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
+          <option value="-apple-system, BlinkMacSystemFont, sans-serif">System Sans-serif</option>
+          <option value="serif">System Serif</option>
+          <option value="monospace">System Monospace</option>
+        </select>
+      </label>
+      <label>X移動 <input id="move-x" type="range" min="-30" max="30" step="0.5" value="0"></label>
+      <label>Y移動 <input id="move-y" type="range" min="-30" max="30" step="0.5" value="0"></label>
+      <label>スケール <input id="scale" type="range" min="0.5" max="3.0" step="0.01" value="1.2"></label>
+      
+      <div style="margin-top: 15px;">
+        <div id="status-text">Ready</div>
+        <div id="progress-bar-bg"><div id="progress-bar-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="card preview-panel">
+      <div id="focus-preview" class="focus-grid"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3. 出力データ (128-bit + Full-width RLE)</h3>
+    <textarea id="output-area" readonly></textarea>
+  </div>
+
+  <div class="card">
+    <h3>一覧プレビュー（最大200文字）</h3>
+    <div id="previews-wrapper"></div>
+  </div>
+</div>
+
+<canvas id="hi-canvas" width="120" height="170" style="display:none;"></canvas>
+<canvas id="lo-canvas" width="12" height="17" style="display:none;"></canvas>
+
+<script>
+(() => {
+  const LOW_RES_X = 12, LOW_RES_Y = 17, MAX_PREVIEW = 200;
+  const MAP128 = "0123456789abcdefghijklmnopqrstuvwxyzàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþßÿāăąćĉċčďđēĕėęěĝğġģĥħĩīĭįıĵķĸĺļľŀłńņňŉŋōŏőœŕŗřśŝşšţťŧũūŭůűųŵŷźżžſ";
+
+  const textInput = document.getElementById('text-input'), moveXEl = document.getElementById('move-x'),
+        moveYEl = document.getElementById('move-y'), scaleEl = document.getElementById('scale'),
+        fontSelect = document.getElementById('font-select'), focusDiv = document.getElementById('focus-preview'),
+        wrapper = document.getElementById('previews-wrapper'), output = document.getElementById('output-area'),
+        startBtn = document.getElementById('start-btn'), statusTxt = document.getElementById('status-text'),
+        progFill = document.getElementById('progress-bar-fill'), charInfo = document.getElementById('char-count-info');
+  
+  const hiCtx = document.getElementById('hi-canvas').getContext('2d', { willReadFrequently: true });
+  const loCtx = document.getElementById('lo-canvas').getContext('2d', { willReadFrequently: true });
+
+  let isBatchProcessing = false;
+
+  function initFocusPreview() {
+    focusDiv.innerHTML = '';
+    for (let i = 0; i < LOW_RES_X * LOW_RES_Y; i++) {
+      const d = document.createElement('div'); d.className = 'dot-cell-large'; focusDiv.appendChild(d);
+    }
+  }
+
+  function captureChar(char, font, state) {
+    hiCtx.clearRect(0, 0, 120, 170); loCtx.clearRect(0, 0, 12, 17);
+    hiCtx.save();
+    hiCtx.translate(60 + state.moveX, 85 + state.moveY);
+    hiCtx.scale(state.scale, state.scale);
+    hiCtx.font = `100px ${font}`; hiCtx.fillStyle = '#000'; hiCtx.textAlign = 'center'; hiCtx.textBaseline = 'middle';
+    hiCtx.fillText(char, 0, 0);
+    hiCtx.restore();
+    loCtx.drawImage(hiCtx.canvas, 0, 0, 12, 17);
+    const imgData = loCtx.getImageData(0, 0, 12, 17).data;
+    let bits = [];
+    for (let i = 0; i < 12 * 17; i++) {
+      const a = imgData[i * 4 + 3];
+      bits.push(a > 200 ? '11' : a > 100 ? '10' : a > 10 ? '01' : '00');
+    }
+    return bits;
+  }
+
+  function compressFinal(bits) {
+    let bitString = bits.join('');
+    let s = "";
+    for (let i = 0; i < bitString.length; i += 7) {
+      let chunk = bitString.substring(i, i + 7).padEnd(7, '0');
+      s += MAP128[parseInt(chunk, 2)];
+    }
+    let res = s.replace(/0+$/, '');
+    res = res.replace(/0{4,}/g, (m) => {
+      return m.length.toString().replace(/[0-9]/g, c => String.fromCharCode(c.charCodeAt(0) + 0xFEE0));
+    });
+    return res || "0";
+  }
+
+  function updateFocusPreview() {
+    if (isBatchProcessing) return;
+    const text = textInput.value.trim();
+    if (!text) return;
+    const bits = captureChar(text[0], fontSelect.value, { moveX: parseFloat(moveXEl.value), moveY: parseFloat(moveYEl.value), scale: parseFloat(scaleEl.value) });
+    [...focusDiv.children].forEach((cell, i) => {
+      const b = bits[i];
+      cell.style.background = b==='11'?'#fff':b==='10'?'#888':b==='01'?'#444':'#111';
+    });
+  }
+
+  async function runBatch() {
+    isBatchProcessing = true; startBtn.disabled = true;
+    wrapper.innerHTML = ''; output.value = 'Processing...';
+    const uniqueChars = Array.from(new Set(textInput.value.replace(/[\n\r\s]/g, '').split('')));
+    const state = { moveX: parseFloat(moveXEl.value), moveY: parseFloat(moveYEl.value), scale: parseFloat(scaleEl.value) };
+    const font = fontSelect.value;
+    let results = [];
+    const frag = document.createDocumentFragment();
+
+    for (let i = 0; i < uniqueChars.length; i++) {
+      const char = uniqueChars[i];
+      const bits = captureChar(char, font, state);
+      const compressed = compressFinal(bits);
+      results.push(`${char}\n${compressed}`);
+
+      if (i % 30 === 0 || i === uniqueChars.length - 1) {
+        progFill.style.width = `${Math.round(((i+1)/uniqueChars.length)*100)}%`;
+        statusTxt.textContent = `Progress: ${i+1}/${uniqueChars.length}`;
+        await new Promise(r => requestAnimationFrame(r));
+      }
+
+      if (i < MAX_PREVIEW) {
+        const unit = document.createElement('div'); unit.className = 'char-preview-unit';
+        const grid = document.createElement('div'); grid.className = 'preview-grid-small';
+        bits.forEach(b => {
+          const c = document.createElement('div'); c.className = 'dot-cell-small';
+          c.style.background = b==='11'?'#333':b==='10'?'#888':b==='01'?'#ccc':'#fff';
+          grid.appendChild(c);
+        });
+        unit.appendChild(grid); frag.appendChild(unit);
+      }
+    }
+    wrapper.appendChild(frag);
+    output.value = results.join('\n');
+    statusTxt.textContent = "Complete!";
+    isBatchProcessing = false; startBtn.disabled = false;
+  }
+
+  [moveXEl, moveYEl, scaleEl, fontSelect].forEach(el => el.addEventListener('input', updateFocusPreview));
+  textInput.addEventListener('input', () => {
+    charInfo.textContent = `Unique Chars: ${new Set(textInput.value.replace(/[\n\r\s]/g, '').split('')).size}`;
+    updateFocusPreview();
+  });
+  startBtn.addEventListener('click', runBatch);
+  initFocusPreview();
+  document.fonts.ready.then(updateFocusPreview);
+})();
+</script>
+</body>
+</html>
