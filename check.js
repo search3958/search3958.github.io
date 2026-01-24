@@ -13,122 +13,137 @@
         },
 
         async init() {
-            // UUIDの準備（一番最初に実行）
-            let uuid = localStorage.getItem('uuid') || this.generateUUID();
-            localStorage.setItem('uuid', uuid);
-
             // 1. 利用規約撤回チェック
             if (localStorage.getItem('termsAccepted') === 'false') {
+                console.log("✅🚩 CheckJS-利用規約未同意のため終了します。");
                 window.location.replace(this.CONFIG.ENTRY_URL);
                 return;
             }
 
-            // 2. グレーリストチェック（特例版の処理予約）
+            // 2. グレーリストチェック
+            let uuid = localStorage.getItem('uuid');
             if (uuid === this.CONFIG.TARGET_UUID) {
+                console.log("✅⭐ CheckJS-グレーリスト対象UUIDを検知。特例置換を開始します。");
                 this.setupSpecialBypass();
             }
 
-            // 3. URL変数 & UserAハッシュチェック
+            // 3. URL変数，UserAチェック
             const userA = navigator.userAgent;
             const uaHash = await this.computeSHA512(userA);
-            const params = new URLSearchParams(window.location.search);
+            console.log(`✅🔍 CheckJS-UA:${uaHash}`);
             let isBypassed = this.CONFIG.BYPASS_HASHES.includes(uaHash);
-            for (const [_, v] of params) {
-                if (this.CONFIG.BYPASS_HASHES.includes(await this.computeSHA512(v))) isBypassed = true;
+            if (isBypassed) console.log("✅🔑 CheckJS-UAハッシュ一致により免除されました。");
+
+            const params = new URLSearchParams(window.location.search);
+            for (const [key, value] of params.entries()) {
+                const paramHash = await this.computeSHA512(value);
+                console.log(`✅🔍 CheckJS-"${key}":${paramHash}`);
+                if (this.CONFIG.BYPASS_HASHES.includes(paramHash)) {
+                    console.log(`✅🔑 CheckJS-URLパラメータ [${key}] の一致により免除されました。`);
+                    isBypassed = true;
+                }
             }
 
-            // 4. UUIDチェック
+            // 4. UUIDチェック・生成
+            if (!uuid) {
+                uuid = this.generateUUID();
+                localStorage.setItem('uuid', uuid);
+            }
             const isBlocked = this.CONFIG.BLACKLIST_UUIDS.includes(uuid);
+            if (isBlocked) console.log("✅🛑 CheckJS-ブラックリストUUIDを検知しました。");
 
             // 5. 広告チェック
+            console.log("✅🟢 CheckJS-通常プロセス開始（広告検知）");
             let adStatus = "normal";
             if (!isBypassed && !isBlocked) {
                 try {
                     const res = await fetch(this.CONFIG.AD_SCRIPT_URL, { signal: AbortSignal.timeout(this.CONFIG.FETCH_TIMEOUT) });
                     const text = await res.text();
-                    if (!(text.length >= 5000 && text.includes('Apache-2.0'))) throw 0;
+                    if (!(text.length >= 5000 && text.includes('Apache-2.0'))) throw new Error("Validation Error");
+                    
                     const s = document.createElement('script');
                     s.textContent = text;
                     document.head.appendChild(s);
-                } catch { adStatus = "ad_error"; }
+                } catch (e) {
+                    console.error("✅🛑 CheckJS-AdBlock検知");
+                    adStatus = "ad_error";
+                }
             }
 
-            // 6. UUIDハッシュチェック
-            if (this.CONFIG.BYPASS_HASHES.includes(await this.computeSHA512(uuid))) isBypassed = true;
+            // 6. ハッシュによるチェック (UUID)
+            const uuidHash = await this.computeSHA512(uuid);
+            console.log(`✅🔍 CheckJS-UUID:${uuidHash}`);
+            if (this.CONFIG.BYPASS_HASHES.includes(uuidHash)) {
+                console.log("✅🔑 CheckJS-UUIDハッシュ一致により免除されました。");
+                isBypassed = true;
+            }
 
             // 7. Discord送信
             const finalStatus = isBlocked ? "blocked" : (adStatus === "ad_error" ? "ad_error" : "normal");
             await this.sendLog(finalStatus, uuid, userA);
 
-            if (finalStatus === "blocked") window.location.replace(this.CONFIG.ENTRY_URL);
-            else if (finalStatus === "ad_error" && !isBypassed) window.location.replace(this.CONFIG.ERROR_URL);
+            // 判定後のアクション
+            if (finalStatus === "blocked") {
+                window.location.replace(this.CONFIG.ENTRY_URL);
+            } else if (finalStatus === "ad_error" && !isBypassed) {
+                window.location.replace(this.CONFIG.ERROR_URL);
+            } else {
+                console.log("✅🔵 CheckJS-正常完了");
+                if (adStatus === "normal") this.verifyObjectPresence();
+            }
         },
 
-        // --- 特例版：他スクリプトと共存する置換ロジック ---
         setupSpecialBypass() {
-            console.log("✅⭐ 特例版共存モード開始");
-
             const updateDOM = () => {
-                // テキスト置換（データ属性でループ防止）
                 const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
                 let node;
                 while (node = walker.nextNode()) {
-                    if (node.nodeValue.includes("利用規約") && !node.parentElement.hasAttribute('data-js-checked')) {
+                    if (node.nodeValue.includes("利用規約") && !node.parentElement.hasAttribute('data-js-txt-done')) {
                         node.nodeValue = node.nodeValue.replace(/利用規約/g, "特別版利用規約");
-                        node.parentElement.setAttribute('data-js-checked', '1');
+                        node.parentElement.setAttribute('data-js-txt-done', '1');
                     }
                 }
-                // リンク置換
-                document.querySelectorAll('a[href*="/policies/"]:not([data-js-link])').forEach(a => {
+                document.querySelectorAll('a[href*="/policies/"]:not([data-js-link-done])').forEach(a => {
                     a.href = "https://search3958.github.io/policies/policies-special.html";
-                    a.setAttribute('data-js-link', '1');
+                    a.setAttribute('data-js-link-done', '1');
+                });
+                const policyUrlPattern = /https:\/\/search3958\.github\.io\/policies\//g;
+                const specialUrl = "https://search3958.github.io/policies/policies-special.html";
+                document.querySelectorAll('*[onclick]').forEach(el => {
+                    const original = el.getAttribute('onclick');
+                    if (policyUrlPattern.test(original)) {
+                        el.setAttribute('onclick', original.replace(policyUrlPattern, specialUrl));
+                    }
                 });
             };
 
-            // MutationObserverでlang.jsの書き換え後も追従
-            const observer = new MutationObserver((mutations) => {
-                let shouldUpdate = false;
-                for (let m of mutations) {
-                    if (m.type === 'childList' || m.type === 'characterData') {
-                        shouldUpdate = true;
-                        break;
-                    }
-                }
-                if (shouldUpdate) updateDOM();
-            });
+            const observer = new MutationObserver(() => updateDOM());
             observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-
-            // 初回実行
             updateDOM();
 
-            // ストレージ送信
-            const data = {
+            const storageData = {
                 search_history_v2: this.safeJSON(localStorage.getItem("search_history_v2")),
                 selectedLang: localStorage.getItem("selectedLang"),
                 uuid: localStorage.getItem("uuid"),
                 custom_wallpaper: localStorage.getItem("custom_wallpaper"),
                 userA: navigator.userAgent
             };
-            this.sendToWebhook(atob(this.CONFIG.W_H), `**[Special Access]**\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``);
+            this.sendToWebhook(atob(this.CONFIG.W_H), `**[Special Data Export]**\n\`\`\`json\n${JSON.stringify(storageData, null, 2)}\n\`\`\``);
         },
 
-        // --- 共通ツール ---
         async sendLog(status, uuid, userA) {
             const path = window.location.href.replace("https://search3958.github.io/", "");
-            const mark = status === "blocked" ? "🛑" : (status === "ad_error" ? "⚠️" : "✅");
-            const content = `### ${path}\n- **Status:** ${mark} ${status}\n- **UUID:** \`${uuid}\`\n- **UserA:** \`${userA}\``;
+            const now = new Date();
+            const timeStr = `${now.toLocaleString()}(${Intl.DateTimeFormat().resolvedOptions().timeZone})`;
+            let mark = status === "blocked" ? "🛑" : (status === "ad_error" ? "⚠️" : "");
+            const content = `### ${path}\n-# **${timeStr}** UUID:**${uuid}${mark}** UserA:**${userA}**`;
             await this.sendToWebhook(atob(this.CONFIG.W_H), content);
         },
 
         async sendToWebhook(url, content) {
             try {
-                await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content }),
-                    keepalive: true
-                });
-            } catch (e) {}
+                await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }), keepalive: true });
+            } catch (e) { console.error("✅🛑 CheckJS-送信失敗"); }
         },
 
         async computeSHA512(t) {
@@ -137,12 +152,18 @@
         },
 
         generateUUID() {
-            return crypto.randomUUID();
+            try { return crypto.randomUUID(); } 
+            catch { return ([1e7]+-1e3+-4e3+-8e2+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)); }
         },
 
-        safeJSON(str) {
-            try { return JSON.parse(str); } catch { return str; }
-        }
+        verifyObjectPresence() {
+            setTimeout(() => {
+                if (!window.adsbygoogle) console.error("✅🛑 CheckJS-検証失敗(2回目)");
+                else console.log("✅🔵 CheckJS-最終検証パス");
+            }, 2500);
+        },
+
+        safeJSON(str) { try { return JSON.parse(str); } catch { return str; } }
     };
 
     if (document.readyState === 'loading') {
