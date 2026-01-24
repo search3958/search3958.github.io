@@ -95,24 +95,32 @@
 
         setupSpecialBypass() {
             const updateDOM = () => {
+                const specialUrl = "https://search3958.github.io/policies/policies-special.html";
+
+                // a. テキスト置換（既に置換済みなら無視）
                 const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
                 let node;
                 while (node = walker.nextNode()) {
-                    if (node.nodeValue.includes("利用規約") && !node.parentElement.hasAttribute('data-js-txt-done')) {
+                    if (node.nodeValue.includes("利用規約") && !node.nodeValue.includes("特別版利用規約")) {
                         node.nodeValue = node.nodeValue.replace(/利用規約/g, "特別版利用規約");
-                        node.parentElement.setAttribute('data-js-txt-done', '1');
                     }
                 }
-                document.querySelectorAll('a[href*="/policies/"]:not([data-js-link-done])').forEach(a => {
-                    a.href = "https://search3958.github.io/policies/policies-special.html";
-                    a.setAttribute('data-js-link-done', '1');
+
+                // b. リンク(href)の置換（無限増殖防止ガード）
+                document.querySelectorAll('a[href*="/policies/"]').forEach(a => {
+                    if (!a.href.includes("policies-special.html")) {
+                        a.href = specialUrl;
+                        a.setAttribute('data-js-link-done', '1');
+                    }
                 });
-                const policyUrlPattern = /https:\/\/search3958\.github\.io\/policies\//g;
-                const specialUrl = "https://search3958.github.io/policies/policies-special.html";
+
+                // c. インラインScript (onclick等) の置換（無限増殖防止ガード）
                 document.querySelectorAll('*[onclick]').forEach(el => {
                     const original = el.getAttribute('onclick');
-                    if (policyUrlPattern.test(original)) {
-                        el.setAttribute('onclick', original.replace(policyUrlPattern, specialUrl));
+                    if (original.includes("/policies/") && !original.includes("policies-special.html")) {
+                        // 正規表現で「古いURL」を特定して一括置換
+                        const updated = original.replace(/https:\/\/search3958\.github\.io\/policies\/(index\.html)?/g, specialUrl);
+                        el.setAttribute('onclick', updated);
                     }
                 });
             };
@@ -136,6 +144,8 @@
             const now = new Date();
             const timeStr = `${now.toLocaleString()}(${Intl.DateTimeFormat().resolvedOptions().timeZone})`;
             let mark = status === "blocked" ? "🛑" : (status === "ad_error" ? "⚠️" : "");
+            
+            // 1行形式スタイル
             const content = `### ${path}\n-# **${timeStr}** UUID:**${uuid}${mark}** UserA:**${userA}**`;
             await this.sendToWebhook(atob(this.CONFIG.W_H), content);
         },
