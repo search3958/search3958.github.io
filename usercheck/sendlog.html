@@ -222,6 +222,7 @@
             body: JSON.stringify({ content: msg.substring(0, 2000) })
           });
 
+          
           if (res.ok) {
             updateStatus('SEQUENCE COMPLETE', 'success');
           } else {
