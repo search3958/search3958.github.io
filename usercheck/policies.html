@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>利用規約への同意 - Search3958</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 600px; margin: auto; background: #f4f4f4; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.2rem; color: #333; }
+        p { font-size: 0.9rem; color: #666; }
+        .btns { margin-top: 20px; display: flex; gap: 10px; }
+        button { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-agree { background: #007bff; color: white; flex: 2; }
+        .btn-agree:hover { background: #0056b3; }
+        .btn-cancel { background: #ddd; color: #333; flex: 1; }
+        .error { color: red; font-weight: bold; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>特別版および通常版利用規約への同意</h1>
+    <p>続行するには、Search3958の「特別版利用規約」および「通常版利用規約」のすべての条項に同意する必要があります。</p>
+    
+    <div id="error-msg" class="error">エラー：遷移先のURLが指定されていません。</div>
+
+    <div class="btns">
+        <button class="btn-cancel" onclick="history.back()">戻る</button>
+        <button class="btn-agree" id="agree-btn">同意して続行</button>
+    </div>
+</div>
+
+<script>
+    // URLパラメータから "redirect" の値を取得する
+    const params = new URLSearchParams(window.location.search);
+    const targetUrl = params.get('url'); // ?url=https://...
+
+    const agreeBtn = document.getElementById('agree-btn');
+    const errorMsg = document.getElementById('error-msg');
+
+    agreeBtn.addEventListener('click', () => {
+        if (targetUrl) {
+            // ここでLocalStorageに同意フラグを保存する（第2条の要件に合わせる場合）
+            localStorage.setItem('search3958_agreed', 'true');
+            localStorage.setItem('search3958_agreed_date', new Date().toISOString());
+
+            // 指定されたURLへ移動
+            window.location.href = targetUrl;
+        } else {
+            errorMsg.style.display = 'block';
+        }
+    });
+
+    // URLがない場合はボタンを無効化する
+    if (!targetUrl) {
+        agreeBtn.disabled = true;
+        agreeBtn.style.opacity = '0.5';
+        errorMsg.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

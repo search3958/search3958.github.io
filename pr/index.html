@@ -16,13 +16,20 @@
 
         #slide-container { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
         
-        /* 基本スタイル。transition自体はJSで上書きするため、ここでは位置固定のみ */
-        #display-image { 
+        .asset-wrapper { 
+            width: 100%; 
+            height: 100%; 
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            will-change: transform, opacity;
+        }
+
+        .slide-asset { 
             max-width: 100%; 
             max-height: 100%; 
-            object-fit: contain; 
-            position: absolute;
-            z-index: 2;
+            object-fit: contain;
         }
 
         #memo-box { position: absolute; top: 30px; left: 30px; width: 340px; max-height: 60vh; padding: 24px; background: rgba(255, 255, 255, 0.98); border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); display: none; z-index: 100; cursor: move; border-top: 5px solid var(--primary-color); }
@@ -49,7 +56,12 @@
 <div id="sync-status"><div class="dot"></div> REALTIME SYNC ON</div>
 
 <div id="slide-container">
-    <img id="display-image" src="">
+    <div id="current-wrapper" class="asset-wrapper">
+        <img id="display-image" class="slide-asset" style="display:none;">
+        <video id="display-video" class="slide-asset" playsinline muted preload="auto" style="display:none;">
+            <source src="main.webm" type="video/webm">
+        </video>
+    </div>
 </div>
 
 <div id="memo-box">
@@ -57,16 +69,15 @@
     <div id="memo-text"></div>
 </div>
 
-<div id="page-num">0 / 20</div>
+<div id="page-num">0 / 0</div>
 <div class="controls-hitbox"></div>
 <div class="controls">
     <button onclick="prevImage()">戻る</button>
-    <button onclick="nextImage()">전진</button>
+    <button onclick="nextImage()">전進</button>
     <button onclick="toggleMemo()">メモを見る</button>
 </div>
 
 <script>
-    // --- Firebase 設定 ---
     const firebaseConfig = {
         apiKey: "AIzaSyDjMhqOjKoGgzvUsn0QXm2sX-epnw7yhhc",
         authDomain: "tangle-sns.firebaseapp.com",
@@ -81,13 +92,19 @@
     const db = firebase.database();
     const slideRef = db.ref('presentation/currentSlide');
 
-    const imageList = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+    const slides = [1, 2, 3, 4, 5, "V1", "V2", "V3", "V4", 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+    const FPS = 24;
+    const videoCheckpoints = { "V1": 30/FPS, "V2": 78/FPS, "V3": 113/FPS, "V4": 999 };
     const memos = [
         "生成AIの時代，人間の開発者が消えるのかについて調べてきた。よろしく。",
         "今回，ソフトウェアとハードウェア開発者の今と今後に焦点を当てて話していきたい。",
         "まず結論を言うと生き残れる。ただ，基礎知識と新しい知識を継続的に取り込むことが必要。ハードウェア開発者は完全に生き残れると考えている。実際に数回ほど設計したが，AIができる部分は少ないと感じた。",
         "また，否定するよりもAIを使ってみることが重要だと私は思う。何か始めたいことがあったとして，それをするときにAIに手助けや作ってもらって，地味に自分で作れるように学習していくのが大事だと思う。",
         "自分はAIによってかなり知識も身についた。23年にAIのみで色々作り始め、24年には基礎知識もついてきて配信を開始。学校内でもWebサービスを使ってもらっている。25年には本格開発し、AIで数を作ってきたおかげでWebアプリの基礎知識はほぼ身についた。今はアプリ開発も始めている。",
+        "【動画 1/4】開発フローの全体像。",
+        "【動画 2/4】AIとの連携プロセスの詳細。",
+        "【動画 3/4】リアルタイムデバッグの様子。",
+        "【動画 4/4】最終成果物のプレビュー。",
         "まず，AIに関して。気付いたことを話していく。",
         "簡単なWebアプリなどなら問題ないが，複雑なものをAIに全部を任せたら確実に事故る。",
         "具体的に言うと通信エラーやデータがないことを一切想定しないことで，例外が多発したりする。指示なしだと拡張が難しかったり、共通化が不十分だったりする。",
@@ -106,116 +123,124 @@
     ];
 
     let currentIndex = 0;
-    const preloadedImages = [];
+    let prevIndex = -1;
+    const preloadedImages = {};
     let loadedCount = 0;
-    let slideDirection = 'right';
+    let isAllLoaded = false;
 
-    // Firebase からの状態受信
     slideRef.on('value', (snapshot) => {
         const val = snapshot.val();
         if (val !== null && val !== currentIndex) {
-            slideDirection = (val > currentIndex) ? 'right' : 'left';
             currentIndex = val;
-            if (loadedCount === imageList.length) updateDisplay();
+            if (isAllLoaded) updateDisplay();
         }
     });
 
-    function preloadAllImages() {
+    function preloadAssets() {
         const progressBar = document.getElementById('progress-bar');
         const statusText = document.getElementById('load-status');
-        imageList.forEach((num, index) => {
+        const imageFiles = slides.filter(s => typeof s === 'number');
+        const total = imageFiles.length + 1;
+
+        const updateProgress = () => {
+            loadedCount++;
+            const percent = Math.floor((loadedCount / total) * 100);
+            progressBar.style.width = percent + '%';
+            statusText.innerText = `Loading... ${percent}%`;
+            if (loadedCount >= total) {
+                isAllLoaded = true;
+                setTimeout(() => { document.getElementById('loader').style.display = 'none'; updateDisplay(); }, 500);
+            }
+        };
+
+        imageFiles.forEach(num => {
             const img = new Image();
             img.src = `${num}.webp`;
-            img.onload = () => {
-                loadedCount++;
-                const percent = Math.floor((loadedCount / imageList.length) * 100);
-                progressBar.style.width = percent + '%';
-                statusText.innerText = `Assets Loading... ${percent}%`;
-                if (loadedCount === imageList.length) startPresentation();
-            };
-            preloadedImages[index] = img;
+            img.onload = () => { preloadedImages[num] = img; updateProgress(); };
+            img.onerror = updateProgress;
         });
+
+        const video = document.getElementById('display-video');
+        video.oncanplaythrough = () => { if(!preloadedImages["v"]) { preloadedImages["v"]=true; updateProgress(); } };
+        video.load();
+        setTimeout(() => { if(!preloadedImages["v"]) updateProgress(); }, 5000);
     }
 
-    function startPresentation() {
-        document.getElementById('loader').style.display = 'none';
-        updateDisplay();
-    }
-
-    // --- Hyper-Sync アニメーションロジック ---
     function updateDisplay() {
         const container = document.getElementById('slide-container');
-        const currentImg = document.getElementById('display-image');
+        const currentWrapper = document.getElementById('current-wrapper');
+        const imgEl = document.getElementById('display-image');
+        const videoEl = document.getElementById('display-video');
         
-        // アニメーション設定
-        const easing = "cubic-bezier(0.8, 0, 0, 1)";
+        const currentSlide = slides[currentIndex];
+        const prevSlide = prevIndex >= 0 ? slides[prevIndex] : null;
+
+        const isCurrentVideo = typeof currentSlide === 'string';
+        const isPrevVideo = typeof prevSlide === 'string';
+        
+        // 動画内のステップ移動か、それともページ移動（画像⇔動画、画像⇔画像）かを判定
+        const isInternalVideoTransition = isCurrentVideo && isPrevVideo;
+
         const duration = "0.6s";
-        const moveDistance = 10; // 10vw
+        const easing = "cubic-bezier(0.8, 0, 0, 1)";
+        const moveDist = 15;
+        const direction = currentIndex > prevIndex ? 1 : -1;
 
-        // 1. クローンを作成して「古いスライド」として背後に残す
-        const clone = currentImg.cloneNode(true);
-        clone.id = ""; 
-        clone.style.zIndex = "1";
-        container.appendChild(clone);
+        if (!isInternalVideoTransition && prevIndex !== -1) {
+            // トランジションが必要な場合のみクローンを作成
+            const oldWrapper = currentWrapper.cloneNode(true);
+            oldWrapper.id = "";
+            oldWrapper.style.zIndex = "1";
+            container.appendChild(oldWrapper);
+            if(oldWrapper.querySelector('video')) oldWrapper.querySelector('video').pause();
 
-        // 2. 本物の要素（新しいスライド）を準備
-        currentImg.style.transition = "none";
-        currentImg.src = preloadedImages[currentIndex].src;
-        currentImg.style.opacity = "0";
+            requestAnimationFrame(() => {
+                oldWrapper.style.transition = `all ${duration} ${easing}`;
+                oldWrapper.style.transform = `translateX(${-direction * moveDist}vw)`;
+                oldWrapper.style.opacity = "0";
+                setTimeout(() => { if(oldWrapper.parentNode) container.removeChild(oldWrapper); }, 700);
+            });
 
-        // 進むなら右、戻るなら左に初期配置
-        const startPos = (slideDirection === 'right') ? moveDistance : -moveDistance;
-        currentImg.style.transform = `translateX(${startPos}vw)`;
+            currentWrapper.style.transition = "none";
+            currentWrapper.style.transform = `translateX(${direction * moveDist}vw)`;
+            currentWrapper.style.opacity = "0";
+        }
 
-        // 3. ブラウザにスタイルの変更を強制的に認識させる
-        currentImg.offsetHeight;
+        // 表示切替
+        if (isCurrentVideo) {
+            imgEl.style.display = "none";
+            videoEl.style.display = "block";
+            const targetTime = (currentSlide === "V4") ? videoEl.duration : videoCheckpoints[currentSlide];
+            
+            if (videoEl.currentTime < targetTime) {
+                videoEl.play().catch(() => {});
+                const timer = setInterval(() => {
+                    if (videoEl.currentTime >= targetTime || videoEl.ended) { videoEl.pause(); clearInterval(timer); }
+                }, 10);
+            } else { videoEl.currentTime = targetTime; videoEl.pause(); }
+        } else {
+            videoEl.style.display = "none";
+            videoEl.pause();
+            imgEl.style.display = "block";
+            imgEl.src = preloadedImages[currentSlide] ? preloadedImages[currentSlide].src : "";
+        }
 
-        // 4. アニメーション開始：新旧スライドを同時に動かす
-        requestAnimationFrame(() => {
-            // 新スライドの進入
-            currentImg.style.transition = `all ${duration} ${easing}`;
-            currentImg.style.opacity = "1";
-            currentImg.style.transform = "translateX(0)";
+        if (!isInternalVideoTransition) {
+            currentWrapper.offsetHeight; // reflow
+            currentWrapper.style.transition = `all ${duration} ${easing}`;
+            currentWrapper.style.transform = "translateX(0)";
+            currentWrapper.style.opacity = "1";
+        }
 
-            // 旧スライド（クローン）の退出（進入方向と逆に逃げる）
-            clone.style.transition = `all ${duration} ${easing}`;
-            clone.style.opacity = "0";
-            clone.style.transform = `translateX(${-startPos}vw)`;
-
-            // アニメーション完了後にクローンを消去
-            setTimeout(() => {
-                if(clone.parentNode === container) container.removeChild(clone);
-            }, 700); // durationより少し長めに設定
-        });
-
-        // UI情報の更新
+        prevIndex = currentIndex;
         document.getElementById('memo-text').innerText = memos[currentIndex] || "";
         document.getElementById('memo-idx').innerText = currentIndex + 1;
-        document.getElementById('page-num').innerText = `${currentIndex + 1} / ${imageList.length}`;
+        document.getElementById('page-num').innerText = `${currentIndex + 1} / ${slides.length}`;
     }
 
-    function nextImage() {
-        if (currentIndex < imageList.length - 1) {
-            slideDirection = 'right';
-            currentIndex++;
-            slideRef.set(currentIndex);
-            updateDisplay();
-        }
-    }
-
-    function prevImage() {
-        if (currentIndex > 0) {
-            slideDirection = 'left';
-            currentIndex--;
-            slideRef.set(currentIndex);
-            updateDisplay();
-        }
-    }
-
-    function toggleMemo() {
-        const box = document.getElementById('memo-box');
-        box.style.display = (box.style.display === "block") ? "none" : "block";
-    }
+    function nextImage() { if (currentIndex < slides.length - 1) { slideRef.set(currentIndex + 1); } }
+    function prevImage() { if (currentIndex > 0) { slideRef.set(currentIndex - 1); } }
+    function toggleMemo() { const box = document.getElementById('memo-box'); box.style.display = (box.style.display === "block") ? "none" : "block"; }
 
     document.addEventListener('keydown', (e) => {
         if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); nextImage(); }
@@ -223,7 +248,7 @@
         if (e.key === "m" || e.key === "M") toggleMemo();
     });
 
-    window.onload = preloadAllImages;
+    window.onload = preloadAssets;
 </script>
 </body>
 </html>
