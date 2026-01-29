@@ -3,78 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI & Developer Future (Hyper-Sync)</title>
+    <title>AI & Developer Future (Hyper-Sync Final)</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
-        :root { --primary-color: #007bff; --bg-color: #000; --ui-bg: rgba(40, 40, 40, 0.85); }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: var(--bg-color); font-family: 'Pretendard', sans-serif; }
+        :root { 
+            --primary-color: #b30000; 
+            --bg-color: #8b0000; 
+            --ui-bg: rgba(30, 30, 30, 0.9); 
+            --accent-green: #00ff00;
+        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: var(--bg-color); font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; color: white; }
         
-        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; color: white; }
-        .progress-container { width: 300px; height: 4px; background: #333; margin-top: 20px; border-radius: 2px; overflow: hidden; }
+        /* 로더 (Loader) */
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+        .progress-container { width: 350px; height: 6px; background: #222; margin-top: 30px; border-radius: 3px; overflow: hidden; border: 1px solid #444; }
         #progress-bar { width: 0%; height: 100%; background: var(--primary-color); transition: width 0.2s; }
 
-        #slide-container { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
-        
+        /* 메인 슬라이드 표시 영역 */
+        #slide-container { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; background: #000; }
         .asset-wrapper { 
-            width: 100%; 
-            height: 100%; 
-            position: absolute;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 100%; height: 100%; 
+            position: absolute; 
+            display: flex; justify-content: center; align-items: center; 
             will-change: transform, opacity;
+            background: #000;
+        }
+        .slide-asset { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        /* 우리 길동무 (Presenter View) */
+        #presenter-view { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: #790000; display: none; grid-template-columns: 1fr 450px;
+            grid-template-rows: 70px 1fr 220px; z-index: 2000;
         }
 
-        .slide-asset { 
-            max-width: 100%; 
-            max-height: 100%; 
-            object-fit: contain;
+        .p-header {
+            grid-column: 1 / span 2;
+            background: #aa0000;
+            display: flex;
+            align-items: center;
+            padding: 0 25px;
+            gap: 40px;
+            border-bottom: 2px solid #ff6666;
         }
+        .p-notes-area { grid-row: 2 / span 2; padding: 40px; overflow-y: auto; background: #050505; border-right: 2px solid #333; }
+        .p-preview-area { padding: 20px; background: #340000; display: flex; flex-direction: column; align-items: center; border-bottom: 2px solid #333; }
+        
+        .p-mini-stage { width: 100%; height: 250px; background: #000; border: 1px solid #333; position: relative; overflow: hidden; display: flex; justify-content: center; }
 
-        #memo-box { position: absolute; top: 30px; left: 30px; width: 340px; max-height: 60vh; padding: 24px; background: rgba(255, 255, 255, 0.98); border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); display: none; z-index: 100; cursor: move; border-top: 5px solid var(--primary-color); }
-        #memo-text { margin-top: 10px; font-size: 16px; line-height: 1.7; color: #222; }
+        .p-controls { padding: 25px; background: #340000; display: flex; flex-direction: column; gap: 20px; }
 
-        .controls { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 8px; opacity: 0; transition: 0.3s; z-index: 1000; }
-        .controls-hitbox { position: fixed; bottom: 0; right: 0; width: 200px; height: 150px; z-index: 999; }
-        .controls-hitbox:hover + .controls, .controls:hover { opacity: 1; }
-        button { padding: 10px 16px; cursor: pointer; border: none; border-radius: 8px; background: var(--ui-bg); color: white; font-size: 13px; }
-        button:hover { background: var(--primary-color); }
-
-        #sync-status { position: fixed; top: 20px; right: 20px; font-size: 10px; color: #4caf50; display: flex; align-items: center; gap: 5px; opacity: 0.7; }
-        .dot { width: 8px; height: 8px; background: #4caf50; border-radius: 50%; }
-        #page-num { position: fixed; bottom: 30px; left: 30px; color: rgba(255,255,255,0.4); font-size: 13px; }
+        .big-btn { flex: 1; padding: 25px; font-size: 24px; font-weight: bold; cursor: pointer; border: none; border-radius: 100px; background: var(--primary-color); color: white; transition: 0.2s; }
+        .big-btn:hover { background: #ff0000; }
+        .big-btn:active { transform: scale(0.95); }
+        .btn-group { display: flex; gap: 15px; width: 100%; }
+        
+        .timer { font-family: monospace; font-size: 40px; color: #ffdf5f; }
+        .sync-tag { font-size: 13px; color: #aaa; }
+        input[type="number"] {
+            background: #910000;
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            width: 100px;
+            border-radius: 100px;
+            font-size: 48px;
+            text-align: center;
+            display: block;
+        }
+        #page-num { position: fixed; bottom: 30px; left: 30px; color: rgba(255,255,255,0.4); font-size: 15px; z-index: 100; }
+        .normal-controls { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 10px; z-index: 1000; }
+        .normal-controls button { padding: 12px 20px; border: none; border-radius: 8px; background: var(--ui-bg); color: white; cursor: pointer; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div id="loader">
-    <div id="load-status">Connecting to Firebase...</div>
+    <div id="load-status"><span style="font-size:3.5em; font-family:serif; font-weight:bold; background:#ce0000; padding:20px; border-radius:4px;">사회주의 만세!</span></div>
     <div class="progress-container"><div id="progress-bar"></div></div>
 </div>
 
-<div id="sync-status"><div class="dot"></div> REALTIME SYNC ON</div>
+<div id="presenter-view">
+    <div class="p-header">
+        <div class="timer" id="p-stopwatch">00:00:00</div>
+        <div style="display:flex; gap:10px;">
+            <button onclick="toggleTimer()" style="background: #d82020; color: #eef3ee; padding: 14px 16px; cursor: pointer; border-radius: 100px; border: none;">시작/멎기</button>
+            <button onclick="resetTimer()" style="background: #d82020; color: #eef3ee; padding: 14px 16px; cursor: pointer; border-radius: 100px; border: none;">초기화</button>
+        </div>
+        <div class="sync-tag" id="p-sync-time">최근 동기화: ---</div>
+    </div>
 
-<div id="slide-container">
-    <div id="current-wrapper" class="asset-wrapper">
-        <img id="display-image" class="slide-asset" style="display:none;">
-        <video id="display-video" class="slide-asset" playsinline muted preload="auto" style="display:none;">
-            <source src="main.webm" type="video/webm">
-        </video>
+    <div class="p-notes-area">
+        <div style="margin-bottom:25px; background:#1a1a1a; padding:15px; border-radius:8px;">
+            <label style="color:#aaa;">글자 크기 조절: </label>
+            <input type="range" id="memo-font-slider" min="18" max="60" value="28" style="width:200px; vertical-align:middle;" oninput="adjustFontSize(this.value)">
+        </div>
+        <div id="p-memo-text" style="font-size:28px; line-height:1.8; white-space: pre-wrap;"></div>
+    </div>
+
+    <div class="p-preview-area">
+        <div class="p-mini-stage" id="mini-stage"></div>
+        <div style="margin-top: 25px; font-size: 40px; text-align: center;">
+            현재 쪽수: <input type="number" id="p-page-input" min="1" onchange="jumpToPage(this.value)"> / <span id="p-total-pages">0</span>
+        </div>
+    </div>
+
+    <div class="p-controls">
+        <div class="btn-group">
+            <button class="big-btn" onclick="prevImage()" style="background:#540000;">뒤로</button>
+            <button class="big-btn" onclick="nextImage()">앞으로</button>
+        </div>
+        <button onclick="togglePresenterMode()" style="background: transparent; border: none; color: #f7ffbc; padding: 10px; cursor: pointer;">일반 화면으로 돌아가기</button>
     </div>
 </div>
 
-<div id="memo-box">
-    <strong style="color:var(--primary-color)">Slide Memo <span id="memo-idx">1</span></strong>
-    <div id="memo-text"></div>
+<div id="slide-container">
+    <div id="main-stage" style="width:100%; height:100%;"></div>
 </div>
 
 <div id="page-num">0 / 0</div>
-<div class="controls-hitbox"></div>
-<div class="controls">
-    <button onclick="prevImage()">戻る</button>
-    <button onclick="nextImage()">전進</button>
-    <button onclick="toggleMemo()">メモを見る</button>
+<div class="normal-controls">
+    <button onclick="prevImage()">뒤로</button>
+    <button onclick="nextImage()">앞으로</button>
+    <button onclick="togglePresenterMode()" style="font-weight:bold;">우리<span style="font-size:1.2em;font-family:serif;">길</span>동무</button>
 </div>
 
 <script>
@@ -85,170 +137,177 @@
         projectId: "tangle-sns",
         storageBucket: "tangle-sns.firebasestorage.app",
         messagingSenderId: "248303876559",
-        appId: "1:248303876559:web:b8c6b6a28cdc93fa3a3aba",
-        measurementId: "G-HMDE0QX8ZM"
+        appId: "1:248303876559:web:b8c6b6a28cdc93fa3a3aba"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const slideRef = db.ref('presentation/currentSlide');
 
     const slides = [1, 2, 3, 4, 5, "V1", "V2", "V3", "V4", 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
-    const FPS = 24;
-    const videoCheckpoints = { "V1": 30/FPS, "V2": 78/FPS, "V3": 113/FPS, "V4": 999 };
     const memos = [
-        "生成AIの時代，人間の開発者が消えるのかについて調べてきた。よろしく。",
-        "今回，ソフトウェアとハードウェア開発者の今と今後に焦点を当てて話していきたい。",
-        "まず結論を言うと生き残れる。ただ，基礎知識と新しい知識を継続的に取り込むことが必要。ハードウェア開発者は完全に生き残れると考えている。実際に数回ほど設計したが，AIができる部分は少ないと感じた。",
-        "また，否定するよりもAIを使ってみることが重要だと私は思う。何か始めたいことがあったとして，それをするときにAIに手助けや作ってもらって，地味に自分で作れるように学習していくのが大事だと思う。",
-        "自分はAIによってかなり知識も身についた。23年にAIのみで色々作り始め、24年には基礎知識もついてきて配信を開始。学校内でもWebサービスを使ってもらっている。25年には本格開発し、AIで数を作ってきたおかげでWebアプリの基礎知識はほぼ身についた。今はアプリ開発も始めている。",
-        "【動画 1/4】開発フローの全体像。",
-        "【動画 2/4】AIとの連携プロセスの詳細。",
-        "【動画 3/4】リアルタイムデバッグの様子。",
-        "【動画 4/4】最終成果物のプレビュー。",
-        "まず，AIに関して。気付いたことを話していく。",
-        "簡単なWebアプリなどなら問題ないが，複雑なものをAIに全部を任せたら確実に事故る。",
-        "具体的に言うと通信エラーやデータがないことを一切想定しないことで，例外が多発したりする。指示なしだと拡張が難しかったり、共通化が不十分だったりする。",
-        "ただ，その辺も優秀なAIはちゃんとしてくれる。GLM, 千问, Claudeなんかはかなり優秀。Geminiも速度がバケモンなので使うことが多い。",
-        "それでも全てできるわけではなく，やっぱりテキストベースの作業が得意。仕様書の解説や骨組み生成、バグ解析など。ただ、バグの特定は人間が行った方が効率的な場合もある。",
-        "細かいバグは苦手っぽい。他にもPCB設計, GUIなどのグラフィック系も苦手な印象。",
-        "AIは知識レベルだけなら強い。なのでAIとの競争は諦めた方がいい。少なくともソフトウェア開発においては。",
-        "だが仕事全部を奪われるわけではなく，共存してこそ力が発揮できる。プロンプト力を上げるより、AIに作業を与え、自分は構造や「どうすべきか」を考えることで成長のチャンスを得られる。",
-        "開発速度はかなり高速になる。実際に作ってから学ぶ方が構造を理解しやすい。今はコーディング（ライティング）よりリーディング（読み取り）ができれば困らないレベル。",
-        "ただしAIの知識が常に最新とは限らない。AIをどう使うか、手作業とどう使い分けるかが重要なスキルになる。",
-        "例えば動画制作で、実写かVFXかAI生成か. 場面やこだわりによって選択が変わるように、プログラミングでも使い分けが重要。",
-        "AIスキル以前に、自分に害がないことには何でもチャレンジした方がいい。その知識は再チャレンジする時に絶対役に立つはず。",
-        "明確な目標は必要。3D制作やアプリ開発も、作りたいものを決めて再チャレンジすることで気軽に作れるようになった。諦めたことがあればもう一度やってみるべき。",
-        "今関係ない面白そうな技術書を読むのも、意外と今後役立ちやすい。全てをAIに任せきりにすると、トラブル時の対応が難しくなる。",
-        "まとめ：AIは文章系が得意で、共存を目指すべき。目標を立て、知識を得ることを目的に学習することで、より役立つことが多くなる。고맙습니다!"
+        "1: 生成AI時代、人間の開発者は\n絶滅するのか\nということで\nリアルを調べてきた。",
+        "2: 今回は、ソフトウェアと\nハードウェアの両面から、\n開発者の『今』と\n『これから』を\n深掘り。",
+        "3: 結論、生き残れます！ \nただし基礎と新技術の欲張りは必須で\n特にハードウェアは、\n自分が設計した限りAIには\nまだ荷が重い作業だった。",
+        "4: それでもAIを否定するより、\nまずは使い倒すのが正解。\nAIに土台を作らせつつ、\n自分は地味に裏側を\n理解していくという\nこの『二刀流』が最短ルートです。",
+        "5: ここからは、\nAIが自分に\nどんな知識と変化をもたらしたか、\nその軌跡をたどります。",
+        "6: 2023年に自分のAIライフがスタート。\n当時は知識ゼロで、とにかく\n『AI全振り』\nで色々作り始めました。",
+        "7: 2024年には\n基礎も追いつき、\n配信まで開始。\n同じクラスの人から\n自作Webサービスを\n使ってもらえるようになり、\n(少し調子に乗り)手応えを感じた。",
+        "8: 2025年には本格開発。\nアクティブユーザーも100人を超えました。\n小4の知識ゼロ時代から、\nAIという最強の家庭教師のおかげで、\nWebアプリの基礎はほぼ身についた。",
+        "9: そして今年、\nついにアプリ開発に突入。\n今はまだ『ざっくり理解』ですが、\nAIを使って一歩ずつ身についていく\n感覚がすごくあり。",
+        "10: じゃあ、\nAIを使い倒して気づいた\nこいつらの正体について、\nいくつかシェアします。",
+        "11: 簡単なWebアプリなら\nAIは天才ですが、\n複雑なものを全部任せると\n『確実に事故る』ので要注意。",
+        "12: AIはエラーなんて絶対起きん\nというすごいポジティブ思考で書くので、\n例外起きた時の処理がガタガタ。\n拡張性ゼロ의 コードを\n渡されることもあります。",
+        "13: でも、GLM、千问\nClaudeはかなり優秀。\n特にGeminiは『速度がバケモン』\nなので、結局よく使います。",
+        "14: とはいえ得意なのはやっぱりテキスト系。\n仕様書の解説や骨組み作り、\nバグの捜査。\nただし、バグの『特定』\nは人間の直感の方が\n早かったりします。\n\n細かいバグの修正や、PCB設計、\nGUIなどのグラフィック系はまだ苦手科目。\nAIにも弱点はあります。",
+        "15: 知識量だけでAIに勝とうとするのは、\n電卓に算数で挑むようなもの。\nソフトウェア開発の暗記勝負\nは、もう厳しいです。",
+        "16: でも、仕事が奪われるわけじゃない。\n『共存』こそが正解で\nプロンプト力を磨くより、\n『どういう構造にすべきか』\nを考える監督力を\n鍛えるチャンスです。",
+        "17: 開発速度は異次元になります。\n作ってから学ぶ方が\n構造も頭に入る。\n今は『書く』より、\nAIのコードを『読み解く』力\nさえあれば困りません。しかしAIの知識が\n常に最新とは限りません。",
+        "18: どこを任せ、\nどこを自分でやるか\nという『使い分けスキル』が、\nこれからの武器になる。\nと自分は思っています",
+        "19: 動画制作で実写かCGかを選ぶように、\nプログラミングでも\n『こだわりポイント』\nによって道具を使い分けるのが\n重要です。",
+        "20: 色々言ってきましたがAI以前に、\n重要なこともあります",
+        "21: 自分に害がないなら\n何でもチャレンジする精神が必要。\nその経験は、いつか\nお宝に化けますので。",
+        "22: また明確なゴールを決めること\nをお勧めします。\n3Dやアプリ開発も、\n作りたいものを決めて\n再チャレンジすれば、\n意外とサクッと作れるようになります。\nAIに聞かなくても\n達成できます",
+        "23: 今は関係なさそうな\n技術書なんかを読むのも意外と大事。\n全部AI任せにしていると、\n特殊な知識が身につきにくいです。",
+        "24: まとめるとAIは文章系が得意な良い동무。\n共存し，知識を得ることを\n目的に学習すれば、\nより良くなっていくはずです。\n고맙습니다!"
     ];
 
-    let currentIndex = 0;
-    let prevIndex = -1;
-    const preloadedImages = {};
-    let loadedCount = 0;
-    let isAllLoaded = false;
+    let currentIndex = -1;
+    const FPS = 24;
+    // ビデオの開始時間と終了時間を定義
+    const videoCheckpoints = { 
+        "V1": { start: 0, end: 30/FPS }, 
+        "V2": { start: 31/FPS, end: 78/FPS }, 
+        "V3": { start: 79/FPS, end: 113/FPS }, 
+        "V4": { start: 114/FPS, end: 150/FPS } 
+    };
 
-    slideRef.on('value', (snapshot) => {
-        const val = snapshot.val();
-        if (val !== null && val !== currentIndex) {
-            currentIndex = val;
-            if (isAllLoaded) updateDisplay();
-        }
-    });
+    function createSlideElement(idx) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'asset-wrapper';
+        const slideKey = slides[idx];
 
-    function preloadAssets() {
-        const progressBar = document.getElementById('progress-bar');
-        const statusText = document.getElementById('load-status');
-        const imageFiles = slides.filter(s => typeof s === 'number');
-        const total = imageFiles.length + 1;
-
-        const updateProgress = () => {
-            loadedCount++;
-            const percent = Math.floor((loadedCount / total) * 100);
-            progressBar.style.width = percent + '%';
-            statusText.innerText = `Loading... ${percent}%`;
-            if (loadedCount >= total) {
-                isAllLoaded = true;
-                setTimeout(() => { document.getElementById('loader').style.display = 'none'; updateDisplay(); }, 500);
-            }
-        };
-
-        imageFiles.forEach(num => {
-            const img = new Image();
-            img.src = `${num}.webp`;
-            img.onload = () => { preloadedImages[num] = img; updateProgress(); };
-            img.onerror = updateProgress;
-        });
-
-        const video = document.getElementById('display-video');
-        video.oncanplaythrough = () => { if(!preloadedImages["v"]) { preloadedImages["v"]=true; updateProgress(); } };
-        video.load();
-        setTimeout(() => { if(!preloadedImages["v"]) updateProgress(); }, 5000);
-    }
-
-    function updateDisplay() {
-        const container = document.getElementById('slide-container');
-        const currentWrapper = document.getElementById('current-wrapper');
-        const imgEl = document.getElementById('display-image');
-        const videoEl = document.getElementById('display-video');
-        
-        const currentSlide = slides[currentIndex];
-        const prevSlide = prevIndex >= 0 ? slides[prevIndex] : null;
-
-        const isCurrentVideo = typeof currentSlide === 'string';
-        const isPrevVideo = typeof prevSlide === 'string';
-        
-        // 動画内のステップ移動か、それともページ移動（画像⇔動画、画像⇔画像）かを判定
-        const isInternalVideoTransition = isCurrentVideo && isPrevVideo;
-
-        const duration = "0.6s";
-        const easing = "cubic-bezier(0.8, 0, 0, 1)";
-        const moveDist = 15;
-        const direction = currentIndex > prevIndex ? 1 : -1;
-
-        if (!isInternalVideoTransition && prevIndex !== -1) {
-            // トランジションが必要な場合のみクローンを作成
-            const oldWrapper = currentWrapper.cloneNode(true);
-            oldWrapper.id = "";
-            oldWrapper.style.zIndex = "1";
-            container.appendChild(oldWrapper);
-            if(oldWrapper.querySelector('video')) oldWrapper.querySelector('video').pause();
-
-            requestAnimationFrame(() => {
-                oldWrapper.style.transition = `all ${duration} ${easing}`;
-                oldWrapper.style.transform = `translateX(${-direction * moveDist}vw)`;
-                oldWrapper.style.opacity = "0";
-                setTimeout(() => { if(oldWrapper.parentNode) container.removeChild(oldWrapper); }, 700);
+        if (typeof slideKey === 'string' && videoCheckpoints[slideKey]) {
+            const video = document.createElement('video');
+            video.className = 'slide-asset';
+            video.src = "main.webm";
+            video.muted = true;
+            video.playsInline = true;
+            
+            // 指定の終了ポイントで停止
+            video.addEventListener('timeupdate', () => {
+                const cp = videoCheckpoints[slideKey];
+                if (video.currentTime >= cp.end) {
+                    video.pause();
+                    video.currentTime = cp.end; 
+                }
             });
 
-            currentWrapper.style.transition = "none";
-            currentWrapper.style.transform = `translateX(${direction * moveDist}vw)`;
-            currentWrapper.style.opacity = "0";
-        }
-
-        // 表示切替
-        if (isCurrentVideo) {
-            imgEl.style.display = "none";
-            videoEl.style.display = "block";
-            const targetTime = (currentSlide === "V4") ? videoEl.duration : videoCheckpoints[currentSlide];
-            
-            if (videoEl.currentTime < targetTime) {
-                videoEl.play().catch(() => {});
-                const timer = setInterval(() => {
-                    if (videoEl.currentTime >= targetTime || videoEl.ended) { videoEl.pause(); clearInterval(timer); }
-                }, 10);
-            } else { videoEl.currentTime = targetTime; videoEl.pause(); }
+            wrapper.appendChild(video);
+            wrapper._isVid = true;
+            wrapper._vidObj = video;
+            wrapper._slideKey = slideKey;
         } else {
-            videoEl.style.display = "none";
-            videoEl.pause();
-            imgEl.style.display = "block";
-            imgEl.src = preloadedImages[currentSlide] ? preloadedImages[currentSlide].src : "";
+            const img = new Image();
+            img.className = 'slide-asset';
+            img.src = `${slideKey}.webp`;
+            wrapper.appendChild(img);
         }
-
-        if (!isInternalVideoTransition) {
-            currentWrapper.offsetHeight; // reflow
-            currentWrapper.style.transition = `all ${duration} ${easing}`;
-            currentWrapper.style.transform = "translateX(0)";
-            currentWrapper.style.opacity = "1";
-        }
-
-        prevIndex = currentIndex;
-        document.getElementById('memo-text').innerText = memos[currentIndex] || "";
-        document.getElementById('memo-idx').innerText = currentIndex + 1;
-        document.getElementById('page-num').innerText = `${currentIndex + 1} / ${slides.length}`;
+        return wrapper;
     }
 
-    function nextImage() { if (currentIndex < slides.length - 1) { slideRef.set(currentIndex + 1); } }
-    function prevImage() { if (currentIndex > 0) { slideRef.set(currentIndex - 1); } }
-    function toggleMemo() { const box = document.getElementById('memo-box'); box.style.display = (box.style.display === "block") ? "none" : "block"; }
+    function updateStages(newIdx) {
+        if (newIdx === currentIndex) return;
+        const isForward = newIdx > currentIndex;
+        const mainStage = document.getElementById('main-stage');
+        const miniStage = document.getElementById('mini-stage');
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); nextImage(); }
-        if (e.key === "ArrowLeft") { e.preventDefault(); prevImage(); }
-        if (e.key === "m" || e.key === "M") toggleMemo();
+        [mainStage, miniStage].forEach(stage => {
+            const oldWrapper = stage.querySelector('.asset-wrapper');
+            const newWrapper = createSlideElement(newIdx);
+
+            // 画像から画像への遷移のみアニメーション
+            if (oldWrapper && !newWrapper._isVid && !oldWrapper._isVid) {
+                newWrapper.style.transform = `translateX(${isForward ? 100 : -100}vw)`;
+                stage.appendChild(newWrapper);
+                newWrapper.offsetHeight; 
+
+                const duration = 800;
+                newWrapper.style.transition = `transform ${duration}ms cubic-bezier(0.8, 0, 0, 1)`;
+                oldWrapper.style.transition = `transform ${duration}ms cubic-bezier(0.8, 0, 0, 1)`;
+                
+                newWrapper.style.transform = 'translateX(0)';
+                oldWrapper.style.transform = `translateX(${isForward ? -100 : 100}vw)`;
+                setTimeout(() => { if(oldWrapper.parentNode) stage.removeChild(oldWrapper); }, duration);
+            } else {
+                // ビデオが含まれる場合は即時切り替え
+                stage.innerHTML = '';
+                stage.appendChild(newWrapper);
+                if (newWrapper._isVid) {
+                    const cp = videoCheckpoints[newWrapper._slideKey];
+                    newWrapper._vidObj.currentTime = cp.start; // 開始位置へジャンプ
+                    newWrapper._vidObj.play().catch(e => console.warn("Video play failed:", e));
+                }
+            }
+        });
+
+        currentIndex = newIdx;
+        document.getElementById('p-memo-text').innerText = memos[currentIndex] || "";
+        document.getElementById('page-num').innerText = `${currentIndex + 1} / ${slides.length}`;
+        document.getElementById('p-page-input').value = currentIndex + 1;
+        document.getElementById('p-total-pages').innerText = slides.length;
+    }
+
+    // Firebase Sync
+    slideRef.on('value', s => {
+        const val = s.val() || 0;
+        updateStages(val);
+        document.getElementById('p-sync-time').innerText = "최근 동기화: " + new Date().toLocaleTimeString();
     });
 
-    window.onload = preloadAssets;
+    function nextImage() { if(currentIndex < slides.length - 1) slideRef.set(currentIndex + 1); }
+    function prevImage() { if(currentIndex > 0) slideRef.set(currentIndex - 1); }
+    function jumpToPage(p) { let i = parseInt(p) - 1; if(i >= 0 && i < slides.length) slideRef.set(i); }
+    function togglePresenterMode() {
+        const pv = document.getElementById('presenter-view');
+        pv.style.display = (pv.style.display === "grid") ? "none" : "grid";
+    }
+    function adjustFontSize(size) { document.getElementById('p-memo-text').style.fontSize = size + "px"; }
+
+    // Timer Logic
+    let timerInterval, secondsElapsed = 0;
+    function toggleTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        else {
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                const h = String(Math.floor(secondsElapsed / 3600)).padStart(2, '0');
+                const m = String(Math.floor((secondsElapsed % 3600) / 60)).padStart(2, '0');
+                const s = String(secondsElapsed % 60).padStart(2, '0');
+                document.getElementById('p-stopwatch').innerText = `${h}:${m}:${s}`;
+            }, 1000);
+        }
+    }
+    function resetTimer() { secondsElapsed = 0; document.getElementById('p-stopwatch').innerText = "00:00:00"; }
+
+    // Loader logic
+    window.onload = () => {
+        const bar = document.getElementById('progress-bar');
+        let b = 0;
+        const itv = setInterval(() => {
+            b += 5;
+            bar.style.width = b + '%';
+            if(b >= 100) {
+                clearInterval(itv);
+                document.getElementById('loader').style.display = 'none';
+            }
+        }, 50);
+    };
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "ArrowRight" || e.key === " ") nextImage();
+        if (e.key === "ArrowLeft") prevImage();
+        if (e.key === "g" || e.key === "G") togglePresenterMode();
+    });
 </script>
 </body>
 </html>
