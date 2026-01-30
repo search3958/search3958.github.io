@@ -1,2 +1,118 @@
-<a href="https://search3958.github.io/test-001/app-debug.apk">test</a>
-<a href="https://search3958.github.io/">hello3958</a>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Download App</title>
+    <style>
+        :root {
+            --primary: #007AFF;
+            --bg: #000000;
+            --card: #1C1C1E;
+            --text: #FFFFFF;
+            --text-secondary: #8E8E93;
+        }
+
+        body {
+            font-family: -apple-system, system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-card {
+            width: 90%;
+            max-width: 360px;
+            background: var(--card);
+            border-radius: 28px;
+            padding: 32px 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+
+        /* アプリのアイコンをイメージしたダミー */
+        .app-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 18px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 8px 0;
+            font-weight: 700;
+        }
+
+        .version {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 32px;
+        }
+
+        /* スマホで押しやすい巨大なボタン */
+        .download-btn {
+            display: block;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 18px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: transform 0.1s;
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+        }
+
+        .download-btn:active {
+            transform: scale(0.96);
+            filter: brightness(0.9);
+        }
+
+        .info-text {
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 24px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-card">
+    <div class="app-icon">📱</div>
+    <h1>test-001</h1>
+    <div class="version">Debug Build (APK)</div>
+
+    <a href="app-debug.apk" class="download-btn" download>
+        インストール
+    </a>
+
+    <p class="info-text">
+        ※Android端末で開いてください。<br>
+        ダウンロード後、ファイルを開いてインストールを続行してください。
+    </p>
+
+    <a href="https://search3958.github.io/" class="home-link">hello3958 Home</a>
+</div>
+
+</body>
+</html>
