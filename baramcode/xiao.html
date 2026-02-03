@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>z.ai Code Chat Terminal</title>
+    <style>
+        :root {
+            --border-color: #ccc;
+            --user-bg: #e3f2fd;
+            --ai-bg: #f5f5f5;
+        }
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* メインレイアウト：チャットとコードエリアを横並びに */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* チャット表示エリア */
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 右側：コード入力エリア */
+        .code-panel {
+            width: 45%;
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            background: #fafafa;
+            padding: 10px;
+        }
+        .code-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        #codeArea {
+            flex: 1;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            resize: none;
+            outline: none;
+        }
+
+        /* メッセージの気泡 */
+        .msg {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .user {
+            align-self: flex-end;
+            background: var(--user-bg);
+        }
+        .ai {
+            align-self: flex-start;
+            background: var(--ai-bg);
+            white-space: pre-wrap;
+        }
+
+        /* 下部：入力エリア */
+        .input-area {
+            padding: 15px;
+            background: #fff;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        #promptInput {
+            flex: 1;
+            height: 80px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            resize: none;
+            outline: none;
+        }
+        button {
+            padding: 10px 20px;
+            height: 40px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-content">
+        <div id="chat-container">
+            <div class="msg ai">準備ができました。指示を入力してください。</div>
+        </div>
+        
+        <div class="code-panel">
+            <div class="code-label">SOURCE CODE (Optional)</div>
+            <textarea id="codeArea" placeholder="ここに既存のコードを貼り付けてください..."></textarea>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <textarea id="promptInput" placeholder="何をしたいですか？ (例: 〇〇機能を追加して)"></textarea>
+        <button onclick="askAI()">SEND</button>
+    </div>
+
+    <script>
+        const API_URL = 'https://sbmatwewsgkuidzbxbxp.supabase.co/functions/v1/zai';
+
+        async function askAI() {
+            const promptInput = document.getElementById('promptInput');
+            const codeArea = document.getElementById('codeArea');
+            const container = document.getElementById('chat-container');
+
+            const userText = promptInput.value.trim();
+            const codeText = codeArea.value.trim();
+
+            if (!userText) return;
+
+            // プロンプトの組み立て
+            let finalPrompt = "";
+            if (codeText) {
+                // コードがある場合のプロンプト
+                finalPrompt = `関数の最初function ???などの最初は必ず全てを出してください。全てを変更しない場合，変更箇所以外は@@code!123123123@@で省略することができます。ただ，全体は必要ないです。複数個@@code!123123123@@を含んでも構いません。出力はコードブロックで書き出してください。\n\nコードのtextareaの内容\n"\n${codeText}\n"\n\n"${userText}"\n\nこれを達成したいので優秀なエンジニアとしてお手伝いしていただけますか？`;
+            } else {
+                // コードがない場合のプロンプト
+                finalPrompt = `"${userText}"\n\nこれを達成したいので優秀なエンジニアとしてお手伝いしていただけますか？\nHTML,CSS,Javascript(バニラ)のみを使用することが可能です。全て単一の1つのファイルです。いいですね？早速作っていきましょう！出力はコードブロックで書き出してください。`;
+            }
+
+            // ユーザーメッセージを表示
+            addMessage(userText, 'user');
+            promptInput.value = '';
+
+            // AIの応答枠を作成
+            const aiDiv = addMessage('...', 'ai');
+            container.scrollTop = container.scrollHeight;
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: finalPrompt })
+                });
+
+                if (!res.body) throw new Error("ReadableStream not supported");
+
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let streamText = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const dataStr = line.substring(6);
+                            if (dataStr.trim() === '[DONE]') break;
+                            try {
+                                const json = JSON.parse(dataStr);
+                                const content = json.choices[0].delta?.content || '';
+                                streamText += content;
+                                aiDiv.innerText = streamText;
+                                container.scrollTop = container.scrollHeight;
+                            } catch (e) {}
+                        }
+                    }
+                }
+            } catch (err) {
+                aiDiv.innerText = "Error: 通信に失敗しました。";
+            }
+        }
+
+        function addMessage(text, type) {
+            const container = document.getElementById('chat-container');
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.innerText = text;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div;
+        }
+
+        // Ctrl + Enter で送信
+        document.getElementById('promptInput').addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                askAI();
+            }
+        });
+    </script>
+</body>
+</html>

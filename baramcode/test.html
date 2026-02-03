@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>便利な計算機</title>
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --calc-bg: #ffffff;
+            --display-bg: #f8f9fa;
+            --text-main: #212529;
+            --text-secondary: #6c757d;
+            --btn-bg: #e9ecef;
+            --btn-hover: #dee2e6;
+            --btn-active: #ced4da;
+            --accent-color: #007bff;
+            --accent-hover: #0056b3;
+            --operator-color: #ff9800;
+            --operator-hover: #f57c00;
+            --danger-color: #dc3545;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --calc-bg: #1e1e1e;
+            --display-bg: #2d2d2d;
+            --text-main: #ffffff;
+            --text-secondary: #a0a0a0;
+            --btn-bg: #333333;
+            --btn-hover: #404040;
+            --btn-active: #44d4d;
+            --accent-color: #4dabf7;
+            --accent-hover: #339af0;
+            --operator-color: #ffa94d;
+            --operator-hover: #ff922b;
+            --danger-color: #ff6b6b;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            background-color: var(--calc-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 360px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ヘッダーとテーマ切り替え */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--btn-bg);
+        }
+
+        .title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-main);
+            font-size: 1.2rem;
+            padding: 5px;
+            border-radius: 50%;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--btn-bg);
+        }
+
+        /* 表示画面 */
+        .display-area {
+            background-color: var(--display-bg);
+            padding: 30px 20px;
+            text-align: right;
+            word-wrap: break-word;
+            word-break: break-all;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .previous-operand {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            min-height: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .current-operand {
+            color: var(--text-main);
+            font-size: 2.5rem;
+           -weight: 500;
+            line-height: 1.1;
+        }
+
+        /* キーパッド */
+        .keypad {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        button {
+            height: 60px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1.25rem;
+            font-weight: 500;
+            cursor: pointer;
+            background-color: var(--btn-bg);
+            color: var(--text-main);
+            user-select: none;
+            touch-action: manipulation; /* タップ遅延を防止 */
+        }
+
+        button:hover {
+            background-color: var(--btn-hover);
+        }
+
+        button:active {
+            background-color: var(--btn-active);
+            transform: scale(0.95);
+        }
+
+        .span-two {
+            grid-column: span 2;
+        }
+
+        .btn-operator {
+            background-color: var(--operator-color);
+            color: #fff;
+        }
+
+        .btn-operator:hover {
+            background-color: var(--operator-hover);
+        }
+
+        .btn-equal {
+            background-color: var(--accent-color);
+            color: #fff;
+        }
+
+        .btn-equal:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-clear {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+
+        .btn-clear:hover {
+            background-color: rgba(220, 53 69, 0.1);
+        }
+
+        /* 履歴モーダル */
+        .history-toggle {
+            margin: 0 20px 15px;
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-align: left;
+            padding: 5px;
+        }
+
+        .history-toggle:hover {
+            text-decoration: underline;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* スマホ用に下から出す */
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .history-panel {
+            background-color: var(--calc-bg);
+            width: 100%;
+            height: 40%;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.open .history-panel {
+            transform: translateY(0);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--btn-bg);
+        }
+
+        .history-title {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .clear-history {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .clear-history:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            list-style: none;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid var(--btn-bg);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .history-item:hover {
+            background-color: var(--btn-bg);
+        }
+
+        .history-item .result {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* エラーメッセージ */
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            height: 1.2rem;
+        }
+
+        /* レスポンシブ調整 */
+        @media (min-width: 600px) {
+            .calculator-container {
+                height: 600px;
+            }
+            .modal-overlay {
+                align-items: center;
+            }
+            .history-panel {
+                height: 400px;
+                width: 80%;
+                max-width: 320px;
+                border-radius: 20px;
+                transform: translateY(20px);
+            }
+            .modal-overlay.open .history-panel {
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="calculator-container">
+        <header class="header">
+            <span class="title">便利な計算機</span>
+            <button class="theme-toggle" id="themeToggle" aria-label="テーマを切り替える">
+                🌙
+            </button>
+        </header>
+
+        <section class="display-area">
+            <div class="previous-operand" id="previousOperand"></div>
+            <div class="current-operand" id="currentOperand">0</div>
+            <div class="error-message" id="errorMessage"></div>
+        </section>
+
+        <button class="history-toggle" id="historyToggle">履歴を見る</button>
+
+        <section class="keypad">
+            <button class="btn-clear span-two" data-action="clear">AC</button>
+            <button class="btn-operator" data-action="delete">⌫</button>
+            <button class="btn-operator" data-action="percent">%</button>
+            
+            <button data-number>7</button>
+            <button data-number>8</button>
+            <button data-number>9</button>
+            <button class="btn-operator" data-action="operation" data-value="÷">÷</button>
+            
+            <button data-number>4</button>
+            <button data-number>5</button>
+            <button data-number>6</button>
+            <button class="btn-operator" data-action="operation" data-value="×">×</button>
+            
+            <button data-number>1</button>
+            <button data-number>2</button>
+            <button data-number>3</button>
+            <button class="btn-operator" data-action="operation" data-value="-">−</button>
+            
+            <button data-number>.</button>
+            <button data-number>0</button>
+            <button class="btn-equal span-two" data-action="calculate">=</button>
+            <button class="btn-operator" data-action="operation" data-value="+">+</button>
+        </section>
+
+        <!-- 履歴モーダル -->
+        <div class="modal-overlay" id="historyModal">
+            <div class="history-panel">
+                <div class="history-header">
+                    <span class="history-title">計算履歴</span>
+                    <button class="clear-history" id="clearHistory">クリア</button>
+                </div>
+                <ul class="history-list" id="historyList">
+                    <!-- 履歴がここに入る -->
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        class Calculator {
+            constructor(previousOperandTextElement, currentOperandTextElement, errorMessageElement) {
+                this.previousOperandTextElement = previousOperandTextElement;
+                this.currentOperandTextElement = currentOperandTextElement;
+                this.errorMessageElement = errorMessageElement;
+                this.history = [];
+                this.clear();
+            }
+
+            clear() {
+                this.currentOperand = '0';
+                this.previousOperand = '';
+                this.operation = undefined;
+                this.shouldResetScreen = false;
+                this.showError('');
+            }
+
+            delete() {
+                if (this.currentOperand === '0' || this.shouldResetScreen) return;
+                if (this.currentOperand.length === 1) {
+                    this.currentOperand = '0';
+                } else {
+                    this.currentOperand = this.currentOperand.toString().slice(0, -1);
+                }
+                this.showError('');
+            }
+
+            appendNumber(number) {
+                if (this.shouldResetScreen) {
+                    this.currentOperand = '';
+                    this.shouldResetScreen = false;
+                }
+                // 小数点の処理
+                if (number === '.' && this.currentOperand.includes('.')) return;
+                // 0で始まる場合の処理
+                if (this.currentOperand === '0' && number !== '.') {
+                    this.currentOperand = number.toString();
+                } else {
+                    this.currentOperand = this.currentOperand.toString() + number.toString();
+                }
+                this.showError('');
+            }
+
+            chooseOperation(operation) {
+                if (this.currentOperand === '') return;
+                if (this.previousOperand !== '') {
+                    this.compute();
+                }
+                this.operation = operation;
+                this.previousOperand = this.currentOperand;
+                this.currentOperand = '';
+                this.shouldResetScreen = false;
+                this.showError('');
+            }
+
+            compute() {
+                let computation;
+                const prev = parseFloat(this.previousOperand);
+                const current = parseFloat(this.currentOperand);
+                
+                if (isNaN(prev) || isNaN(current)) return;
+
+                switch (this.operation) {
+                    case '+':
+                        computation = prev + current;
+                        break;
+                    case '-':
+                        computation = prev - current;
+                        break;
+                    case '×':
+                        computation = prev * current;
+                        break;
+                    case '÷':
+                        if (current === 0) {
+                            this.showError('エラー: 0で割ることはできません');
+                           ;
+                        }
+                        computation = prev / current;
+                        break;
+                    default:
+                        return;
+                }
+
+                // 精度を改善するための簡易的な丸め処理
+                computation = Math.round(computation * 1000000000) / 1000000000;
+
+                // 履歴に追加
+                this.addHistory(prev, this.operation, current,);
+
+                this.currentOperand = computation;
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.shouldResetScreen = true;
+                this.showError('');
+            }
+
+            calculatePercent() {
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(current)) return;
+                this.currentOperand = current / 100;
+                this.shouldResetScreen = true;
+                this.showError('');
+            }
+
+            getDisplayNumber(number) {
+                const stringNumber = number.toString();
+                const integerDigits = parseFloat(stringNumber.split('.')[0]);
+                const decimalDigits = stringNumber.split('.')[1];
+                let integerDisplay;
+                if (isNaN(integerDigits)) {
+                    integerDisplay = '';
+                } else {
+                    integerDisplay = integerDigits.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+                }
+                if (decimalDigits != null) {
+                    return `${integerDisplay}.${decimalDigits}`;
+                } else {
+                    return integerDisplay;
+                }
+            }
+
+            updateDisplay() {
+                this.currentOperandTextElement.innerText = this.getDisplayNumber(this.currentOperand);
+                if (this.operation != null) {
+                    this.previousOperandTextElement.innerText = 
+                        `${this.getDisplayNumber(this.previousOperand)} ${this.operation}`;
+                } else {
+                    this.previousOperandTextElement.innerText = '';
+                }
+            }
+
+            showError(message) {
+                this.errorMessageElement.innerText = message;
+            }
+
+            addHistory(prev, op, curr, result) {
+                const historyItem = {
+                    expression: `${prev} ${op} ${curr} =`,
+                    result: result
+                };
+                this.history.unshift(historyItem); // 最新を先頭に
+                if (this.history.length > 20) {
+                    this.history.pop(); // 最新20件まで保持
+                }
+                renderHistory();
+            }
+
+            clearHistory() {
+                this.history = [];
+                renderHistory();
+            }
+        }
+
+        // DOM要素の取得
+        const previousOperandTextElement = document.getElementById('previousOperand');
+        const currentOperandTextElement = document.getElementById('currentOperand');
+        const errorMessageElement = document.getElementById('errorMessage');
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const historyToggleBtn = document.getElementById('historyToggle');
+        const historyModal = document.getElementById('historyModal');
+        const clearHistoryBtn = document.getElementById('clearHistory');
+        const historyListElement = document.getElementById('historyList');
+
+        // 計算機の初期化
+        const calculator = new Calculator(previousOperandTextElement, currentOperandTextElement, errorMessageElement);
+
+        // グローバル関数として参照できるように
+        window.calculator = calculator;
+
+        // テーマ切り替え
+        let isDarkMode = false;
+        themeToggleBtn.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+            themeToggleBtn.innerText = isDarkMode ? '☀️' : '🌙';
+        });
+
+        // 履歴モーダルの操作
+        historyToggleBtn.addEventListener('click', () => {
+            historyModal.classList.toggle('open');
+        });
+
+        // モーダル外クリックで閉じる
+        historyModal.addEventListener('click', (e) => {
+            if (e.target === historyModal) {
+                historyModal.classList.remove('open');
+            }
+        });
+
+        clearHistoryBtn.addEventListener('click', () => {
+            calculator.clearHistory();
+        });
+
+        // 履歴のレンダリング
+        function renderHistory() {
+            historyListElement.innerHTML = '';
+            calculator.history.forEach((item) => {
+                const li = document.createElement('li');
+                li.className = 'history-item';
+                li.innerHTML = `
+                    <span>${item.expression}</span                    <span class="result">${item.result}</span>
+                `;
+                historyListElement.appendChild(li);
+            });
+        }
+
+        // ボタンクリックイベントの設定
+        document.querySelectorAll('button[data-number]').forEach(button => {
+            button.addEventListener('click', () => {
+                calculator.appendNumber(button.innerText);
+                calculator.updateDisplay();
+            });
+        });
+
+        document.querySelectorAll('button[data-action="operation"]').forEach(button => {
+            button.addEventListener('click', () => {
+                calculator.chooseOperation(button.getAttribute('data-value'));
+                calculator.updateDisplay();
+            });
+        });
+
+        document.querySelector('button[data-action="calculate"]').addEventListener('click', () => {
+            calculator.compute();
+            calculator.updateDisplay();
+        });
+
+        document.querySelector('button[data-action="clear"]').addEventListener('click', () => {
+            calculator.clear();
+            calculator.updateDisplay();
+        });
+
+        document.querySelector('button[data-action="delete"]').addEventListener('click', () => {
+            calculator.delete();
+            calculator.updateDisplay();
+        });
+
+        document.querySelector('button[data-action="percent"]').addEventListener('click', () => {
+            calculator.calculatePercent();
+            calculator.updateDisplay();
+        });
+
+        // キーボード対応
+        document.addEventListener('keydown', (e) => {
+            if ((e.key >= 0 && e.key <= 9) || e.key === '.') {
+                calculator.appendNumber(e.key);
+                calculator.updateDisplay();
+            }
+            if (e.key === '+' || e.key === '-') {
+                calculator.chooseOperation(e.key);
+                calculator.updateDisplay();
+            }
+            if (e.key === '*' || e.key === 'x') {
+                calculator.chooseOperation('×');
+                calculator.updateDisplay();
+            }
+            if (e.key === '/') {
+                e.preventDefault(); // フォーム送信などを防ぐ
+                calculatorOperation('÷');
+                calculator.updateDisplay();
+            }
+            if (e.key === 'Enter' || e.key === '=') {
+                e.preventDefault();
+                calculator.compute();
+                calculator.updateDisplay();
+            }
+            if (e.key === 'Backspace') {
+                calculator.delete();
+                calculator.updateDisplay();
+            }
+            if (e.key === 'Escape') {
+                calculator.clear();
+                calculator.updateDisplay();
+            }
+        });
+
+    </script>
+</body>
+</html>

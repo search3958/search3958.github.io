@@ -4,117 +4,185 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI & Developer Future (Hyper-Sync Final)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
     <style>
         :root { 
-            --primary-color: #b30000; 
-            --bg-color: #8b0000; 
-            --ui-bg: rgba(30, 30, 30, 0.9); 
-            --accent-green: #00ff00;
+            --primary-color: #e60000; 
+            --bg-color: #0a0a0a; 
+            --ui-bg: rgba(25, 25, 25, 0.9); 
+            --accent-yellow: #ffdf5f;
+            --accent-green: #00ff88;
+            --p-sidebar-bg: #151515;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: var(--bg-color); font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; color: white; }
+
+        /* Noto Sans JP を全ての要素に適用 */
+        * { 
+            font-family: 'Noto Sans JP', sans-serif; 
+            box-sizing: border-box;
+        }
+
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; background-color: var(--bg-color); 
+            color: #ffffff; 
+        }
         
-        /* 로더 (Loader) */
-        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
-        .progress-container { width: 350px; height: 6px; background: #222; margin-top: 30px; border-radius: 3px; overflow: hidden; border: 1px solid #444; }
+        /* ローダー (Loader) */
+        #loader { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; z-index: 9999; 
+        }
+        #load-status span {
+            font-size: 3em; font-weight: 900; background: var(--primary-color); 
+            padding: 20px 40px; border-radius: 8px; letter-spacing: -1px;
+            box-shadow: 0 10px 40px rgba(230, 0, 0, 0.4);
+        }
+        .progress-container { 
+            width: 350px; height: 4px; background: #222; 
+            margin-top: 40px; border-radius: 10px; overflow: hidden; 
+        }
         #progress-bar { width: 0%; height: 100%; background: var(--primary-color); transition: width 0.2s; }
 
-        /* 메인 슬라이드 표시 영역 */
-        #slide-container { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; background: #000; }
+        /* メインスライド */
+        #slide-container { 
+            width: 100vw; height: 100vh; display: flex; 
+            justify-content: center; align-items: center; 
+            position: relative; overflow: hidden; background: #000; 
+        }
         .asset-wrapper { 
-            width: 100%; height: 100%; 
-            position: absolute; 
+            width: 100%; height: 100%; position: absolute; 
             display: flex; justify-content: center; align-items: center; 
-            will-change: transform, opacity;
-            background: #000;
+            will-change: transform, opacity; background: #000;
         }
         .slide-asset { max-width: 100%; max-height: 100%; object-fit: contain; }
 
         /* 우리 길동무 (Presenter View) */
         #presenter-view { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background: #790000; display: none; grid-template-columns: 1fr 450px;
-            grid-template-rows: 70px 1fr 220px; z-index: 2000;
+            background: #111; display: none; grid-template-columns: 1fr 450px;
+            grid-template-rows: 80px 1fr 240px; z-index: 2000;
         }
 
         .p-header {
             grid-column: 1 / span 2;
-            background: #aa0000;
-            display: flex;
-            align-items: center;
-            padding: 0 25px;
-            gap: 40px;
-            border-bottom: 2px solid #ff6666;
+            background: #1a1a1a;
+            display: flex; align-items: center; padding: 0 30px; gap: 40px;
+            border-bottom: 1px solid #333;
         }
-        .p-notes-area { grid-row: 2 / span 2; padding: 40px; overflow-y: auto; background: #050505; border-right: 2px solid #333; }
-        .p-preview-area { padding: 20px; background: #340000; display: flex; flex-direction: column; align-items: center; border-bottom: 2px solid #333; }
         
-        .p-mini-stage { width: 100%; height: 250px; background: #000; border: 1px solid #333; position: relative; overflow: hidden; display: flex; justify-content: center; }
+        .p-notes-area { 
+            grid-row: 2 / span 2; padding: 50px; overflow-y: auto; 
+            background: #080808; border-right: 1px solid #333; 
+        }
+        
+        .p-preview-area { 
+            padding: 25px; background: var(--p-sidebar-bg); 
+            display: flex; flex-direction: column; align-items: center; 
+            border-bottom: 1px solid #333; 
+        }
+        
+        .p-mini-stage { 
+            width: 100%; height: 260px; background: #000; 
+            border: 1px solid #444; border-radius: 8px; 
+            position: relative; overflow: hidden; display: flex; justify-content: center; 
+        }
 
-        .p-controls { padding: 25px; background: #340000; display: flex; flex-direction: column; gap: 20px; }
+        .p-controls { 
+            padding: 30px; background: var(--p-sidebar-bg); 
+            display: flex; flex-direction: column; gap: 20px; 
+        }
 
-        .big-btn { flex: 1; padding: 25px; font-size: 24px; font-weight: bold; cursor: pointer; border: none; border-radius: 100px; background: var(--primary-color); color: white; transition: 0.2s; }
-        .big-btn:hover { background: #ff0000; }
-        .big-btn:active { transform: scale(0.95); }
+        .big-btn { 
+            flex: 1; padding: 22px; font-size: 20px; font-weight: 700; 
+            cursor: pointer; border: none; border-radius: 12px; 
+            background: #333; color: white; transition: var(--transition); 
+        }
+        .big-btn:last-child { background: var(--primary-color); }
+        .big-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .big-btn:active { transform: scale(0.98); }
+        
         .btn-group { display: flex; gap: 15px; width: 100%; }
         
-        .timer { font-family: monospace; font-size: 40px; color: #ffdf5f; }
-        .sync-tag { font-size: 13px; color: #aaa; }
+        .timer { font-family: 'Courier New', monospace; font-size: 42px; font-weight: 700; color: var(--accent-yellow); }
+        .sync-tag { font-size: 12px; color: #666; font-weight: 500; }
+        
         input[type="number"] {
-            background: #910000;
-            border: none;
-            color: white;
-            padding: 16px 32px;
-            width: 100px;
-            border-radius: 100px;
-            font-size: 48px;
-            text-align: center;
-            display: block;
+            background: #2a2a2a; border: 1px solid #444; color: white;
+            padding: 10px; width: 110px; border-radius: 8px;
+            font-size: 40px; font-weight: 700; text-align: center;
         }
-        #page-num { position: fixed; bottom: 30px; left: 30px; color: rgba(255,255,255,0.4); font-size: 15px; z-index: 100; }
-        .normal-controls { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 10px; z-index: 1000; }
-        .normal-controls button { padding: 12px 20px; border: none; border-radius: 8px; background: var(--ui-bg); color: white; cursor: pointer; font-size: 14px; }
+
+        #page-num { 
+            position: fixed; bottom: 30px; left: 30px; 
+            color: rgba(255,255,255,0.3); font-size: 14px; z-index: 100; 
+        }
+        
+        .normal-controls { 
+            position: fixed; bottom: 30px; right: 30px; display: flex; gap: 12px; z-index: 1000; 
+        }
+        .normal-controls button { 
+            padding: 12px 24px; border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 8px; background: var(--ui-bg); color: white; 
+            cursor: pointer; font-size: 14px; font-weight: 500;
+            backdrop-filter: blur(10px); transition: var(--transition);
+        }
+        .normal-controls button:hover { background: #333; transform: translateY(-2px); }
+        
+        /* メモテキストのスタイル調整 */
+        #p-memo-text { font-weight: 400; line-height: 1.8; color: #ddd; }
+        
+        /* スライダーのスタイル */
+        input[type="range"] { accent-color: var(--primary-color); }
     </style>
 </head>
 <body>
 
 <div id="loader">
-    <div id="load-status"><span style="font-size:3.5em; font-family:serif; font-weight:bold; background:#ce0000; padding:20px; border-radius:4px;">사회주의 만세!</span></div>
+    <div id="load-status"><span>사회주의 만세!</span></div>
     <div class="progress-container"><div id="progress-bar"></div></div>
 </div>
 
 <div id="presenter-view">
     <div class="p-header">
         <div class="timer" id="p-stopwatch">00:00:00</div>
-        <div style="display:flex; gap:10px;">
-            <button onclick="toggleTimer()" style="background: #d82020; color: #eef3ee; padding: 14px 16px; cursor: pointer; border-radius: 100px; border: none;">시작/멎기</button>
-            <button onclick="resetTimer()" style="background: #d82020; color: #eef3ee; padding: 14px 16px; cursor: pointer; border-radius: 100px; border: none;">초기화</button>
+        <div style="display:flex; gap:12px;">
+            <button onclick="toggleTimer()" style="background: #333; color: white; padding: 12px 24px; cursor: pointer; border-radius: 50px; border: 1px solid #444; font-weight:700;">시작/멎기</button>
+            <button onclick="resetTimer()" style="background: transparent; color: #aaa; padding: 12px 24px; cursor: pointer; border-radius: 50px; border: 1px solid #444;">초기화</button>
         </div>
         <div class="sync-tag" id="p-sync-time">최근 동기화: ---</div>
     </div>
 
     <div class="p-notes-area">
-        <div style="margin-bottom:25px; background:#1a1a1a; padding:15px; border-radius:8px;">
-            <label style="color:#aaa;">글자 크기 조절: </label>
+        <div style="margin-bottom:30px; background:#1a1a1a; padding:20px; border-radius:12px; border: 1px solid #333;">
+            <label style="color:#888; font-size:14px; margin-right:15px; font-weight:700;">FONT SIZE</label>
             <input type="range" id="memo-font-slider" min="18" max="60" value="28" style="width:200px; vertical-align:middle;" oninput="adjustFontSize(this.value)">
         </div>
-        <div id="p-memo-text" style="font-size:28px; line-height:1.8; white-space: pre-wrap;"></div>
+        <div id="p-memo-text" style="font-size:28px; white-space: pre-wrap;"></div>
     </div>
 
     <div class="p-preview-area">
         <div class="p-mini-stage" id="mini-stage"></div>
-        <div style="margin-top: 25px; font-size: 40px; text-align: center;">
-            현재 쪽수: <input type="number" id="p-page-input" min="1" onchange="jumpToPage(this.value)"> / <span id="p-total-pages">0</span>
+        <div style="margin-top: 30px; font-size: 24px; text-align: center; color: #888; font-weight:500;">
+            PAGE <br>
+            <input type="number" id="p-page-input" min="1" onchange="jumpToPage(this.value)"> 
+            <span style="font-size: 32px; color: #444; margin-left:10px;">/ <span id="p-total-pages">0</span></span>
         </div>
     </div>
 
     <div class="p-controls">
         <div class="btn-group">
-            <button class="big-btn" onclick="prevImage()" style="background:#540000;">뒤로</button>
-            <button class="big-btn" onclick="nextImage()">앞으로</button>
+            <button class="big-btn" onclick="prevImage()">PREV</button>
+            <button class="big-btn" onclick="nextImage()">NEXT</button>
         </div>
-        <button onclick="togglePresenterMode()" style="background: transparent; border: none; color: #f7ffbc; padding: 10px; cursor: pointer;">일반 화면으로 돌아가기</button>
+        <button onclick="togglePresenterMode()" style="background: transparent; border: none; color: #555; padding: 10px; cursor: pointer; font-size: 14px; text-decoration: underline;">Exit Presenter Mode</button>
     </div>
 </div>
 
@@ -124,9 +192,9 @@
 
 <div id="page-num">0 / 0</div>
 <div class="normal-controls">
-    <button onclick="prevImage()">뒤로</button>
-    <button onclick="nextImage()">앞으로</button>
-    <button onclick="togglePresenterMode()" style="font-weight:bold;">우리<span style="font-size:1.2em;font-family:serif;">길</span>동무</button>
+    <button onclick="prevImage()">PREV</button>
+    <button onclick="nextImage()">NEXT</button>
+    <button onclick="togglePresenterMode()" style="border-color: var(--primary-color); color: var(--primary-color); font-weight: 700;">우리길동무</button>
 </div>
 
 <script>
@@ -173,7 +241,6 @@
 
     let currentIndex = -1;
     const FPS = 24;
-    // ビデオの開始時間と終了時間を定義
     const videoCheckpoints = { 
         "V1": { start: 0, end: 30/FPS }, 
         "V2": { start: 31/FPS, end: 78/FPS }, 
@@ -192,8 +259,6 @@
             video.src = "main.webm";
             video.muted = true;
             video.playsInline = true;
-            
-            // 指定の終了ポイントで停止
             video.addEventListener('timeupdate', () => {
                 const cp = videoCheckpoints[slideKey];
                 if (video.currentTime >= cp.end) {
@@ -201,7 +266,6 @@
                     video.currentTime = cp.end; 
                 }
             });
-
             wrapper.appendChild(video);
             wrapper._isVid = true;
             wrapper._vidObj = video;
@@ -225,26 +289,22 @@
             const oldWrapper = stage.querySelector('.asset-wrapper');
             const newWrapper = createSlideElement(newIdx);
 
-            // 画像から画像への遷移のみアニメーション
             if (oldWrapper && !newWrapper._isVid && !oldWrapper._isVid) {
                 newWrapper.style.transform = `translateX(${isForward ? 100 : -100}vw)`;
                 stage.appendChild(newWrapper);
                 newWrapper.offsetHeight; 
-
                 const duration = 800;
                 newWrapper.style.transition = `transform ${duration}ms cubic-bezier(0.8, 0, 0, 1)`;
                 oldWrapper.style.transition = `transform ${duration}ms cubic-bezier(0.8, 0, 0, 1)`;
-                
                 newWrapper.style.transform = 'translateX(0)';
                 oldWrapper.style.transform = `translateX(${isForward ? -100 : 100}vw)`;
                 setTimeout(() => { if(oldWrapper.parentNode) stage.removeChild(oldWrapper); }, duration);
             } else {
-                // ビデオが含まれる場合は即時切り替え
                 stage.innerHTML = '';
                 stage.appendChild(newWrapper);
                 if (newWrapper._isVid) {
                     const cp = videoCheckpoints[newWrapper._slideKey];
-                    newWrapper._vidObj.currentTime = cp.start; // 開始位置へジャンプ
+                    newWrapper._vidObj.currentTime = cp.start;
                     newWrapper._vidObj.play().catch(e => console.warn("Video play failed:", e));
                 }
             }
@@ -257,7 +317,6 @@
         document.getElementById('p-total-pages').innerText = slides.length;
     }
 
-    // Firebase Sync
     slideRef.on('value', s => {
         const val = s.val() || 0;
         updateStages(val);
@@ -273,7 +332,6 @@
     }
     function adjustFontSize(size) { document.getElementById('p-memo-text').style.fontSize = size + "px"; }
 
-    // Timer Logic
     let timerInterval, secondsElapsed = 0;
     function toggleTimer() {
         if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
@@ -289,7 +347,6 @@
     }
     function resetTimer() { secondsElapsed = 0; document.getElementById('p-stopwatch').innerText = "00:00:00"; }
 
-    // Loader logic
     window.onload = () => {
         const bar = document.getElementById('progress-bar');
         let b = 0;
