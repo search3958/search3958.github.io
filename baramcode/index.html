@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>BaramCode</title>
+    <title>BaramCode - Flow</title>
     <style>
         :root {
             --bg: #ffffff;
@@ -20,7 +20,6 @@
             background: var(--bg); color: var(--text);
         }
 
-        /* レイアウト */
         #app { display: flex; flex-direction: column; height: 100vh; max-width: 900px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
 
         /* チャットエリア */
@@ -59,6 +58,8 @@
         textarea:focus { border-color: var(--accent); }
         .submit-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
         #sendBtn { background: var(--accent); color: #fff; border: none; padding: 8px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        
+        .status-bar { display: flex; align-items: center; gap: 10px; }
     </style>
 </head>
 <body>
@@ -68,7 +69,8 @@
         <div class="msg ai">
             <div class="bubble">
                 <b>CodeFlow Minimal</b><br>
-                「新しいコード」でBaseを送信し、「変更」で差分を適用します。
+                「新しいコード」でBaseを送信し、「変更」で差分を適用します。<br>
+                Baseがある場合は、下の「保存」ボタンからファイルをダウンロードできます。
             </div>
         </div>
     </div>
@@ -80,14 +82,17 @@
         </div>
         <textarea id="mainInput" placeholder="ここにコードを入力..."></textarea>
         <div class="submit-row">
-            <div id="status" style="font-size: 11px; color: #9ca3af;">Base: Empty</div>
+            <div class="status-bar">
+                <div id="status" style="font-size: 11px; color: #9ca3af;">Base: Empty</div>
+                <button id="downloadBtn" class="btn-sm" style="display: none;" onclick="downloadSource()">保存</button>
+            </div>
             <button id="sendBtn">送信</button>
         </div>
     </div>
 </div>
 
 <script>
-    const MARKER = '@@code!123123123@@';
+    const MARKER = '@@code!skip@@';
     let currentSource = ""; 
     let mode = "patch";
     let history = [];
@@ -118,11 +123,10 @@
 
         let sourceLines = currentSource.split('\n');
         let parts = template.split(MARKER);
-        let lastIdx = 0;
         let changes = [];
 
         try {
-            parts.forEach((part, idx) => {
+            parts.forEach((part) => {
                 const pLines = part.split('\n').map(l => l.trim()).filter(l => l);
                 pLines.forEach(pLine => {
                     let best = { idx: -1, score: 0 };
@@ -200,6 +204,19 @@
         document.getElementById(`msg-${id}`).remove();
     }
 
+    function downloadSource() {
+        if (!currentSource) return;
+        const blob = new Blob([currentSource], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const now = new Date();
+        const ts = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        a.href = url;
+        a.download = `source-${ts}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
     function findScope(lines, idx) {
         const patterns = [/function\s+([\w$]+)/, /([\w$]+)\s*=\s*/, /class\s+([\w$]+)/, /([.#][\w\-\s]+)\{/];
         for (let i = idx; i >= 0; i--) {
@@ -232,7 +249,18 @@
         div.scrollIntoView({ behavior: 'smooth' });
     }
 
-    function updateStatus() { document.getElementById('status').innerText = currentSource ? `Base: ${currentSource.split('\n').length} lines` : "Base: Empty"; }
+    function updateStatus() { 
+        const statusEl = document.getElementById('status');
+        const dlBtn = document.getElementById('downloadBtn');
+        if (currentSource) {
+            statusEl.innerText = `Base: ${currentSource.split('\n').length} lines`;
+            dlBtn.style.display = 'inline-block';
+        } else {
+            statusEl.innerText = "Base: Empty";
+            dlBtn.style.display = 'none';
+        }
+    }
+    
     function esc(s) { return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m])); }
 </script>
 </body>
