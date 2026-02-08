@@ -2,100 +2,76 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>BaramCode - Flow</title>
+    <title>BaramCode - Flow v6</title>
     <style>
         :root {
-            --bg: #ffffff;
-            --chat-bg: #f9fafb;
-            --accent: #111827;
-            --border: #e5e7eb;
-            --text: #374151;
-            --diff-add: #f0fdf4;
-            --diff-rem: #fef2f2;
+            --bg: #ffffff; --chat-bg: #f9fafb; --accent: #111827;
+            --border: #e5e7eb; --text: #374151; --text-muted: #9ca3af;
+            --diff-add: #f0fdf4; --diff-rem: #fef2f2;
         }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); }
+        #app { display: flex; flex-direction: column; height: 100vh; max-width: 900px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); position: relative; }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid var(--border); background: #fff; z-index: 10; }
+        .header-title { font-weight: bold; font-size: 14px; }
+        .dl-link { font-size: 12px; color: var(--text); text-decoration: none; border: 1px solid var(--border); padding: 4px 12px; border-radius: 4px; cursor: pointer; }
+        .dl-link:hover { background: #f3f4f6; }
 
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg); color: var(--text);
-        }
+        /* Chat Feed */
+        #chatFeed { flex: 1; overflow-y: auto; padding: 20px; scroll-behavior: smooth; }
+        .msg { margin-bottom: 24px; }
+        .bubble { padding: 14px 16px; border-radius: 8px; font-size: 14px; line-height: 1.6; }
+        .user .bubble { background: var(--accent); color: #fff; margin-left: auto; max-width: 80%; white-space: pre-wrap; font-family: monospace; font-size: 11px; }
+        .ai .bubble { background: #fff; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 
-        #app { display: flex; flex-direction: column; height: 100vh; max-width: 900px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
-
-        /* チャットエリア */
-        #chatFeed { flex: 1; overflow-y: auto; padding: 30px 20px; scroll-behavior: smooth; }
-        .msg { margin-bottom: 24px; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .bubble { position: relative; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.6; }
-        .user .bubble { background: var(--accent); color: #fff; margin-left: auto; max-width: 80%; }
-        .ai .bubble { background: var(--chat-bg); border: 1px solid var(--border); }
-
-        /* Diffカード */
-        .diff-card { margin-top: 12px; background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; font-family: "SFMono-Regular", Consolas, monospace; }
-        .diff-header { padding: 6px 12px; background: #fdfdfd; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #9ca3af; }
-        .diff-content { padding: 8px 0; font-size: 12px; overflow-x: auto; white-space: pre; }
-        .d-row { padding: 0 12px; display: flex; gap: 8px; }
+        /* Diff Content */
+        .diff-card { margin-top: 12px; background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; font-family: monospace; }
+        .diff-content { font-size: 11px; line-height: 1.4; white-space: pre; overflow-x: auto; max-height: 300px; }
+        .d-row { padding: 2px 10px; display: flex; gap: 8px; }
         .d-row.add { background: var(--diff-add); color: #166534; }
         .d-row.rem { background: var(--diff-rem); color: #991b1b; }
-        .ln { width: 25px; text-align: right; opacity: 0.4; }
 
-        /* ボタン類 */
-        .actions { display: flex; gap: 8px; margin-top: 8px; }
-        .btn-sm { padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; border: 1px solid var(--border); background: #fff; color: #6b7280; transition: 0.2s; }
-        .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
-
-        /* 入力エリア */
+        /* Input Area */
         .input-wrap { padding: 20px; background: #fff; border-top: 1px solid var(--border); }
-        .mode-select { display: flex; gap: 4px; margin-bottom: 12px; background: #f3f4f6; padding: 3px; border-radius: 8px; width: fit-content; }
-        .m-btn { border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; color: #6b7280; background: transparent; }
-        .m-btn.active { background: #fff; color: var(--accent); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-
-        textarea {
-            width: 100%; height: 80px; border: 1px solid var(--border); border-radius: 12px;
-            padding: 12px; outline: none; resize: none; font-family: inherit; transition: 0.2s; box-sizing: border-box;
-        }
-        textarea:focus { border-color: var(--accent); }
-        .submit-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        #sendBtn { background: var(--accent); color: #fff; border: none; padding: 8px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .mode-select { display: flex; gap: 6px; margin-bottom: 12px; }
+        .m-btn { border: 1px solid var(--border); padding: 6px 14px; border-radius: 4px; cursor: pointer; background: #fff; font-size: 12px; transition: 0.2s; }
+        .m-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
         
-        .status-bar { display: flex; align-items: center; gap: 10px; }
+        textarea { width: 100%; height: 110px; border: 1px solid var(--border); border-radius: 6px; padding: 12px; box-sizing: border-box; font-family: monospace; font-size: 13px; outline: none; resize: none; }
+        textarea:focus { border-color: var(--accent); }
+        
+        .footer-ctrl { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+        #status { font-size: 11px; color: var(--text-muted); font-family: monospace; }
+        #sendBtn { background: var(--accent); color: #fff; border: none; padding: 8px 24px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        #sendBtn:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
-
 <div id="app">
-    <div id="chatFeed">
-        <div class="msg ai">
-            <div class="bubble">
-                <b>CodeFlow Minimal</b><br>
-                「新しいコード」でBaseを送信し、「変更」で差分を適用します。<br>
-                Baseがある場合は、下の「保存」ボタンからファイルをダウンロードできます。
-            </div>
-        </div>
+    <div class="header">
+        <div class="header-title">BaramCode Flow v6</div>
+        <button class="dl-link" onclick="downloadCode()">Download (.txt)</button>
     </div>
-
+    
+    <div id="chatFeed"></div>
+    
     <div class="input-wrap">
         <div class="mode-select">
-            <button id="m-patch" class="m-btn active" onclick="setMode('patch')">変更</button>
-            <button id="m-base" class="m-btn" onclick="setMode('base')">新しいコード</button>
+            <button id="m-patch" class="m-btn active" onclick="setMode('patch')">変更を適用</button>
+            <button id="m-base" class="m-btn" onclick="setMode('base')">ベースを登録</button>
         </div>
-        <textarea id="mainInput" placeholder="ここにコードを入力..."></textarea>
-        <div class="submit-row">
-            <div class="status-bar">
-                <div id="status" style="font-size: 11px; color: #9ca3af;">Base: Empty</div>
-                <button id="downloadBtn" class="btn-sm" style="display: none;" onclick="downloadSource()">保存</button>
-            </div>
+        <textarea id="mainInput" placeholder="パッチまたはソースを入力..."></textarea>
+        <div class="footer-ctrl">
+            <span id="status">Base: Empty</span>
             <button id="sendBtn">送信</button>
         </div>
     </div>
 </div>
 
 <script>
-    const MARKER = '@@code!skip@@';
     let currentSource = ""; 
     let mode = "patch";
-    let history = [];
 
     function setMode(m) {
         mode = m;
@@ -106,162 +82,108 @@
     document.getElementById('sendBtn').addEventListener('click', () => {
         const val = document.getElementById('mainInput').value.trim();
         if (!val) return;
-
         addChat('user', val);
         if (mode === 'base') {
             currentSource = val;
             addChat('ai', "Baseソースを更新しました。");
         } else {
-            processPatch(val);
+            processUnifiedDiff(val);
         }
         document.getElementById('mainInput').value = "";
-        updateStatus();
+        document.getElementById('status').innerText = currentSource ? `Base: ${currentSource.split('\n').length} lines` : "Base: Empty";
     });
 
-    function processPatch(template) {
+    // diffの処理ロジックは変更していません
+    function processUnifiedDiff(diffText) {
         if (!currentSource) return addChat('ai', "先にソースを登録してください。");
-
-        let sourceLines = currentSource.split('\n');
-        let parts = template.split(MARKER);
+        
+        let lines = currentSource.split('\n');
+        let diffLines = diffText.split('\n');
         let changes = [];
+        let i = 0;
 
         try {
-            parts.forEach((part) => {
-                const pLines = part.split('\n').map(l => l.trim()).filter(l => l);
-                pLines.forEach(pLine => {
-                    let best = { idx: -1, score: 0 };
-                    for (let th = 1.0; th >= 0.4; th -= 0.1) {
-                        for (let i = 0; i < sourceLines.length; i++) {
-                            const sc = similarity(pLine, sourceLines[i].trim());
-                            if (sc > best.score) best = { idx: i, score: sc };
+            while (i < diffLines.length) {
+                if (!diffLines[i].startsWith('@@')) { i++; continue; }
+                i++;
+
+                while (i < diffLines.length && !diffLines[i].startsWith('@@')) {
+                    let dLine = diffLines[i];
+                    let symbol = dLine.trim()[0];
+                    let content = dLine.trim().substring(1).trim();
+
+                    if (dLine.includes('-') && symbol === '-') {
+                        let foundIdx = -1;
+                        for(let j=0; j<lines.length; j++) {
+                            if (lines[j].trim() === content && lines[j] !== "__DELETE__") {
+                                foundIdx = j; break;
+                            }
                         }
-                        if (best.score >= th) break;
+                        if (foundIdx !== -1) {
+                            changes.push({ type: 'rem', old: lines[foundIdx] });
+                            lines[foundIdx] = "__DELETE__";
+                        }
+                    } else if (dLine.includes('+') && symbol === '+') {
+                        let insertIdx = lines.findIndex(l => l === "__DELETE__");
+                        if (insertIdx === -1) {
+                            insertIdx = lines.length;
+                        }
+                        let newCode = dLine.trim().substring(1);
+                        changes.push({ type: 'add', new: newCode });
+                        lines.splice(insertIdx, 0, newCode);
                     }
-                    if (best.idx !== -1 && best.score < 0.98) {
-                        const old = sourceLines[best.idx];
-                        const indent = old.match(/^\s*/)[0];
-                        const updated = indent + pLine;
-                        changes.push({ idx: best.idx, old, new: updated, scope: findScope(sourceLines, best.idx) });
-                        sourceLines[best.idx] = updated;
-                    }
-                });
-            });
-
-            if (changes.length === 0) throw new Error("変更箇所を特定できませんでした。");
-
-            const id = Date.now();
-            history.push({ id, prev: currentSource });
-            currentSource = sourceLines.join('\n');
-            renderAiPatch(id, changes, sourceLines);
-
-        } catch (e) {
-            addChat('ai', "Error: " + e.message);
-        }
-    }
-
-    function renderAiPatch(id, changes, allLines) {
-        const div = document.createElement('div');
-        div.className = 'msg ai';
-        div.id = `msg-${id}`;
-        let html = `<div class="bubble">パッチを適用しました。`;
-        
-        changes.forEach(c => {
-            html += `<div class="diff-card">
-                <div class="diff-header">${c.scope}</div>
-                <div class="diff-content">`;
-            for (let i = c.idx - 5; i <= c.idx + 5; i++) {
-                if (i < 0 || i >= allLines.length) continue;
-                if (i === c.idx) {
-                    html += `<div class="d-row rem"><span class="ln">-</span>${esc(c.old)}</div>`;
-                    html += `<div class="d-row add"><span class="ln">+</span>${esc(c.new)}</div>`;
-                } else {
-                    html += `<div class="d-row"><span class="ln">${i+1}</span>${esc(allLines[i])}</div>`;
+                    i++;
                 }
             }
-            html += `</div></div>`;
+
+            currentSource = lines.filter(l => l !== "__DELETE__").join('\n');
+            if (changes.length === 0) throw new Error("マッチする行が見つかりませんでした。");
+            renderResult(changes);
+        } catch (e) {
+            addChat('ai', "エラー: " + e.message);
+        }
+    }
+
+    function renderResult(changes) {
+        const div = document.createElement('div');
+        div.className = 'msg ai';
+        let card = `<div class="diff-card"><div class="diff-content">`;
+        changes.forEach(c => {
+            if (c.type === 'rem') card += `<div class="d-row rem"><span>-</span>${esc(c.old)}</div>`;
+            else card += `<div class="d-row add"><span>+</span>${esc(c.new)}</div>`;
         });
-
-        html += `<div class="actions">
-            <button class="btn-sm" onclick="undo(${id})">戻す</button>
-            <button class="btn-sm" onclick="removeMsg(${id})">削除</button>
-        </div></div>`;
-        div.innerHTML = html;
+        div.innerHTML = `
+            <div class="bubble">
+                適用完了（${changes.length}件）
+                ${card}</div>
+                <div style="margin-top:8px; display:flex; gap:10px;">
+                    <span class="dl-link" style="font-size:11px;" onclick="downloadCode()">この状態をダウンロード</span>
+                </div>
+            </div>`;
         document.getElementById('chatFeed').appendChild(div);
-    }
-
-    function undo(id) {
-        const h = history.find(x => x.id === id);
-        if (h) {
-            currentSource = h.prev;
-            updateStatus();
-            const btn = document.querySelector(`#msg-${id} .btn-sm`);
-            btn.innerText = "戻し済み";
-            btn.disabled = true;
-        }
-    }
-
-    function removeMsg(id) {
-        document.getElementById(`msg-${id}`).remove();
-    }
-
-    function downloadSource() {
-        if (!currentSource) return;
-        const blob = new Blob([currentSource], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        const now = new Date();
-        const ts = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
-        a.href = url;
-        a.download = `source-${ts}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-
-    function findScope(lines, idx) {
-        const patterns = [/function\s+([\w$]+)/, /([\w$]+)\s*=\s*/, /class\s+([\w$]+)/, /([.#][\w\-\s]+)\{/];
-        for (let i = idx; i >= 0; i--) {
-            for (let p of patterns) {
-                const m = lines[i].match(p);
-                if (m) return m[0].replace('{','').trim();
-            }
-        }
-        return "Global";
-    }
-
-    function similarity(s1, s2) {
-        const len = Math.max(s1.length, s2.length);
-        if (len === 0) return 1.0;
-        const matrix = Array.from({ length: s1.length + 1 }, (_, i) => [i]);
-        for (let j = 1; j <= s2.length; j++) matrix[0][j] = j;
-        for (let i = 1; i <= s1.length; i++) {
-            for (let j = 1; j <= s2.length; j++) {
-                matrix[i][j] = s1[i-1] === s2[j-1] ? matrix[i-1][j-1] : Math.min(matrix[i-1][j-1], matrix[i][j-1], matrix[i-1][j]) + 1;
-            }
-        }
-        return (len - matrix[s1.length][s2.length]) / len;
+        div.scrollIntoView();
     }
 
     function addChat(type, text) {
         const div = document.createElement('div');
         div.className = `msg ${type}`;
-        div.innerHTML = `<div class="bubble">${esc(text).replace(/\n/g, '<br>')}</div>`;
+        div.innerHTML = `<div class="bubble">${esc(text)}</div>`;
         document.getElementById('chatFeed').appendChild(div);
-        div.scrollIntoView({ behavior: 'smooth' });
+        div.scrollIntoView();
     }
 
-    function updateStatus() { 
-        const statusEl = document.getElementById('status');
-        const dlBtn = document.getElementById('downloadBtn');
-        if (currentSource) {
-            statusEl.innerText = `Base: ${currentSource.split('\n').length} lines`;
-            dlBtn.style.display = 'inline-block';
-        } else {
-            statusEl.innerText = "Base: Empty";
-            dlBtn.style.display = 'none';
-        }
+    function downloadCode() {
+        if (!currentSource) { alert("ソースコードがありません。"); return; }
+        const blob = new Blob([currentSource], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "processed_code.txt";
+        a.click();
+        URL.revokeObjectURL(url);
     }
-    
-    function esc(s) { return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m])); }
+
+    function esc(s) { return s ? s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m])) : ""; }
 </script>
 </body>
 </html>

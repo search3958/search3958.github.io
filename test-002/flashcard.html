@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M3 Multi Wordbook</title>
+    <style>
+        :root {
+            --md-sys-color-primary: #D1E4FF;
+            --md-sys-color-on-primary: #003258;
+            --md-sys-color-primary-container: #00497D;
+            --md-sys-color-on-primary-container: #D1E4FF;
+            --md-sys-color-secondary-container: #3E4759;
+            --md-sys-color-on-secondary-container: #D7E3F7;
+            --md-sys-color-surface: #1A1C1E;
+            --md-sys-color-on-surface: #E2E2E6;
+            --md-sys-color-surface-variant: #43474E;
+            --md-sys-color-outline: #8D9199;
+            --md-sys-color-error: #FFB4AB;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .icon-btn:hover { background: var(--md-sys-color-surface-variant); }
+        .icon-btn svg { fill: var(--md-sys-color-on-surface); width: 24px; height: 24px; }
+
+        .app-title { flex: 1; font-size: 1.2rem; font-weight: 400; }
+
+        /* Content Area */
+        .container {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* M3 Cards & Lists */
+        .m3-card {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.1s;
+        }
+        .m3-card:active { transform: scale(0.98); }
+
+        .add-box {
+            background: var(--md-sys-color-primary-container);
+            padding: 16px;
+            border-radius: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 8px;
+        }
+
+        input {
+            flex: 1;
+            background: var(--md-sys-color-surface);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+        }
+
+        .btn-fill {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Flashcard Area */
+        .flashcard-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            margin-top: 40px;
+        }
+        .flashcard {
+            width: 100%;
+            height: 300px;
+            background: var(--md-sys-color-secondary-container);
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 24px;
+        }
+        .flashcard .word { font-size: 2.5rem; font-weight: bold; }
+        .flashcard .mean { font-size: 1.5rem; margin-top: 20px; color: var(--md-sys-color-primary); display: none; }
+        .flashcard.show-mean .mean { display: block; }
+
+        .delete-btn { color: var(--md-sys-color-error); font-size: 0.8rem; border: 1px solid; padding: 4px 8px; border-radius: 8px; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <button class="icon-btn" onclick="handleBack()" id="nav-btn">
+            <svg id="icon-home" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <svg id="icon-back" class="hidden" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </button>
+        <div class="app-title" id="app-title">単語帳一覧</div>
+        <button class="icon-btn hidden" id="edit-toggle" onclick="goEdit()">
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        </button>
+    </div>
+
+    <div class="container">
+        <div id="view-library">
+            <div class="add-box">
+                <input type="text" id="new-book-name" placeholder="新しい単語帳の名前">
+                <button class="btn-fill" onclick="addBook()">作成</button>
+            </div>
+            <div id="library-list"></div>
+        </div>
+
+        <div id="view-study" class="hidden">
+            <div class="flashcard-wrapper">
+                <div class="flashcard" id="card" onclick="this.classList.toggle('show-mean')">
+                    <div class="word" id="study-w">Word</div>
+                    <div class="mean" id="study-m">意味</div>
+                </div>
+                <div style="display:flex; gap:16px; width:100%;">
+                    <button class="btn-fill" style="flex:1" onclick="prevWord()">前へ</button>
+                    <button class="btn-fill" style="flex:1" onclick="nextWord()">次へ</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-edit" class="hidden">
+            <div class="add-box">
+                <input type="text" id="edit-w" placeholder="単語">
+                <input type="text" id="edit-m" placeholder="意味">
+                <button class="btn-fill" onclick="addWordToBook()">追加</button>
+            </div>
+            <div id="edit-list"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data Structure: books = [{ title: "English", words: [{w, m}, ...] }]
+        let books = JSON.parse(localStorage.getItem('m3Bookshelf')) || [
+            { title: "デフォルト単語帳", words: [{w: "Sample", m: "サンプル"}] }
+        ];
+        let currentBookIdx = -1;
+        let currentWordIdx = 0;
+        let currentView = 'library'; // library, study, edit
+
+        // UI Elements
+        const views = {
+            library: document.getElementById('view-library'),
+            study: document.getElementById('view-study'),
+            edit: document.getElementById('view-edit')
+        };
+        const titleEl = document.getElementById('app-title');
+        const iconHome = document.getElementById('icon-home');
+        const iconBack = document.getElementById('icon-back');
+        const editToggle = document.getElementById('edit-toggle');
+
+        function save() {
+            localStorage.setItem('m3Bookshelf', JSON.stringify(books));
+            render();
+        }
+
+        function switchView(viewName) {
+            currentView = viewName;
+            Object.keys(views).forEach(v => views[v].classList.add('hidden'));
+            views[viewName].classList.remove('hidden');
+
+            // Toggle Header Buttons
+            if (viewName === 'library') {
+                iconHome.classList.remove('hidden');
+                iconBack.classList.add('hidden');
+                editToggle.classList.add('hidden');
+                titleEl.innerText = "単語帳一覧";
+            } else {
+                iconHome.classList.add('hidden');
+                iconBack.classList.remove('hidden');
+                editToggle.classList.toggle('hidden', viewName === 'edit');
+                if (viewName === 'study') titleEl.innerText = books[currentBookIdx].title;
+                if (viewName === 'edit') titleEl.innerText = "編集: " + books[currentBookIdx].title;
+            }
+            render();
+        }
+
+        function handleBack() {
+            if (currentView === 'edit') switchView('study');
+            else if (currentView === 'study') switchView('library');
+            else location.href='?close=true'; // Libraryの時はホーム挙動
+        }
+
+        // --- Library Logic ---
+        function addBook() {
+            const name = document.getElementById('new-book-name').value;
+            if (!name) return;
+            books.push({ title: name, words: [] });
+            document.getElementById('new-book-name').value = "";
+            save();
+        }
+
+        function openBook(idx) {
+            currentBookIdx = idx;
+            currentWordIdx = 0;
+            switchView('study');
+            updateCard();
+        }
+
+        function deleteBook(e, idx) {
+            e.stopPropagation();
+            if(confirm("この単語帳を削除しますか？")) {
+                books.splice(idx, 1);
+                save();
+            }
+        }
+
+        // --- Study Logic ---
+        function updateCard() {
+            const book = books[currentBookIdx];
+            const card = document.getElementById('card');
+            card.classList.remove('show-mean');
+            if (book.words.length > 0) {
+                document.getElementById('study-w').innerText = book.words[currentWordIdx].w;
+                document.getElementById('study-m').innerText = book.words[currentWordIdx].m;
+            } else {
+                document.getElementById('study-w').innerText = "空です";
+                document.getElementById('study-m').innerText = "編集から単語を追加してください";
+            }
+        }
+
+        function nextWord() {
+            const len = books[currentBookIdx].words.length;
+            if (len > 0) {
+                currentWordIdx = (currentWordIdx + 1) % len;
+                updateCard();
+            }
+        }
+
+        function prevWord() {
+            const len = books[currentBookIdx].words.length;
+            if (len > 0) {
+                currentWordIdx = (currentWordIdx - 1 + len) % len;
+                updateCard();
+            }
+        }
+
+        // --- Edit Logic ---
+        function goEdit() { switchView('edit'); }
+
+        function addWordToBook() {
+            const w = document.getElementById('edit-w').value;
+            const m = document.getElementById('edit-m').value;
+            if (!w || !m) return;
+            books[currentBookIdx].words.unshift({w, m});
+            document.getElementById('edit-w').value = "";
+            document.getElementById('edit-m').value = "";
+            save();
+        }
+
+        function deleteWord(idx) {
+            books[currentBookIdx].words.splice(idx, 1);
+            save();
+        }
+
+        // --- Global Render ---
+        function render() {
+            if (currentView === 'library') {
+                const libList = document.getElementById('library-list');
+                libList.innerHTML = books.map((b, i) => `
+                    <div class="m3-card" onclick="openBook(${i})">
+                        <span>${b.title} (${b.words.length})</span>
+                        <span class="delete-btn" onclick="deleteBook(event, ${i})">削除</span>
+                    </div>
+                `).join('');
+            } else if (currentView === 'edit') {
+                const editList = document.getElementById('edit-list');
+                editList.innerHTML = books[currentBookIdx].words.map((word, i) => `
+                    <div class="m3-card" style="cursor:default">
+                        <div>
+                            <strong>${word.w}</strong><br>
+                            <small>${word.m}</small>
+                        </div>
+                        <span class="delete-btn" onclick="deleteWord(${i})">削除</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>

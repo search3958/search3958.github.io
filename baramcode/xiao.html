@@ -4,46 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>z.ai Code Chat Terminal</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            --border-color: #ccc;
+            --border-color: #ddd;
             --user-bg: #e3f2fd;
-            --ai-bg: #f5f5f5;
+            --ai-bg: #ffffff;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
         }
         body {
-            font-family: sans-serif;
+            font-family: 'Consolas', 'Monaco', monospace;
             margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
+            background: #f0f2f5;
         }
-
-        /* メインレイアウト：チャットとコードエリアを横並びに */
         .main-content {
             display: flex;
             flex: 1;
             overflow: hidden;
-            border-bottom: 1px solid var(--border-color);
         }
-
-        /* チャット表示エリア */
         #chat-container {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
-
-        /* 右側：コード入力エリア */
         .code-panel {
             width: 45%;
             border-left: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            background: #fafafa;
+            background: #fff;
             padding: 10px;
         }
         .code-label {
@@ -54,80 +51,90 @@
         }
         #codeArea {
             flex: 1;
-            font-family: 'Consolas', 'Monaco', monospace;
+            font-family: inherit;
             font-size: 13px;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
+            border-radius: 4px;
             resize: none;
             outline: none;
+            background: #fafafa;
+            line-height: 1.5;
         }
-
-        /* メッセージの気泡 */
         .msg {
-            max-width: 85%;
-            padding: 10px 15px;
+            max-width: 95%;
+            padding: 15px;
             border-radius: 8px;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
+            word-wrap: break-word;
         }
         .user {
             align-self: flex-end;
             background: var(--user-bg);
+            border: 1px solid #bbdefb;
         }
         .ai {
             align-self: flex-start;
             background: var(--ai-bg);
-            white-space: pre-wrap;
+            border: 1px solid var(--border-color);
+            width: 98%;
         }
-
-        /* 下部：入力エリア */
-        .input-area {
+        .ai pre {
+            background: var(--code-bg) !important;
+            color: var(--code-text) !important;
             padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .ai code { font-family: inherit; }
+        .input-area {
+            padding: 20px;
             background: #fff;
             display: flex;
-            gap: 10px;
-            align-items: flex-end;
+            gap: 12px;
+            border-top: 1px solid var(--border-color);
         }
         #promptInput {
             flex: 1;
             height: 80px;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 8px;
             resize: none;
             outline: none;
+            font-family: inherit;
         }
         button {
-            padding: 10px 20px;
-            height: 40px;
+            padding: 0 30px;
             background: #333;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
         }
-        button:hover {
-            background: #000;
-        }
+        button:hover { background: #000; }
+        button:disabled { background: #ccc; }
     </style>
 </head>
 <body>
 
     <div class="main-content">
         <div id="chat-container">
-            <div class="msg ai">準備ができました。指示を入力してください。</div>
+            <div class="msg ai">ソースコードを貼り付け、指示を入力してください。</div>
         </div>
         
         <div class="code-panel">
-            <div class="code-label">SOURCE CODE (Optional)</div>
-            <textarea id="codeArea" placeholder="ここに既存のコードを貼り付けてください..."></textarea>
+            <div class="code-label">SOURCE CODE</div>
+            <textarea id="codeArea" placeholder="ここにコードを貼り付け..."></textarea>
         </div>
     </div>
 
     <div class="input-area">
-        <textarea id="promptInput" placeholder="何をしたいですか？ (例: 〇〇機能を追加して)"></textarea>
-        <button onclick="askAI()">SEND</button>
+        <textarea id="promptInput" placeholder="指示を入力 (Ctrl+Enterで送信)"></textarea>
+        <button id="sendBtn" onclick="askAI()">SEND</button>
     </div>
 
     <script>
@@ -137,29 +144,28 @@
             const promptInput = document.getElementById('promptInput');
             const codeArea = document.getElementById('codeArea');
             const container = document.getElementById('chat-container');
+            const sendBtn = document.getElementById('sendBtn');
 
             const userText = promptInput.value.trim();
             const codeText = codeArea.value.trim();
 
-            if (!userText) return;
+            if (!userText || sendBtn.disabled) return;
 
-            // プロンプトの組み立て
+            // プロンプトを一切省略せず、指示通りに出力させる
             let finalPrompt = "";
             if (codeText) {
-                // コードがある場合のプロンプト
-                finalPrompt = `こんにちは！このHTMLについて：\n${userText}\n\n優秀なエンジニアとしてお手伝いしていただけますか？また，次のルール従ってコーディングして欲しいです。関数の定義function...などはだけ必ず全てを出して欲しいです。変更がある部分以外は"@@code!skip@@"でまとめて必ず省略してください！(大部分を必ず省略してください。全体は本当にいらないです。関数2つの変更なら関数2つだけをまとめて省略して出してください。HTMLのhead部分,CSSの変更がない部分,JSでもなんでも)!DOCTYPE html周辺とか絶対変わらないと思いますので。複数個@@code!skip@@を含んでも構いません。省略の例"\nfunction addMessage(text,type){@@code!skip@@ div.innerText = text;@@code!skip@@}\n" 出力はコードブロックで書き出してください。\nコードの全体内容:\n${codeText}\n`;
+                finalPrompt = `以下の指示とコードに基づき、修正したコードを出力してください。\n\n【指示】\n${userText}\n\n【対象コード】\n${codeText}\n\n【ルール】\n余計な解説は省き、修正後のコード全体をコードブロックで出力すること。`;
             } else {
-                // コードがない場合のプロンプト
-                finalPrompt = `"${userText}"\n\nこれを達成したいので優秀なエンジニアとしてお手伝いしていただけますか？\nHTML,CSS,Javascript(バニラ)のみを使用することが可能です。全て単一の1つのファイルです。いいですね？早速作っていきましょう！出力はコードブロックで書き出してください。`;
+                finalPrompt = userText;
             }
 
-            // ユーザーメッセージを表示
             addMessage(userText, 'user');
             promptInput.value = '';
+            sendBtn.disabled = true;
 
-            // AIの応答枠を作成
             const aiDiv = addMessage('...', 'ai');
-            container.scrollTop = container.scrollHeight;
+            let streamText = '';
+            let buffer = '';
 
             try {
                 const res = await fetch(API_URL, {
@@ -168,35 +174,42 @@
                     body: JSON.stringify({ prompt: finalPrompt })
                 });
 
-                if (!res.body) throw new Error("ReadableStream not supported");
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
                 const reader = res.body.getReader();
                 const decoder = new TextDecoder();
-                let streamText = '';
+                aiDiv.innerHTML = '';
 
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
 
-                    const chunk = decoder.decode(value);
-                    const lines = chunk.split('\n');
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop(); // 未完の行を次へ
 
                     for (const line of lines) {
-                        if (line.startsWith('data: ')) {
-                            const dataStr = line.substring(6);
-                            if (dataStr.trim() === '[DONE]') break;
-                            try {
-                                const json = JSON.parse(dataStr);
-                                const content = json.choices[0].delta?.content || '';
-                                streamText += content;
-                                aiDiv.innerText = streamText;
-                                container.scrollTop = container.scrollHeight;
-                            } catch (e) {}
-                        }
+                        const trimmed = line.trim();
+                        if (!trimmed.startsWith('data: ')) continue;
+                        
+                        const dataStr = trimmed.substring(6);
+                        if (dataStr === '[DONE]') break;
+
+                        try {
+                            const json = JSON.parse(dataStr);
+                            const content = json.choices[0].delta?.content || '';
+                            streamText += content;
+                            
+                            // レンダリング実行
+                            aiDiv.innerHTML = marked.parse(streamText);
+                            container.scrollTop = container.scrollHeight;
+                        } catch (e) {}
                     }
                 }
             } catch (err) {
-                aiDiv.innerText = "Error: 通信に失敗しました。";
+                aiDiv.innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
+            } finally {
+                sendBtn.disabled = false;
             }
         }
 
@@ -210,7 +223,6 @@
             return div;
         }
 
-        // Ctrl + Enter で送信
         document.getElementById('promptInput').addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 e.preventDefault();

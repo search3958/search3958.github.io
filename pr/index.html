@@ -22,7 +22,6 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Noto Sans JP を全ての要素に適用 */
         * { 
             font-family: 'Noto Sans JP', sans-serif; 
             box-sizing: border-box;
@@ -34,6 +33,20 @@
             color: #ffffff; 
         }
         
+        /* 全画面 ZH オーバーレイ（常にFirebaseに従う） */
+        #china-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 30; display: none;
+        }
+        #china-overlay img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* プレビュー枠内 ZH オーバーレイ（枠内限定） */
+        #preview-zh {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 100; display: none;
+        }
+        #preview-zh img { width: 100%; height: 100%; object-fit: contain; }
+
         /* ローダー (Loader) */
         #loader { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
@@ -42,8 +55,8 @@
         }
         #load-status span {
             font-size: 3em; font-weight: 900; background: var(--primary-color); 
-            padding: 20px 40px; border-radius: 8px; letter-spacing: -1px;
-            box-shadow: 0 10px 40px rgba(230, 0, 0, 0.4);
+            padding: 20px 40px; letter-spacing: -1px;
+            box-shadow: 0 10px 40px rgba(230, 0, 0, 0.154); font-family:serif;
         }
         .progress-container { 
             width: 350px; height: 4px; background: #222; 
@@ -68,7 +81,7 @@
         #presenter-view { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
             background: #111; display: none; grid-template-columns: 1fr 450px;
-            grid-template-rows: 80px 1fr 240px; z-index: 2000;
+            grid-template-rows: 80px 1fr 240px; z-index: 6000; /* 全画面overlay(5000)より上に配置 */
         }
 
         .p-header {
@@ -106,14 +119,14 @@
             background: #333; color: white; transition: var(--transition); 
         }
         .big-btn:last-child { background: var(--primary-color); }
-        .big-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .big-btn:active { transform: scale(0.98); }
         
         .btn-group { display: flex; gap: 15px; width: 100%; }
         
         .timer { font-family: 'Courier New', monospace; font-size: 42px; font-weight: 700; color: var(--accent-yellow); }
         .sync-tag { font-size: 12px; color: #666; font-weight: 500; }
         
+        .zh-toggle { display: flex; align-items: center; gap: 8px; background: #222; padding: 10px 15px; border-radius: 50px; border: 1px solid #444; cursor: pointer; color: #ff4d4d; font-weight: 900; }
+
         input[type="number"] {
             background: #2a2a2a; border: 1px solid #444; color: white;
             padding: 10px; width: 110px; border-radius: 8px;
@@ -134,16 +147,14 @@
             cursor: pointer; font-size: 14px; font-weight: 500;
             backdrop-filter: blur(10px); transition: var(--transition);
         }
-        .normal-controls button:hover { background: #333; transform: translateY(-2px); }
         
-        /* メモテキストのスタイル調整 */
         #p-memo-text { font-weight: 400; line-height: 1.8; color: #ddd; }
-        
-        /* スライダーのスタイル */
         input[type="range"] { accent-color: var(--primary-color); }
     </style>
 </head>
 <body>
+
+<div id="china-overlay"><img src="zhongguo.png"></div>
 
 <div id="loader">
     <div id="load-status"><span>사회주의 만세!</span></div>
@@ -153,9 +164,10 @@
 <div id="presenter-view">
     <div class="p-header">
         <div class="timer" id="p-stopwatch">00:00:00</div>
-        <div style="display:flex; gap:12px;">
+        <div style="display:flex; gap:12px; align-items: center;">
             <button onclick="toggleTimer()" style="background: #333; color: white; padding: 12px 24px; cursor: pointer; border-radius: 50px; border: 1px solid #444; font-weight:700;">시작/멎기</button>
             <button onclick="resetTimer()" style="background: transparent; color: #aaa; padding: 12px 24px; cursor: pointer; border-radius: 50px; border: 1px solid #444;">초기화</button>
+            <label class="zh-toggle"><input type="checkbox" id="zh-sync-check" onchange="toggleChinaImage(this.checked)"> 중화인민공화국</label>
         </div>
         <div class="sync-tag" id="p-sync-time">최근 동기화: ---</div>
     </div>
@@ -169,7 +181,9 @@
     </div>
 
     <div class="p-preview-area">
-        <div class="p-mini-stage" id="mini-stage"></div>
+        <div class="p-mini-stage" id="mini-stage">
+            <div id="preview-zh"><img src="zhongguo.png"></div>
+        </div>
         <div style="margin-top: 30px; font-size: 24px; text-align: center; color: #888; font-weight:500;">
             PAGE <br>
             <input type="number" id="p-page-input" min="1" onchange="jumpToPage(this.value)"> 
@@ -210,6 +224,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const slideRef = db.ref('presentation/currentSlide');
+    const overlayRef = db.ref('presentation/showChina');
 
     const slides = [1, 2, 3, 4, 5, "V1", "V2", "V3", "V4", 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
     const memos = [
@@ -218,14 +233,14 @@
         "3: \n結論、生き残れます！ \nただし基礎と新技術の欲張りは必須で\n特にハードウェアは、\n自分が設計した限りAIには\nまだ荷が重い作業だった。\n\n荷=に 니",
         "4: \nそれでもAIを否定するより、\nまずは使い倒すのが正解。\nAIに土台を作らせつつ、\n自分は地味に裏側を\n理解していくという\nこの『二刀流』が最短ルートです。\n\n二刀流=にとうりゅう",
         "5: \nここからは、\nAIが自分に\nどんな知識と変化をもたらしたか、\nその軌跡をたどります。",
-        "6: \n2023年に自分のAIライフがスタート。\n当時は知識ゼロで、とにかく\n『AI全振り』\nで色々作り始めました。",
+        "6: \n2023年にAiを使って色々作り始める。\n当時は知識ゼロで、とにかく\n『AI全振り』\nで色々作り始めました。",
         "7: \n2024年には\n基礎も追いつき、\n配信まで開始。\n同じクラスの人から\n自作Webサービスを\n使ってもらえるようになり、\n(少し調子に乗り)手応えを感じた。",
         "8: \n2025年には本格開発。\nアクティブユーザーも100人を超えました。\n小4の知識ゼロ時代から、\nAIという最強の家庭教師のおかげで、\nWebアプリの基礎はほぼ身についた。",
-        "9: \nそして今年、\nついにアプリ開発に突入。\n今はまだ『ざっくり理解』ですが、\nAIを使って一歩ずつ身についていく\n感覚がすごくあり。",
+        "9: \nほんで今年入ってから\nアプリ開発にも手出してきた\n初めてそんなに時間経ってないが\nちょっとずつわかるようになってるのは\n実感できます",
         "10: \nじゃあ、\nAIを使い倒して気づいた\nこいつらの正体について、\nいくつかシェアします。",
         "11: \n簡単なWebアプリなら\nAIは天才ですが、\n複雑なものを全部任せると\n『確実に事故る』ので要注意。",
         "12: \nAIはエラーなんて絶対起きん\nというすごいポジティブ思考で書くので、\n例外起きた時の処理がガタガタ。\n拡張性ゼロ의 コードを\n渡されることもあります。",
-        "13: \nでも、GLM、千问\nClaudeはかなり優秀。\n特にGeminiは『速度がバケモン』\nなので、結局よく使います。",
+        "13: \nでも、GLM、千问\nClaudeはかなり優秀。\n特にGeminiとか豆包(dòu bāo)は『速度がバケモン』\nなので、結局よく使います。\n\nそれでもやっぱり\n中国の技術の凄さが\nよくわかりますね。\nもちろん\nアメリカも\nすごいですけど",
         "14: \nとはいえ得意なのはやっぱりテキスト系。\n仕様書の解説や骨組み作り、\nバグの捜査。\nただし、バグの『特定』\nは人間の直感の方が\n早かったりします。\n\n細かいバグの修正や、PCB設計、\nGUIなどのグラフィック系はまだ苦手科目。\nAIにも弱点はあります。\n\n捜査=そうさ 소으사",
         "15: \n知識量だけでAIに勝っても，\n『知識の倉庫』になっただけで、\n使い手になったわけではない。\nソフトウェア開発の暗記勝負\nは、もう厳しいです。",
         "16: \nでも、仕事が奪われるわけじゃない。\n『共存』こそが正解で\nプロンプト力を磨くより、\n『どういう構造にすべきか』\nを考える監督力を\n鍛えるチャンスです。\n\n監督力=かんとくりょく 깐또력",
@@ -238,9 +253,10 @@
         "23: \n今は関係なさそうな\n記事や本なんかを読むのも意外と大事。\n全部AI任せにしていると、\n特殊な知識が身につきにくいです。",
         "24: \nまとめるとAIは文章系が得意な良い동무。\n共存し，知識を得ることを\n目的に学習すれば、\nより良くなっていくはずです。\n고맙습니다!"
     ];
-
     let currentIndex = -1;
     const FPS = 24;
+    
+    // 動画の再生区間定義
     const videoCheckpoints = { 
         "V1": { start: 0, end: 30/FPS }, 
         "V2": { start: 31/FPS, end: 78/FPS }, 
@@ -248,88 +264,204 @@
         "V4": { start: 114/FPS, end: 150/FPS } 
     };
 
+    // 画像キャッシュ用Map
+    const imageCache = new Map();
+
+    // 画像を事前に読み込んでキャッシュする関数
+    function preloadImages() {
+        slides.forEach(key => {
+            // videoCheckpointsにキーがなければ画像とみなす
+            if (!videoCheckpoints[key]) {
+                const img = new Image();
+                img.src = `${key}.webp`;
+                imageCache.set(key, img);
+            }
+        });
+    }
+
+    // 即時実行してキャッシュを作成
+    preloadImages();
+
+    // 現在のビデオ監視用ターゲット（終了時間を保持）
+    let currentVideoTargetEnd = 0;
+
+    function toggleChinaImage(isVisible) { overlayRef.set(isVisible); }
+
+    // 状態管理: Firebase同期
+    overlayRef.on('value', s => {
+        const isVisible = s.val() || false;
+        document.getElementById('china-overlay').style.display = isVisible ? 'block' : 'none';
+        document.getElementById('preview-zh').style.display = isVisible ? 'block' : 'none';
+        const cb = document.getElementById('zh-sync-check');
+        if(cb) cb.checked = isVisible;
+    });
+
+    // スライド要素の作成（キャッシュ利用・最適化版）
     function createSlideElement(idx) {
         const wrapper = document.createElement('div');
         wrapper.className = 'asset-wrapper';
         const slideKey = slides[idx];
-
-        if (typeof slideKey === 'string' && videoCheckpoints[slideKey]) {
+        
+        if (videoCheckpoints[slideKey]) {
+            // --- 動画の場合 ---
             const video = document.createElement('video');
             video.className = 'slide-asset';
             video.src = "main.webm";
-            video.muted = true;
+            video.muted = true; 
             video.playsInline = true;
+            video.preload = "auto";
+            
             video.addEventListener('timeupdate', () => {
-                const cp = videoCheckpoints[slideKey];
-                if (video.currentTime >= cp.end) {
+                if (currentVideoTargetEnd > 0 && video.currentTime >= currentVideoTargetEnd) {
                     video.pause();
-                    video.currentTime = cp.end; 
+                    video.currentTime = currentVideoTargetEnd; 
                 }
             });
+            
             wrapper.appendChild(video);
-            wrapper._isVid = true;
-            wrapper._vidObj = video;
+            wrapper._isVid = true; 
+            wrapper._vidObj = video; 
             wrapper._slideKey = slideKey;
         } else {
-            const img = new Image();
+            // --- 画像の場合 ---
+            let img;
+            if (imageCache.has(slideKey)) {
+                // キャッシュがある場合はクローンして使用（高速表示）
+                img = imageCache.get(slideKey).cloneNode(true);
+            } else {
+                // 万が一キャッシュがない場合
+                img = new Image();
+                img.src = `${slideKey}.webp`;
+            }
             img.className = 'slide-asset';
-            img.src = `${slideKey}.webp`;
             wrapper.appendChild(img);
+            wrapper._isVid = false;
         }
         return wrapper;
     }
 
+    // 動画→動画の最適化更新（DOM再生成なし）
+    function updateVideoStateOnly(stageId, slideKey) {
+        const stage = document.getElementById(stageId);
+        const video = stage.querySelector('video');
+        if (video && videoCheckpoints[slideKey]) {
+            const cp = videoCheckpoints[slideKey];
+            currentVideoTargetEnd = cp.end;
+            
+            // 再生位置が大きくずれている場合のみシーク
+            if (Math.abs(video.currentTime - cp.start) > 0.5) {
+                video.currentTime = cp.start;
+            }
+            video.play().catch(e => console.warn("Play interrupted", e));
+        }
+    }
+
     function updateStages(newIdx) {
         if (newIdx === currentIndex) return;
+
+        const newKey = slides[newIdx];
+        const oldKey = (currentIndex !== -1) ? slides[currentIndex] : null;
+
+        const isNewVideo = (videoCheckpoints[newKey] !== undefined);
+        const isOldVideo = (videoCheckpoints[oldKey] !== undefined);
+
+        // 動画から動画への連続移動の場合（DOMを破壊せずシークのみ）
+        if (isNewVideo && isOldVideo) {
+            updateVideoStateOnly('main-stage', newKey);
+            updateVideoStateOnly('mini-stage', newKey);
+            finalizeUpdate(newIdx);
+            return;
+        }
+
+        // 通常遷移（画像↔画像、画像↔動画）
         const isForward = newIdx > currentIndex;
         const mainStage = document.getElementById('main-stage');
         const miniStage = document.getElementById('mini-stage');
 
         [mainStage, miniStage].forEach(stage => {
+            const isMini = (stage.id === 'mini-stage');
             const oldWrapper = stage.querySelector('.asset-wrapper');
             const newWrapper = createSlideElement(newIdx);
 
-            if (oldWrapper && !newWrapper._isVid && !oldWrapper._isVid) {
-                newWrapper.style.transform = `translateX(${isForward ? 100 : -100}vw)`;
-                stage.appendChild(newWrapper);
-                newWrapper.offsetHeight; 
-                const duration = 800;
-                newWrapper.style.transition = `transform ${duration}ms cubic-bezier(0.8, 0, 0, 1)`;
-                oldWrapper.style.transition = `transform ${duration}ms cubic-bezier(0.8, 0, 0, 1)`;
-                newWrapper.style.transform = 'translateX(0)';
-                oldWrapper.style.transform = `translateX(${isForward ? -100 : 100}vw)`;
-                setTimeout(() => { if(oldWrapper.parentNode) stage.removeChild(oldWrapper); }, duration);
-            } else {
-                stage.innerHTML = '';
-                stage.appendChild(newWrapper);
-                if (newWrapper._isVid) {
-                    const cp = videoCheckpoints[newWrapper._slideKey];
-                    newWrapper._vidObj.currentTime = cp.start;
-                    newWrapper._vidObj.play().catch(e => console.warn("Video play failed:", e));
+            if (oldWrapper) {
+                // 動画から画像へ移る際、古い動画を停止
+                if (oldWrapper._isVid && oldWrapper._vidObj) {
+                    oldWrapper._vidObj.pause();
                 }
+
+                newWrapper.style.transform = `translateX(${isForward ? 100 : -100}${isMini ? '%' : 'vw'})`;
+                stage.appendChild(newWrapper);
+                
+                // 強制リフロー
+                newWrapper.offsetHeight; 
+
+                // アニメーション設定
+                newWrapper.style.transition = `transform 600ms cubic-bezier(0.25, 1, 0.5, 1)`;
+                oldWrapper.style.transition = `transform 600ms cubic-bezier(0.25, 1, 0.5, 1)`;
+
+                newWrapper.style.transform = 'translateX(0)';
+                oldWrapper.style.transform = `translateX(${isForward ? -100 : 100}${isMini ? '%' : 'vw'})`;
+
+                setTimeout(() => { 
+                    if(oldWrapper.parentNode) stage.removeChild(oldWrapper); 
+                }, 600);
+            } else {
+                // 初回表示またはDOMがない場合
+                stage.innerHTML = '';
+                if(isMini) {
+                    const zh = document.createElement('div');
+                    zh.id = 'preview-zh';
+                    zh.innerHTML = '<img src="zhongguo.png">';
+                    overlayRef.once('value').then(s => zh.style.display = s.val() ? 'block' : 'none');
+                    stage.appendChild(zh);
+                }
+                stage.appendChild(newWrapper);
+            }
+
+            // 新しいスライドが動画なら再生開始
+            if (newWrapper._isVid) {
+                const cp = videoCheckpoints[newWrapper._slideKey];
+                currentVideoTargetEnd = cp.end;
+                newWrapper._vidObj.currentTime = cp.start;
+                newWrapper._vidObj.play().catch(e => console.warn(e));
             }
         });
 
-        currentIndex = newIdx;
-        document.getElementById('p-memo-text').innerText = memos[currentIndex] || "";
+        finalizeUpdate(newIdx);
+    }
+
+    // UI更新処理
+    function finalizeUpdate(idx) {
+        currentIndex = idx;
+        const memoText = memos[currentIndex] || "";
+        document.getElementById('p-memo-text').innerText = memoText;
         document.getElementById('page-num').innerText = `${currentIndex + 1} / ${slides.length}`;
-        document.getElementById('p-page-input').value = currentIndex + 1;
+        
+        const pInput = document.getElementById('p-page-input');
+        if (document.activeElement !== pInput) {
+            pInput.value = currentIndex + 1;
+        }
+        
         document.getElementById('p-total-pages').innerText = slides.length;
     }
 
     slideRef.on('value', s => {
         const val = s.val() || 0;
-        updateStages(val);
+        if (val >= 0 && val < slides.length) {
+            updateStages(val);
+        }
         document.getElementById('p-sync-time').innerText = "최근 동기화: " + new Date().toLocaleTimeString();
     });
 
     function nextImage() { if(currentIndex < slides.length - 1) slideRef.set(currentIndex + 1); }
     function prevImage() { if(currentIndex > 0) slideRef.set(currentIndex - 1); }
     function jumpToPage(p) { let i = parseInt(p) - 1; if(i >= 0 && i < slides.length) slideRef.set(i); }
+    
     function togglePresenterMode() {
         const pv = document.getElementById('presenter-view');
         pv.style.display = (pv.style.display === "grid") ? "none" : "grid";
     }
+    
     function adjustFontSize(size) { document.getElementById('p-memo-text').style.fontSize = size + "px"; }
 
     let timerInterval, secondsElapsed = 0;
@@ -351,13 +483,9 @@
         const bar = document.getElementById('progress-bar');
         let b = 0;
         const itv = setInterval(() => {
-            b += 5;
-            bar.style.width = b + '%';
-            if(b >= 100) {
-                clearInterval(itv);
-                document.getElementById('loader').style.display = 'none';
-            }
-        }, 50);
+            b += 5; bar.style.width = b + '%';
+            if(b >= 100) { clearInterval(itv); document.getElementById('loader').style.display = 'none'; }
+        }, 30);
     };
 
     document.addEventListener('keydown', (e) => {
