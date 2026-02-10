@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Video Presentation Player</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #f0f0f0; }
+        .container { max-width: 800px; width: 100%; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        video { width: 100%; border-radius: 4px; background: #000; }
+        .controls { margin-top: 15px; display: flex; justify-content: center; gap: 10px; }
+        button { padding: 10px 20px; cursor: pointer; font-size: 16px; }
+        .script-box { margin-top: 20px; padding: 15px; border-left: 5px solid #007bff; background: #f9f9f9; min-height: 50px; }
+        .info { font-size: 0.9em; color: #666; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="info">Point: <span id="currentPoint">0</span> / <span id="totalPoints">0</span></div>
+    
+    <video id="myVideo" src="./video.mp4" playsinline></video>
+
+    <div class="controls">
+        <button id="prevBtn">戻る</button>
+        <button id="nextBtn" style="font-weight: bold; background: #007bff; color: white; border: none; border-radius: 4px;">次へ (再生)</button>
+    </div>
+
+    <div class="script-box">
+        <strong>原稿表示:</strong>
+        <p id="scriptText">「次へ」を押すと開始します。</p>
+    </div>
+</div>
+
+<script>
+    const video = document.getElementById('myVideo');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const scriptText = document.getElementById('scriptText');
+    const currentPointEl = document.getElementById('currentPoint');
+    const totalPointsEl = document.getElementById('totalPoints');
+
+    let timeData = [];
+    let currentIndex = -1; // 開始前
+    const FPS = 30; // 動画のフレームレートに合わせて調整してください
+
+    // JSONの読み込み
+    fetch('./time.json')
+        .then(response => response.json())
+        .then(data => {
+            timeData = data;
+            totalPointsEl.textContent = timeData.length;
+        })
+        .catch(err => console.error("JSONの読み込みに失敗しました:", err));
+
+    // 「次へ」ボタンの処理
+    nextBtn.addEventListener('click', () => {
+        if (currentIndex < timeData.length - 1) {
+            currentIndex++;
+            playToNextPoint();
+        }
+    });
+
+    // 「戻る」ボタンの処理
+    prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            const targetTime = currentIndex === 0 ? 0 : timeData[currentIndex - 1].frame / FPS;
+            video.currentTime = targetTime;
+            video.pause();
+            updateUI();
+        }
+    });
+
+    function playToNextPoint() {
+        updateUI();
+        video.play();
+    }
+
+    function updateUI() {
+        const point = timeData[currentIndex];
+        currentPointEl.textContent = currentIndex + 1;
+        scriptText.textContent = `ポイント ${point.name}: (ここにフレーム ${point.frame} の原稿を表示)`;
+    }
+
+    // ビデオの再生位置を監視
+    video.addEventListener('timeupdate', () => {
+        if (currentIndex >= 0) {
+            const stopFrame = timeData[currentIndex].frame;
+            const stopTime = stopFrame / FPS;
+
+            // 指定の時間（フレーム）を超えたら一時停止
+            if (video.currentTime >= stopTime) {
+                video.pause();
+                video.currentTime = stopTime; // 念のため位置を微調整
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
