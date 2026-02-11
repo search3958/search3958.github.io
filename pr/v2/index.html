@@ -1,101 +1,261 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>Video Presentation Player</title>
-    <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #f0f0f0; }
-        .container { max-width: 800px; width: 100%; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        video { width: 100%; border-radius: 4px; background: #000; }
-        .controls { margin-top: 15px; display: flex; justify-content: center; gap: 10px; }
-        button { padding: 10px 20px; cursor: pointer; font-size: 16px; }
-        .script-box { margin-top: 20px; padding: 15px; border-left: 5px solid #007bff; background: #f9f9f9; min-height: 50px; }
-        .info { font-size: 0.9em; color: #666; margin-bottom: 10px; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Professional Video Presenter - 길動務 Elite V3</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --accent-color: #c00000;
+      --panel-bg: rgba(10, 10, 10, 0.98);
+      --danger-color: #830a0a;
+    }
+
+    body, html {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      background: #000; color: #fff;
+      font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden;
+    }
+
+    .main-layout { display: flex; width: 100vw; height: 100vh; transition: all 0.4s ease; }
+
+    /* 左側：プレビューエリア */
+    .preview-section {
+      flex: 1; display: flex; flex-direction: column;
+      background: #050505; border-right: 1px solid #222;
+    }
+
+    .main-video-box { flex: 2; display: flex; align-items: center; justify-content: center; background: #000; }
+    video { max-width: 100%; max-height: 100%; }
+
+    /* 初期状態は非表示、パネル有効時のみ表示 */
+    .slide-previews { display: none; flex: 1; gap: 10px; padding: 15px; background: #111; }
+    body:has(.kildongmu-panel.active) .slide-previews { display: flex; }
+
+    .preview-card { flex: 1; position: relative; border: 2px solid #333; border-radius: 4px; overflow: hidden; background: #000; }
+    .preview-card.active { border-color: var(--accent-color); }
+    .preview-card canvas { width: 100%; height: 100%; object-fit: contain; }
+    .label { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.8); padding: 2px 8px; font-size: 11px; z-index: 10; font-weight: bold;}
+
+    /* 右側：길동무パネル (50vw) */
+    .kildongmu-panel {
+      width: 0; overflow: hidden; background: var(--panel-bg);
+      display: flex; flex-direction: column; position: relative;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .kildongmu-panel.active { width: 50vw; }
+
+    .panel-content { width: 50vw; height: 100%; display: flex; flex-direction: column; padding: 30px; box-sizing: border-box; }
+
+    /* ストップウォッチエリア */
+    .timer-container {
+      position: absolute; top: 20px; right: 30px; display: flex; align-items: center; gap: 10px;
+    }
+    #stopwatch { font-family: monospace; font-size: 1.8rem; color: var(--accent-color); background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+    .timer-btn { background: #333; border: none; color: #fff; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; }
+
+    /* Markdown表示 */
+    .md-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; margin-top: 30px;}
+    .md-container { flex: 1; overflow-y: auto; background: rgba(255,255,255,0.02); padding: 25px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; line-height: 1.6; }
+
+    /* モード別ボタン表示制御：ホバー時のみ表示 */
+    .min-tools { 
+      position: fixed; right: 20px; bottom: 20px; 
+      display: flex; gap: 10px; z-index: 500; 
+      opacity: 0; transition: opacity 0.3s ease; /* 初期は透明 */
+    }
+    .min-tools:hover { opacity: 1; } /* ホバーで表示 */
+    
+    body:has(.kildongmu-panel.active) .min-tools { display: none; }
+
+    .btn-tool { background: rgba(40,40,40,0.95); color: #fff; border: 1px solid #555; padding: 24px 20px; border-radius: 6px; cursor: pointer; font-size:24px; }
+    .btn-tool:hover { background: #555; border-color: var(--accent-color); }
+    .btn-tool.accent { background: var(--accent-color); border: none; font-weight: bold; }
+
+    /* パネル内統合コントローラー */
+    .panel-controls { background: #1a1a1a; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px; }
+    .control-row { display: flex; gap: 10px; align-items: center; }
+
+    #loading { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="info">Point: <span id="currentPoint">0</span> / <span id="totalPoints">0</span></div>
-    
-    <video id="myVideo" src="./video.mp4" playsinline></video>
+<div id="loading">System Booting...</div>
 
-    <div class="controls">
-        <button id="prevBtn">戻る</button>
-        <button id="nextBtn" style="font-weight: bold; background: #007bff; color: white; border: none; border-radius: 4px;">次へ (再生)</button>
+<div class="main-layout">
+  <div class="preview-section">
+    <div class="main-video-box"><video id="video-player" src="./video.mp4" preload="auto"></video></div>
+    <div class="slide-previews">
+      <div class="preview-card active"><span class="label">CURRENT</span><canvas id="canvas-curr"></canvas></div>
+      <div class="preview-card"><span class="label">NEXT</span><canvas id="canvas-next"></canvas></div>
+    </div>
+  </div>
+
+  <div class="kildongmu-panel" id="k-panel">
+    <div class="timer-container">
+      <button class="timer-btn" onclick="resetTimer()">RESET</button>
+      <div id="stopwatch" onclick="toggleTimer()">00:00.0</div>
     </div>
 
-    <div class="script-box">
-        <strong>原稿表示:</strong>
-        <p id="scriptText">「次へ」を押すと開始します。</p>
+    <div class="panel-content">
+      <div class="md-controls">
+        <span style="font-size: 0.8rem; color:#888;">Size:</span>
+        <input type="range" id="md-size-slider" min="12" max="60" value="20">
+      </div>
+      <div class="md-container" id="md-display"></div>
+      
+      <div class="panel-controls">
+        <div class="control-row">
+          <span style="font-size: 0.8rem; color: var(--accent-color); font-weight: bold;">PAGE:</span>
+          <input type="number" id="page-jump" style="width: 70px; padding: 10px; background:#000; border:1px solid var(--accent-color); color:#fff; text-align:center;" value="1">
+          <button class="btn-tool" style="flex:1" onclick="prev()">뒤로</button>
+          <button class="btn-tool" style="flex:1" onclick="next()">앞으로</button>
+        </div>
+        <div class="control-row">
+          <button class="btn-tool" style="flex:1" onclick="toggleFS()">전화명</button>
+          <button class="btn-tool" style="flex:1; background: var(--danger-color); border:none;" onclick="toggleKildongmu()">Close 길동무</button>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
+
+<div class="min-tools">
+  <button class="btn-tool" onclick="toggleFS()">⛶ 전화명</button>
+  <button class="btn-tool" onclick="prev()">뒤로</button>
+  <button class="btn-tool" onclick="next()">앞으로</button>
+  <button class="btn-tool accent" onclick="toggleKildongmu()">길동무</button>
 </div>
 
 <script>
-    const video = document.getElementById('myVideo');
-    const nextBtn = document.getElementById('nextBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const scriptText = document.getElementById('scriptText');
-    const currentPointEl = document.getElementById('currentPoint');
-    const totalPointsEl = document.getElementById('totalPoints');
+(() => {
+  const FPS = 24;
+  const video = document.getElementById("video-player");
+  const mdDisplay = document.getElementById("md-display");
+  const kPanel = document.getElementById("k-panel");
+  const pageInput = document.getElementById("page-jump");
+  const timerDisplay = document.getElementById("stopwatch");
+  
+  let points = [];
+  let currentIndex = 0;
+  let targetTime = null;
+  let isChecking = false;
 
-    let timeData = [];
-    let currentIndex = -1; // 開始前
-    const FPS = 30; // 動画のフレームレートに合わせて調整してください
+  let timerStart = 0;
+  let timerElapsed = 0;
+  let timerRunning = false;
+  let timerInterval = null;
 
-    // JSONの読み込み
-    fetch('./time.json')
-        .then(response => response.json())
-        .then(data => {
-            timeData = data;
-            totalPointsEl.textContent = timeData.length;
-        })
-        .catch(err => console.error("JSONの読み込みに失敗しました:", err));
-
-    // 「次へ」ボタンの処理
-    nextBtn.addEventListener('click', () => {
-        if (currentIndex < timeData.length - 1) {
-            currentIndex++;
-            playToNextPoint();
-        }
-    });
-
-    // 「戻る」ボタンの処理
-    prevBtn.addEventListener('click', () => {
-        if (currentIndex > 0) {
-            currentIndex--;
-            const targetTime = currentIndex === 0 ? 0 : timeData[currentIndex - 1].frame / FPS;
-            video.currentTime = targetTime;
-            video.pause();
-            updateUI();
-        }
-    });
-
-    function playToNextPoint() {
-        updateUI();
-        video.play();
+  window.toggleTimer = () => {
+    if (!timerRunning) {
+      timerStart = Date.now() - timerElapsed;
+      timerInterval = setInterval(() => {
+        timerElapsed = Date.now() - timerStart;
+        const d = new Date(timerElapsed);
+        timerDisplay.textContent = `${String(d.getUTCMinutes()).padStart(2,'0')}:${String(d.getUTCSeconds()).padStart(2,'0')}.${Math.floor(d.getUTCMilliseconds()/100)}`;
+      }, 100);
+      timerRunning = true;
+    } else {
+      clearInterval(timerInterval);
+      timerRunning = false;
     }
+  };
 
-    function updateUI() {
-        const point = timeData[currentIndex];
-        currentPointEl.textContent = currentIndex + 1;
-        scriptText.textContent = `ポイント ${point.name}: (ここにフレーム ${point.frame} の原稿を表示)`;
+  window.resetTimer = () => {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    timerElapsed = 0;
+    timerDisplay.textContent = "00:00.0";
+  };
+
+  async function loadMarkdown() {
+    try {
+      const res = await fetch('./script.md');
+      let text = await res.text();
+      // marked.parse の第2引数にオプションを追加
+      mdDisplay.innerHTML = marked.parse(text.replace(/\/\*[\s\S]*?\*\//g, ""), { breaks: true });
+    } catch (e) { mdDisplay.textContent = "script.md not found."; }
+  }
+
+  document.getElementById("md-size-slider").oninput = (e) => mdDisplay.style.fontSize = e.target.value + "px";
+
+  function capture(time, canvas) {
+    if (!video.readyState) return;
+    const temp = document.createElement('video');
+    temp.src = video.src;
+    temp.currentTime = time;
+    temp.onseeked = () => {
+      const ctx = canvas.getContext('2d');
+      canvas.width = 480; canvas.height = 270;
+      ctx.drawImage(temp, 0, 0, canvas.width, canvas.height);
+      temp.remove();
+    };
+  }
+
+  function syncUI() {
+    pageInput.value = currentIndex + 1;
+    const currT = (currentIndex === 0) ? 0 : points[currentIndex - 1].time;
+    capture(currT + 0.05, document.getElementById("canvas-curr"));
+    if (currentIndex < points.length) {
+      capture(points[currentIndex].time + 0.05, document.getElementById("canvas-next"));
+    } else {
+      document.getElementById("canvas-next").getContext('2d').clearRect(0,0,999,999);
     }
+  }
 
-    // ビデオの再生位置を監視
-    video.addEventListener('timeupdate', () => {
-        if (currentIndex >= 0) {
-            const stopFrame = timeData[currentIndex].frame;
-            const stopTime = stopFrame / FPS;
+  function monitor() {
+    if (targetTime !== null) {
+      if (video.currentTime >= targetTime) {
+        video.pause(); video.currentTime = targetTime;
+        targetTime = null; isChecking = false;
+        return;
+      }
+      requestAnimationFrame(monitor);
+    }
+  }
 
-            // 指定の時間（フレーム）を超えたら一時停止
-            if (video.currentTime >= stopTime) {
-                video.pause();
-                video.currentTime = stopTime; // 念のため位置を微調整
-            }
-        }
-    });
+  window.next = () => {
+    if (currentIndex < points.length) {
+      targetTime = points[currentIndex].time;
+      video.play(); currentIndex++; syncUI();
+      if (!isChecking) { isChecking = true; requestAnimationFrame(monitor); }
+    }
+  };
+
+  window.prev = () => {
+    if (currentIndex > 0) {
+      currentIndex--; video.pause();
+      video.currentTime = (currentIndex === 0) ? 0 : points[currentIndex - 1].time;
+      targetTime = null; syncUI();
+    }
+  };
+
+  window.toggleKildongmu = () => kPanel.classList.toggle("active");
+  window.toggleFS = () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  };
+
+  pageInput.onchange = (e) => {
+    const val = parseInt(e.target.value);
+    if (val >= 1 && val <= points.length + 1) {
+      currentIndex = val - 1;
+      video.currentTime = (currentIndex === 0) ? 0 : points[currentIndex - 1].time;
+      targetTime = null; syncUI();
+    }
+  };
+
+  async function init() {
+    try {
+      const res = await fetch("./time.json");
+      points = (await res.json()).map(p => ({ ...p, time: p.frame / FPS }));
+      document.getElementById("loading").style.display = "none";
+      loadMarkdown(); syncUI();
+    } catch (e) { console.error(e); }
+  }
+  init();
+})();
 </script>
-
 </body>
 </html>
