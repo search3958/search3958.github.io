@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M3 Voice Transcriber</title>
+    <style>
+        @font-face {
+            font-family: 'LINESeedJP';
+            src: url('LINESeedJP-Regular.ttf') format('truetype');
+        }
+        :root {
+            --md-sys-color-surface: #ffffff;
+            --md-sys-color-on-surface: #1c1b1f;
+            --md-sys-color-surface-container: #f3f3f3;
+            --md-sys-color-primary: #056941;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-secondary-container: #99fbb8;
+            --md-sys-color-outline: #747e7b;
+            --md-sys-color-error: #ba1a1a;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            font-family: 'LINESeedJP', sans-serif !important;
+            user-select: none;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--md-sys-color-surface-container);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 100px 24px 40px 24px; /* 上部にボタンを避ける余白 */
+        }
+
+        /* 既存の戻るボタン設定を維持 */
+        .back-btn {
+            background: var(--md-sys-color-secondary-container);
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            height: 52px;
+            padding-top: 6px;
+            aspect-ratio: 1 / 1;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* 文字起こし表示エリア */
+        #display-area {
+            flex-grow: 1;
+            background: var(--md-sys-color-surface);
+            border-radius: 28px;
+            padding: 24px;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: var(--md-sys-color-on-surface);
+            overflow-y: auto;
+            margin-bottom: 24px;
+            border: 1px solid var(--md-sys-color-outline);
+            user-select: text; /* テキスト選択は可能に */
+            white-space: pre-wrap;
+        }
+
+        /* 下部コントロールエリア */
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .fab {
+            height: 56px;
+            padding: 0 24px;
+            border-radius: 16px;
+            border: none;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .fab:active { opacity: 0.7; }
+
+        .btn-primary { background: var(--md-sys-color-primary); color: white; }
+        .btn-secondary { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-primary); }
+        .btn-outline { background: transparent; border: 1px solid var(--md-sys-color-outline); }
+
+        .recording {
+            animation: pulse 1.5s infinite;
+            background: var(--md-sys-color-error) !important;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="back-btn" onclick="AndroidInterface.navigate('')">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--md-sys-color-primary)">
+        <path d="m313-440 196 196q12 12 11.5 28T508-188q-12 11-28 11.5T452-188L188-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l264-264q11-11 27.5-11t28.5 11q12 12 12 28.5T508-715L313-520h447q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440H313Z"/>
+    </svg>
+</button>
+
+<main>
+    <div id="display-area">ここに文字こしが表示されます...</div>
+
+    <div class="controls">
+        <button id="toggle-btn" class="fab btn-primary">
+            音声認識開始
+        </button>
+        <button id="copy-btn" class="fab btn-secondary">
+            全文コピー
+        </button>
+        <button id="clear-btn" class="fab btn-outline">
+            クリア
+        </button>
+    </div>
+</main>
+
+<script>
+    const displayArea = document.getElementById('display-area');
+    const toggleBtn = document.getElementById('toggle-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const clearBtn = document.getElementById('clear-btn');
+
+    let recognition;
+    let isRecording = false;
+    let finalTranscript = '';
+
+    // Web Speech APIのセットアップ
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'ja-JP';
+        recognition.interimResults = true;
+        recognition.continuous = true;
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + '\n';
+                } else {
+                    interimTranscript = transcript;
+                }
+            }
+            displayArea.innerText = finalTranscript + interimTranscript;
+            displayArea.scrollTop = displayArea.scrollHeight;
+        };
+
+        recognition.onerror = (event) => {
+            console.error(event.error);
+            stopRecording();
+        };
+
+        recognition.onend = () => {
+            if (isRecording) recognition.start(); // 途切れたら自動再開
+        };
+    }
+
+    function startRecording() {
+        isRecording = true;
+        recognition.start();
+        toggleBtn.innerText = '停止';
+        toggleBtn.classList.add('recording');
+    }
+
+    function stopRecording() {
+        isRecording = false;
+        recognition.stop();
+        toggleBtn.innerText = '音声認識開始';
+        toggleBtn.classList.remove('recording');
+    }
+
+    // トグル動作
+    toggleBtn.addEventListener('click', () => {
+        if (!recognition) return alert('このブラウザは対応していません');
+        isRecording ? stopRecording() : startRecording();
+    });
+
+    // コピー機能
+    copyBtn.addEventListener('click', () => {
+        const text = displayArea.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = copyBtn.innerText;
+            copyBtn.innerText = 'コピー完了';
+            setTimeout(() => copyBtn.innerText = originalText, 1500);
+        });
+    });
+
+    // クリア機能
+    clearBtn.addEventListener('click', () => {
+        if (confirm('内容をクリアしますか？')) {
+            finalTranscript = '';
+            displayArea.innerText = '';
+        }
+    });
+</script>
+
+</body>
+</html>

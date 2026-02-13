@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M3 Voice Reader</title>
+    <style>
+        @font-face {
+            font-family: 'LINESeedJP';
+            src: url('LINESeedJP-Regular.ttf') format('truetype');
+        }
+        :root {
+            --md-sys-color-surface: #ffffff;
+            --md-sys-color-on-surface: #1c1b1f;
+            --md-sys-color-surface-container: #f3f3f3;
+            --md-sys-color-primary: #056941;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-secondary-container: #99fbb8;
+            --md-sys-color-outline: #747e7b;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            font-family: 'LINESeedJP', sans-serif !important;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--md-sys-color-surface-container);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 100px 24px 40px 24px;
+        }
+
+        .back-btn {
+            background: var(--md-sys-color-secondary-container);
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            height: 52px;
+            padding-top: 6px;
+            aspect-ratio: 1 / 1;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* 入力エリア（読み上げ対象） */
+        #text-input {
+            flex-grow: 1;
+            background: var(--md-sys-color-surface);
+            border-radius: 28px;
+            padding: 24px;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: var(--md-sys-color-on-surface);
+            border: 1px solid var(--md-sys-color-outline);
+            margin-bottom: 24px;
+            resize: none;
+            outline: none;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .fab {
+            height: 56px;
+            padding: 0 32px;
+            border-radius: 16px;
+            border: none;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .fab:active { transform: scale(0.95); opacity: 0.8; }
+
+        .btn-play { background: var(--md-sys-color-primary); color: white; }
+        .btn-stop { background: #ba1a1a; color: white; }
+        .btn-clear { background: transparent; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-on-surface); }
+    </style>
+</head>
+<body>
+
+<button class="back-btn" onclick="AndroidInterface.navigate('')">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--md-sys-color-primary)">
+        <path d="m313-440 196 196q12 12 11.5 28T508-188q-12 11-28 11.5T452-188L188-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l264-264q11-11 27.5-11t28.5 11q12 12 12 28.5T508-715L313-520h447q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440H313Z"/>
+    </svg>
+</button>
+
+<main>
+    <textarea id="text-input" placeholder="読み上げたい文章を入力してください..."></textarea>
+
+    <div class="controls">
+        <button id="play-btn" class="fab btn-play">再生</button>
+        <button id="stop-btn" class="fab btn-stop">停止</button>
+        <button id="clear-btn" class="fab btn-clear">クリア</button>
+    </div>
+</main>
+
+<script>
+    const textInput = document.getElementById('text-input');
+    const playBtn = document.getElementById('play-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const clearBtn = document.getElementById('clear-btn');
+
+    // 再生機能
+    playBtn.addEventListener('click', () => {
+        const text = textInput.value;
+        if (!text) return;
+
+        // すでに再生中の場合は一度キャンセル
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ja-JP';
+        utterance.rate = 1.0; // 速度 (0.1 - 10)
+        utterance.pitch = 1.0; // ピッチ (0 - 2)
+
+        window.speechSynthesis.speak(utterance);
+    });
+
+    // 停止機能
+    stopBtn.addEventListener('click', () => {
+        window.speechSynthesis.cancel();
+    });
+
+    // クリア機能
+    clearBtn.addEventListener('click', () => {
+        textInput.value = '';
+        window.speechSynthesis.cancel();
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ブロック学習ツール</title>
+    <style>
+        @font-face {
+            font-family: 'LINESeedJP';
+            src: url('LINESeedJP-Regular.ttf') format('truetype');
+        }
+
+        :root {
+            --md-sys-color-surface: #ffffff;
+            --md-sys-color-surface-container: #f3f3f3;
+            --md-sys-color-primary: #056941;
+            --md-sys-color-secondary-container: #99fbb8;
+            --block-red: #ef5350;
+            --block-blue: #42a5f5;
+            --grid-size: 70px;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            font-family: 'LINESeedJP', sans-serif !important;
+            user-select: none;
+            touch-action: none;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--md-sys-color-surface-container);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .back-btn {
+            background: var(--md-sys-color-secondary-container);
+            position: fixed;
+            top: 24px; left: 24px;
+            height: 52px; width: 52px;
+            border: none; border-radius: 100px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 2000;
+        }
+
+        #workspace {
+            flex: 1;
+            position: relative;
+            background-image: radial-gradient(#d1d1d1 1.2px, transparent 1.2px);
+            background-size: var(--grid-size) var(--grid-size);
+        }
+
+        /* ブロック本体（常に白） */
+        .block {
+            position: absolute;
+            width: 60px; height: 60px;
+            border-radius: 12px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            display: flex; align-items: center; justify-content: center;
+            cursor: grab;
+            z-index: 10;
+        }
+
+        .block.is-dragging {
+            z-index: 9999 !important;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+            transform: scale(1.1);
+        }
+
+        /* 中央の太い角丸線 */
+        .block-line {
+            width: 80%;
+            height: 16px;
+            border-radius: 10px;
+            background-color: var(--block-blue); /* デフォルト青 */
+        }
+
+        .block.is-red .block-line { background-color: var(--block-red); }
+
+        /* ボトムバー */
+        .bottom-bar {
+            height: 100px;
+            background: var(--md-sys-color-surface);
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            border-top: 1px solid #e0e0e0;
+            z-index: 1000;
+        }
+
+        .spawner-wrapper {
+            display: flex;
+            gap: 30px;
+        }
+
+        /* 生成用の見本 */
+        .sample-block {
+            width: 50px; height: 50px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .sample-line {
+            width: 80%;
+            height: 10px;
+            border-radius: 10px;
+        }
+
+        .trash-can {
+            width: 60px; height: 60px;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .trash-can.over { transform: scale(1.4); }
+    </style>
+</head>
+<body>
+
+    <button class="back-btn" onclick="AndroidInterface.navigate('')">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--md-sys-color-primary)"><path d="m313-440 196 196q12 12 11.5 28T508-188q-12 11-28 11.5T452-188L188-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l264-264q11-11 27.5-11t28.5 11q12 12 12 28.5T508-715L313-520h447q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440H313Z"/></svg>
+    </button>
+
+    <div id="workspace"></div>
+
+    <div class="bottom-bar">
+        <div class="spawner-wrapper">
+            <div class="sample-block" id="spawn-blue">
+                <div class="sample-line" style="background-color: var(--block-blue);"></div>
+            </div>
+            <div class="sample-block" id="spawn-red">
+                <div class="sample-line" style="background-color: var(--block-red);"></div>
+            </div>
+        </div>
+
+        <div class="trash-can" id="trash-can">
+            <svg xmlns="http://www.w3.org/2000/svg" height="42px" viewBox="0 -960 960 960" width="42px" fill="#ef5350"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+        </div>
+    </div>
+
+    <script>
+        const workspace = document.getElementById('workspace');
+        const trashCan = document.getElementById('trash-can');
+        const gridSize = 70;
+
+        let activeBlock = null;
+        let offset = { x: 0, y: 0 };
+        let hasMoved = false;
+
+        function createBlock(x, y, colorClass = '') {
+            const el = document.createElement('div');
+            el.className = 'block ' + colorClass;
+            
+            const line = document.createElement('div');
+            line.className = 'block-line';
+            el.appendChild(line);
+
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            
+            el.addEventListener('pointerdown', onPointerDown);
+            workspace.appendChild(el);
+            return el;
+        }
+
+        // 見本をクリック/ドラッグしたときの処理
+        document.getElementById('spawn-blue').addEventListener('pointerdown', (e) => startSpawning(e, ''));
+        document.getElementById('spawn-red').addEventListener('pointerdown', (e) => startSpawning(e, 'is-red'));
+
+        function startSpawning(e, colorClass) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const newBlock = createBlock(rect.left, rect.top, colorClass);
+            activeBlock = newBlock;
+            activeBlock.classList.add('is-dragging');
+            offset.x = 30;
+            offset.y = 30;
+            newBlock.setPointerCapture(e.pointerId);
+        }
+
+        function onPointerDown(e) {
+            activeBlock = e.target.closest('.block');
+            if (!activeBlock) return;
+            
+            activeBlock.classList.add('is-dragging');
+            const rect = activeBlock.getBoundingClientRect();
+            offset.x = e.clientX - rect.left;
+            offset.y = e.clientY - rect.top;
+            hasMoved = false;
+            activeBlock.setPointerCapture(e.pointerId);
+        }
+
+        window.addEventListener('pointermove', (e) => {
+            if (!activeBlock) return;
+            hasMoved = true;
+            
+            const x = e.clientX - offset.x;
+            const y = e.clientY - offset.y;
+            
+            activeBlock.style.left = x + 'px';
+            activeBlock.style.top = y + 'px';
+
+            const trashRect = trashCan.getBoundingClientRect();
+            if (e.clientX > trashRect.left && e.clientX < trashRect.right && 
+                e.clientY > trashRect.top && e.clientY < trashRect.bottom) {
+                trashCan.classList.add('over');
+            } else {
+                trashCan.classList.remove('over');
+            }
+        });
+
+        window.addEventListener('pointerup', (e) => {
+            if (!activeBlock) return;
+
+            activeBlock.classList.remove('is-dragging');
+            const trashRect = trashCan.getBoundingClientRect();
+            const isOverTrash = (e.clientX > trashRect.left && e.clientX < trashRect.right && 
+                                e.clientY > trashRect.top && e.clientY < trashRect.bottom);
+
+            if (isOverTrash) {
+                activeBlock.remove();
+                trashCan.classList.remove('over');
+            } else if (!hasMoved) {
+                // タップで線の色を切り替え
+                activeBlock.classList.toggle('is-red');
+            } else {
+                snapToGrid(activeBlock);
+            }
+
+            activeBlock.releasePointerCapture(e.pointerId);
+            activeBlock = null;
+        });
+
+        function snapToGrid(block) {
+            const x = parseInt(block.style.left);
+            const y = parseInt(block.style.top);
+            const snappedX = Math.round(x / gridSize) * gridSize + (gridSize - 60)/2;
+            const snappedY = Math.round(y / gridSize) * gridSize + (gridSize - 60)/2;
+            block.style.left = snappedX + 'px';
+            block.style.top = snappedY + 'px';
+        }
+
+        // 初期配置
+        createBlock(gridSize, gridSize, '');
+        createBlock(gridSize, gridSize * 2, 'is-red');
+    </script>
+</body>
+</html>

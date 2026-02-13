@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
+    <title>M3 OCR - Ultra Premium</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <style>
+        @font-face {
+            font-family: 'LINESeedJP';
+            src: url('LINESeedJP-Regular.ttf') format('truetype');
+        }
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            font-family: 'LINESeedJP', sans-serif !important;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            background-color: #000;
+            height: 100vh; width: 100vw;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        /* 戻るボタン：非常に柔らかいシャドウ */
+        .back-btn {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: fixed; top: 24px; left: 24px;
+            height: 52px; width: 52px;
+            border: none; border-radius: 100px;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+
+        #display-container {
+            position: relative;
+            width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        video, #captured-image {
+            position: absolute;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        #captured-image { display: none; z-index: 10; }
+
+        .full-screen-layer {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            padding: 10vw;
+        }
+
+        .full-screen-layer.active { opacity: 1; pointer-events: auto; }
+
+        .progress-text { font-size: 5rem; font-weight: bold; }
+
+        #result-content {
+            width: 100%;
+            height: 55vh;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 1.25rem;
+            line-height: 1.8;
+            text-align: left;
+            user-select: text; /* テキスト選択を許可 */
+            mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
+
+        /* ボタンコンテナ */
+        .button-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 40px;
+        }
+
+        .action-btn {
+            padding: 18px 32px;
+            border: none;
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        /* 選択時ポップアップコピーボタン */
+        #selection-copy-btn {
+            position: fixed;
+            display: none;
+            z-index: 2000;
+            background: #fff;
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .shutter-btn {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 84px; height: 84px;
+            background: white;
+            border: 10px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            z-index: 50;
+        }
+
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+
+<button class="back-btn" onclick="location.reload()">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="m313-440 196 196q12 12 11.5 28T508-188q-12 11-28 11.5T452-188L188-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l264-264q11-11 27.5-11t28.5 11q12 12 12 28.5T508-715L313-520h447q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440H313Z"/></svg>
+</button>
+
+<div id="selection-copy-btn">コピー</div>
+
+<div id="display-container">
+    <video id="video" autoplay playsinline></video>
+    <img id="captured-image">
+    
+    <div id="loading-layer" class="full-screen-layer">
+        <div id="progress" class="progress-text">0%</div>
+        <div style="margin-top: 10px; opacity: 0.5; letter-spacing: 4px; font-size: 0.8rem;">SCANNING</div>
+    </div>
+
+    <div id="result-layer" class="full-screen-layer">
+        <div id="result-content"></div>
+        <div class="button-group">
+            <button class="action-btn" onclick="copyAll()">全文コピー</button>
+            <button class="action-btn" onclick="location.reload()">再撮影</button>
+        </div>
+    </div>
+
+    <div class="shutter-btn" id="capture" onclick="startOCR()"></div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<script>
+    const video = document.getElementById('video');
+    const capturedImg = document.getElementById('captured-image');
+    const canvas = document.getElementById('canvas');
+    const loadingLayer = document.getElementById('loading-layer');
+    const resultLayer = document.getElementById('result-layer');
+    const progressText = document.getElementById('progress');
+    const resultContent = document.getElementById('result-content');
+    const selectionBtn = document.getElementById('selection-copy-btn');
+
+    async function initCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment", width: { ideal: 1920 } },
+                audio: false
+            });
+            video.srcObject = stream;
+        } catch (err) { console.error(err); }
+    }
+
+    // 全文コピー
+    function copyAll() {
+        navigator.clipboard.writeText(resultContent.innerText);
+        const btn = document.querySelector('.action-btn');
+        const original = btn.innerText;
+        btn.innerText = "コピー完了！";
+        setTimeout(() => btn.innerText = original, 2000);
+    }
+
+    // 選択範囲コピーUIの制御
+    document.addEventListener('selectionchange', () => {
+        const selection = window.getSelection();
+        const text = selection.toString();
+
+        if (text && text.length > 0) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            
+            selectionBtn.style.display = 'block';
+            selectionBtn.style.top = `${rect.top - 50}px`;
+            selectionBtn.style.left = `${rect.left + (rect.width / 2) - 30}px`;
+        } else {
+            selectionBtn.style.display = 'none';
+        }
+    });
+
+    selectionBtn.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        const text = window.getSelection().toString();
+        navigator.clipboard.writeText(text);
+        selectionBtn.innerText = "✓";
+        setTimeout(() => {
+            selectionBtn.style.display = 'none';
+            selectionBtn.innerText = "コピー";
+            window.getSelection().removeAllRanges();
+        }, 600);
+    });
+
+    async function startOCR() {
+        const context = canvas.getContext('2d', { willReadFrequently: true });
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // モノクロ化で精度向上
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            const avg = (imageData.data[i] + imageData.data[i+1] + imageData.data[i+2]) / 3;
+            imageData.data[i] = imageData.data[i+1] = imageData.data[i+2] = avg;
+        }
+        context.putImageData(imageData, 0, 0);
+
+        const dataUrl = canvas.toDataURL('image/png');
+        capturedImg.src = dataUrl;
+        capturedImg.style.display = 'block';
+        video.style.display = 'none';
+        document.getElementById('capture').style.display = 'none';
+
+        setTimeout(() => {
+            capturedImg.style.filter = 'blur(30px) brightness(0.4)';
+            loadingLayer.classList.add('active');
+        }, 50);
+
+        try {
+            const worker = await Tesseract.createWorker('jpn+eng', 1, {
+                logger: m => {
+                    if (m.status === 'recognizing text') {
+                        progressText.textContent = `${Math.round(m.progress * 100)}%`;
+                    }
+                }
+            });
+            const { data: { text } } = await worker.recognize(dataUrl);
+            await worker.terminate();
+
+            loadingLayer.classList.remove('active');
+            setTimeout(() => {
+                resultContent.textContent = text.trim();
+                resultLayer.classList.add('active');
+            }, 500);
+        } catch (e) { progressText.textContent = "ERR"; }
+    }
+
+    initCamera();
+</script>
+
+</body>
+</html>

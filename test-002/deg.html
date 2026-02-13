@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>360°精密分度器 - 学習用</title>
+    <style>
+        @font-face {
+            font-family: 'LINESeedJP';
+            src: url('LINESeedJP-Regular.ttf') format('truetype');
+        }
+
+        :root {
+            --md-sys-color-surface: #ffffff;
+            --md-sys-color-on-surface: #1c1b1f;
+            --md-sys-color-surface-container: #f3f3f3;
+            --md-sys-color-primary: #056941;
+            --md-sys-color-tertiary: #006495;
+            --md-sys-color-outline: #747e7b;
+            --md-sys-color-secondary-container: #99fbb8;
+            --highlight-green: rgba(5, 105, 65, 0.2); /* 濃くしたハイライト */
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            font-family: 'LINESeedJP', sans-serif !important;
+            user-select: none;
+            touch-action: none;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--md-sys-color-surface-container);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .back-btn {
+            background: var(--md-sys-color-secondary-container);
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            height: 52px;
+            width: 52px;
+            border: none;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .protractor-wrapper {
+            position: relative;
+            width: 95vmin;
+            height: 95vmin;
+            background: var(--md-sys-color-surface);
+            border-radius: 50%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .center-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.9);
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid var(--md-sys-color-surface-container);
+        }
+
+        .angle-value {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--md-sys-color-primary);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .angle-unit {
+            font-size: 1rem;
+            color: var(--md-sys-color-outline);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="back-btn" onclick="console.log('Back')">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--md-sys-color-primary)">
+            <path d="m313-440 196 196q12 12 11.5 28T508-188q-12 11-28 11.5T452-188L188-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l264-264q11-11 27.5-11t28.5 11q12 12 12 28.5T508-715L313-520h447q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440H313Z"/>
+        </svg>
+    </button>
+
+    <div class="protractor-wrapper">
+        <canvas id="canvas"></canvas>
+        <div class="center-display">
+            <p class="angle-value" id="angle-text">0</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const angleText = document.getElementById('angle-text');
+
+        let currentAngle = 45;
+        let isDragging = false;
+
+        function resize() {
+            const size = canvas.clientWidth;
+            canvas.width = size * window.devicePixelRatio;
+            canvas.height = size * window.devicePixelRatio;
+            draw();
+        }
+
+        window.addEventListener('resize', resize);
+
+        function draw() {
+            const w = canvas.width;
+            const h = canvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+            const outerR = (w / 2) - 20;
+            const innerR = 80 * window.devicePixelRatio;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. 角度の扇形ハイライト（以前より濃く）
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, outerR, -Math.PI/2, (currentAngle - 90) * Math.PI / 180);
+            ctx.fillStyle = "rgba(5, 105, 65, 0.2)";
+            ctx.fill();
+
+            // 2. 目盛りの描画
+            for (let i = 0; i < 360; i++) {
+                const rad = (i - 90) * Math.PI / 180;
+                const isTen = i % 10 === 0;
+                const isFive = i % 5 === 0;
+
+                ctx.beginPath();
+                
+                if (isTen) {
+                    // 10度ごとの線（薄く設定）
+                    ctx.moveTo(cx + Math.cos(rad) * outerR, cy + Math.sin(rad) * outerR);
+                    ctx.lineTo(cx + Math.cos(rad) * innerR, cy + Math.sin(rad) * innerR);
+                    ctx.strokeStyle = "rgba(0, 0, 0, 0.1)"; // 薄い色
+                    ctx.lineWidth = 2;
+                } else {
+                    // 1度ごとの線（外側・濃く設定）
+                    const lineLen = isFive ? 35 : 20;
+                    ctx.moveTo(cx + Math.cos(rad) * outerR, cy + Math.sin(rad) * outerR);
+                    ctx.lineTo(cx + Math.cos(rad) * (outerR - lineLen), cy + Math.sin(rad) * (outerR - lineLen));
+                    ctx.strokeStyle = "rgba(0, 0, 0, 0.6)"; // 濃い色
+                    ctx.lineWidth = 1.5;
+                }
+                ctx.stroke();
+
+                // 数字の表示
+                if (isTen && i % 20 === 0) {
+                    ctx.save();
+                    ctx.translate(cx + Math.cos(rad) * (outerR - 70), cy + Math.sin(rad) * (outerR - 70));
+                    ctx.rotate(rad + Math.PI/2);
+                    ctx.textAlign = "center";
+                    ctx.fillStyle = i === 0 ? "var(--md-sys-color-primary)" : "#444";
+                    ctx.font = `bold ${w * 0.035}px 'LINESeedJP'`;
+                    ctx.fillText(i, 0, 0);
+                    ctx.restore();
+                }
+            }
+
+            // 3. メインの太い線
+            const targetRad = (currentAngle - 90) * Math.PI / 180;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + Math.cos(targetRad) * outerR, cy + Math.sin(targetRad) * outerR);
+            ctx.strokeStyle = "var(--md-sys-color-primary)";
+            ctx.lineWidth = 6;
+            ctx.lineCap = "round";
+            ctx.stroke();
+
+            // 4. つまみ（完全に不透明）
+            ctx.beginPath();
+            ctx.arc(cx + Math.cos(targetRad) * outerR, cy + Math.sin(targetRad) * outerR, 22, 0, Math.PI * 2);
+            ctx.fillStyle = "#056941"; // 濃い不透明な緑
+            ctx.fill();
+            // つまみの縁取り
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            angleText.innerText = Math.round(currentAngle);
+        }
+
+        function handleMove(e) {
+            if (!isDragging) return;
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            const x = clientX - (rect.left + rect.width / 2);
+            const y = clientY - (rect.top + rect.height / 2);
+
+            let angle = Math.atan2(y, x) * 180 / Math.PI + 90;
+            if (angle < 0) angle += 360;
+            
+            currentAngle = angle;
+            draw();
+        }
+
+        canvas.addEventListener('mousedown', (e) => { isDragging = true; handleMove(e); });
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mousemove', handleMove);
+
+        canvas.addEventListener('touchstart', (e) => { isDragging = true; handleMove(e); e.preventDefault(); }, {passive: false});
+        window.addEventListener('touchend', () => isDragging = false);
+        window.addEventListener('touchmove', (e) => { handleMove(e); e.preventDefault(); }, {passive: false});
+
+        // 読み込み時にフォントが適用されるよう少し待機して描画
+        document.fonts.ready.then(resize);
+    </script>
+</body>
+</html>
