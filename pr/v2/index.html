@@ -246,11 +246,13 @@
       document.getElementById("canvas-next").getContext('2d').clearRect(0,0,999,999);
     }
     
-    // Markdown Auto Scroll (Optional: スライドに合わせてスクロールさせる簡易実装)
+    // --- 以下のスクロール処理をコメントアウト、または削除 ---
+    /*
     const headers = mdDisplay.querySelectorAll('h1, h2, h3');
     if(headers[currentIndex]) {
         headers[currentIndex].scrollIntoView({behavior: "smooth", block: "center"});
     }
+    */
   }
 
   function monitor() {
