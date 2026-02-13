@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私について - Search3958</title>
+
+<meta name="description" content="Sentaro（Search3958）によるプロジェクト紹介サイト。Newtab5、ToolBoard、3D Spaceなど、日常のデジタル体験を豊かで効率的にする無料のWebツールやアプリケーションを提供しています。">
+<meta name="keywords" content="Sentaro, Search3958, Newtab5, ToolBoard, 3D Space, Webツール, ウェブアプリケーション, 生産性向上, UI/UX, Flutter, Web開発">
+<meta name="author" content="Sentaro (@Search3958)">
+
+<meta property="og:title" content="Sentaro - とにかく便利に | Newtab、ツール、Webアプリケーション">
+<meta property="og:description" content="Sentaro（Search3958）によるプロジェクト紹介サイト。Newtab5、ToolBoard、3D Spaceなど、日常のデジタル体験を豊かで効率的にする無料のWebツールやアプリケーションを提供しています。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://search3958.github.io/"><meta property="og:site_name" content="Sentaro">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@Search3958_dev"><meta name="twitter:title" content="Sentaro - とにかく便利に | Newtab、ツール、Webアプリケーション">
+<meta name="twitter:description" content="Sentaro（Search3958）によるプロジェクト紹介サイト。Newtab5、ToolBoard、3D Spaceなど、日常のデジタル体験を豊かで効率的にする無料のWebツールやアプリケーションを提供しています。">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link rel="icon" href="https://search3958.github.io/project/logos/3958logo_main.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7N56NHPY3C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-7N56NHPY3C');
+</script>
+    <style>
+
+
+:root {
+    --primary: #BE0000;
+    --primary-container: #ffdad6;
+    --on-primary: #ffffff;
+    --background: #F4F4F4;
+    --surface: #ffffff;
+    --surface-variant: #e1e2e1;
+    --on-surface: #1b1b1b;
+    --on-surface-variant: #444746;
+    --outline: #747775;
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --radius-s: 16px;
+    --radius-m: 24px;
+    --radius-l: 32px;
+    --radius-xl: 48px;
+    --spacing-section: 120px
+}
+
+@media (prefers-color-scheme:dark) {
+    :root {
+        --background: #121212;
+        --surface: #1e1e1e;
+        --surface-variant: #2c2c2c;
+        --on-surface: #e2e2e2;
+        --on-surface-variant: #c4c7c5;
+        --primary-container: #410002;
+        --outline: #8e918f;
+        --glass-bg: rgba(30, 30, 30, 0.85);
+        --glass-border: rgba(255, 255, 255, 0.1)
+    }
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+}
+
+body {
+    font-family: 'Google Sans', 'Noto Sans JP', sans-serif;
+    background-color: var(--background);
+    color: var(--on-surface);
+    line-height: 1.6;
+    overflow-x: hidden;
+    transition: background-color 0.3s, color 0.3s
+}
+
+a {
+    text-decoration: none;
+    color: inherit
+}
+
+ul {
+    list-style: none
+}
+
+section {
+    max-width: 1200px;
+    margin:0 auto;
+    padding:5vw;
+}
+
+.first{
+    background:var(--primary);
+    margin:0px;
+    padding:10vh 5vw!important;
+    padding-top:15vh!important;
+    max-width:unset;
+    flex-direction: row!important;
+    gap:24px;
+    justify-content: space-between!important;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+    height: 48px;
+    border-radius: 24px;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.2, 0.0, 0, 1);
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    scale:1;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    scale:1.02;
+}
+
+.btn-tonal {
+    background-color: var(--surface-variant);
+    color: var(--on-surface)
+}
+
+.btn-tonal:hover {
+    filter: brightness(0.95)
+}
+
+@keyframes rotate-blob {
+    0% {
+        transform: rotate(0deg) scale(1)
+    }
+
+    50% {
+        transform: rotate(180deg) scale(1.1)
+    }
+
+    100% {
+        transform: rotate(360deg) scale(1)
+    }
+}
+
+.fade-in-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0, 0, 1)
+}
+
+.fade-in-up.visible {
+    opacity: 1;
+    transform: translateY(0)
+}
+
+header {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: fit-content;
+    max-width: 1200px;
+    height: 64px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    padding-right:14px;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--glass-border);
+    gap:24px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: var(--on-surface);
+    letter-spacing: -0.5px
+}
+
+.logo-svg {
+    height: 32px;
+    width: auto
+}
+
+@media (prefers-color-scheme:dark) {
+    .logo-svg {
+        filter: invert(0)
+    }
+}
+
+.nav-links {
+    display: flex;
+    gap: 8px
+}
+
+.nav-links a {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.2s
+}
+
+.nav-links a:hover {
+    background-color: var(--surface-variant)
+}
+
+.hero {
+    padding-top: 180px;
+    padding-bottom: 100px;
+    min-height: 30vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center
+}
+
+.hero h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    letter-spacing: -2px;
+    color: #fff7e2
+}
+
+.hero h1 span {
+    color: #ffd467
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: #ffac97;
+    max-width: 600px;
+    margin-bottom: 0px
+}
+
+.section-title {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+    font-weight: 700
+}
+
+.project-interface {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 32px;
+    min-height: 450px;
+    background: var(--surface);
+    padding: 16px;
+    border-radius: calc(var(--radius-l) + 16px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+    corner-shape: superellipse(1.6);
+}
+
+.project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px
+}
+
+.project-item {
+    padding: 20px 24px;
+    background: var(--background);
+    border-radius: var(--radius-l);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+    border: 1px solid transparent;
+    corner-shape: superellipse(1.6);
+}
+
+.project-item:hover {
+    background: var(--surface-variant);
+    transform: translateX(10px)
+}
+
+.project-item.active {
+    background: var(--primary);
+    color: var(--on-primary);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2)
+}
+
+.project-item.active .sub-tag {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.2)
+}
+
+.project-item.active .material-symbols-rounded {
+    color: #fff
+}
+
+.project-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.sub-tag {
+    font-size: 0.8rem;
+    font-weight: normal;
+    color: var(--on-surface-variant);
+    background: var(--surface-variant);
+    padding: 2px 8px;
+    border-radius: 8px
+}
+
+.project-preview {
+    background: var(--surface);
+    border-radius: var(--radius-l);
+    corner-shape: superellipse;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    z-index: 1;
+    corner-shape: superellipse(1.6);
+}
+
+.project-preview::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 300px;
+    height: 300px;
+    background: var(--primary);
+    opacity: 0.08;
+    border-radius: 50%;
+    z-index: -1;
+    animation: rotate-blob 20s linear infinite;
+    corner-shape: superellipse(1.6)
+}
+
+.preview-content {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease
+}
+
+.preview-content.show {
+    opacity: 1;
+    transform: translateY(0)
+}
+
+.preview-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 16px;
+    color: var(--primary)
+}
+
+.preview-desc {
+    font-size: 1.1rem;
+    color: var(--on-surface-variant);
+    margin-bottom: 32px;
+    line-height: 1.8
+}
+
+.preview-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    font-weight: 500
+}
+
+.badge {
+    background: #e8f5e9;
+    color: #1b5e20;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem
+}
+
+@media (prefers-color-scheme:dark) {
+    .badge {
+        background: #0f3513;
+        color: #a4f3a9
+    }
+}
+
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px
+}
+
+.about-card {
+    background: var(--surface);
+    padding: 32px;
+    border-radius: var(--radius-l);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    transition: transform 0.3s;
+    corner-shape: superellipse(1.6);
+}
+
+.about-card:hover {
+    transform: translateY(-5px)
+}
+
+.about-icon {
+    font-size: 40px;
+    color: var(--primary);
+    margin-bottom: 20px;
+    font-variation-settings: 'FILL'1
+}
+
+.about-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 16px
+}
+
+.about-card p {
+    color: var(--on-surface-variant)
+}
+
+
+.quality-container {
+    background-image: url('https://search3958.github.io/newtab/bgimg/3958Glass4.webp');
+    background-size: cover;
+    background-position: center;
+    border-radius: var(--radius-xl);
+    corner-shape: superellipse(1.6);
+    overflow: hidden;
+    position: relative
+}
+
+.quality-overlay {
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(32px) brightness(105%);
+    -webkit-backdrop-filter: blur(32px) brightness(105%);
+    padding: 80px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    color: #1b1b1b
+}
+
+@media (prefers-color-scheme:dark) {
+    .quality-overlay {
+        background-color: rgba(255, 255, 255, 0.85)
+    }
+
+    .quality-text h2,
+    .quality-text p,
+    .stat-label,
+    .stat-note {
+        color: #1b1b1b !important
+    }
+}
+
+.quality-text h2 {
+    font-size: 2.5rem;
+    margin-bottom: 24px;
+    color: inherit
+}
+
+.quality-text p {
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    opacity: 0.8
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    border-radius: var(--radius-m);
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.5)
+}
+
+.stat-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 8px
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.7
+}
+
+.stat-note {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    margin-top: 16px
+}
+
+.chip-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px
+}
+
+.project-chip {
+    background: var(--surface);
+    padding: 12px 24px;
+    border-radius: 100px;
+    font-weight: 500;
+    border: 1px solid var(--outline);
+    transition: all 0.2s;
+    cursor: pointer;
+    color: var(--on-surface);
+    opacity: 0.8;
+    border-color: transparent;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+    transform: translateY(0px);
+    scale:1;
+}
+
+.project-chip:hover {
+    color: var(--on-primary);
+    background: var(--primary);
+    opacity: 1;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    scale:1.05;
+}
+
+.contact-section {
+    padding: 80px 0 120px;
+    text-align: center
+}
+
+.contact-box {
+    background: var(--surface);
+    padding: 60px 24px;
+    border-radius: var(--radius-xl);
+    corner-shape: superellipse(1.6);
+    color: var(--on-surface)
+}
+
+@media (prefers-color-scheme:dark) {
+    .contact-box {
+        color: #fefcfc
+    }
+}
+
+.contact-box h2 {
+    margin-bottom: 24px
+}
+
+footer {
+    background: var(--surface);
+    padding: 40px 0;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px
+}
+
+.footer-links {
+    display: flex;
+    gap: 24px
+}
+
+.footer-links a {
+    color: var(--on-surface-variant);
+    font-size: 0.9rem
+}
+
+.fstbtn{
+    height:100%;
+    padding:0px 32px;
+    corner-shape: superellipse(1.3);
+    border-radius:40px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width:768px) {
+    .project-interface {
+        grid-template-columns: 1fr
+    }
+
+    .project-preview {
+        min-height: 300px
+    }
+
+    .quality-overlay {
+        grid-template-columns: 1fr;
+        padding: 40px 24px
+    }
+
+    .hero h1 {
+        font-size: 3rem
+    }
+
+    header {
+        padding: 0 16px
+    }
+
+    .nav-links {
+        display: none
+    }
+}
+
+</style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <svg class="logo-svg" width="14" height="21" viewBox="0 0 14 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#paint0_angular_1417_5_clip_path)" data-figma-skip-parse="true"><g transform="matrix(-0.007 2.38419e-10 2.38418e-10 0.007 7 14)"><foreignObject x="-1142.86" y="-1142.86" width="2285.71" height="2285.71"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(88, 0, 0, 1) 0deg,rgba(190, 0, 0, 1) 181.711deg,rgba(255, 0, 0, 1) 290.751deg,rgba(255, 145, 145, 1) 349.598deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.34511718153953552,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.74511718750,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.57208782434463501,&#34;b&#34;:0.57208782434463501,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.34511718153953552,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.74511718750,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.57208782434463501,&#34;b&#34;:0.57208782434463501,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:-14.0,&#34;m01&#34;:4.7683604975645721e-07,&#34;m02&#34;:14.0,&#34;m10&#34;:4.7683732873338158e-07,&#34;m11&#34;:14.0,&#34;m12&#34;:6.9999995231628418},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+<g clip-path="url(#paint1_angular_1417_5_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0.007 -2.46698e-10 -2.46699e-10 -0.007 7 7)"><foreignObject x="-1142.86" y="-1142.86" width="2285.71" height="2285.71"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(88, 0, 0, 1) 0deg,rgba(190, 0, 0, 1) 181.711deg,rgba(255, 0, 0, 1) 290.751deg,rgba(255, 147, 71, 1) 349.598deg,rgba(255, 219, 59, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.34511718153953552,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.74511718750,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.58000427484512329,&#34;b&#34;:0.28000730276107788,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.85929673910140991,&#34;b&#34;:0.23252780735492706,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.34511718153953552,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.74511718750,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.58000427484512329,&#34;b&#34;:0.28000730276107788,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.85929673910140991,&#34;b&#34;:0.23252780735492706,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:14.000000953674316,&#34;m01&#34;:-4.9339809038428939e-07,&#34;m02&#34;:-3.4106756174878683e-07,&#34;m10&#34;:-4.9339649876856129e-07,&#34;m11&#34;:-14.000000953674316,&#34;m12&#34;:14.000000953674316},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+<rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)" fill="url(#paint2_radial_1417_5)" fill-opacity="0.9"/>
+<defs>
+<clipPath id="paint0_angular_1417_5_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)"/></clipPath><clipPath id="paint1_angular_1417_5_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)"/></clipPath><radialGradient id="paint2_radial_1417_5" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(8.5 7) rotate(180) scale(8.5 9.93252)">
+<stop offset="0.615427" stop-color="#F3FFBF" stop-opacity="0"/>
+<stop offset="1" stop-color="#F3FFBF"/>
+</radialGradient>
+</defs>
+</svg>
+            <span>Sentaro</span>
+        </div>
+        <nav class="nav-links">
+            <a href="https://search3958.github.io/">ホーム</a>
+            <a href="https://search3958.github.io/i/newtab/">Newtab</a>
+            <a href="https://search3958.github.io/i/tools/">ツール</a>
+            <a href="https://github.com/search3958" target="_blank">GitHub</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <section id="hero" class="hero fade-in-up first">
+            <div>
+                <h1>私は。<br>とにかく<span>便利に</span></h1>
+             <p>いろんなツールを提供してます。なんでも使ってみてください！</p>
+            </div>
+            <div style="display: flex; gap: 16px;     flex-direction: column;
+    justify-content: space-between;
+">
+                <button class="btn btn-primary fstbtn" onclick="document.getElementById('projects').scrollIntoView({behavior: 'smooth'})">プロジェクトを見る</button>
+                <button class="btn btn-tonal fstbtn" onclick="window.location.href='https://github.com/search3958'">GitHubを確認</button>
+            </div>
+        </section>
+
+        <section id="projects" class="projects-section fade-in-up">
+            <h2 class="section-title">Featured Projects</h2>
+            <div class="project-interface">
+                <div class="project-list" id="projectList">
+                    </div>
+                <div class="project-preview">
+                    <div class="preview-content" id="previewContent">
+                        <div class="preview-title" id="pTitle">Newtab5</div>
+                        <div class="preview-desc" id="pDesc">革命的な新しいタブページ体験。美しいデザインと実用性を兼ね備えた次世代の新しいタブ。</div>
+                        <div class="preview-meta">
+                            <span class="badge" id="pPrice">価格: 無料 / 無制限</span>
+                        </div>
+                        <button class="btn btn-primary" id="pBtn">使用開始</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section fade-in-up">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-grid">
+                <div class="about-card">
+                    <span class="material-symbols-rounded about-icon">face</span>
+                    <h3>私の特徴</h3>
+                    <p>とにかく、自分が欲しいと思ったらすぐに作ってます。また、可能な限りみんなが使いやすく便利なものを作るように心がけています。</p>
+                </div>
+                <div class="about-card">
+                    <span class="material-symbols-rounded about-icon">flag</span>
+                    <h3>ミッション</h3>
+                    <p>日常のデジタル体験をより豊かで効率的にすることを目指しています。使いやすさと美しさを両立するため、特にユーザー中心設計、モダンなUI/UX、パフォーマンス重視を重視しています。</p>
+                </div>
+                <div class="about-card">
+                    <span class="material-symbols-rounded about-icon">code</span>
+                    <h3>技術スタック</h3>
+                    <p>最新のWeb技術を活用し、高品質で美しいアプリケーションを構築しています。Web系とFlutterを主に扱います。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="quality-section fade-in-up">
+            <div class="quality-container">
+                <div class="quality-overlay">
+                    <div class="quality-text">
+                        <h2>信頼できる品質</h2>
+                        <p>私は日常のちょっとした作業の手間を減らし、よりスマートに作業を効率化するためにサービスを無料で提供しています。</p>
+                        <p>常に新しい技術が使用されているため、ユーザーのニーズや時代の変化に合わせて、より直感的でスマートな体験を提供し続けています。</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number">1.3万+</span>
+                            <span class="stat-label">表示回数</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">4.2万+</span>
+                            <span class="stat-label">イベント数</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">3,766</span>
+                            <span class="stat-label">セッション</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">78.5%</span>
+                            <span class="stat-label">エンゲージメント率</span>
+                        </div>
+                        <div class="stat-note">※2025.1.1から2025.11.9までの情報</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="all-projects" class="all-projects fade-in-up">
+            <h2 class="section-title">Other Projects</h2>
+            <div class="chip-container">
+                <a class="project-chip" href="https://search3958.github.io/toolboard">ToolBoard</a>
+                <a class="project-chip" href="https://search3958.github.io/m3color">M3 Gen</a>
+                <a class="project-chip" href="https://search3958.github.io/newtab/">NewTab</a>
+                <a class="project-chip" href="https://search3958.github.io/project/htmlos/1/">Hanul1234</a>
+                <a class="project-chip" href="https://search3958.github.io/docs/document/edit/">ドキュメント</a>
+                <a class="project-chip" href="https://search3958.github.io/accounts/">3958アカウント</a>
+                <a class="project-chip" href="https://search3958.github.io/3dspace">3D Space</a>
+                <a class="project-chip" href="https://search3958.github.io/uiscript/">UI Script</a>
+                <a class="project-chip" href="https://search3958.github.io/webmaker">WebCreator</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/counter.html">カウンター</a>
+                <a class="project-chip" href="https://search3958.github.io/webmaker">thinkSocial</a>
+                <a class="project-chip" href="https://search3958.github.io/games/">クソゲー広場</a>
+                <a class="project-chip" href="https://search3958.github.io/tools">Tools</a>
+                <a class="project-chip" href="https://search3958.github.io/techpick10/">TechPick 10</a>
+                <a class="project-chip" href="https://search3958.github.io/firebasetext">火源台</a>
+                <a class="project-chip" href="https://search3958.github.io/project/images/">Images</a>
+                <a class="project-chip" href="https://search3958.github.io/project/images/2/">壁紙</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/timer/ja.html">タイマー</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/stopwatch/ja.html">ストップウォッチ</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/dclock/ja.html">デジタル時計</a>
+                <a class="project-chip" href="https://search3958.github.io/tools/aclock/ja.html">アナログ時計</a>
+                <a class="project-chip" href="https://search3958.github.io/dictionary/html/">HTML要素辞書</a>
+                <a class="project-chip" href="https://search3958.github.io/baram/welcome.html">Baram Code</a>
+            </div>
+        </section>
+
+        <section id="contact" class="contact-section fade-in-up">
+            <div class="contact-box">
+                <h2>何か伝えることがありましたらご遠慮なくどうぞ！</h2>
+                <button class="btn btn-primary" onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform?usp=sharing&ouid=116246090197695118669'">フォームを表示</button>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="logo-container" style="font-size:1rem;">Sentaro(@Search3958)</div>
+            <div class="footer-links">
+                <a href="https://search3958.github.io/accounts/lang">Language</a>
+                <a href="http://search3958.github.io/policies/" target="_blank">利用規約とプライバシーポリシー</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Data for Interactive Projects Section (Updated URLs)
+        const projects = [
+            { 
+                name: "Newtab5", 
+                desc: "革命的な新しいタブページ体験。美しいデザインと実用性を兼ね備えた次世代の新しいタブ。",
+                tag: "Main",
+                url: "https://search3958.github.io/i/newtab/"
+            },
+            { 
+                name: "ToolBoard", 
+                desc: "日常で使える便利ツールを一箇所に集約。生産性向上のための新たな選択肢を提供します。",
+                tag: "Productivity",
+                url: "https://search3958.github.io/toolboard"
+            },
+            { 
+                name: "thinkSocial", 
+                desc: "色情報も共有できるプラットフォーム。従来のSNSとは一線を画した体験をお楽しみください。",
+                tag: "SNS",
+                url: "https://sns.thinking-grp.org/"
+            },
+            { 
+                name: "3D Space", 
+                desc: "Webブラウザ上で動作する没入型の3D空間体験。",
+                tag: "WebGL",
+                url: "https://search3958.github.io/3dspace/"
+            },
+            // Sub projects (Specific Tools requested)
+            { 
+                name: "文字カウンター", 
+                desc: "リアルタイムで文字数・行数をカウントするシンプルツール。",
+                tag: "Sub",
+                url: "https://search3958.github.io/tools/counter.html"
+            },
+            { 
+                name: "WebP変換", 
+                desc: "画像を次世代フォーマットWebPへドラッグ&ドロップで瞬時に変換。",
+                tag: "Sub",
+                url: "https://search3958.github.io/tools/webp.html"
+            },
+            { 
+                name: "コード軽量化", 
+                desc: "HTML, CSS, JSを圧縮してWebサイトのパフォーマンスを向上。",
+                tag: "Sub",
+                url: "https://search3958.github.io/tools/smallcode.html"
+            }
+        ];
+
+        const listContainer = document.getElementById('projectList');
+        const pContent = document.getElementById('previewContent');
+        const pTitle = document.getElementById('pTitle');
+        const pDesc = document.getElementById('pDesc');
+        const pBtn = document.getElementById('pBtn');
+
+        // Render List
+        projects.forEach((proj, index) => {
+            const item = document.createElement('div');
+            item.className = `project-item ${index === 0 ? 'active' : ''}`;
+            item.innerHTML = `
+                <div class="project-name">
+                    ${proj.name}
+                    ${proj.tag === 'Sub' ? '<span class="sub-tag">Tool</span>' : '<span class="material-symbols-rounded">arrow_forward</span>'}
+                </div>
+            `;
+            
+            // Hover/Click Event
+            const updatePreview = () => {
+                // Remove active class from all
+                document.querySelectorAll('.project-item').forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+
+                // Animate Content Change
+                pContent.classList.remove('show');
+                
+                setTimeout(() => {
+                    pTitle.innerText = proj.name;
+                    pDesc.innerText = proj.desc;
+                    // Update Button action
+                    pBtn.onclick = () => window.location.href = proj.url;
+                    
+                    pContent.classList.add('show');
+                }, 200);
+            };
+
+            item.addEventListener('mouseenter', updatePreview);
+            item.addEventListener('click', updatePreview);
+            
+            listContainer.appendChild(item);
+        });
+
+        // Initialize Animation state & button
+        pBtn.onclick = () => window.location.href = projects[0].url;
+        setTimeout(() => {
+            pContent.classList.add('show');
+        }, 100);
+
+        // Scroll Animation Observer
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Run once
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            observer.observe(el);
+        });
+
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
+     crossorigin="anonymous"></script>
+
+     <script src="frameworks/lang.js" data-xml="xml/first.xml"></script>
+
+</body>  <script src="check.js"></script>
+</html>

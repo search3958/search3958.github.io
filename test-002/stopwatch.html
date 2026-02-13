@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M3 Stopwatch - Original Style</title>
+    <style>
+        @font-face {
+            font-family: 'LINESeedJP';
+            src: url('LINESeedJP-Regular.ttf') format('truetype');
+        }
+
+        :root {
+            --md-sys-color-surface: #ffffff;
+            --md-sys-color-on-surface: #1c1b1f;
+            --md-sys-color-surface-container: #f3f3f3;
+            --md-sys-color-primary: hsl(156, 91%, 22%);
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-secondary-container: #99fbb8;
+            --md-sys-color-outline: #747e7b;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            font-family: 'LINESeedJP', sans-serif !important;
+            user-select: none;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--md-sys-color-surface-container);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 450px;
+            padding: 24px;
+        }
+
+        /* 戻るボタン：元の丸型デザインへ */
+        .back-btn {
+            background: var(--md-sys-color-secondary-container);
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            height: 52px;
+            width: 52px;
+            border: none;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* タイムボックス：揺れを抑える固定幅 */
+        .display-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 40px;
+        }
+
+        .time-box {
+            background-color: var(--md-sys-color-surface);
+            width: 80px;
+            height: 84px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+        }
+
+        .time-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--md-sys-color-on-surface);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .separator {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--md-sys-color-outline);
+            margin-bottom: 12px;
+        }
+
+        /* コントロール：Material 3準拠 */
+        .controls {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 28px;
+            padding:24px;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            position:relative;
+            --ac-1:hsl(139, 92%, 79%);
+            --ac-01:hsla(139, 92%, 79%, 0.1);
+            --ac-0:hsla(139, 92%, 79%, 0);
+        }
+
+/* 通常時：戻る際のアニメーション設定 */
+.btn::before {
+    content: "";
+    position: absolute;
+    /* --- 修正箇所：上下中央から左右中央へ --- */
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%); /* YからXに変更 */
+    width: 10%;  /* heightからwidthに変更（通常時の横幅） */
+    height: 100%; /* 高さは常に一杯に */
+    /* -------------------------------------- */
+    
+    border-radius: 28px;
+    opacity: 0;
+    box-shadow: var(--ac-1) 0px 0px 16px 0px inset;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(1,0,1,-0.1), opacity ease 0.3s;
+    will-change: transform, opacity, width, box-shadow; /* heightをwidthに変更 */
+}
+
+/* アニメーション実行中：JSでこのクラスを付与する */
+.btn.is-animating::before {
+    width: 100%; /* 通常時の30%から100%に広がる */
+    opacity: 1;
+    border-radius: 28px;
+    box-shadow: var(--ac-0) 0px 0px 16px 0px inset;
+    background-color: var(--ac-01);
+    transition: all 0.5s cubic-bezier(.1,.23,0,1), opacity ease 0.2s;
+}
+
+
+
+        .btn-primary {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            flex: 2;
+        }
+
+        .btn-tonal {
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-primary);
+            flex: 1;
+
+            --ac-1:hsl(156, 91%, 22%);
+            --ac-01:hsla(156, 91%, 22%, 0.1);
+            --ac-0:hsla(156, 91%, 22%, 0);
+        }
+
+        svg { fill: currentColor; }
+    </style>
+</head>
+<body>
+
+    <button class="back-btn" onclick="handleBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--md-sys-color-primary)"><path d="m313-440 196 196q12 12 11.5 28T508-188q-12 11-28 11.5T452-188L188-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l264-264q11-11 27.5-11t28.5 11q12 12 12 28.5T508-715L313-520h447q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440H313Z"/></svg>
+    </button>
+
+    <main>
+        <div class="display-container">
+            <div class="time-box">
+                <span class="time-value" id="hh">00</span>
+            </div>
+            <span class="separator">:</span>
+            <div class="time-box">
+                <span class="time-value" id="mm">00</span>
+            </div>
+            <span class="separator">:</span>
+            <div class="time-box">
+                <span class="time-value" id="ss">00</span>
+            </div>
+            <span class="separator">.</span>
+            <div class="time-box">
+                <span class="time-value" id="ms">00</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleStartStop()">
+                <span id="playIcon"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M320-200v-560l440 280-440 280Z"/></svg></span>
+                <span id="btnText">開始</span>
+            </button>
+            <button class="btn btn-tonal" onclick="resetStopwatch()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
+                リセット
+            </button>
+        </div>
+    </main>
+    <script>
+    // --- ストップウォッチ変数 ---
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval;
+    let isRunning = false;
+
+    // --- タブ・ナビゲーション変数 ---
+    let currentIndex = 0;
+
+    // --- ボタンアニメーション (is-animating) の制御 ---
+    function handleBtnClick(event) {
+        const btn = event.currentTarget;
+        // アニメーションのリセット
+        btn.classList.remove('is-animating');
+        void btn.offsetWidth; // リフロー強制
+        btn.classList.add('is-animating');
+        
+        // CSSの遷移時間(0.5s)に合わせてクラスを除去
+        setTimeout(() => {
+            btn.classList.remove('is-animating');
+        }, 500); 
+    }
+
+    // すべてのボタンにアニメーションイベントを付与
+    // ※ HTML側のボタンに class="btn" または class="back-btn" があることを想定
+    document.querySelectorAll('.btn, .back-btn, .md-btn').forEach(btn => {
+        btn.addEventListener('pointerdown', handleBtnClick);
+    });
+
+    // --- ストップウォッチ機能 ---
+    function updateDisplay() {
+        const elHH = document.getElementById('hh');
+        const elMM = document.getElementById('mm');
+        const elSS = document.getElementById('ss');
+        const elMS = document.getElementById('ms');
+
+        let time = elapsedTime;
+        let hh = Math.floor(time / 3600000);
+        let mm = Math.floor((time % 3600000) / 60000);
+        let ss = Math.floor((time % 60000) / 1000);
+        let ms = Math.floor((time % 1000) / 10);
+
+        if(elHH) elHH.textContent = hh.toString().padStart(2, '0');
+        if(elMM) elMM.textContent = mm.toString().padStart(2, '0');
+        if(elSS) elSS.textContent = ss.toString().padStart(2, '0');
+        if(elMS) elMS.textContent = ms.toString().padStart(2, '0');
+    }
+
+    function toggleStartStop() {
+        const btnText = document.getElementById('btnText');
+        const playIcon = document.getElementById('playIcon');
+
+        if (!isRunning) {
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(() => {
+                elapsedTime = Date.now() - startTime;
+                updateDisplay();
+            }, 10);
+            if(btnText) btnText.textContent = "停止";
+            if(playIcon) playIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z"/></svg>';
+            isRunning = true;
+        } else {
+            clearInterval(timerInterval);
+            if(btnText) btnText.textContent = "再開";
+            if(playIcon) playIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M320-200v-560l440 280-440 280Z"/></svg>';
+            isRunning = false;
+        }
+    }
+
+    function resetStopwatch() {
+        clearInterval(timerInterval);
+        elapsedTime = 0;
+        updateDisplay();
+        isRunning = false;
+        const btnText = document.getElementById('btnText');
+        const playIcon = document.getElementById('playIcon');
+        if(btnText) btnText.textContent = "開始";
+        if(playIcon) playIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M320-200v-560l440 280-440 280Z"/></svg>';
+    }
+
+    // --- 戻る処理（Android連携） ---
+    function handleBack() {
+        if (elapsedTime > 0) {
+            const leave = confirm("ストップウォッチの時間が残っていますが、削除して戻りますか？");
+            if (!leave) return;
+        }
+        
+        if (window.AndroidInterface && typeof AndroidInterface.navigate === 'function') {
+            AndroidInterface.navigate('');
+        }
+    }
+
+    // --- UIユーティリティ (時計・バッテリー) ---
+    function showTab(id, nextIndex) {
+        if (currentIndex === nextIndex) return;
+        const sections = document.querySelectorAll('.content-section');
+        const tabs = document.querySelectorAll('.tab-item');
+        const nextSection = document.getElementById(id);
+        const currentSection = Array.from(sections).find(s => s.classList.contains('active'));
+
+        if(!nextSection || !currentSection) return;
+
+        tabs.forEach((t, i) => t.classList.toggle('active', i === nextIndex));
+        const movingRight = nextIndex > currentIndex;
+
+        currentSection.classList.remove('active', 'pos-left', 'pos-right');
+        currentSection.classList.add(movingRight ? 'pos-left' : 'pos-right');
+
+        nextSection.style.transition = 'none';
+        nextSection.classList.remove('active', 'pos-left', 'pos-right');
+        nextSection.classList.add(movingRight ? 'pos-right' : 'pos-left');
+
+        nextSection.offsetHeight; // force reflow
+        nextSection.style.transition = '';
+        nextSection.classList.add('active');
+        currentIndex = nextIndex;
+    }
+
+    function updateClock() {
+        const now = new Date();
+        const dateDisplay = document.getElementById('date-display');
+        const timeDisplay = document.getElementById('time-display');
+        if(dateDisplay) dateDisplay.innerText = now.toLocaleDateString('ja-JP');
+        if(timeDisplay) timeDisplay.innerText = now.toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    if (navigator.getBattery) {
+        navigator.getBattery().then(bat => {
+            const up = () => {
+                const l = Math.floor(bat.level * 100);
+                const bar = document.getElementById('battery-level-bar');
+                const percent = document.getElementById('battery-percent');
+                if(percent) percent.innerText = l + "%";
+                if(bar) {
+                    bar.style.width = l + "%";
+                    bar.style.backgroundColor = (l < 25) ? "#ffe136" : "#15e882";
+                }
+            };
+            up(); bat.addEventListener('levelchange', up);
+        });
+    }
+</script>
+</body>
+</html>

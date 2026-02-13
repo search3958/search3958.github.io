@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>M3 Note App</title>
+    <style>
+        @font-face { font-family: 'LINESeedJP'; src: url('LINESeedJP-Regular.ttf') format('truetype'); }
+        :root {
+            --md-sys-color-surface: #ffffff;
+            --md-sys-color-on-surface: #1c1b1f;
+            --md-sys-color-surface-container: #f7f9f8;
+            --md-sys-color-primary: #056941;
+            --md-sys-color-secondary-container: #99fbb8;
+            --md-sys-color-outline: #c4c9c6;
+            --md-sys-color-error: #ba1a1a;
+            --transition-speed: 0.25s;
+        }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; font-family: 'LINESeedJP', sans-serif !important; outline: none; }
+        body { margin: 0; background-color: var(--md-sys-color-surface-container); height: 100vh; overflow: hidden; color: var(--md-sys-color-on-surface); }
+        
+        .page-container { position: relative; width: 100%; height: 100vh; }
+        .page {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--md-sys-color-surface-container);
+            transition: opacity var(--transition-speed) ease;
+            display: flex; flex-direction: column; padding: 20px;
+            opacity: 0; pointer-events: none; z-index: 1;
+        }
+        .page.active { opacity: 1; pointer-events: auto; z-index: 2; }
+
+        .header { display: flex; align-items: center; height: 64px; margin-bottom: 10px; }
+        .back-btn {
+            background: var(--md-sys-color-secondary-container);
+            height: 48px; width: 48px; border: none; border-radius: 100px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; margin-right: 16px; flex-shrink: 0;
+        }
+
+        .note-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; overflow-y: auto; padding-bottom: 100px; }
+        .note-card {
+            background: var(--md-sys-color-surface); border-radius: 16px; padding: 16px;
+            border: 1px solid var(--md-sys-color-outline); height: 160px;
+            display: flex; flex-direction: column;
+        }
+        .note-card h3 { margin: 0 0 8px 0; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .note-card p { margin: 0; font-size: 13px; color: #555; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; }
+
+        input#note-title { width: 100%; border: none; background: transparent; font-size: 24px; font-weight: bold; padding: 10px 0; }
+        #editor { flex-grow: 1; overflow-y: auto; font-size: 16px; line-height: 1.6; }
+        #editor:empty:before { content: "メモを入力..."; color: #aaa; }
+
+        .sub-heading { display: block; font-size: 1.2em; font-weight: bold; margin-top: 16px; color: var(--md-sys-color-primary); }
+        .todo-row { display: flex; align-items: center; margin: 4px 0; }
+        .todo-row input[type="checkbox"] { width: 20px; height: 20px; margin-right: 10px; accent-color: var(--md-sys-color-primary); flex-shrink: 0; }
+        .todo-text { flex-grow: 1; outline: none; }
+
+        .toolbar { display: flex; gap: 8px; padding: 12px 0; border-top: 1px solid var(--md-sys-color-outline); overflow-x: auto; }
+        .tool-btn { 
+            background: white; border: 1px solid var(--md-sys-color-outline); 
+            padding: 8px 12px; border-radius: 8px; font-size: 12px; 
+            cursor: pointer; flex-shrink: 0; display: flex; align-items: center; gap: 4px;
+        }
+        .tool-btn.active { background: var(--md-sys-color-secondary-container); border-color: var(--md-sys-color-primary); }
+        .tool-btn.delete { color: var(--md-sys-color-error); border-color: var(--md-sys-color-error); margin-left: auto; }
+
+        .fab {
+    width: 100%;
+    height: 56px;
+    background: var(--md-sys-color-secondary-container);
+    border-radius: 33px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    margin-bottom: 24px;
+}
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+    <div id="list-page" class="page active">
+        <div class="header">
+            <button class="back-btn" onclick="if(window.AndroidInterface) AndroidInterface.navigate('')">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="var(--md-sys-color-primary)"><path d="m313-440 196 196q12 12 11.5 28T508-188q-12 11-28 11.5T452-188L188-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l264-264q11-11 27.5-11t28.5 11q12 12 12 28.5T508-715L313-520h447q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440H313Z"/></svg>
+            </button>
+            <h2 style="margin:0; font-size: 20px;">マイメモ</h2>
+        </div>
+
+        <button class="fab" onclick="createNewNote()">
+            <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 -960 960 960" width="28" fill="var(--md-sys-color-primary)"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+            新規メモ
+        </button>
+        <div class="note-list" id="note-container"></div>
+    </div>
+
+    <div id="edit-page" class="page">
+        <div class="header">
+            <button class="back-btn" onclick="saveAndGoBack()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--md-sys-color-primary)"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+            </button>
+            
+        </div>
+        <input type="text" id="note-title" placeholder="タイトル" autocomplete="off">
+        <div id="editor" contenteditable="true"></div>
+        <div class="toolbar">
+            <button class="tool-btn" onclick="toggleHeading()">T 中見出し</button>
+            <button id="todo-toggle" class="tool-btn" onclick="toggleCheckboxMode()">☑ リスト項目</button>
+            <button class="tool-btn delete" onclick="deleteNote()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/></svg>
+                削除
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 保存キーを固定
+    const STORAGE_KEY = 'm3_notes_data_v1';
+    let notes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    let currentNoteId = null;
+    let isCheckboxMode = false;
+
+    // --- 永続化関数 ---
+    function syncToStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    }
+
+    function navigateToEdit() {
+        document.getElementById('list-page').classList.remove('active');
+        document.getElementById('edit-page').classList.add('active');
+        history.pushState({view: 'edit'}, '');
+    }
+
+    function navigateToList() {
+        document.getElementById('list-page').classList.add('active');
+        document.getElementById('edit-page').classList.remove('active');
+        renderList();
+    }
+
+    window.onpopstate = () => navigateToList();
+
+    function renderList() {
+        const container = document.getElementById('note-container');
+        container.innerHTML = '';
+        notes.forEach(note => {
+            const card = document.createElement('div');
+            card.className = 'note-card';
+            const textPreview = note.content.replace(/<[^>]*>?/gm, ' ').trim();
+            card.innerHTML = `<h3>${note.title || '無題'}</h3><p>${textPreview || '本文なし'}</p>`;
+            card.onclick = () => openNote(note.id);
+            container.appendChild(card);
+        });
+    }
+
+    function createNewNote() {
+        currentNoteId = Date.now();
+        isCheckboxMode = false;
+        updateToolbarUI();
+        document.getElementById('note-title').value = '';
+        document.getElementById('editor').innerHTML = '<div><br></div>';
+        navigateToEdit();
+    }
+
+    function openNote(id) {
+        const note = notes.find(n => n.id === id);
+        if (!note) return;
+        currentNoteId = id;
+        document.getElementById('note-title').value = note.title;
+        document.getElementById('editor').innerHTML = note.content;
+        isCheckboxMode = document.getElementById('editor').querySelector('.todo-row') !== null;
+        updateToolbarUI();
+        navigateToEdit();
+    }
+
+    function saveAndGoBack() {
+        const title = document.getElementById('note-title').value;
+        const content = document.getElementById('editor').innerHTML;
+        
+        // タイトルも中身も空なら保存せずに戻る（不要なゴミを作らない）
+        if (title.trim() === '' && content.replace(/<[^>]*>?/gm, '').trim() === '') {
+            history.back();
+            return;
+        }
+
+        const index = notes.findIndex(n => n.id === currentNoteId);
+        const noteData = { id: currentNoteId, title, content, updated: Date.now() };
+        
+        if (index > -1) {
+            notes[index] = noteData;
+        } else {
+            notes.unshift(noteData);
+        }
+        
+        syncToStorage();
+        history.back();
+    }
+
+    // ブラウザ標準の確認ダイアログを追加
+    function deleteNote() {
+        if (confirm('このメモを削除しますか？')) {
+            notes = notes.filter(n => n.id !== currentNoteId);
+            syncToStorage();
+            history.back();
+        }
+    }
+
+    function toggleCheckboxMode() {
+        isCheckboxMode = !isCheckboxMode;
+        const editor = document.getElementById('editor');
+        const lines = Array.from(editor.children);
+        editor.innerHTML = '';
+        
+        lines.forEach(line => {
+            // Keepの挙動に合わせ、全行を変換
+            const text = isCheckboxMode ? line.innerText.trim() : (line.querySelector('.todo-text')?.innerText || line.innerText);
+            if (isCheckboxMode) {
+                editor.appendChild(createTodoRow(text));
+            } else {
+                const div = document.createElement('div');
+                div.innerText = text;
+                editor.appendChild(div);
+            }
+        });
+        updateToolbarUI();
+    }
+
+    function createTodoRow(text) {
+        const div = document.createElement('div');
+        div.className = 'todo-row';
+        div.innerHTML = `<input type="checkbox"><div class="todo-text" contenteditable="true">${text}</div>`;
+        return div;
+    }
+
+    function updateToolbarUI() {
+        document.getElementById('todo-toggle').classList.toggle('active', isCheckboxMode);
+    }
+
+    function toggleHeading() {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+        let container = selection.getRangeAt(0).commonAncestorContainer;
+        if (container.nodeType === 3) container = container.parentNode;
+        const line = container.closest('#editor > div');
+        if (!line) return;
+        line.classList.toggle('sub-heading');
+        if (line.classList.contains('sub-heading') && isCheckboxMode) toggleCheckboxMode();
+    }
+
+    document.getElementById('editor').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            const selection = window.getSelection();
+            const range = selection.getRangeAt(0);
+            let container = range.commonAncestorContainer;
+            if (container.nodeType === 3) container = container.parentNode;
+            const line = container.closest('#editor > div');
+
+            if (isCheckboxMode && line) {
+                e.preventDefault();
+                const newRow = createTodoRow('');
+                line.after(newRow);
+                newRow.querySelector('.todo-text').focus();
+            } else if (line && line.classList.contains('sub-heading')) {
+                e.preventDefault();
+                const nextLine = document.createElement('div');
+                nextLine.innerHTML = '<br>';
+                line.after(nextLine);
+                const newRange = document.createRange();
+                newRange.setStart(nextLine, 0);
+                newRange.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+            }
+        }
+    });
+
+    // 初期読み込み
+    renderList();
+</script>
+
+</body>
+</html>

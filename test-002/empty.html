@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M3 Premium Calculator - Adaptive</title>
+    <style>
+
+        @font-face {
+        font-family: 'LINESeedJP';
+        src: url('LINESeedJP-Regular.ttf') format('truetype');
+    }
+        :root {
+    --md-sys-color-surface: #ffffff;
+    --md-sys-color-on-surface: #1c1b1f;
+    --md-sys-color-surface-container: #f3f3f3;
+    --md-sys-color-primary: #056941;
+    --md-sys-color-secondary-container: #99fbb8;
+    --md-sys-color-outline: #747e7b;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+    font-family: 'LINESeedJP', sans-serif !important;
+    user-select: none;
+}
+
+body {
+    margin: 0; padding: 0;
+    background-color: var(--md-sys-color-surface-container);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+main {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.back-btn{
+        background: var(--md-sys-color-secondary-container);
+    position:fixed;
+    top:24px;
+    left:24px;
+    height:52px;
+    padding-top:6px;
+        aspect-ratio: 1 / 1;
+        border:none;
+        border-radius:100px;
+
+}
+    </style>
+</head>
+<body>
+
+<main>
+    <button class="back-btn" onclick="AndroidInterface.navigate('')"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--md-sys-color-primary)"><path d="m313-440 196 196q12 12 11.5 28T508-188q-12 11-28 11.5T452-188L188-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l264-264q11-11 27.5-11t28.5 11q12 12 12 28.5T508-715L313-520h447q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440H313Z"/></svg></button>
+
+</main>
+
+</body>
+</html>
