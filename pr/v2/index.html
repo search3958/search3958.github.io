@@ -56,22 +56,28 @@
     .sync-dot { width: 8px; height: 8px; background: #444; border-radius: 50%; display: inline-block; }
     .sync-indicator.active .sync-dot { background: var(--success-color); box-shadow: 0 0 8px var(--success-color); }
 
+    .btn-group { display: flex; gap: 8px; }
     .btn-reset {
       background: #333; color: #fff; border: 1px solid #555;
-      padding: 5px 15px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;
+      padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;
       transition: all 0.2s;
     }
-    .btn-reset:hover { background: var(--danger-color); border-color: var(--danger-color); }
+    .btn-reset:hover { background: #444; border-color: #777; }
+    .btn-reload-all {
+      background: var(--danger-color); color: #fff; border: none;
+      padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;
+      transition: opacity 0.2s;
+    }
+    .btn-reload-all:hover { opacity: 0.8; }
 
     .timer-container {
       position: absolute; top: 20px; right: 30px; display: flex; align-items: center; gap: 10px;
-      /* ステータスバーと被らないよう少し調整 */
       transform: translateY(50px); z-index: 100;
     }
     #stopwatch { font-family: monospace; font-size: 1.8rem; color: var(--accent-color); background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 5px; cursor: pointer; }
     .timer-btn { background: #333; border: none; color: #fff; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; }
 
-    .md-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; margin-top: 50px;}
+    .md-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; margin-top: 0px;}
     .md-container { flex: 1; overflow-y: auto; background: rgba(255,255,255,0.02); padding: 25px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; line-height: 1.6; }
 
     .min-tools { 
@@ -89,12 +95,12 @@
     .panel-controls { background: #1a1a1a; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px; }
     .control-row { display: flex; gap: 10px; align-items: center; }
 
-    #loading { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+    #loading { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; font-size:32px;}
   </style>
 </head>
 <body>
 
-<div id="loading">System Booting...</div>
+<div id="loading">잠간 기다려주십시오.</div>
 
 <div class="main-layout">
   <div class="preview-section">
@@ -112,12 +118,15 @@
         <div class="sync-indicator" id="sync-status">
           <span class="sync-dot"></span> <span id="sync-text">CONNECTING...</span>
         </div>
-        <button class="btn-reset" onclick="remoteReset()">⏮ FIRST PAGE (RESET)</button>
+        <div class="btn-group">
+          <button class="btn-reload-all" onclick="remoteReloadAll()">전체 새로고침</button>
+          <button class="btn-reset" onclick="remoteReset()">페이지 초기화</button>
+        </div>
       </div>
 
       <div class="timer-container">
-        <button class="timer-btn" onclick="resetTimer()">RESET</button>
-        <div id="stopwatch" onclick="toggleTimer()">00:00.0</div>
+        <button class="timer-btn" onclick="resetTimer()">초기화</button>
+        <div id="stopwatch" onclick="toggleTimer()">시작-00:00.0</div>
       </div>
 
       <div class="md-controls">
@@ -151,9 +160,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-  // --- Firebase Configuration ---
   const firebaseConfig = {
     apiKey: "AIzaSyDjMhqOjKoGgzvUsn0QXm2sX-epnw7yhhc",
     authDomain: "tangle-sns.firebaseapp.com",
@@ -168,6 +176,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const statusRef = ref(db, 'presentation/status');
+  const pageLoadTime = Date.now(); // ページ読み込み時刻を保持
 
   // --- Variables ---
   const FPS = 24;
@@ -180,7 +189,7 @@
   const syncText = document.getElementById("sync-text");
   
   let points = [];
-  let currentIndex = 0; // Local State
+  let currentIndex = 0;
   let targetTime = null;
   let isChecking = false;
 
@@ -245,14 +254,6 @@
     } else {
       document.getElementById("canvas-next").getContext('2d').clearRect(0,0,999,999);
     }
-    
-    // --- 以下のスクロール処理をコメントアウト、または削除 ---
-    /*
-    const headers = mdDisplay.querySelectorAll('h1, h2, h3');
-    if(headers[currentIndex]) {
-        headers[currentIndex].scrollIntoView({behavior: "smooth", block: "center"});
-    }
-    */
   }
 
   function monitor() {
@@ -266,9 +267,6 @@
     }
   }
 
-  // --- Local Execution (The "Puppet") ---
-  // Firebaseから命令が来た時だけ動く関数群
-
   function executeNext() {
     if (currentIndex < points.length) {
       targetTime = points[currentIndex].time;
@@ -279,7 +277,6 @@
     }
   }
 
-  // 単純移動（アニメーションなし）
   function executeJump(index) {
     if (index >= 0 && index <= points.length) {
       currentIndex = index;
@@ -290,61 +287,57 @@
     }
   }
 
-  // --- Remote Control (The "Master") ---
-  // ボタンを押した時は自分の画面を動かさず、DBに値をセットするだけ
-  
+  // --- Remote Control ---
   window.remoteNext = () => {
     if (currentIndex < points.length) {
-      set(statusRef, { currentIndex: currentIndex + 1, timestamp: Date.now() });
+      update(statusRef, { currentIndex: currentIndex + 1, timestamp: Date.now() });
     }
   };
 
   window.remotePrev = () => {
     if (currentIndex > 0) {
-      set(statusRef, { currentIndex: currentIndex - 1, timestamp: Date.now() });
+      update(statusRef, { currentIndex: currentIndex - 1, timestamp: Date.now() });
     }
   };
   
   window.remoteReset = () => {
-    // 最初のページに戻す
-    set(statusRef, { currentIndex: 0, timestamp: Date.now() });
+    update(statusRef, { currentIndex: 0, timestamp: Date.now() });
+  };
+
+  // 全ページを強制リロードさせる命令をDBに送る
+  window.remoteReloadAll = () => {
+    update(statusRef, { reloadTrigger: Date.now() });
   };
 
   pageInput.onchange = (e) => {
     const val = parseInt(e.target.value);
     if (val >= 1 && val <= points.length + 1) {
-      set(statusRef, { currentIndex: val - 1, timestamp: Date.now() });
+      update(statusRef, { currentIndex: val - 1, timestamp: Date.now() });
     }
   };
 
   // --- Sync Listener ---
-  // DBの絶対的な値(remoteIndex)に合わせて、自分の状態(currentIndex)を調整する
-  
   onValue(statusRef, (snapshot) => {
     const data = snapshot.val();
-    
-    // 接続確認UI更新
     syncStatus.classList.add("active");
     syncText.textContent = "同期完了 (SYNCED)";
-    
     if (!data) return;
 
+    // 全体リロードのチェック: reloadTriggerがページ読み込み後であればリロード
+    if (data.reloadTrigger && data.reloadTrigger > pageLoadTime) {
+      location.reload();
+      return;
+    }
+
     const remoteIndex = data.currentIndex;
-
-    // 既に同期済みなら何もしない
     if (remoteIndex === currentIndex) return;
-
-    // 「現在の次」であればアニメーション再生
     if (remoteIndex === currentIndex + 1) {
       executeNext();
-    } 
-    // それ以外（戻る、リセット、ジャンプ）は即座に移動
-    else {
+    } else {
       executeJump(remoteIndex);
     }
   });
 
-  // --- Misc ---
   window.toggleKildongmu = () => kPanel.classList.toggle("active");
   window.toggleFS = () => {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
@@ -352,18 +345,27 @@
   };
 
   async function init() {
+    // 最小1秒表示のためのタイマー開始
+    const minWait = new Promise(resolve => setTimeout(resolve, 400));
+    
     try {
-      const res = await fetch("./time.json");
-      points = (await res.json()).map(p => ({ ...p, time: p.frame / FPS }));
+      const dataFetch = fetch("./time.json").then(res => res.json());
+      
+      // データ取得と1秒待機の両方が終わるのを待つ
+      const [jsonData] = await Promise.all([dataFetch, minWait]);
+      
+      points = jsonData.map(p => ({ ...p, time: p.frame / FPS }));
       document.getElementById("loading").style.display = "none";
       loadMarkdown();
-      // 初回はDBの値でsyncUIされるため、ここでは明示的に呼ばなくても良いが、念のため
       syncUI();
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+      console.error(e);
+      // エラー時も1秒後にローディングを消す
+      setTimeout(() => { document.getElementById("loading").style.display = "none"; }, 1000);
+    }
   }
   
   init();
-
 </script>
 </body>
 </html>
