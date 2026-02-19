@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フリーボードシート</title>
+    <style>
+        @font-face {
+            font-family: 'LINESeedJP';
+            src: url('LINESeedJP-Regular.ttf') format('truetype');
+        }
+        :root {
+            --md-sys-color-surface: #ffffff;
+            --md-sys-color-on-surface: #1c1b1f;
+            --md-sys-color-surface-container: #f3f3f3;
+            --md-sys-color-primary: #056941;
+            --md-sys-color-secondary-container: #99fbb8;
+            --md-sys-color-outline: #747e7b;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-sys-color-surface: #1B1C18;
+                --md-sys-color-on-surface: #E4E3DB;
+                --md-sys-color-surface-container: #212121;
+                --md-sys-color-primary: #76db9f;
+                --md-sys-color-secondary-container: #00522a;
+                --md-sys-color-outline: #8F9385;
+            }
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            user-select: none;
+            font-family: 'LINESeedJP', sans-serif !important; 
+        }
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--md-sys-color-surface-container);
+            font-family: 'LINESeedJP', sans-serif !important;
+        }
+
+        #viewport {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+
+        #canvas {
+            transform-origin: 0 0;
+            position: relative;
+            transition:all 0.8s cubic-bezier(0,.75,0,1);
+        }
+
+        #sheet-wrapper {
+            position: absolute;
+            left: 50vw;
+            top: 50vh;
+            transform: translate(-50%, -50%);
+        }
+
+        #sheet-container {
+    background-color: var(--md-sys-color-surface);
+    border-radius: 38px;
+    box-shadow: 0 8px 64px rgba(0, 0, 0, 0.05);
+    padding: 6px;
+}
+
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            border: none;
+            padding: 3px;
+            min-width: 80px;
+        }
+
+        input {
+            width: 120px;
+            height: 60px;
+            border: none;
+            background-color: var(--md-sys-color-surface-container);
+            color: var(--md-sys-color-on-surface);
+            padding: 4px 8px;
+            font-size: 23px;
+            user-select: text;
+            text-align:center;
+            border-radius:100px;
+        }
+        input:focus {
+            outline: 2px solid var(--md-sys-color-primary);
+        }
+        
+        /* Sheet Modification Controls */
+        .control-btn {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-secondary-container);
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+            transition: transform 0.1s ease;
+            z-index: 10;
+        }
+        .control-btn:active {
+            transform: scale(0.9);
+        }
+        #add-row-top { top: -50px; left: 50%; transform: translateX(-150%); }
+        #remove-row-top { top: -50px; left: calc(50% + 48px); transform: translateX(-100%); }
+        #add-row-bottom { bottom: -50px; left: 50%; transform: translateX(-150%); }
+        #remove-row-bottom { bottom: -50px; left: calc(50% + 48px); transform: translateX(-100%); }
+        #add-col-left { left: -50px; top: 50%; transform: translateY(-150%); }
+        #remove-col-left { left: -50px; top: calc(50% + 48px); transform: translateY(-100%); }
+        #add-col-right { right: -50px; top: 50%; transform: translateY(-150%); }
+        #remove-col-right { right: -50px; top: calc(50% + 48px); transform: translateY(-100%); }
+        
+        /* Fixed UI Controls */
+        .fixed-btn {
+            position: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: none;
+            cursor: pointer;
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-primary);
+        }
+        .xbtn{
+
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: none;
+            cursor: pointer;
+            margin-bottom:8px;
+        }
+        #back-btn{
+            top: 24px;
+            left: 24px;
+            height: 52px;
+            width: 52px;
+            border-radius: 100px;
+        }
+        #zoom-controls {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            gap: 8px;
+            z-index: 100;
+        }
+        #zoom-in-btn, #zoom-out-btn, #reset-btn {
+             width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            font-size: 24px;
+        }
+
+    </style>
+</head>
+<body>
+
+<button id="back-btn" class="fixed-btn" onclick="location.href='./index.html'"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m313-440 196 196q12 12 11.5 28T508-188q-12 11-28 11.5T452-188L188-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l264-264q11-11 27.5-11t28.5 11q12 12 12 28.5T508-715L313-520h447q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440H313Z"/></svg></button>
+
+<div id="viewport">
+    <div id="canvas">
+        <div id="sheet-wrapper">
+            <div id="sheet-container">
+                <table id="sheet">
+                    <tbody></tbody>
+                </table>
+            </div>
+            <button class="control-btn" id="add-row-top">+</button>
+            <button class="control-btn" id="remove-row-top">-</button>
+            <button class="control-btn" id="add-row-bottom">+</button>
+            <button class="control-btn" id="remove-row-bottom">-</button>
+            <button class="control-btn" id="add-col-left">+</button>
+            <button class="control-btn" id="remove-col-left">-</button>
+            <button class="control-btn" id="add-col-right">+</button>
+            <button class="control-btn" id="remove-col-right">-</button>
+        </div>
+    </div>
+</div>
+
+<div id="zoom-controls">
+    <button id="zoom-in-btn" class="xbtn">+</button>
+    <button id="zoom-out-btn" class="xbtn">-</button>
+    <button id="reset-btn" class="xbtn" style="font-size:16px;">×</button>
+</div>
+
+<script>
+    const viewport = document.getElementById('viewport');
+    const canvas = document.getElementById('canvas');
+    const sheet = document.getElementById('sheet').getElementsByTagName('tbody')[0];
+
+    // Pan & Zoom state
+    let scale = 1;
+    let panX = 0;
+    let panY = 0;
+    let isPanning = false;
+    let startX, startY;
+    const minScale = 0.2;
+    const maxScale = 3;
+
+    function updateTransform() {
+        canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    }
+
+    function zoom(factor, centerX, centerY) {
+        const newScale = Math.max(minScale, Math.min(maxScale, scale * factor));
+        panX = centerX - (centerX - panX) * (newScale / scale);
+        panY = centerY - (centerY - panY) * (newScale / scale);
+        scale = newScale;
+        updateTransform();
+    }
+
+    viewport.onmousedown = (e) => {
+        if (e.target.closest('.control-btn') || e.target.tagName === 'INPUT') return;
+        isPanning = true;
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+        viewport.style.cursor = 'grabbing';
+        e.preventDefault();
+    };
+
+    viewport.onmousemove = (e) => {
+        if (!isPanning) return;
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        updateTransform();
+    };
+
+    window.onmouseup = () => {
+        isPanning = false;
+        viewport.style.cursor = 'grab';
+    };
+
+    viewport.onwheel = (e) => {
+        e.preventDefault();
+        const rect = viewport.getBoundingClientRect();
+        const scaleFactor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
+        zoom(scaleFactor, e.clientX - rect.left, e.clientY - rect.top);
+    };
+    
+    document.getElementById('zoom-in-btn').onclick = () => {
+        const rect = viewport.getBoundingClientRect();
+        zoom(1.2, rect.width / 2, rect.height / 2);
+    };
+    document.getElementById('zoom-out-btn').onclick = () => {
+        const rect = viewport.getBoundingClientRect();
+        zoom(1 / 1.2, rect.width / 2, rect.height / 2);
+    };
+    document.getElementById('reset-btn').onclick = () => {
+        scale = 1;
+        panX = 0;
+        panY = 0;
+        updateTransform();
+    };
+
+    // Sheet manipulation logic
+    function createCell() {
+        const cell = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'text';
+        cell.appendChild(input);
+        return cell;
+    }
+
+    function addRow(atStart = false) {
+        const row = document.createElement('tr');
+        const colCount = sheet.rows.length > 0 ? sheet.rows[0].cells.length : 3;
+        for (let i = 0; i < colCount; i++) {
+            row.appendChild(createCell());
+        }
+        if (atStart) {
+            sheet.insertBefore(row, sheet.firstChild);
+        } else {
+            sheet.appendChild(row);
+        }
+    }
+
+    function removeRow(fromStart = false) {
+        if (sheet.rows.length > 1) {
+             if (fromStart) {
+                sheet.removeChild(sheet.rows[0]);
+            } else {
+                sheet.removeChild(sheet.rows[sheet.rows.length - 1]);
+            }
+        }
+    }
+
+    function addCol(atStart = false) {
+        if(sheet.rows.length === 0) addRow();
+        for (let i = 0; i < sheet.rows.length; i++) {
+            const cell = createCell();
+            if (atStart) {
+                sheet.rows[i].insertBefore(cell, sheet.rows[i].firstChild);
+            } else {
+                sheet.rows[i].appendChild(cell);
+            }
+        }
+    }
+
+    function removeCol(fromStart = false) {
+        if (sheet.rows.length > 0 && sheet.rows[0].cells.length > 1) {
+            for (let i = 0; i < sheet.rows.length; i++) {
+                if (fromStart) {
+                    sheet.rows[i].removeChild(sheet.rows[i].cells[0]);
+                } else {
+                    sheet.rows[i].removeChild(sheet.rows[i].cells[sheet.rows[i].cells.length - 1]);
+                }
+            }
+        }
+    }
+
+    document.getElementById('add-row-top').onclick = (e) => { e.stopPropagation(); addRow(true); };
+    document.getElementById('remove-row-top').onclick = (e) => { e.stopPropagation(); removeRow(true); };
+    document.getElementById('add-row-bottom').onclick = (e) => { e.stopPropagation(); addRow(false); };
+    document.getElementById('remove-row-bottom').onclick = (e) => { e.stopPropagation(); removeRow(false); };
+    document.getElementById('add-col-left').onclick = (e) => { e.stopPropagation(); addCol(true); };
+    document.getElementById('remove-col-left').onclick = (e) => { e.stopPropagation(); removeCol(true); };
+    document.getElementById('add-col-right').onclick = (e) => { e.stopPropagation(); addCol(false); };
+    document.getElementById('remove-col-right').onclick = (e) => { e.stopPropagation(); removeCol(false); };
+
+
+    // Initial sheet
+    for (let i = 0; i < 3; i++) {
+        addRow();
+    }
+    
+    updateTransform();
+</script>
+
+</body>
+</html>

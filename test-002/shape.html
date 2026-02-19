@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>立体図形展開図ビューア</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a1a0f;
+      --bg-mid: #0f2818;
+      --accent: #10b981;
+      --accent-light: #34d399;
+      --accent-dark: #059669;
+      --text: #e8f5e9;
+      --text-muted: #81c784;
+      --card: rgba(16, 185, 129, 0.1);
+      --border: rgba(52, 211, 153, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg-pattern {
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(5, 150, 105, 0.1) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 0;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      color: var(--accent-light);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .shape-selector {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .shape-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+    }
+
+    .shape-btn:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .shape-btn.active {
+      background: var(--accent);
+      color: var(--bg-dark);
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    .viewer-wrapper {
+      position: relative;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.02) 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 500px;
+      cursor: grab;
+    }
+
+    #canvas-container:active {
+      cursor: grabbing;
+    }
+
+    .controls-panel {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 24px;
+      background: rgba(10, 26, 15, 0.8);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (min-width: 768px) {
+      .controls-panel {
+        grid-template-columns: 2fr 1fr;
+      }
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .control-value {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--accent-light);
+      font-size: 0.9rem;
+    }
+
+    .slider-container {
+      position: relative;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(90deg, var(--accent-dark) 0%, var(--accent) 100%);
+      border-radius: 4px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      background: var(--accent-light);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+      transition: transform 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      background: var(--accent-light);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+    }
+
+    .labels-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .ctrl-btn {
+      flex: 1;
+      min-width: 100px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .ctrl-btn:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--accent);
+    }
+
+    .ctrl-btn.active {
+      background: var(--accent);
+      color: var(--bg-dark);
+    }
+
+    .ctrl-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .info-panel {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 16px;
+      background: rgba(16, 185, 129, 0.05);
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .info-item {
+      text-align: center;
+    }
+
+    .info-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      color: var(--accent-light);
+    }
+
+    @media (max-width: 600px) {
+      #canvas-container {
+        height: 350px;
+      }
+      
+      .info-panel {
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-pattern"></div>
+  
+  <div class="container">
+    <header>
+      <h1>POLYHEDRA VIEWER</h1>
+      <p class="subtitle">展開図と3Dモデルを自由に切り替え</p>
+    </header>
+
+    <nav class="shape-selector" role="tablist">
+      <button class="shape-btn active" data-shape="cube" role="tab" aria-selected="true">立方体</button>
+      <button class="shape-btn" data-shape="rectangular" role="tab">直方体</button>
+      <button class="shape-btn" data-shape="triangular_prism" role="tab">三角柱</button>
+      <button class="shape-btn" data-shape="triangular_pyramid" role="tab">三角錐</button>
+      <button class="shape-btn" data-shape="pentagonal_prism" role="tab">五角柱</button>
+    </nav>
+
+    <div class="viewer-wrapper">
+      <div id="canvas-container"></div>
+      
+      <div class="controls-panel">
+        <div class="control-group">
+          <div class="control-label">
+            <span>展開具合</span>
+            <span class="control-value" id="unfold-value">0%</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="unfold-slider" min="0" max="100" value="0">
+            <div class="labels-row">
+              <span>展開図</span>
+              <span>3D</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>操作</span>
+          </div>
+          <div class="btn-group">
+            <button class="ctrl-btn" id="btn-zoom-in" aria-label="拡大">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/>
+              </svg>
+              拡大
+            </button>
+            <button class="ctrl-btn" id="btn-zoom-out" aria-label="縮小">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M8 11h6"/>
+              </svg>
+              縮小
+            </button>
+            <button class="ctrl-btn" id="btn-animate" aria-label="アニメーション">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              再生
+            </button>
+            <button class="ctrl-btn" id="btn-reset" aria-label="リセット">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              リセット
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-item">
+          <div class="info-label">頂点数</div>
+          <div class="info-value" id="info-vertices">8</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">辺数</div>
+          <div class="info-value" id="info-edges">12</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">面数</div>
+          <div class="info-value" id="info-faces">6</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // === State ===
+    let currentShape = 'cube';
+    let unfoldAmount = 0;
+    let isAnimating = false;
+    let animationDirection = 1;
+    let shapeGroup = null;
+    let faces = [];
+
+    // === Three.js Setup ===
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.set(5, 4, 6);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    container.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.minDistance = 3;
+    controls.maxDistance = 15;
+
+    // === Lighting ===
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 10, 7);
+    scene.add(directionalLight);
+
+    const backLight = new THREE.DirectionalLight(0x34d399, 0.3);
+    backLight.position.set(-5, -5, -5);
+    scene.add(backLight);
+
+    // === Materials ===
+    const faceMaterials = [
+      new THREE.MeshPhongMaterial({ color: 0x10b981, side: THREE.DoubleSide, flatShading: true }),
+      new THREE.MeshPhongMaterial({ color: 0x059669, side: THREE.DoubleSide, flatShading: true }),
+      new THREE.MeshPhongMaterial({ color: 0x34d399, side: THREE.DoubleSide, flatShading: true }),
+      new THREE.MeshPhongMaterial({ color: 0x0d9488, side: THREE.DoubleSide, flatShading: true }),
+      new THREE.MeshPhongMaterial({ color: 0x14b8a6, side: THREE.DoubleSide, flatShading: true }),
+      new THREE.MeshPhongMaterial({ color: 0x047857, side: THREE.DoubleSide, flatShading: true }),
+      new THREE.MeshPhongMaterial({ color: 0x22c55e, side: THREE.DoubleSide, flatShading: true }),
+      new THREE.MeshPhongMaterial({ color: 0x15803d, side: THREE.DoubleSide, flatShading: true }),
+    ];
+
+    const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x86efac, linewidth: 1 });
+
+    // === Shape Definitions ===
+    const shapeInfo = {
+      cube: { vertices: 8, edges: 12, faces: 6 },
+      rectangular: { vertices: 8, edges: 12, faces: 6 },
+      triangular_prism: { vertices: 6, edges: 9, faces: 5 },
+      triangular_pyramid: { vertices: 4, edges: 6, faces: 4 },
+      pentagonal_prism: { vertices: 10, edges: 15, faces: 7 }
+    };
+
+    // === Helper Functions ===
+    function createFace(vertices, colorIndex) {
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(vertices.flat());
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.computeVertexNormals();
+      
+      const material = faceMaterials[colorIndex % faceMaterials.length];
+      const mesh = new THREE.Mesh(geometry, material.clone());
+      
+      // Edge geometry
+      const edgeGeometry = new THREE.BufferGeometry();
+      const edgeVertices = [...vertices, vertices[0]].flat();
+      edgeGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(edgeVertices), 3));
+      const edge = new THREE.Line(edgeGeometry, edgeMaterial);
+      
+      const group = new THREE.Group();
+      group.add(mesh);
+      group.add(edge);
+      
+      return group;
+    }
+
+    function clearShape() {
+      if (shapeGroup) {
+        scene.remove(shapeGroup);
+        shapeGroup.traverse(child => {
+          if (child.geometry) child.geometry.dispose();
+          if (child.material) child.material.dispose();
+        });
+      }
+      faces = [];
+      shapeGroup = new THREE.Group();
+      scene.add(shapeGroup);
+    }
+
+    // === Shape Creation Functions ===
+    function createCube(size = 1.5) {
+      clearShape();
+      const s = size;
+      
+      // Front face
+      const front = createFace([
+        [-s, -s, s], [s, -s, s], [s, s, s], [-s, s, s]
+      ], 0);
+      front.userData = {
+        pivot: new THREE.Vector3(0, -s, s),
+        axis: new THREE.Vector3(1, 0, 0),
+        angle: -Math.PI / 2,
+        basePosition: new THREE.Vector3(0, -s, s)
+      };
+      faces.push(front);
+      shapeGroup.add(front);
+
+      // Back face
+      const back = createFace([
+        [s, -s, -s], [-s, -s, -s], [-s, s, -s], [s, s, -s]
+      ], 1);
+      back.userData = {
+        pivot: new THREE.Vector3(0, -s, -s),
+        axis: new THREE.Vector3(1, 0, 0),
+        angle: Math.PI / 2,
+        basePosition: new THREE.Vector3(0, -s, -s)
+      };
+      faces.push(back);
+      shapeGroup.add(back);
+
+      // Top face
+      const top = createFace([
+        [-s, s, s], [s, s, s], [s, s, -s], [-s, s, -s]
+      ], 2);
+      top.userData = {
+        pivot: new THREE.Vector3(0, s, 0),
+        axis: new THREE.Vector3(1, 0, 0),
+        angle: -Math.PI / 2,
+        basePosition: new THREE.Vector3(0, s, 0)
+      };
+      faces.push(top);
+      shapeGroup.add(top);
+
+      // Bottom face
+      const bottom = createFace([
+        [-s, -s, -s], [s, -s, -s], [s, -s, s], [-s, -s, s]
+      ], 3);
+      bottom.userData = { isBase: true };
+      faces.push(bottom);
+      shapeGroup.add(bottom);
+
+      // Right face
+      const right = createFace([
+        [s, -s, s], [s, -s, -s], [s, s, -s], [s, s, s]
+      ], 4);
+      right.userData = {
+        pivot: new THREE.Vector3(s, -s, 0),
+        axis: new THREE.Vector3(0, 0, 1),
+        angle: Math.PI / 2,
+        basePosition: new THREE.Vector3(s, -s, 0)
+      };
+      faces.push(right);
+      shapeGroup.add(right);
+
+      // Left face
+      const left = createFace([
+        [-s, -s, -s], [-s, -s, s], [-s, s, s], [-s, s, -s]
+      ], 5);
+      left.userData = {
+        pivot: new THREE.Vector3(-s, -s, 0),
+        axis: new THREE.Vector3(0, 0, 1),
+        angle: -Math.PI / 2,
+        basePosition: new THREE.Vector3(-s, -s, 0)
+      };
+      faces.push(left);
+      shapeGroup.add(left);
+
+      shapeGroup.position.y = size;
+    }
+
+    function createRectangular(w = 2, h = 1, d = 1.2) {
+      clearShape();
+      
+      // Front
+      const front = createFace([
+        [-w, -h, d], [w, -h, d], [w, h, d], [-w, h, d]
+      ], 0);
+      front.userData = {
+        pivot: new THREE.Vector3(0, -h, d),
+        axis: new THREE.Vector3(1, 0, 0),
+        angle: -Math.PI / 2,
+        basePosition: new THREE.Vector3(0, -h, d)
+      };
+      faces.push(front);
+      shapeGroup.add(front);
+
+      // Back
+      const back = createFace([
+        [w, -h, -d], [-w, -h, -d], [-w, h, -d], [w, h, -d]
+      ], 1);
+      back.userData = {
+        pivot: new THREE.Vector3(0, -h, -d),
+        axis: new THREE.Vector3(1, 0, 0),
+        angle: Math.PI / 2,
+        basePosition: new THREE.Vector3(0, -h, -d)
+      };
+      faces.push(back);
+      shapeGroup.add(back);
+
+      // Top
+      const top = createFace([
+        [-w, h, d], [w, h, d], [w, h, -d], [-w, h, -d]
+      ], 2);
+      top.userData = {
+        pivot: new THREE.Vector3(0, h, 0),
+        axis: new THREE.Vector3(1, 0, 0),
+        angle: -Math.PI / 2,
+        basePosition: new THREE.Vector3(0, h, 0)
+      };
+      faces.push(top);
+      shapeGroup.add(top);
+
+      // Bottom
+      const bottom = createFace([
+        [-w, -h, -d], [w, -h, -d], [w, -h, d], [-w, -h, d]
+      ], 3);
+      bottom.userData = { isBase: true };
+      faces.push(bottom);
+      shapeGroup.add(bottom);
+
+      // Right
+      const right = createFace([
+        [w, -h, d], [w, -h, -d], [w, h, -d], [w, h, d]
+      ], 4);
+      right.userData = {
+        pivot: new THREE.Vector3(w, -h, 0),
+        axis: new THREE.Vector3(0, 0, 1),
+        angle: Math.PI / 2,
+        basePosition: new THREE.Vector3(w, -h, 0)
+      };
+      faces.push(right);
+      shapeGroup.add(right);
+
+      // Left
+      const left = createFace([
+        [-w, -h, -d], [-w, -h, d], [-w, h, d], [-w, h, -d]
+      ], 5);
+      left.userData = {
+        pivot: new THREE.Vector3(-w, -h, 0),
+        axis: new THREE.Vector3(0, 0, 1),
+        angle: -Math.PI / 2,
+        basePosition: new THREE.Vector3(-w, -h, 0)
+      };
+      faces.push(left);
+      shapeGroup.add(left);
+
+      shapeGroup.position.y = h + 0.5;
+    }
+
+    function createTriangularPrism(size = 1.5) {
+      clearShape();
+      const h = size;
+      const r = size * 0.8;
+      
+      const tri = [
+        new THREE.Vector3(0, -h, r * 0.577),
+        new THREE.Vector3(-r, -h, -r * 0.289),
+        new THREE.Vector3(r, -h, -r * 0.289)
+      ];
+
+      // Bottom triangle
+      const bottom = createFace([
+        [tri[0].x, tri[0].y, tri[0].z],
+        [tri[2].x, tri[2].y, tri[2].z],
+        [tri[1].x, tri[1].y, tri[1].z]
+      ], 0);
+      bottom.userData = { isBase: true };
+      faces.push(bottom);
+      shapeGroup.add(bottom);
+
+      // Top triangle
+      const top = createFace([
+        [tri[0].x, h, tri[0].z],
+        [tri[1].x, h, tri[1].z],
+        [tri[2].x, h, tri[2].z]
+      ], 1);
+      top.userData = {
+        pivot: new THREE.Vector3(0, h, tri[0].z),
+        axis: new THREE.Vector3(1, 0, 0),
+        angle: -Math.PI / 2,
+        basePosition: new THREE.Vector3(0, h, tri[0].z)
+      };
+      faces.push(top);
+      shapeGroup.add(top);
+
+      // Side 1
+      const side1 = createFace([
+        [tri[0].x, -h, tri[0].z],
+        [tri[1].x, -h, tri[1].z],
+        [tri[1].x, h, tri[1].z],
+        [tri[0].x, h, tri[0].z]
+      ], 2);
+      side1.userData = {
+        pivot: tri[0].clone().lerp(tri[1], 0.5).setY(-h),
+        axis: new THREE.Vector3(0, 0, 1),
+        angle: -Math.PI / 2,
+        basePosition: tri[0].clone().lerp(tri[1], 0.5).setY(-h)
+      };
+      faces.push(side1);
+      shapeGroup.add(side1);
+
+      // Side 2
+      const side2 = createFace([
+        [tri[1].x, -h, tri[1].z],
+        [tri[2].x, -h, tri[2].z],
+        [tri[2].x, h, tri[2].z],
+        [tri[1].x, h, tri[1].z]
+      ], 3);
+      side2.userData = {
+        pivot: tri[1].clone().lerp(tri[2], 0.5).setY(-h),
+        axis: new THREE.Vector3(0, 0, 1),
+        angle: -Math.PI / 2,
+        basePosition: tri[1].clone().lerp(tri[2], 0.5).setY(-h)
+      };
+      faces.push(side2);
+      shapeGroup.add(side2);
+
+      // Side 3
+      const side3 = createFace([
+        [tri[2].x, -h, tri[2].z],
+        [tri[0].x, -h, tri[0].z],
+        [tri[0].x, h, tri[0].z],
+        [tri[2].x, h, tri[2].z]
+      ], 4);
+      side3.userData = {
+        pivot: tri[2].clone().lerp(tri[0], 0.5).setY(-h),
+        axis: new THREE.Vector3(0, 0, 1),
+        angle: -Math.PI / 2,
+        basePosition: tri[2].clone().lerp(tri[0], 0.5).setY(-h)
+      };
+      faces.push(side3);
+      shapeGroup.add(side3);
+
+      shapeGroup.position.y = size + 0.5;
+    }
+
+    function createTriangularPyramid(size = 1.5) {
+      clearShape();
+      const h = size * 1.2;
+      const r = size;
+      
+      const apex = new THREE.Vector3(0, h, 0);
+      const base = [
+        new THREE.Vector3(0, 0, r),
+        new THREE.Vector3(-r * 0.866, 0, -r * 0.5),
+        new THREE.Vector3(r * 0.866, 0, -r * 0.5)
+      ];
+
+      // Base triangle
+      const bottom = createFace([
+        [base[0].x, base[0].y, base[0].z],
+        [base[2].x, base[2].y, base[2].z],
+        [base[1].x, base[1].y, base[1].z]
+      ], 0);
+      bottom.userData = { isBase: true };
+      faces.push(bottom);
+      shapeGroup.add(bottom);
+
+      // Side 1
+      const side1 = createFace([
+        [base[0].x, base[0].y, base[0].z],
+        [base[1].x, base[1].y, base[1].z],
+        [apex.x, apex.y, apex.z]
+      ], 1);
+      side1.userData = {
+        pivot: base[0].clone().lerp(base[1], 0.5),
+        axis: new THREE.Vector3(0, 0, 1),
+        angle: -Math.PI / 2,
+        basePosition: base[0].clone().lerp(base[1], 0.5)
+      };
+      faces.push(side1);
+      shapeGroup.add(side1);
+
+      // Side 2
+      const side2 = createFace([
+        [base[1].x, base[1].y, base[1].z],
+        [base[2].x, base[2].y, base[2].z],
+        [apex.x, apex.y, apex.z]
+      ], 2);
+      side2.userData = {
+        pivot: base[1].clone().lerp(base[2], 0.5),
+        axis: new THREE.Vector3(0, 0, 1),
+        angle: -Math.PI / 2,
+        basePosition: base[1].clone().lerp(base[2], 0.5)
+      };
+      faces.push(side2);
+      shapeGroup.add(side2);
+
+      // Side 3
+      const side3 = createFace([
+        [base[2].x, base[2].y, base[2].z],
+        [base[0].x, base[0].y, base[0].z],
+        [apex.x, apex.y, apex.z]
+      ], 3);
+      side3.userData = {
+        pivot: base[2].clone().lerp(base[0], 0.5),
+        axis: new THREE.Vector3(0, 0, 1),
+        angle: -Math.PI / 2,
+        basePosition: base[2].clone().lerp(base[0], 0.5)
+      };
+      faces.push(side3);
+      shapeGroup.add(side3);
+
+      shapeGroup.position.y = 1;
+    }
+
+    function createPentagonalPrism(size = 1.2) {
+      clearShape();
+      const h = size;
+      const r = size * 1.2;
+      
+      const pentagon = [];
+      for (let i = 0; i < 5; i++) {
+        const angle = (i * Math.PI * 2) / 5 - Math.PI / 2;
+        pentagon.push(new THREE.Vector3(r * Math.cos(angle), 0, r * Math.sin(angle)));
+      }
+
+      // Bottom
+      const bottomVerts = pentagon.map(p => [p.x, -h, p.z]).reverse();
+      const bottom = createFace(bottomVerts, 0);
+      bottom.userData = { isBase: true };
+      faces.push(bottom);
+      shapeGroup.add(bottom);
+
+      // Top
+      const topVerts = pentagon.map(p => [p.x, h, p.z]);
+      const top = createFace(topVerts, 1);
+      top.userData = {
+        pivot: new THREE.Vector3(0, h, r),
+        axis: new THREE.Vector3(1, 0, 0),
+        angle: -Math.PI / 2,
+        basePosition: new THREE.Vector3(0, h, r)
+      };
+      faces.push(top);
+      shapeGroup.add(top);
+
+      // Sides
+      for (let i = 0; i < 5; i++) {
+        const next = (i + 1) % 5;
+        const side = createFace([
+          [pentagon[i].x, -h, pentagon[i].z],
+          [pentagon[next].x, -h, pentagon[next].z],
+          [pentagon[next].x, h, pentagon[next].z],
+          [pentagon[i].x, h, pentagon[i].z]
+        ], i + 2);
+        
+        const midPoint = pentagon[i].clone().lerp(pentagon[next], 0.5);
+        side.userData = {
+          pivot: midPoint.clone().setY(-h),
+          axis: new THREE.Vector3(0, 0, 1),
+          angle: -Math.PI / 2,
+          basePosition: midPoint.clone().setY(-h)
+        };
+        faces.push(side);
+        shapeGroup.add(side);
+      }
+
+      shapeGroup.position.y = size + 0.8;
+    }
+
+    // === Update Unfold ===
+    function updateUnfold(amount) {
+      faces.forEach(face => {
+        if (face.userData.isBase) return;
+        
+        const { pivot, axis, angle } = face.userData;
+        if (!pivot || !axis) return;
+        
+        const unfoldAngle = angle * (1 - amount);
+        
+        face.position.set(0, 0, 0);
+        face.rotation.set(0, 0, 0);
+        
+        // Translate to pivot
+        face.position.sub(pivot);
+        
+        // Rotate
+        const quaternion = new THREE.Quaternion();
+        quaternion.setFromAxisAngle(axis, unfoldAngle);
+        face.quaternion.premultiply(quaternion);
+        
+        // Apply rotation to position
+        face.position.applyQuaternion(quaternion);
+        
+        // Translate back
+        face.position.add(pivot);
+      });
+    }
+
+    // === Create Shape Function ===
+    function createShape(type) {
+      switch (type) {
+        case 'cube': createCube(); break;
+        case 'rectangular': createRectangular(); break;
+        case 'triangular_prism': createTriangularPrism(); break;
+        case 'triangular_pyramid': createTriangularPyramid(); break;
+        case 'pentagonal_prism': createPentagonalPrism(); break;
+      }
+      updateUnfold(unfoldAmount);
+      updateInfo(type);
+    }
+
+    // === Update Info Panel ===
+    function updateInfo(type) {
+      const info = shapeInfo[type];
+      document.getElementById('info-vertices').textContent = info.vertices;
+      document.getElementById('info-edges').textContent = info.edges;
+      document.getElementById('info-faces').textContent = info.faces;
+    }
+
+    // === Event Listeners ===
+    const shapeButtons = document.querySelectorAll('.shape-btn');
+    shapeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        shapeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentShape = btn.dataset.shape;
+        createShape(currentShape);
+      });
+    });
+
+    const unfoldSlider = document.getElementById('unfold-slider');
+    const unfoldValue = document.getElementById('unfold-value');
+    
+    unfoldSlider.addEventListener('input', () => {
+      unfoldAmount = unfoldSlider.value / 100;
+      unfoldValue.textContent = `${unfoldSlider.value}%`;
+      updateUnfold(unfoldAmount);
+    });
+
+    document.getElementById('btn-zoom-in').addEventListener('click', () => {
+      camera.position.multiplyScalar(0.8);
+    });
+
+    document.getElementById('btn-zoom-out').addEventListener('click', () => {
+      camera.position.multiplyScalar(1.25);
+    });
+
+    const animateBtn = document.getElementById('btn-animate');
+    animateBtn.addEventListener('click', () => {
+      isAnimating = !isAnimating;
+      animateBtn.classList.toggle('active', isAnimating);
+      animateBtn.innerHTML = isAnimating 
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>停止'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>再生';
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      isAnimating = false;
+      animateBtn.classList.remove('active');
+      animateBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>再生';
+      unfoldAmount = 0;
+      unfoldSlider.value = 0;
+      unfoldValue.textContent = '0%';
+      camera.position.set(5, 4, 6);
+      controls.reset();
+      createShape(currentShape);
+    });
+
+    // === Resize Handler ===
+    window.addEventListener('resize', () => {
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    });
+
+    // === Animation Loop ===
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      if (isAnimating) {
+        unfoldAmount += 0.005 * animationDirection;
+        
+        if (unfoldAmount >= 1) {
+          unfoldAmount = 1;
+          animationDirection = -1;
+        } else if (unfoldAmount <= 0) {
+          unfoldAmount = 0;
+          animationDirection = 1;
+        }
+        
+        unfoldSlider.value = Math.round(unfoldAmount * 100);
+        unfoldValue.textContent = `${Math.round(unfoldAmount * 100)}%`;
+        updateUnfold(unfoldAmount);
+      }
+      
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    // === Initialize ===
+    createShape(currentShape);
+    animate();
+  </script>
+</body>
+</html>

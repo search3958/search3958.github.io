@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Graph Interactive - Adaptive</title>
+    <style>
+        /* Modern & Minimalist Design for Math Graph Interactive - Adjusted */
+
+@font-face {
+    font-family: 'LINESeedJP';
+    src: url('LINESeedJP-Regular.ttf') format('truetype');
+}
+
+:root {
+    --md-sys-color-primary: #006d43;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #95f7bd;
+    --md-sys-color-surface: #fdfdfd;
+    --md-sys-color-surface-container: #f0f4f0;
+    --md-sys-color-on-surface: #191c1a;
+    --md-sys-color-on-surface-variant: #404943;
+    --md-sys-color-outline: #707971;
+    --md-sys-color-secondary-container: #99fbb8; /* Back button original color */
+    
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+    font-family: 'LINESeedJP', 'Helvetica Neue', Arial, sans-serif !important;
+    user-select: none;
+}
+
+body {
+    margin: 0; padding: 0;
+    background-color: var(--md-sys-color-surface);
+    height: 100vh;
+    display: flex;
+    color: var(--md-sys-color-on-surface);
+}
+
+main {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* --- Left Panel --- */
+.controls-panel {
+    width: 360px;
+    background: var(--md-sys-color-surface);
+    padding: 100px 24px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    z-index: 10;
+    overflow-y: auto;
+    border-right: 1px solid var(--md-sys-color-surface-container);
+}
+
+.graph-container {
+    flex-grow: 1;
+    background-color: #ffffff;
+    position: relative;
+}
+
+/* --- UI Elements --- */
+
+.equation-display {
+    font-size: 1.75rem;
+    font-weight: 500;
+    text-align: center;
+    padding: 24px;
+    background: var(--md-sys-color-surface-container);
+    border-radius: 20px;
+    color: var(--md-sys-color-primary);
+    font-family: 'Times New Roman', serif !important;
+}
+
+.mode-selector {
+    display: flex;
+    background: var(--md-sys-color-surface-container);
+    padding: 4px;
+    border-radius: 12px;
+    gap: 4px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 10px 4px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant);
+    transition: var(--transition-fast);
+}
+
+.mode-btn.active {
+    background: #ffffff;
+    color: var(--md-sys-color-primary);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* --- Sliders (Enhanced Height) --- */
+.slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Spacing between label and slider */
+    margin-bottom: 8px;
+}
+
+.slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px; /* Slightly thicker track */
+    background: var(--md-sys-color-surface-container);
+    border-radius: 10px;
+    outline: none;
+}
+
+/* Thumb (The handle) - Increased size for better accessibility */
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 28px; /* Higher/Bigger thumb */
+    width: 28px;
+    border-radius: 50%;
+    background: var(--md-sys-color-primary);
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    transition: transform 0.1s ease;
+    border: 2px solid white;
+}
+
+input[type=range]:active::-webkit-slider-thumb {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.info-box {
+    background: #ffffff;
+    padding: 16px;
+    border-left: 4px solid var(--md-sys-color-primary-container);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.compare-btn {
+    background: var(--md-sys-color-primary);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 100px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: auto;
+}
+
+/* --- Back Button (Restored to Original Circle) --- */
+.back-btn {
+    background: var(--md-sys-color-secondary-container);
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    height: 52px;
+    width: 52px;
+    padding-top: 6px;
+    border: none;
+    border-radius: 100px;
+    z-index: 100;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.back-btn:hover {
+    filter: brightness(0.95);
+    transform: scale(1.05);
+}
+
+/* --- Mobile --- */
+@media (max-width: 800px) {
+    main { flex-direction: column-reverse; }
+    .controls-panel { width: 100%; height: 55%; padding: 24px; border-top: 1px solid var(--md-sys-color-surface-container); }
+    .graph-container { height: 45%; }
+    .back-btn { top: 12px; left: 12px; height: 44px; width: 44px; padding-top: 4px; }
+    input[type=range]::-webkit-slider-thumb { height: 32px; width: 32px; } /* Even larger for touch */
+}
+    </style>
+</head>
+<body>
+
+<main>
+    <div class="controls-panel">
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="setMode('linear')">一次関数</button>
+            <button class="mode-btn" onclick="setMode('quadratic')">二次関数</button>
+            <button class="mode-btn" onclick="setMode('inverse')">反比例</button>
+        </div>
+
+        <div class="equation-display" id="equationOutput">y = x</div>
+
+        <div id="slidersArea">
+            </div>
+
+        <div class="info-box" id="educationalText">
+            パラメータを操作して、グラフの変化を確認しましょう。
+        </div>
+
+        <button class="compare-btn" id="compareBtn" onclick="toggleShadow()">
+            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Z"/></svg>
+            <span>現在のグラフを比較用に残す</span>
+        </button>
+    </div>
+
+    <div class="graph-container" id="graphContainer">
+        <canvas id="graphCanvas"></canvas>
+    </div>
+
+    <button class="back-btn" onclick="try{AndroidInterface.navigate('')}catch(e){console.log('Back clicked')}" aria-label="Back">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--md-sys-color-primary)">
+            <path d="m313-440 196 196q12 12 11.5 28T508-188q-12 11-28 11.5T452-188L188-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l264-264q11-11 27.5-11t28.5 11q12 12 12 28.5T508-715L313-520h447q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440H313Z"/>
+        </svg>
+    </button>
+</main>
+
+<script>
+    /**
+     * Application State
+     */
+    const state = {
+        mode: 'linear', // linear, quadratic, inverse
+        params: { a: 1, b: 0, c: 0, k: 4 },
+        shadow: null, // Stores a copy of params for comparison
+        zoom: 40, // Pixels per unit
+        offsetX: 0,
+        offsetY: 0
+    };
+
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('graphContainer');
+
+    /**
+     * Initialization
+     */
+    function init() {
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        renderSliders();
+        updateGraph();
+    }
+
+    function resizeCanvas() {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        // Reset origin to center
+        state.offsetX = canvas.width / 2;
+        state.offsetY = canvas.height / 2;
+        updateGraph();
+    }
+
+    /**
+     * Logic: Mode Switching
+     */
+    window.setMode = function(mode) {
+        state.mode = mode;
+        state.shadow = null; // Clear comparison on mode switch
+        document.getElementById('compareBtn').classList.remove('active');
+        document.querySelector('#compareBtn span').textContent = "現在のグラフを比較用に残す";
+        
+        // Reset default params for better UX
+        if(mode === 'linear') { state.params.a = 1; state.params.b = 0; }
+        if(mode === 'quadratic') { state.params.a = 1; state.params.b = 0; state.params.c = 0; }
+        if(mode === 'inverse') { state.params.k = 6; }
+
+        // Update Buttons
+        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = Array.from(document.querySelectorAll('.mode-btn')).find(b => b.textContent.includes(
+            mode === 'linear' ? '一次' : mode === 'quadratic' ? '二次' : '反比例'
+        ));
+        if(activeBtn) activeBtn.classList.add('active');
+
+        renderSliders();
+        updateGraph();
+    };
+
+    /**
+     * Logic: Comparison (Shadow)
+     */
+    window.toggleShadow = function() {
+        const btn = document.getElementById('compareBtn');
+        const label = btn.querySelector('span');
+        
+        if (state.shadow) {
+            state.shadow = null;
+            btn.classList.remove('active');
+            label.textContent = "現在のグラフを比較用に残す";
+        } else {
+            state.shadow = { ...state.params };
+            btn.classList.add('active');
+            label.textContent = "比較モード終了（クリア）";
+        }
+        updateGraph();
+    };
+
+    /**
+     * UI: Render Sliders dynamically
+     */
+    function renderSliders() {
+        const area = document.getElementById('slidersArea');
+        area.innerHTML = '';
+
+        const configs = {
+            linear: [
+                { id: 'a', min: -5, max: 5, step: 0.1, label: 'a (傾き)' },
+                { id: 'b', min: -5, max: 5, step: 0.1, label: 'b (切片)' }
+            ],
+            quadratic: [
+                { id: 'a', min: -5, max: 5, step: 0.1, label: 'a (開き具合)' },
+                { id: 'b', min: -5, max: 5, step: 0.1, label: 'b (軸の位置)' },
+                { id: 'c', min: -5, max: 5, step: 0.1, label: 'c (y切片)' }
+            ],
+            inverse: [
+                { id: 'k', min: -12, max: 12, step: 0.5, label: 'k (比例定数)' }
+            ]
+        };
+
+        configs[state.mode].forEach(cfg => {
+            const group = document.createElement('div');
+            group.className = 'slider-group';
+            group.innerHTML = `
+                <div class="slider-label">
+                    <span>${cfg.label}</span>
+                    <span id="val-${cfg.id}">${state.params[cfg.id]}</span>
+                </div>
+                <input type="range" id="input-${cfg.id}" 
+                       min="${cfg.min}" max="${cfg.max}" step="${cfg.step}" 
+                       value="${state.params[cfg.id]}">
+            `;
+            area.appendChild(group);
+
+            // Add Listener
+            document.getElementById(`input-${cfg.id}`).addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                state.params[cfg.id] = val;
+                document.getElementById(`val-${cfg.id}`).textContent = val;
+                updateGraph();
+            });
+        });
+    }
+
+    /**
+     * Drawing Logic
+     */
+    function updateGraph() {
+        // 1. Clear Canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 2. Draw Grid & Axes
+        drawGrid();
+
+        // 3. Draw Shadow Graph (if exists)
+        if (state.shadow) {
+            drawFunctionPath(state.shadow, true);
+        }
+
+        // 4. Draw Active Graph
+        drawFunctionPath(state.params, false);
+
+        // 5. Update Text & Info
+        updateTextInfo();
+    }
+
+    function drawGrid() {
+        const w = canvas.width;
+        const h = canvas.height;
+        const ox = state.offsetX;
+        const oy = state.offsetY;
+        const step = state.zoom;
+
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#e0e0e0';
+
+        // Vertical lines
+        ctx.beginPath();
+        for (let x = ox % step; x < w; x += step) {
+            ctx.moveTo(x, 0); ctx.lineTo(x, h);
+        }
+        // Horizontal lines
+        for (let y = oy % step; y < h; y += step) {
+            ctx.moveTo(0, y); ctx.lineTo(w, y);
+        }
+        ctx.stroke();
+
+        // Axes
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#444';
+        ctx.beginPath();
+        ctx.moveTo(0, oy); ctx.lineTo(w, oy); // X-axis
+        ctx.moveTo(ox, 0); ctx.lineTo(ox, h); // Y-axis
+        ctx.stroke();
+
+        // Axis Labels
+        ctx.fillStyle = '#666';
+        ctx.font = '12px sans-serif';
+        ctx.fillText('x', w - 15, oy + 15);
+        ctx.fillText('y', ox + 10, 15);
+        ctx.fillText('O', ox - 15, oy + 15);
+    }
+
+    // Convert Math X to Screen X
+    function toScreenX(x) { return state.offsetX + x * state.zoom; }
+    // Convert Math Y to Screen Y (Flip Y axis)
+    function toScreenY(y) { return state.offsetY - y * state.zoom; }
+    // Convert Screen X to Math X
+    function toMathX(px) { return (px - state.offsetX) / state.zoom; }
+
+    function getY(x, p) {
+        if (state.mode === 'linear') return p.a * x + p.b;
+        if (state.mode === 'quadratic') return p.a * x * x + p.b * x + p.c;
+        if (state.mode === 'inverse') return x === 0 ? null : p.k / x;
+        return 0;
+    }
+
+    function drawFunctionPath(params, isShadow) {
+        ctx.beginPath();
+        ctx.strokeStyle = isShadow ? 'rgba(5, 105, 65, 0.2)' : '#056941';
+        ctx.lineWidth = isShadow ? 3 : 3;
+        if (isShadow) ctx.setLineDash([5, 5]);
+        else ctx.setLineDash([]);
+
+        const startX = -state.offsetX / state.zoom;
+        const endX = (canvas.width - state.offsetX) / state.zoom;
+        const step = 0.05; // Precision
+
+        let moveToNext = true;
+
+        for (let x = startX; x <= endX; x += step) {
+            const y = getY(x, params);
+            
+            // Handle Inverse Asymptote
+            if (state.mode === 'inverse' && Math.abs(x) < 0.05) {
+                moveToNext = true;
+                continue;
+            }
+
+            // Handle Out of bounds to avoid rendering issues
+            if (y === null || Math.abs(y) > 1000) {
+                moveToNext = true;
+                continue;
+            }
+
+            const sx = toScreenX(x);
+            const sy = toScreenY(y);
+
+            if (moveToNext) {
+                ctx.moveTo(sx, sy);
+                moveToNext = false;
+            } else {
+                ctx.lineTo(sx, sy);
+            }
+        }
+        ctx.stroke();
+
+        // Highlight Key Points (Only for active graph)
+        if (!isShadow) {
+            drawKeyPoints(params);
+        }
+    }
+
+    function drawKeyPoints(p) {
+        ctx.fillStyle = '#FF5252';
+        
+        // Y-intercept (x=0)
+        let yInt = getY(0, p);
+        if (yInt !== null && Math.abs(yInt) < 20) {
+            drawPoint(0, yInt);
+        }
+
+        // Vertex for Quadratic
+        if (state.mode === 'quadratic' && p.a !== 0) {
+            const vx = -p.b / (2 * p.a);
+            const vy = getY(vx, p);
+            drawPoint(vx, vy);
+        }
+    }
+
+    function drawPoint(mx, my) {
+        const sx = toScreenX(mx);
+        const sy = toScreenY(my);
+        // Don't draw if off screen
+        if(sx < 0 || sx > canvas.width || sy < 0 || sy > canvas.height) return;
+
+        ctx.beginPath();
+        ctx.arc(sx, sy, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'black';
+        ctx.font = '10px sans-serif';
+    }
+
+    /**
+     * Text & Educational Logic
+     */
+    function updateTextInfo() {
+        const p = state.params;
+        const eqDiv = document.getElementById('equationOutput');
+        const infoDiv = document.getElementById('educationalText');
+        
+        let eqStr = '';
+        let infoStr = '';
+
+        const fmt = (n) => {
+            const s = Math.round(n * 100) / 100;
+            return s >= 0 ? `+ ${s}` : `- ${Math.abs(s)}`;
+        };
+        const fmtSimple = (n) => Math.round(n * 100) / 100;
+
+        if (state.mode === 'linear') {
+            // y = ax + b
+            eqStr = `y = ${fmtSimple(p.a)}x ${fmt(p.b)}`;
+            infoStr = `<b>解説:</b><br>
+            • a = ${p.a}: <b>傾き</b>。${p.a > 0 ? '右上がり' : (p.a < 0 ? '右下がり' : '水平')}です。<br>
+            • b = ${p.b}: <b>切片</b>。y軸と交わる点の高さです。`;
+        } else if (state.mode === 'quadratic') {
+            // y = ax^2 + bx + c
+            eqStr = `y = ${fmtSimple(p.a)}x^2 ${fmt(p.b)}x ${fmt(p.c)}`;
+            const opens = p.a > 0 ? '上に開く（下に凸）' : (p.a < 0 ? '下に開く（上に凸）' : '直線（二次関数ではない）');
+            infoStr = `<b>解説:</b><br>
+            • a = ${p.a}: グラフは<b>${opens}</b>形です。|a|が大きいほど細くなります。<br>
+            • c = ${p.c}: y軸との交点（y切片）。`;
+        } else if (state.mode === 'inverse') {
+            // y = k/x
+            eqStr = `y = \\frac{${fmtSimple(p.k)}}{x}`;
+            // Simple render fix for fraction in plain HTML
+            eqStr = `y = ${fmtSimple(p.k)} / x`;
+            
+            const area = p.k > 0 ? '第1・第3象限' : (p.k < 0 ? '第2・第4象限' : '軸上');
+            infoStr = `<b>解説:</b><br>
+            • k = ${p.k}: 比例定数。グラフは<b>${area}</b>に現れます。<br>
+            • 双曲線と呼ばれ、x軸とy軸には決して交わりません（漸近線）。`;
+        }
+
+        eqDiv.textContent = eqStr;
+        infoDiv.innerHTML = infoStr;
+    }
+
+    // Start
+    init();
+
+</script>
+</body>
+</html>

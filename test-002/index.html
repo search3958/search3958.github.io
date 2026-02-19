@@ -4,166 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-    /* フォントの設定：同じフォルダのLINESeedJP-Regular.ttfを使用 */
-    @font-face {
-        font-family: 'LINESeedJP';
-        src: url('LINESeedJP-Regular.ttf') format('truetype');
+        /* フォントの設定：同じフォルダのLINESeedJP-Regular.ttfを使用 */
+        @font-face {
+            font-family: 'LINESeedJP';
+            src: url('LINESeedJP-Regular.ttf') format('truetype');
+        }
+
+        :root {
+            --md-sys-color-surface: #ffffff;
+            --md-sys-color-on-surface: #1c1b1f;
+            --md-sys-color-surface-container: #f3f3f3;
+            --md-sys-color-primary: #146121ff;
+            --md-sys-color-secondary-container: #e0f8deff;
+            --md-sys-color-outline: #79747e;
+            --transition-main: 0.4s cubic-bezier(.57, .17, 0, 1);
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            font-family: 'LINESeedJP', sans-serif !important; /* 全てのフォントを統一 */
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--md-sys-color-surface);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 24px; border-bottom: 1px solid #eee;
+            background: var(--md-sys-color-surface); z-index: 100;
+        }
+
+        .tabs { display: flex; gap: 8px; }
+
+        .tab-item {
+            position: relative; /* beforeの基準点 */
+            padding: 10px 20px; border-radius: 20px;
+            font-weight: 600; cursor: pointer;
+            color: var(--md-sys-color-outline);
+            transition: color var(--transition-main);
+            z-index: 1; /* 文字を前面に出す */
+        }
+
+        .tab-item::before {
+            content: "";
+            position: absolute;
+            inset: 0; /* 親要素いっぱいに広げる */
+            background-color: var(--md-sys-color-secondary-container);
+            border-radius: 20px;
+            z-index: -1; /* 文字の背後に配置 */
+            transform: scale(0.6,1); /* 通常時は縮小 */
+            transition: all var(--transition-main);
+            opacity:0;
+            box-shadow: rgba(0, 214, 111, 1) 0px 0px 11px 0px inset;
+        }
+
+        .tab-item.active::before {
+            transform: scale(1); /* アクティブ時に拡大 */
+            opacity:1;
+            box-shadow: rgba(0, 214, 111, 0.117) 0px 0px 11px 0px inset;
+        }
+
+        .tab-item.active {
+            color: var(--md-sys-color-primary);
+        }
+
+        .status-area { display: flex; align-items: center; gap: 15px; }
+        .date-time { text-align: right; line-height: 1.2; }
+        #date-display { font-size: 0.75rem; color: var(--md-sys-color-outline); }
+        #time-display { font-size: 1.1rem; font-weight: 700; }
+
+        .battery-visual { display: flex; align-items: center; gap: 6px; }
+        .battery-body {
+            width: 64px; height: 32px; background:#eee;
+            border-radius: 100px; position: relative; overflow:hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #battery-level-bar {
+            height: 100%; width: 0%;
+            transition: width 0.5s, background 0.5s, box-shadow 0.5s;
+            border-radius: 100px;
+        }
+
+        main { flex: 1; position: relative; overflow: hidden; background: #fff; }
+
+        .content-section {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; padding: 12px;
+            display: flex; flex-direction: column; gap: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition-main), transform var(--transition-main);
+            z-index: 1;
+            will-change: transform, opacity;
+        }
+
+        .content-section.active {
+            opacity: 1;
+            transform: translateX(0) !important;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .pos-right { transform: translateX(20vw); opacity: 0; }
+        .pos-left { transform: translateX(-20vw); opacity: 0; }
+
+        .button-row { display: flex; flex: 1; gap: 12px; width: 100%; }
+     .md-btn {
+        flex: 1;
+        background: var(--md-sys-color-surface-container);
+        border: none;
+        border-radius: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden; /* 擬似要素のはみ出し防止 */
+        transition: transform 0.1s;
     }
 
-    :root {
-        --md-sys-color-surface: #ffffff;
-        --md-sys-color-on-surface: #1c1b1f;
-        --md-sys-color-surface-container: #f3f3f3;
-        --md-sys-color-primary: #146121ff;
-        --md-sys-color-secondary-container: #e0f8deff;
-        --md-sys-color-outline: #79747e;
-        --transition-main: 0.4s cubic-bezier(.57, .17, 0, 1);
-    }
-
-    * {
-        -webkit-tap-highlight-color: transparent;
-        box-sizing: border-box;
-        font-family: 'LINESeedJP', sans-serif !important; /* 全てのフォントを統一 */
-    }
-
-    body {
-        margin: 0; padding: 0;
-        background-color: var(--md-sys-color-surface);
-        min-height: 100vh;
-        display: flex; flex-direction: column;
-        overflow: hidden;
-    }
-
-    header {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 12px 24px; border-bottom: 1px solid #eee;
-        background: var(--md-sys-color-surface); z-index: 100;
-    }
-
-    .tabs { display: flex; gap: 8px; }
-    
-    .tab-item {
-        position: relative; /* beforeの基準点 */
-        padding: 10px 20px; border-radius: 20px;
-        font-weight: 600; cursor: pointer;
-        color: var(--md-sys-color-outline);
-        transition: color var(--transition-main);
-        z-index: 1; /* 文字を前面に出す */
-    }
-
-    .tab-item::before {
+    /* 通常時：戻る際のアニメーション設定 */
+    .md-btn::before {
         content: "";
         position: absolute;
-        inset: 0; /* 親要素いっぱいに広げる */
-        background-color: var(--md-sys-color-secondary-container);
-        border-radius: 20px;
-        z-index: -1; /* 文字の背後に配置 */
-        transform: scale(0.6,1); /* 通常時は縮小 */
-        transition: all var(--transition-main);
-        opacity:0;
-        box-shadow: rgba(0, 214, 111, 1) 0px 0px 11px 0px inset;
-    }
-
-    .tab-item.active::before {
-        transform: scale(1); /* アクティブ時に拡大 */
-        opacity:1;
-        box-shadow: rgba(0, 214, 111, 0.117) 0px 0px 11px 0px inset;
-    }
-
-    .tab-item.active {
-        color: var(--md-sys-color-primary);
-    }
-
-    .status-area { display: flex; align-items: center; gap: 15px; }
-    .date-time { text-align: right; line-height: 1.2; }
-    #date-display { font-size: 0.75rem; color: var(--md-sys-color-outline); }
-    #time-display { font-size: 1.1rem; font-weight: 700; }
-
-    .battery-visual { display: flex; align-items: center; gap: 6px; }
-    .battery-body {
-        width: 64px; height: 32px; background:#eee;
-        border-radius: 100px; position: relative; overflow:hidden;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-    }
-    #battery-level-bar {
-        height: 100%; width: 0%;
-        transition: width 0.5s, background 0.5s, box-shadow 0.5s;
+        left: 0;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 30%; /* 通常時の高さ */
         border-radius: 100px;
-    }
-
-    main { flex: 1; position: relative; overflow: hidden; background: #fff; }
-
-    .content-section {
-        position: absolute; top: 0; left: 0;
-        width: 100%; height: 100%; padding: 12px;
-        display: flex; flex-direction: column; gap: 12px;
         opacity: 0;
+        box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 64px 0px inset;
         pointer-events: none;
-        transition: opacity var(--transition-main), transform var(--transition-main);
-        z-index: 1;
-        will-change: transform, opacity;
+        /* 戻る時のイージング（こだわり設定） */
+        transition: all 0.3s cubic-bezier(1,0,1,-0.1), opacity ease 0.3s;
+
+        will-change: transform, opacity, height, box-shadow;
     }
 
-    .content-section.active {
+    /* アニメーション実行中：JSでこのクラスを付与する */
+    .md-btn.is-animating::before {
+        height: 100%;
         opacity: 1;
-        transform: translateX(0) !important;
-        pointer-events: auto;
-        z-index: 10;
+        border-radius: 40px;
+        box-shadow: rgba(0, 0, 0, 0.0) 0px 0px 64px 0px inset;
+        background-color: rgba(0, 0, 0, 0.07);
+        /* 行きのイージング（こだわり設定） */
+        transition: all 0.5s cubic-bezier(.1,.23,0,1), opacity ease 0.2s;
     }
 
-    .pos-right { transform: translateX(20vw); opacity: 0; }
-    .pos-left { transform: translateX(-20vw); opacity: 0; }
 
-    .button-row { display: flex; flex: 1; gap: 12px; width: 100%; }
- .md-btn {
-    flex: 1; 
-    background: var(--md-sys-color-surface-container);
-    border: none; 
-    border-radius: 40px;
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center;
-    cursor: pointer; 
-    position: relative;
-    overflow: hidden; /* 擬似要素のはみ出し防止 */
-    transition: transform 0.1s;
-}
-
-/* 通常時：戻る際のアニメーション設定 */
-.md-btn::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 30%; /* 通常時の高さ */
-    border-radius: 100px;
-    opacity: 0;
-    box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 64px 0px inset;
-    pointer-events: none;
-    /* 戻る時のイージング（こだわり設定） */
-    transition: all 0.3s cubic-bezier(1,0,1,-0.1), opacity ease 0.3s;
-
-    will-change: transform, opacity, height, box-shadow;
-}
-
-/* アニメーション実行中：JSでこのクラスを付与する */
-.md-btn.is-animating::before {
-    height: 100%;
-    opacity: 1;
-    border-radius: 40px;
-    box-shadow: rgba(0, 0, 0, 0.0) 0px 0px 64px 0px inset;
-    background-color: rgba(0, 0, 0, 0.07);
-    /* 行きのイージング（こだわり設定） */
-    transition: all 0.5s cubic-bezier(.1,.23,0,1), opacity ease 0.2s;
-}
-
-
-    .icon { font-size: 3.5rem; margin-bottom: 4px; }
-    .label { font-size: 1.1rem; font-weight: 700; }
-</style>
+        .icon { font-size: 3.5rem; margin-bottom: 4px; }
+        .label { font-size: 1.1rem; font-weight: 700; }
+    </style>
 </head>
 <body>
 
@@ -190,39 +190,37 @@
 <main>
     <div id="home" class="content-section active">
         <div class="button-row">
-            <button class="md-btn"><span class="icon">🧮</span><span class="label">計算機</span></button>
-            <button class="md-btn"><span class="icon">🖼️</span><span class="label">写真</span></button>
-            <button class="md-btn"><span class="icon">📷</span><span class="label">カメラ</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('calc.html')"><span class="icon">🧮</span><span class="label">計算機</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('gallery')"><span class="icon">🖼️</span><span class="label">写真</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('camera')"><span class="icon">📷</span><span class="label">カメラ</span></button>
         </div>
         <div class="button-row">
-            <button class="md-btn"><span class="icon">📝</span><span class="label">メモ</span></button>
-            <button class="md-btn"><span class="icon">⏲️</span><span class="label">タイマー</span></button>
-            <button class="md-btn"><span class="icon">⏱️</span><span class="label">ストップウォッチ</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('note.html')"><span class="icon">📝</span><span class="label">メモ</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('timer.html')"><span class="icon">⏲️</span><span class="label">タイマー</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('stopwatch.html')"><span class="icon">⏱️</span><span class="label">ストップウォッチ</span></button>
         </div>
     </div>
 
     <div id="kokugo" class="content-section pos-right">
         <div class="button-row">
-            <button class="md-btn" onclick="AndroidInterface.navigate('page1.html')"><span class="icon">🔍</span><span class="label">文字認識</span></button>
-            <button class="md-btn" onclick="AndroidInterface.navigate('page2.html')"><span class="icon">🏮</span><span class="label">漢字読み</span></button>
-            <button class="md-btn"><span class="icon">🎙️</span><span class="label">音声認識</span></button>
-            <button class="md-btn"><span class="icon">🔊</span><span class="label">音声読上げ</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('text.html')"><span class="icon">🔍</span><span class="label">文字認識</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('hanja.html')"><span class="icon">🏮</span><span class="label">漢字読み</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('stt.html')"><span class="icon">🎙️</span><span class="label">音声認識</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('tts.html')"><span class="icon">🔊</span><span class="label">音声読上げ</span></button>
         </div>
     </div>
 
     <div id="suuji" class="content-section pos-right">
         <div class="button-row">
-            <button class="md-btn"><span class="icon">📐</span><span class="label">分度器</span></button>
-            <button class="md-btn"><span class="icon">🧱</span><span class="label">数字ブロック</span></button>
-            <button class="md-btn"><span class="icon">📊</span><span class="label">表</span></button>
-            <button class="md-btn"><span class="icon">📦</span><span class="label">箱ひげ図</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('deg.html')"><span class="icon">📐</span><span class="label">分度器</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('block.html')"><span class="icon">🧱</span><span class="label">数字ブロック</span></button>
+            <button class="md-btn" onclick="AndroidInterface.navigate('sheet.html')"><span class="icon">📊</span><span class="label">表</span></button>
         </div>
         <div class="button-row">
             <button class="md-btn"><span class="icon">📈</span><span class="label">関数グラフ</span></button>
             <button class="md-btn"><span class="icon">💎</span><span class="label">展開図</span></button>
-            <button class="md-btn"><span class="icon">📏</span><span class="label">数直線ボード</span></button>
-            </div>
         </div>
+    </div>
 
     <div id="jouhou" class="content-section pos-right">
         <div class="button-row">
@@ -251,11 +249,11 @@
     function handleBtnClick(event) {
         const btn = event.currentTarget;
         btn.classList.remove('is-animating');
-        void btn.offsetWidth; 
+        void btn.offsetWidth;
         btn.classList.add('is-animating');
         setTimeout(() => {
             btn.classList.remove('is-animating');
-        }, 500); 
+        }, 500);
     }
 
     document.querySelectorAll('.md-btn').forEach(btn => {
@@ -293,7 +291,7 @@
         const now = new Date();
         const dateDisplay = document.getElementById('date-display');
         const timeDisplay = document.getElementById('time-display');
-        
+
         if(dateDisplay) dateDisplay.innerText = now.toLocaleDateString('ja-JP');
         // 秒（second: '2-digit'）を追加
         if(timeDisplay) timeDisplay.innerText = now.toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
@@ -307,7 +305,7 @@
                 const l = Math.floor(bat.level * 100);
                 const bar = document.getElementById('battery-level-bar');
                 const percent = document.getElementById('battery-percent');
-                
+
                 if(percent) percent.innerText = l + "%";
                 if(bar) {
                     bar.style.width = l + "%";

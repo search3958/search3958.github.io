@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>M3 Resistor Master</title>
+    <style>
+        :root {
+            --primary: #006c4c;
+            --on-primary: #ffffff;
+            --primary-container: #89f8c7;
+            --on-primary-container: #002114;
+            --surface: #fbfdf9;
+            --on-surface: #191c1a;
+            --outline: #707973;
+            --surface-variant: #dce5dd;
+            --resistor-bg: #e2cfb4;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--surface);
+            color: var(--on-surface);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header / Resistor Visual */
+        .header-visual {
+            background: linear-gradient(180deg, #ffffff 0%, var(--surface-variant) 100%);
+            padding: 60px 20px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 12px var(--shadow);
+            z-index: 10;
+        }
+
+        .resistor-container {
+            position: relative;
+            width: 240px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wire {
+            position: absolute;
+            width: 140%;
+            height: 4px;
+            background: linear-gradient(to bottom, #bdc3c7, #95a5a6);
+            border-radius: 2px;
+        }
+
+        .resistor-body {
+            position: relative;
+            width: 160px;
+            height: 54px;
+            background: var(--resistor-bg);
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: inset 0 -4px 6px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        .band {
+            width: 14px;
+            height: 100%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 1px 0 2px rgba(0,0,0,0.1);
+        }
+
+        .band-tolerance { background: #cd7f32; margin-left: 15px; } /* Gold/Bronze */
+
+        /* Main Content */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        /* 数値入力エリアのスタイル追加 */
+        .input-area {
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        #ohm-input-field {
+            width: 100%;
+            max-width: 200px;
+            padding: 10px;
+            font-size: 20px;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            text-align: center;
+            outline: none;
+        }
+
+        .selector-card {
+            background: white;
+            border-radius: 24px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--surface-variant);
+        }
+
+        .grid-labels {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .chip {
+            height: 44px;
+            border-radius: 100px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+            width:44px;
+        }
+
+        .chip::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: white;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .chip.selected {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .chip.selected::after { opacity: 1; }
+
+        /* Footer Result */
+        footer {
+            background: white;
+            padding: 24px;
+            border-top: 1px solid var(--surface-variant);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .value-display {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .value-display span { font-size: 18px; color: var(--outline); }
+        
+        /* 換算表示のスタイル追加 */
+        .conversion-hint {
+            text-align: center;
+            font-size: 14px;
+            color: var(--outline);
+            margin-top: -4px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 16px; left: 16px;
+            width: 48px; height: 48px;
+            border-radius: 24px;
+            border: none;
+            background: var(--primary-container);
+            color: var(--on-primary-container);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        /* 色の定義 */
+        .c-0 { background-color: #212121; color: white; }
+        .c-1 { background-color: #795548; color: white; }
+        .c-2 { background-color: #f44336; color: white; }
+        .c-3 { background-color: #ff9800; color: white; }
+        .c-4 { background-color: #ffeb3b; color: black; }
+        .c-5 { background-color: #4caf50; color: white; }
+        .c-6 { background-color: #2196f3; color: white; }
+        .c-7 { background-color: #9c27b0; color: white; }
+        .c-8 { background-color: #9e9e9e; color: white; }
+        .c-9 { background-color: #ffffff; color: black; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+
+<button class="back-btn">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+</button>
+
+<div class="header-visual">
+    <div class="resistor-container">
+        <div class="wire"></div>
+        <div class="resistor-body">
+            <div id="band1" class="band"></div>
+            <div id="band2" class="band"></div>
+            <div id="band3" class="band"></div>
+            <div class="band band-tolerance"></div>
+        </div>
+    </div>
+</div>
+
+<main>
+    <div class="input-area">
+        <input type="number" id="ohm-input-field" placeholder="Ω値を入力">
+    </div>
+
+    <div class="selector-card">
+        <div class="color-grid" id="selectors">
+            <div class="column" id="col0"></div>
+            <div class="column" id="col1"></div>
+            <div class="column" id="col2"></div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="value-display">
+        <div id="res-value">1.0</div>
+        <span id="res-unit">kΩ</span>
+    </div>
+    <div class="conversion-hint" id="conversion-display">1000 Ω = 1.0 kΩ</div>
+</footer>
+
+<script>
+    const colors = [
+        { name: '黒', hex: '#212121', val: 0 },
+        { name: '茶', hex: '#795548', val: 1 },
+        { name: '赤', hex: '#f44336', val: 2 },
+        { name: '橙', hex: '#ff9800', val: 3 },
+        { name: '黄', hex: '#ffeb3b', val: 4 },
+        { name: '緑', hex: '#4caf50', val: 5 },
+        { name: '青', hex: '#2196f3', val: 6 },
+        { name: '紫', hex: '#9c27b0', val: 7 },
+        { name: '灰', hex: '#9e9e9e', val: 8 },
+        { name: '白', hex: '#ffffff', val: 9 }
+    ];
+
+    let current = [1, 0, 2]; // 10 * 10^2 = 1000
+
+    function init() {
+        for (let i = 0; i < 3; i++) {
+            const col = document.getElementById(`col${i}`);
+            colors.forEach((color, idx) => {
+                const chip = document.createElement('div');
+                chip.className = `chip c-${idx}`;
+                chip.onclick = () => {
+                    current[i] = idx;
+                    const val = (current[0] * 10 + current[1]) * Math.pow(10, current[2]);
+                    document.getElementById('ohm-input-field').value = val;
+                    update();
+                };
+                chip.id = `chip-${i}-${idx}`;
+                col.appendChild(chip);
+            });
+        }
+
+        // 数値入力時のイベント
+        document.getElementById('ohm-input-field').addEventListener('input', (e) => {
+            let val = parseInt(e.target.value);
+            if (isNaN(val) || val < 0) return;
+            
+            let s = val.toString();
+            if (s.length < 2) s = s.padStart(2, '0');
+            
+            current[0] = parseInt(s[0]);
+            current[1] = parseInt(s[1]);
+            current[2] = s.length - 2;
+            
+            if (current[2] < 0) current[2] = 0;
+            if (current[2] > 9) current[2] = 9;
+            
+            update();
+        });
+
+        // 初期値
+        document.getElementById('ohm-input-field').value = 1000;
+        update();
+    }
+
+    function formatValue(num) {
+        if (num >= 1000000) return { v: (num / 1000000).toFixed(num % 1000000 === 0 ? 0 : 1), u: 'MΩ' };
+        if (num >= 1000) return { v: (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1), u: 'kΩ' };
+        return { v: num, u: 'Ω' };
+    }
+
+    function update() {
+        const val = (current[0] * 10 + current[1]) * Math.pow(10, current[2]);
+        const formatted = formatValue(val);
+        
+        document.getElementById('res-value').innerText = formatted.v;
+        document.getElementById('res-unit').innerText = formatted.u;
+
+        // 換算表示の更新
+        const kValue = (val / 1000).toFixed(val % 1000 === 0 ? 0 : 2);
+        document.getElementById('conversion-display').innerText = `${val} Ω = ${kValue} kΩ`;
+
+        // Visuals
+        document.getElementById('band1').style.backgroundColor = colors[current[0]].hex;
+        document.getElementById('band2').style.backgroundColor = colors[current[1]].hex;
+        document.getElementById('band3').style.backgroundColor = colors[current[2]].hex;
+
+        // UI State
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        for (let i = 0; i < 3; i++) {
+            const target = document.getElementById(`chip-${i}-${current[i]}`);
+            if (target) target.classList.add('selected');
+        }
+    }
+
+    init();
+</script>
+
+</body>
+</html>
