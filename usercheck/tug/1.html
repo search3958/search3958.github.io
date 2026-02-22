@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+    <meta charset="UTF-8">
+    <title>Fixed Japanese Crypto - Material 3</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* M3 Color Palette */
+            --m3-primary: #507da4;
+            --m3-on-primary: #FFFFFF;
+            --m3-surface: #f7faff;
+            --m3-surface-container: #edf1f7;
+            --m3-outline: #74797e;
+            --m3-on-surface: #1b1e20;
+            --m3-on-surface-variant: #45494f;
+        }
+
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background-color: var(--m3-surface); 
+            color: var(--m3-on-surface);
+            padding: 40px; 
+            margin: 0;
+        }
+
+        .container { 
+            background-color: var(--m3-surface-container); 
+            padding: 2.5rem; 
+            border-radius: 28px; 
+            max-width: 600px; 
+            margin: auto; 
+            transition: all 0.3s ease;
+        }
+
+        #message-area { 
+            background: white;
+            border-radius: 16px; 
+            margin-top: 20px; 
+            padding: 20px; 
+            line-height: 1.6;
+            border: 1px solid var(--m3-outline);
+            color: var(--m3-on-surface-variant);
+        }
+
+        button { 
+            cursor: pointer; 
+            background-color: var(--m3-primary); 
+            color: var(--m3-on-primary); 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 100px; 
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.1px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: box-shadow 0.2s, background-color 0.2s;
+        }
+
+        button:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="login-section" style="text-align: center;">
+        <button id="login-btn">Google でログイン</button>
+    </div>
+
+    <div id="user-section" class="hidden">
+        <div id="message-area">
+            お待ちください...
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDjMhqOjKoGgzvUsn0QXm2sX-epnw7yhhc",
+        authDomain: "tangle-sns.firebaseapp.com",
+        projectId: "tangle-sns",
+        appId: "1:248303876559:web:b8c6b6a28cdc93fa3a3aba",
+    };
+
+    const encryptedBase64Data = "WhMTFtHB4JaAyZPG683gzMrR1Z2Iu9Wz7o3Nh47++JCs84Ww9pP4r9O3q6XV9sbN9ILyooLirIny89OxiNHB85Cu6X9rkbjBQwRAk/qR07Wxo+jIzejJgvGWS0kkj+D11rS50cHzkKzgluDZzePqYiM+PNOxkXOj6/hsiPTCkK/Hi4bqk/iT07eUo+rxzenFgvCFguCSifPu07GR0cHikK/jluP8zeHhye7RnqC21bPqifGniPflkK/CgK/bk/u007Szo+vbzer6humqguKEifHq07Ge2ujqkK/IluDbzeDnzevWmrCy1bPfifKOhMntkK/ygK/Elf+11ZiLqMLzzen6gvG9guKGifH907GQ0cHAeSSJ48FTBEuFs8uUwoZx2Y7ajsiLj83qkK/PgK/uk/iq07S+o+v4zereidqchN69ifHg07K9YQ45kKz5nOD4y/fVzevnmrGW1bPEifGljtXVlr7pSQRgelQQEBbRwsiQrMSW4vXN48DN6eaasZrfpPKC1YmD9eSQr+1QHlqUw4rUjZek0vkkS1VBUyRMQw5Kl+KE2Imjc4nwmI3p6ZCvz4Wgwpfei9O3uaPo+s3r9FOQrdeFsuKUwpXVsLej69gbW0WFyZSF2IuOyPPTsZjbwf6VpvuW4P/Gx+jG1MyasY7VsMyJ8aVhVUFTDmtpBECT+aDVsLelxMrN6+RLWQ5QhpfelMKV1bC3o+vYzev5hcuDhPiTifLr1ZWL1MTllLTvluDYydXaytH7mrGp1bDLjPm7jN3ekK7sgKz4QUnUi4DW+8+XluGW4fLN4N3N6++asZ/Vssw5Fk8ZFglAF1RbzevenJ6T0o7difOjiPfzQR6F2JiOy9zUiLza4eaQr+2W4fEka4G4ylBTGtark6TRxWyEyfuXluuLhvKT+JvYn4Cl1+DN6uKC8oSC4qqP0M3VoL4YamB5BEGW4ePL5+bLxMmasKEcGEpgXg5LVVCWl9WHlc+V/7XTt5mj6v/K09iE6JOC4byP1cTWtLnV2u6Qr8CS1crK2ujN6+masrvQuNWN25GI9eyQrPNXytHGnYuV0orKgtKiiPTnkK7jaQ5KUFk6HRYSYI7Lg47u3JCvyoaB1JP4p9O3lKX61cvF74bpqoLihI3pw9iYttHC+JWr5Zbj883h4SRKUFkQOhsSYEqQr+GQz9HIxvvN696as7fVsdCJ8YqI99iQr8qKuMiZ+ZPTt6uj6Ph9DhQTEEZSWhtSk/ieZWN7BInxvI368ZeQ+oCv85P7u9O2sA=="; 
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('user-section').classList.remove('hidden');
+            // 解読処理へ
+            if (encryptedBase64Data) decrypt(encryptedBase64Data, user.email);
+        }
+    });
+
+    function decrypt(b64, key) {
+        try {
+            const binaryStr = atob(b64);
+            const keyBytes = new TextEncoder().encode(key);
+            const bytes = new Uint8Array(binaryStr.length);
+            
+            for (let i = 0; i < binaryStr.length; i++) {
+                bytes[i] = binaryStr.charCodeAt(i) ^ keyBytes[i % keyBytes.length];
+            }
+            
+            // fatal: true を設定することで、不正なバイト列（間違ったキー）の場合にエラーを発生させます
+            const decodedText = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+            document.getElementById('message-area').innerHTML = marked.parse(decodedText);
+        } catch (e) {
+            document.getElementById('message-area').textContent = "申し訳ございませんが，お客様のアカウントでは閲覧できません。";
+        }
+    }
+
+    // --- 管理用：暗号文生成機能 (aキー10回) ---
+    let aCount = 0;
+    document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'a') {
+            aCount++;
+            if (aCount === 10) {
+                const rawText = prompt("暗号化したいMarkdown:");
+                const key = prompt("キーにするメールアドレス:");
+                if (rawText && key) {
+                    const txtBytes = new TextEncoder().encode(rawText);
+                    const keyBytes = new TextEncoder().encode(key);
+                    const encryptedBytes = new Uint8Array(txtBytes.length);
+                    for (let i = 0; i < txtBytes.length; i++) {
+                        encryptedBytes[i] = txtBytes[i] ^ keyBytes[i % keyBytes.length];
+                    }
+                    const b64 = btoa(String.fromCharCode(...encryptedBytes));
+                    console.log("Base64 Encrypted:\n", b64);
+                    alert("コンソールを確認してください。");
+                }
+                aCount = 0;
+            }
+        } else { aCount = 0; }
+    });
+
+    document.getElementById('login-btn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
+</script>
+</body>
+</html>
