@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>GoodFish - Login Only</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --m3-primary: #507da4;
+            --m3-on-primary: #FFFFFF;
+            --m3-surface: #f7faff;
+            --m3-surface-container: #edf1f7;
+            --m3-outline: #74797e;
+            --m3-on-surface: #1b1e20;
+            --m3-on-surface-variant: #45494f;
+        }
+
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background-color: var(--m3-surface); 
+            color: var(--m3-on-surface);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container { 
+            background-color: var(--m3-surface-container); 
+            padding: 2.5rem; 
+            border-radius: 28px; 
+            max-width: 400px; 
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        #user-info { 
+            background: white;
+            border-radius: 16px; 
+            margin-top: 20px; 
+            padding: 20px; 
+            border: 1px solid var(--m3-outline);
+            word-break: break-all;
+        }
+
+        button { 
+            cursor: pointer; 
+            background-color: var(--m3-primary); 
+            color: var(--m3-on-primary); 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 100px; 
+            font-weight: 500;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+
+        button:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        button:active { transform: scale(0.98); }
+        
+        .logout-btn {
+            background-color: transparent;
+            color: var(--m3-primary);
+            border: 1px solid var(--m3-primary);
+            margin-top: 15px;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>GoodFish</h2>
+    
+    <div id="login-section">
+        <p>サービスを利用するにはログインしてください</p>
+        <button id="login-btn">Google でログイン</button>
+    </div>
+
+    <div id="user-section" class="hidden">
+        <div id="user-info">
+            <p id="welcome-msg"></p>
+            <small id="user-email"></small>
+        </div>
+        <button id="logout-btn" class="logout-btn">ログアウト</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // Firebase設定
+    const firebaseConfig = {
+        apiKey: "AIzaSyDjMhqOjKoGgzvUsn0QXm2sX-epnw7yhhc",
+        authDomain: "tangle-sns.firebaseapp.com",
+        projectId: "tangle-sns",
+        appId: "1:248303876559:web:b8c6b6a28cdc93fa3a3aba",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // ログイン状態の監視
+    onAuthStateChanged(auth, (user) => {
+        const loginSection = document.getElementById('login-section');
+        const userSection = document.getElementById('user-section');
+
+        if (user) {
+            loginSection.classList.add('hidden');
+            userSection.classList.remove('hidden');
+            document.getElementById('welcome-msg').textContent = `${user.displayName} さん、こんにちは！`;
+            document.getElementById('user-email').textContent = user.email;
+        } else {
+            loginSection.classList.remove('hidden');
+            userSection.classList.add('hidden');
+        }
+    });
+
+    // ログイン処理
+    document.getElementById('login-btn').onclick = () => {
+        signInWithPopup(auth, provider).catch(err => console.error("Login Error:", err));
+    };
+
+    // ログアウト処理
+    document.getElementById('logout-btn').onclick = () => {
+        signOut(auth).catch(err => console.error("Logout Error:", err));
+    };
+</script>
+</body>
+</html>
