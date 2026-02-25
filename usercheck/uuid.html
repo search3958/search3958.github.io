@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UUID提供の確認 - Search3958</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      corner-shape: superellipse(1.5);
+      font-family: 'M PLUS 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #efefef;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dialog {
+      background-color: #fff;
+      border-radius: 56px;
+      padding: 32px;
+      max-width: 560px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0px 8px 32px #0001;
+    }
+
+    .dialog h1 {
+      color: #202124;
+      font-size: 20px;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .dialog p {
+      color: #5F6368;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .uuid-box {
+      display: none;
+      background: #f1f3f4;
+      border-radius: 18px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 13px;
+      word-break: break-all;
+      margin-bottom: 24px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .buttons button {
+      border: none;
+      border-radius: 22px;
+      padding: 12px 24px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      flex: 1;
+      min-width: 140px;    color: #000000;
+    background-color: #f2f2f2;
+    }
+
+    .buttons button.secondary {
+      background-color: #ca0404;
+      color:#fff;
+    }
+
+    .buttons button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .error {
+      display: none;
+      color: #d93025;
+      font-size: 13px;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .terms-link {
+      color: #008f66;
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    .terms-link:hover {
+      text-decoration: underline;
+      color: #09af6e;
+    }
+
+    button:disabled{
+        opacity:0.3!important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dialog">
+  <h1 id="title-text">権限の確認</h1>
+
+  <p id="desc-text"></p>
+
+  <div id="error-msg" class="error"></div>
+
+  <div id="uuid-box" class="uuid-box"></div>
+
+  <div class="buttons">
+    <button id="btn-temp">ダミーを提供</button>
+    <button id="btn-permanent">UUIDを提供</button>
+    <button id="btn-cancel" class="secondary">拒否</button>
+  </div>
+
+</div>
+
+<script>
+(() => {
+  'use strict';
+  console.log('[UUID] init');
+
+  /* ---------- DOM ---------- */
+  const titleEl = document.getElementById('title-text');
+  const descEl = document.getElementById('desc-text');
+  const uuidBox = document.getElementById('uuid-box');
+  const errorEl = document.getElementById('error-msg');
+
+  const btnTemp = document.getElementById('btn-temp');
+  const btnPermanent = document.getElementById('btn-permanent');
+  const btnCancel = document.getElementById('btn-cancel');
+
+  if (!titleEl || !descEl || !uuidBox || !errorEl ||
+      !btnTemp || !btnPermanent || !btnCancel) {
+    console.error('[UUID] DOM not found');
+    return;
+  }
+
+  /* ---------- URL params ---------- */
+  const params = new URLSearchParams(location.search);
+  const serviceName = params.get('service');
+
+  if (!serviceName) {
+    console.error('[UUID] service param missing');
+    errorEl.textContent = 'エラー：提供先サービスが指定されていません。';
+    errorEl.style.display = 'block';
+    disableButtons();
+    return;
+  }
+
+  descEl.textContent = `"${serviceName}" にUUIDを提供しますか?`;
+  console.log('[UUID] service:', serviceName);
+
+  /* ---------- UUID ---------- */
+  function generateUUID() {
+    const uuid = crypto.randomUUID();
+    console.log('[UUID] generated:', uuid);
+    return uuid;
+  }
+
+  function getPermanentUUID() {
+    const key = 'search3958_permanent_uuid';
+    let uuid = localStorage.getItem(key);
+
+    if (!uuid) {
+      console.log('[UUID] permanent UUID not found');
+      uuid = generateUUID();
+      localStorage.setItem(key, uuid);
+      console.log('[UUID] permanent UUID saved');
+    } else {
+      console.log('[UUID] permanent UUID loaded');
+    }
+    return uuid;
+  }
+
+  /* ---------- UI ---------- */
+  function showUUID(uuid, type) {
+    uuidBox.textContent = `${uuid}`;
+    uuidBox.style.display = 'block';
+
+    params.set('uuid_shown', 'true');
+    history.replaceState(null, '', `${location.pathname}?${params.toString()}`);
+
+    console.log('[UUID] shown & url updated');
+    disableButtons();
+  }
+
+  function disableButtons() {
+    [btnTemp, btnPermanent].forEach(btn => {
+      btn.disabled = true;
+    });
+    console.log('[UUID] buttons disabled');
+  }
+
+  /* ---------- events ---------- */
+  btnTemp.addEventListener('click', () => {
+    console.log('[UUID] temp selected');
+    showUUID(generateUUID(), '一時');
+  });
+
+  btnPermanent.addEventListener('click', () => {
+    console.log('[UUID] permanent selected');
+    showUUID(getPermanentUUID(), '永久');
+  });
+
+  btnCancel.addEventListener('click', () => {
+    console.log('[UUID] canceled');
+    history.back();
+  });
+
+})();
+</script>
+
+<!-- 既存処理はそのまま -->
+<script>
+  localStorage.setItem('termsAccepted', 'false');
+</script>
+
+<script src="check.js"></script>
+</body>
+</html>
