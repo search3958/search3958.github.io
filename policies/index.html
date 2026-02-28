@@ -104,24 +104,33 @@ async function loadMarkdown() {
   const url = 'policies.md';
   try {
     const response = await fetch(url);
-    let text = await response.text();
+    const text = await response.text();
 
-    // 行ごとに分割
+    // 1. Markdownのパースと表示
     const lines = text.split('\n');
-
-    // # と ## を <h1> <h2> に変換
     const htmlLines = lines.map(line => {
-      if (line.startsWith('## ')) {
-        return '<h2>' + line.slice(3).trim() + '</h2>';
-      } else if (line.startsWith('# ')) {
-        return '<h1>' + line.slice(2).trim() + '</h1>';
-      } else {
-        return '<p>' + line.trim() + '</p>';
-      }
+      if (line.startsWith('## ')) return '<h2>' + line.slice(3).trim() + '</h2>';
+      if (line.startsWith('# ')) return '<h1>' + line.slice(2).trim() + '</h1>';
+      return '<p>' + line.trim() + '</p>';
     });
 
-    // divに挿入
-    document.getElementById('md-container').innerHTML = htmlLines.join('\n');
+    const container = document.getElementById('md-container');
+    container.innerHTML = htmlLines.join('\n');
+
+    // 2. 比較用の「正解データ」を作成（記号や空白を除去）
+    const originalRef = text.replace(/[#\n\r\s]+/g, '').trim();
+
+    // 3. 定期監視ロジック (3秒ごとにチェック)
+    setInterval(() => {
+      const currentText = container.innerText.replace(/\s+/g, '').trim();
+      
+      // 内容が一致しない、またはコンテナ自体が消された場合の判定
+      if (currentText !== originalRef) {
+        console.warn("改ざんを検知しました。リダイレクトします。");
+        window.location.href = 'https://search3958.github.io/usercheck/entry';
+      }
+    }, 3000); // 3000ms = 3秒間隔
+
   } catch (err) {
     document.getElementById('md-container').textContent = '読み込みに失敗しました';
     console.error(err);

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>길동무 (Sync System)</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --accent-color: #c00000;
+      --panel-bg: rgba(10, 10, 10, 0.98);
+      --danger-color: #830a0a;
+      --success-color: #00c040;
+    }
+    h3{ color:#ffe195; }
+    h1{ color:#fff8e5; background:#830a0a; }
+    body, html {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      background: #000; color: #fff;
+      font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden;
+    }
+
+    .main-layout { display: flex; width: 100vw; height: 100vh; transition: all 0.4s ease; }
+    .preview-section {
+      flex: 1; display: flex; flex-direction: column;
+      background: #050505; border-right: 1px solid #222;
+    }
+    .main-video-box { flex: 2; display: flex; align-items: center; justify-content: center; background: #000; }
+    video { max-width: 100%; max-height: 100%; }
+
+    .slide-previews { display: none; flex: 1; gap: 10px; padding: 15px; background: #111; }
+    body:has(.kildongmu-panel.active) .slide-previews { display: flex; }
+
+    .preview-card { flex: 1; position: relative; border: 2px solid #333; border-radius: 4px; overflow: hidden; background: #000; }
+    .preview-card.active { border-color: var(--accent-color); }
+    .preview-card canvas { width: 100%; height: 100%; object-fit: contain; }
+    .label { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.8); padding: 2px 8px; font-size: 11px; z-index: 10; font-weight: bold;}
+
+    .kildongmu-panel {
+      width: 0; overflow: hidden; background: var(--panel-bg);
+      display: flex; flex-direction: column; position: relative;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .kildongmu-panel.active { width: 50vw; }
+
+    .panel-content { width: 50vw; height: 100%; display: flex; flex-direction: column; padding: 30px; box-sizing: border-box; }
+
+    /* 上部の同期ステータスとリセットボタンエリア */
+    .top-status-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #333;
+    }
+    .sync-indicator {
+      font-size: 0.9rem; color: #666; font-weight: bold; display: flex; align-items: center; gap: 8px;
+    }
+    .sync-indicator.active { color: var(--success-color); }
+    .sync-dot { width: 8px; height: 8px; background: #444; border-radius: 50%; display: inline-block; }
+    .sync-indicator.active .sync-dot { background: var(--success-color); box-shadow: 0 0 8px var(--success-color); }
+
+    .btn-group { display: flex; gap: 8px; }
+    .btn-reset {
+      background: #333; color: #fff; border: 1px solid #555;
+      padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+    .btn-reset:hover { background: #444; border-color: #777; }
+    .btn-reload-all {
+      background: var(--danger-color); color: #fff; border: none;
+      padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;
+      transition: opacity 0.2s;
+    }
+    .btn-reload-all:hover { opacity: 0.8; }
+
+    .timer-container {
+      position: absolute; top: 20px; right: 30px; display: flex; align-items: center; gap: 10px;
+      transform: translateY(50px); z-index: 100;
+    }
+    #stopwatch { font-family: monospace; font-size: 1.8rem; color: var(--accent-color); background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+    .timer-btn { background: #333; border: none; color: #fff; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; }
+
+    .md-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; margin-top: 0px;}
+    .md-container { flex: 1; overflow-y: auto; background: rgba(255,255,255,0.02); padding: 25px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; line-height: 1.6; }
+
+    .min-tools { 
+      position: fixed; right: 20px; bottom: 20px; 
+      display: flex; gap: 10px; z-index: 500; 
+      opacity: 0; transition: opacity 0.3s ease; 
+    }
+    .min-tools:hover { opacity: 1; }
+    body:has(.kildongmu-panel.active) .min-tools { display: none; }
+
+    .btn-tool { background: rgba(40,40,40,0.95); color: #fff; border: 1px solid #555; padding: 24px 20px; border-radius: 6px; cursor: pointer; font-size:24px; }
+    .btn-tool:hover { background: #555; border-color: var(--accent-color); }
+    .btn-tool.accent { background: var(--accent-color); border: none; font-weight: bold; }
+
+    .panel-controls { background: #1a1a1a; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px; }
+    .control-row { display: flex; gap: 10px; align-items: center; }
+
+    #loading { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; font-size:32px;}
+  </style>
+</head>
+<body>
+
+<div id="loading">잠간 기다려주십시오.</div>
+
+<div class="main-layout">
+  <div class="preview-section">
+    <div class="main-video-box"><video id="video-player" src="./video.mp4" preload="auto"></video></div>
+    <div class="slide-previews">
+      <div class="preview-card active"><span class="label">CURRENT</span><canvas id="canvas-curr"></canvas></div>
+      <div class="preview-card"><span class="label">NEXT</span><canvas id="canvas-next"></canvas></div>
+    </div>
+  </div>
+
+  <div class="kildongmu-panel" id="k-panel">
+    
+    <div class="panel-content">
+      <div class="top-status-bar">
+        <div class="sync-indicator" id="sync-status">
+          <span class="sync-dot"></span> <span id="sync-text">CONNECTING...</span>
+        </div>
+        <div class="btn-group">
+          <button class="btn-reload-all" onclick="remoteReloadAll()">전체 새로고침</button>
+          <button class="btn-reset" onclick="remoteReset()">페이지 초기화</button>
+        </div>
+      </div>
+
+      <div class="timer-container">
+        <button class="timer-btn" onclick="resetTimer()">초기화</button>
+        <div id="stopwatch" onclick="toggleTimer()">시작-00:00.0</div>
+      </div>
+
+      <div class="md-controls">
+        <span style="font-size: 0.8rem; color:#888;">Size:</span>
+        <input type="range" id="md-size-slider" min="12" max="60" value="20">
+      </div>
+      <div class="md-container" id="md-display"></div>
+      
+      <div class="panel-controls">
+        <div class="control-row">
+          <span style="font-size: 0.8rem; color: var(--accent-color); font-weight: bold;">PAGE:</span>
+          <input type="number" id="page-jump" style="width: 70px; padding: 10px; background:#000; border:1px solid var(--accent-color); color:#fff; text-align:center;" value="1">
+          <button class="btn-tool" style="flex:1" onclick="remotePrev()">뒤로</button>
+          <button class="btn-tool" style="flex:1" onclick="remoteNext()">앞으로</button>
+        </div>
+        <div class="control-row">
+          <button class="btn-tool" style="flex:1" onclick="toggleFS()">전화명</button>
+          <button class="btn-tool" style="flex:1; background: var(--danger-color); border:none;" onclick="toggleKildongmu()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="min-tools">
+  <button class="btn-tool" onclick="toggleFS()">⛶ 전화명</button>
+  <button class="btn-tool" onclick="remotePrev()">뒤로</button>
+  <button class="btn-tool" onclick="remoteNext()">앞으로</button>
+  <button class="btn-tool accent" onclick="toggleKildongmu()">길동무</button>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDjMhqOjKoGgzvUsn0QXm2sX-epnw7yhhc",
+    authDomain: "tangle-sns.firebaseapp.com",
+    databaseURL: "https://tangle-sns-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "tangle-sns",
+    storageBucket: "tangle-sns.firebasestorage.app",
+    messagingSenderId: "248303876559",
+    appId: "1:248303876559:web:b8c6b6a28cdc93fa3a3aba",
+    measurementId: "G-HMDE0QX8ZM"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const statusRef = ref(db, 'presentation/status');
+  const pageLoadTime = Date.now(); // ページ読み込み時刻を保持
+
+  // --- Variables ---
+  const FPS = 24;
+  const video = document.getElementById("video-player");
+  const mdDisplay = document.getElementById("md-display");
+  const kPanel = document.getElementById("k-panel");
+  const pageInput = document.getElementById("page-jump");
+  const timerDisplay = document.getElementById("stopwatch");
+  const syncStatus = document.getElementById("sync-status");
+  const syncText = document.getElementById("sync-text");
+  
+  let points = [];
+  let currentIndex = 0;
+  let targetTime = null;
+  let isChecking = false;
+
+  let timerStart = 0;
+  let timerElapsed = 0;
+  let timerRunning = false;
+  let timerInterval = null;
+
+  // --- Global Timer Logic ---
+  window.toggleTimer = () => {
+    if (!timerRunning) {
+      timerStart = Date.now() - timerElapsed;
+      timerInterval = setInterval(() => {
+        timerElapsed = Date.now() - timerStart;
+        const d = new Date(timerElapsed);
+        timerDisplay.textContent = `${String(d.getUTCMinutes()).padStart(2,'0')}:${String(d.getUTCSeconds()).padStart(2,'0')}.${Math.floor(d.getUTCMilliseconds()/100)}`;
+      }, 100);
+      timerRunning = true;
+    } else {
+      clearInterval(timerInterval);
+      timerRunning = false;
+    }
+  };
+
+  window.resetTimer = () => {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    timerElapsed = 0;
+    timerDisplay.textContent = "00:00.0";
+  };
+
+  // --- Video & Markdown Logic ---
+  async function loadMarkdown() {
+    try {
+      const res = await fetch('./script.md');
+      let text = await res.text();
+      mdDisplay.innerHTML = marked.parse(text.replace(/\/\*[\s\S]*?\*\//g, ""), { breaks: true });
+    } catch (e) { mdDisplay.textContent = "script.md not found."; }
+  }
+
+  document.getElementById("md-size-slider").oninput = (e) => mdDisplay.style.fontSize = e.target.value + "px";
+
+  function capture(time, canvas) {
+    if (!video.readyState) return;
+    const temp = document.createElement('video');
+    temp.src = video.src;
+    temp.currentTime = time;
+    temp.onseeked = () => {
+      const ctx = canvas.getContext('2d');
+      canvas.width = 480; canvas.height = 270;
+      ctx.drawImage(temp, 0, 0, canvas.width, canvas.height);
+      temp.remove();
+    };
+  }
+
+  function syncUI() {
+    pageInput.value = currentIndex + 1;
+    const currT = (currentIndex === 0) ? 0 : points[currentIndex - 1].time;
+    capture(currT + 0.05, document.getElementById("canvas-curr"));
+    if (currentIndex < points.length) {
+      capture(points[currentIndex].time + 0.05, document.getElementById("canvas-next"));
+    } else {
+      document.getElementById("canvas-next").getContext('2d').clearRect(0,0,999,999);
+    }
+  }
+
+  function monitor() {
+    if (targetTime !== null) {
+      if (video.currentTime >= targetTime) {
+        video.pause(); video.currentTime = targetTime;
+        targetTime = null; isChecking = false;
+        return;
+      }
+      requestAnimationFrame(monitor);
+    }
+  }
+
+  function executeNext() {
+    if (currentIndex < points.length) {
+      targetTime = points[currentIndex].time;
+      video.play(); 
+      currentIndex++; 
+      syncUI();
+      if (!isChecking) { isChecking = true; requestAnimationFrame(monitor); }
+    }
+  }
+
+  function executeJump(index) {
+    if (index >= 0 && index <= points.length) {
+      currentIndex = index;
+      video.pause();
+      video.currentTime = (currentIndex === 0) ? 0 : points[currentIndex - 1].time;
+      targetTime = null; 
+      syncUI();
+    }
+  }
+
+  // --- Remote Control ---
+  window.remoteNext = () => {
+    if (currentIndex < points.length) {
+      update(statusRef, { currentIndex: currentIndex + 1, timestamp: Date.now() });
+    }
+  };
+
+  window.remotePrev = () => {
+    if (currentIndex > 0) {
+      update(statusRef, { currentIndex: currentIndex - 1, timestamp: Date.now() });
+    }
+  };
+  
+  window.remoteReset = () => {
+    update(statusRef, { currentIndex: 0, timestamp: Date.now() });
+  };
+
+  // 全ページを強制リロードさせる命令をDBに送る
+  window.remoteReloadAll = () => {
+    update(statusRef, { reloadTrigger: Date.now() });
+  };
+
+  pageInput.onchange = (e) => {
+    const val = parseInt(e.target.value);
+    if (val >= 1 && val <= points.length + 1) {
+      update(statusRef, { currentIndex: val - 1, timestamp: Date.now() });
+    }
+  };
+
+  // --- Sync Listener ---
+  onValue(statusRef, (snapshot) => {
+    const data = snapshot.val();
+    syncStatus.classList.add("active");
+    syncText.textContent = "同期完了 (SYNCED)";
+    if (!data) return;
+
+    // 全体リロードのチェック: reloadTriggerがページ読み込み後であればリロード
+    if (data.reloadTrigger && data.reloadTrigger > pageLoadTime) {
+      location.reload();
+      return;
+    }
+
+    const remoteIndex = data.currentIndex;
+    if (remoteIndex === currentIndex) return;
+    if (remoteIndex === currentIndex + 1) {
+      executeNext();
+    } else {
+      executeJump(remoteIndex);
+    }
+  });
+
+  window.toggleKildongmu = () => kPanel.classList.toggle("active");
+  window.toggleFS = () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  };
+
+  async function init() {
+    // 最小1秒表示のためのタイマー開始
+    const minWait = new Promise(resolve => setTimeout(resolve, 400));
+    
+    try {
+      const dataFetch = fetch("./time.json").then(res => res.json());
+      
+      // データ取得と1秒待機の両方が終わるのを待つ
+      const [jsonData] = await Promise.all([dataFetch, minWait]);
+      
+      points = jsonData.map(p => ({ ...p, time: p.frame / FPS }));
+      document.getElementById("loading").style.display = "none";
+      loadMarkdown();
+      syncUI();
+    } catch (e) { 
+      console.error(e);
+      // エラー時も1秒後にローディングを消す
+      setTimeout(() => { document.getElementById("loading").style.display = "none"; }, 1000);
+    }
+  }
+  
+  init();
+</script>
+</body>
+</html>
