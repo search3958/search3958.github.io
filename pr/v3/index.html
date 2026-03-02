@@ -92,22 +92,9 @@
     /* ★ フルスクリーン時はミニツールを強制非表示（ボタン操作の無効化） */
     :fullscreen .min-tools { display: none !important; }
 
-    .btn-tool {
-      background: rgba(40,40,40,0.95); color: #fff; border: 1px solid #555;
-      padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size:18px; min-height: 28px; height: 28px;
-    }
+    .btn-tool { background: rgba(40,40,40,0.95); color: #fff; border: 1px solid #555; padding: 24px 20px; border-radius: 6px; cursor: pointer; font-size:24px; }
     .btn-tool:hover { background: #555; border-color: var(--accent-color); }
     .btn-tool.accent { background: var(--accent-color); border: none; font-weight: bold; }
-    /* 全画面・Closeボタンも小さく */
-    .panel-controls .btn-tool[onclick*="toggleFS"],
-    .panel-controls .btn-tool[onclick*="toggleKildongmu"] {
-      padding: 8px 12px; font-size: 16px; min-height: 28px; height: 28px;
-    }
-    /* スクロールボタンも小さく */
-    .panel-controls .btn-tool[onclick*="remoteScrollUp"],
-    .panel-controls .btn-tool[onclick*="remoteScrollDown"] {
-      padding: 6px 10px; font-size: 15px; min-height: 24px; height: 24px;
-    }
 
     .panel-controls { background: #1a1a1a; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px; }
     .control-row { display: flex; gap: 10px; align-items: center; }
@@ -152,10 +139,9 @@
       <div class="md-container" id="md-display"></div>
       
       <div class="panel-controls">
-        <div class="control-row">
-          <button class="btn-tool" style="flex:1" onclick="remoteScrollUp()">⬆ 위로</button>
-          <button class="btn-tool" style="flex:1" onclick="remoteScrollDown()">⬇ 아래로</button>
-        </div>
+        <div class="control-row" style="justify-content: flex-end; margin-bottom: -10px;">
+  <button class="btn-tool" style="padding: 5px 15px; font-size: 0.7rem; min-height: auto;" onclick="remoteScrollUp()">▲ 5行上へ</button>
+</div>
         <div class="control-row">
           <span style="font-size: 0.8rem; color: var(--accent-color); font-weight: bold;">PAGE:</span>
           <input type="number" id="page-jump" style="width: 70px; padding: 10px; background:#000; border:1px solid var(--accent-color); color:#fff; text-align:center;" value="1">
@@ -210,16 +196,87 @@
   let points = [];
   let currentIndex = 0;
   
-  // ★ 再生制御用のステータス管理
+  // ★ 修正1: ページロード時の時間を基準にする（最初のクリックを逃さない）
+  let lastScrollTrigger = pageLoadTime; 
+  
   let targetTime = null;
   let isPlayingToTarget = false;
-
   let timerStart = 0;
   let timerElapsed = 0;
   let timerRunning = false;
   let timerInterval = null;
 
-  // --- Global Timer Logic ---
+  // --- スクロール実行 (より確実に動作するよう修正) ---
+  function executeScroll(direction) {
+    if (!mdDisplay) return;
+    const style = window.getComputedStyle(mdDisplay);
+    const fontSize = parseFloat(style.fontSize) || 20;
+    // lineHeightが"normal"の場合、フォントサイズの約1.2倍として計算
+    const lineHeight = (style.lineHeight === 'normal') ? fontSize * 1.2 : parseFloat(style.lineHeight);
+    const scrollAmount = lineHeight * -4; 
+    
+    mdDisplay.scrollBy({
+      top: direction === 'up' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth'
+    });
+  }
+
+  // --- Remote Control Functions ---
+  window.remoteScrollUp = () => {
+    update(statusRef, { 
+      scrollTrigger: Date.now(), 
+      scrollDir: 'up' 
+    });
+  };
+
+  window.remoteNext = () => {
+    if (currentIndex < points.length) {
+      update(statusRef, { currentIndex: currentIndex + 1, timestamp: Date.now() });
+    }
+  };
+
+  window.remotePrev = () => {
+    if (currentIndex > 0) {
+      update(statusRef, { currentIndex: currentIndex - 1, timestamp: Date.now() });
+    }
+  };
+  
+  window.remoteReset = () => {
+    update(statusRef, { currentIndex: 0, timestamp: Date.now() });
+  };
+
+  window.remoteReloadAll = () => {
+    update(statusRef, { reloadTrigger: Date.now() });
+  };
+
+  // --- Sync Listener ---
+  onValue(statusRef, (snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
+    
+    syncStatus.classList.add("active");
+    syncText.textContent = "同期完了 (SYNCED)";
+
+    // 1. リロード
+    if (data.reloadTrigger && data.reloadTrigger > pageLoadTime) {
+      location.reload();
+      return;
+    }
+
+    // ★ 修正2: scrollTriggerの判定を確実に
+    if (data.scrollTrigger && data.scrollTrigger > lastScrollTrigger) {
+      executeScroll(data.scrollDir);
+      lastScrollTrigger = data.scrollTrigger;
+    }
+
+    // 3. ページ遷移
+    const remoteIndex = data.currentIndex;
+    if (remoteIndex !== currentIndex) {
+      executeTransition(remoteIndex);
+    }
+  });
+
+  // --- UI Logic ---
   window.toggleTimer = () => {
     if (!timerRunning) {
       timerStart = Date.now() - timerElapsed;
@@ -277,10 +334,8 @@
     }
   }
 
-  // ★ 堅牢な再生監視ロジック
   function monitorPlayback() {
     if (!isPlayingToTarget || targetTime === null) return;
-    
     if (video.currentTime >= targetTime) {
       video.pause(); 
       video.currentTime = targetTime;
@@ -291,11 +346,8 @@
     requestAnimationFrame(monitorPlayback);
   }
 
-  // ★ 全ての遷移を一元管理し、暴走を防ぐ
   function executeTransition(remoteIndex) {
     if (remoteIndex < 0 || remoteIndex > points.length) return;
-
-    // 1ページだけ次へ進む場合（かつ現在遷移中でない場合）のみ再生アニメーション
     if (remoteIndex === currentIndex + 1 && !isPlayingToTarget) {
       targetTime = points[currentIndex].time;
       currentIndex = remoteIndex;
@@ -303,67 +355,16 @@
       video.play();
       syncUI();
       requestAnimationFrame(monitorPlayback);
-    } 
-    // 連打された場合、戻る場合、大きくジャンプする場合は強制停止＆シーク
-    else {
+    } else {
       isPlayingToTarget = false;
       targetTime = null;
       currentIndex = remoteIndex;
       video.pause();
-      
       const jumpTime = (currentIndex === 0) ? 0 : points[currentIndex - 1].time;
       video.currentTime = jumpTime;
       syncUI();
     }
   }
-
-  window.remoteScrollUp = () => {
-    update(statusRef, { scrollCommand: "up", timestamp: Date.now() });
-  };
-
-  window.remoteScrollDown = () => {
-    update(statusRef, { scrollCommand: "down", timestamp: Date.now() });
-  };
-
-  // ローカルスクロール実行
-  function executeScroll(direction) {
-    const scrollAmount = 5 * 20; // 5行 × 約20px per line
-    const start = mdDisplay.scrollTop;
-    const end = direction === "up" ? start - scrollAmount : start + scrollAmount;
-    const duration = 1500; // 1.5秒
-    const startTime = performance.now();
-    function animateScroll(now) {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      mdDisplay.scrollTop = start + (end - start) * progress;
-      if (progress < 1) {
-        requestAnimationFrame(animateScroll);
-      }
-    }
-    requestAnimationFrame(animateScroll);
-  }
-
-  // --- Remote Control ---
-  // ローカルでは状態を直接変更せず、Firebaseへ送信するだけ
-  window.remoteNext = () => {
-    if (currentIndex < points.length) {
-      update(statusRef, { currentIndex: currentIndex + 1, timestamp: Date.now() });
-    }
-  };
-
-  window.remotePrev = () => {
-    if (currentIndex > 0) {
-      update(statusRef, { currentIndex: 0, timestamp: Date.now() });
-    }
-  };
-  
-  window.remoteReset = () => {
-    update(statusRef, { currentIndex: 0, timestamp: Date.now() });
-  };
-
-  window.remoteReloadAll = () => {
-    update(statusRef, { reloadTrigger: Date.now() });
-  };
 
   pageInput.onchange = (e) => {
     const val = parseInt(e.target.value);
@@ -371,31 +372,6 @@
       update(statusRef, { currentIndex: val - 1, timestamp: Date.now() });
     }
   };
-
-  // --- Sync Listener ---
-  onValue(statusRef, (snapshot) => {
-    const data = snapshot.val();
-    syncStatus.classList.add("active");
-    syncText.textContent = "同期完了 (SYNCED)";
-    if (!data) return;
-
-    if (data.reloadTrigger && data.reloadTrigger > pageLoadTime) {
-      location.reload();
-      return;
-    }
-
-    // スクロールコマンドの処理
-    if (data.scrollCommand) {
-      executeScroll(data.scrollCommand);
-      return;
-    }
-
-    const remoteIndex = data.currentIndex;
-    if (remoteIndex === currentIndex) return;
-    
-    // 変更があった場合は必ず executeTransition を経由する
-    executeTransition(remoteIndex);
-  });
 
   window.toggleKildongmu = () => kPanel.classList.toggle("active");
   window.toggleFS = () => {
@@ -408,7 +384,6 @@
     try {
       const dataFetch = fetch("./time.json").then(res => res.json());
       const [jsonData] = await Promise.all([dataFetch, minWait]);
-      
       points = jsonData.map(p => ({ ...p, time: p.frame / FPS }));
       document.getElementById("loading").style.display = "none";
       loadMarkdown();
