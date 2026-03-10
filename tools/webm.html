@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Video Converter (No-Header Version)</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 40px auto; text-align: center; background: #f9f9f9; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        select, input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        #status { font-size: 14px; color: #666; font-weight: bold; }
+        .loader { color: #007bff; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h3>動画変換 (MP4 / WebM)</h3>
+    <p id="status" class="loader">FFmpegをロード中...</p>
+    
+    <input type="file" id="uploader" accept="video/*">
+    <select id="format">
+        <option value="mp4">MP4に変換</option>
+        <option value="webm">WebMに変換</option>
+    </select>
+    <button id="convertBtn" disabled>変換開始</button>
+    
+    <div id="downloadArea"></div>
+</div>
+
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+<script>
+    const { createFFmpeg, fetchFile } = FFmpeg;
+    
+    // 【重要】SharedArrayBufferエラーを回避するため「シングルスレッド版(ST)」のコアを明示
+    const ffmpeg = createFFmpeg({ 
+        log: true,
+        corePath: 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js'
+    });
+
+    const status = document.getElementById('status');
+    const convertBtn = document.getElementById('convertBtn');
+
+    // ページ読み込み時に即実行
+    (async () => {
+        try {
+            await ffmpeg.load();
+            status.innerText = "✅ 準備完了";
+            status.style.color = "green";
+            convertBtn.disabled = false;
+        } catch (e) {
+            status.innerText = "❌ ロード失敗。ブラウザを更新してください。";
+            console.error(e);
+        }
+    })();
+
+    convertBtn.onclick = async () => {
+        const file = document.getElementById('uploader').files[0];
+        if (!file) return alert("ファイルを選択してください");
+
+        const target = document.getElementById('format').value;
+        const outName = `output.${target}`;
+
+        convertBtn.disabled = true;
+        status.innerText = "変換中... (進行度はコンソールで確認できます)";
+
+        ffmpeg.FS('writeFile', 'input', await fetchFile(file));
+        
+        // 変換実行
+        await ffmpeg.run('-i', 'input', outName);
+
+        const data = ffmpeg.FS('readFile', outName);
+        const url = URL.createObjectURL(new Blob([data.buffer], { type: `video/${target}` }));
+        
+        document.getElementById('downloadArea').innerHTML = 
+            `<a href="${url}" download="${outName}" style="display:block;margin-top:20px;color:#28a745;text-decoration:none;font-weight:bold;">
+                【保存】変換したファイルをダウンロード
+            </a>`;
+        
+        status.innerText = "✅ 完了！";
+        convertBtn.disabled = false;
+    };
+</script>
+
+</body>
+</html>
