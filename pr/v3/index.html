@@ -282,7 +282,7 @@
         timerDisplay.textContent = `${String(d.getUTCMinutes()).padStart(2,'0')}:${String(d.getUTCSeconds()).padStart(2,'0')}.${Math.floor(d.getUTCMilliseconds()/100)}`;
       }, 100);
       timerRunning = true;
-      timerDisplay.style.color = "#ff6b6b"; // 動作中を少し色変え
+      timerDisplay.style.color = "#ff6b6b";
     } else {
       clearInterval(timerInterval);
       timerRunning = false;
@@ -298,7 +298,6 @@
     timerDisplay.style.color = "var(--accent-color)";
   };
 
-  // --- 発表者モード切替 ---
   window.togglePresenterMode = () => {
     document.body.classList.toggle("presenter-mode");
   };
@@ -313,38 +312,20 @@
 
   document.getElementById("md-size-slider").oninput = (e) => mdDisplay.style.fontSize = e.target.value + "px";
 
-  function capture(time, canvas) {
-    if (!video.readyState) return;
-    const temp = document.createElement('video');
-    temp.src = video.src;
-    temp.currentTime = time;
-    temp.muted = true;
-    temp.onseeked = () => {
-      const ctx = canvas.getContext('2d');
-      canvas.width = 480; canvas.height = 270;
-      ctx.drawImage(temp, 0, 0, canvas.width, canvas.height);
-      temp.remove();
-    };
-  }
-
+  // サムネイル画像更新処理を完全削除し、ページ番号のUI同期のみ残す
   function syncUI() {
     pageInput.value = currentIndex + 1;
-    const currT = (currentIndex === 0) ? 0 : points[currentIndex - 1].time;
-    capture(currT + 0.05, document.getElementById("canvas-curr"));
-    if (currentIndex < points.length) {
-      capture(points[currentIndex].time + 0.05, document.getElementById("canvas-next"));
-    } else {
-      document.getElementById("canvas-next").getContext('2d').clearRect(0,0,999,999);
-    }
   }
 
   function monitorPlayback() {
     if (!isPlayingToTarget || targetTime === null) return;
-    if (video.currentTime >= targetTime) {
+    
+    // フレーム行き過ぎを防ぐため、ターゲットのわずか手前で停止判定を行う
+    if (video.currentTime >= targetTime - 0.015) {
       video.pause(); 
-      video.currentTime = targetTime;
       isPlayingToTarget = false;
       targetTime = null;
+      syncUI();
       return;
     }
     requestAnimationFrame(monitorPlayback);
@@ -352,6 +333,7 @@
 
   function executeTransition(remoteIndex) {
     if (remoteIndex < 0 || remoteIndex > points.length) return;
+    
     if (remoteIndex === currentIndex + 1 && !isPlayingToTarget) {
       targetTime = points[currentIndex].time;
       currentIndex = remoteIndex;
@@ -364,7 +346,9 @@
       targetTime = null;
       currentIndex = remoteIndex;
       video.pause();
+      
       const jumpTime = (currentIndex === 0) ? 0 : points[currentIndex - 1].time;
+      // 停止状態でのみシークさせることでカクつきを防止
       video.currentTime = jumpTime;
       syncUI();
     }
