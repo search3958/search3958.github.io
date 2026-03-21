@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Binary Timecode Rewriter</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: #eee; padding: 20px; }
+        .ui { border: 1px solid #444; padding: 20px; border-radius: 10px; max-width: 500px; background: #252525; margin: auto; }
+        input, button { width: 100%; margin: 10px 0; padding: 12px; box-sizing: border-box; border: none; border-radius: 6px; }
+        input { background: #333; color: #fff; }
+        button { background: #ff9800; color: white; font-weight: bold; cursor: pointer; }
+        #status { font-size: 13px; color: #00ff00; text-align: center; margin-top: 10px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+
+<div class="ui">
+    <h3>バイナリ・タイムコード修正</h3>
+    <p style="font-size:11px; color:#888;">※WebMファイルのバイナリを直接編集します</p>
+    
+    <input type="file" id="up" accept=".webm">
+    
+    <label style="font-size:12px;">1コマの持続時間 (ミリ秒)</label>
+    <input type="number" id="stepMs" value="1000">
+
+    <button id="btn">バイナリを書き換えて保存</button>
+    <div id="status"></div>
+</div>
+
+<script>
+/**
+ * WebM (EBML) の Timecode を書き換える
+ * SimpleBlock (0xA3) の構造を探し、その中の Timecode (2バイト) を上書きする
+ */
+document.getElementById('btn').onclick = async () => {
+    const file = document.getElementById('up').files[0];
+    if (!file) return;
+
+    const stepMs = parseInt(document.getElementById('stepMs').value);
+    const reader = new FileReader();
+    const status = document.getElementById('status');
+
+    reader.onload = async (e) => {
+        let buffer = new Uint8Array(e.target.result);
+        status.textContent = "スキャン中...";
+
+        let frameCount = 0;
+        let lastTimecode = 0;
+
+        // バイナリを走査して SimpleBlock (0xA3) を探す
+        // 注意: 簡易的な実装のため、データの並びによっては誤検出の可能性がありますが
+        // 多くの標準的なWebMで動作するロジックです。
+        for (let i = 0; i < buffer.length - 4; i++) {
+            // SimpleBlock の ID は 0xA3
+            if (buffer[i] === 0xA3) {
+                // EBMLのサイズ定義をスキップ (可変長)
+                let sizeIdx = i + 1;
+                let firstByte = buffer[sizeIdx];
+                let numBytes = Math.clz32(firstByte ^ 0xff) - 24; // EBML VarInt の長さ
+                
+                let timecodeIdx = sizeIdx + numBytes + 1; // Track Number (通常1バイト) の次
+
+                // タイムコードは 2バイト符号付き整数 (Int16)
+                // 各フレームのタイムコードを累計の stepMs で上書きする
+                let newTimecode = frameCount * stepMs;
+                
+                // WebMの1つの Cluster 内での相対タイムコードを書き換え
+                // (※本来は Cluster の Timecode も考慮が必要ですが、
+                // 多くのプレイヤーは Block のタイムコード直書きで尺を認識します)
+                buffer[timecodeIdx] = (newTimecode >> 8) & 0xff;
+                buffer[timecodeIdx + 1] = newTimecode & 0xff;
+
+                frameCount++;
+                i = timecodeIdx + 2; // 次のブロックへ
+            }
+        }
+
+        status.textContent = `${frameCount}個のフレームを修正しました。\nバイナリを構築中...`;
+
+        const blob = new Blob([buffer], { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `rewritten_step_${stepMs}ms.webm`;
+        a.click();
+
+        status.textContent += "\n完了！";
+    };
+
+    reader.readAsArrayBuffer(file);
+};
+</script>
+</body>
+</html>

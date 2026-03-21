@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私はSentaro - Search3958</title>
+
+    <meta name="description" content="Sentaro（Search3958）によるプロジェクト紹介サイト。">
+    <meta name="author" content="Sentaro (@Search3958)">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@374&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+        /* --- Layout Skeleton (Essential Only) --- */
+        * {
+            box-sizing: border-box;
+            corner-shape: superellipse(1.6);
+            font-family: "M PLUS 2", sans-serif;
+        }
+
+        body {
+            margin: 0;
+            line-height: 1.5;
+            color: #000;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Layout */
+        header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    padding-right: 32px;
+    gap:8px;
+    position: fixed;
+    z-index: 999;
+    background: #fffc;
+    backdrop-filter: blur(32px) brightness(1.4);
+        top: 40px;
+    left: 40px;
+    border-radius: 33px;
+    box-shadow: 0px 4px 24px #0004;
+}
+.hero-btns .btn {
+    background: #fff7;
+    border: none;
+    backdrop-filter: blur(10px) brightness(2);
+    color: #000;
+    box-shadow:none;
+}
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Section Spacing */
+        section {
+            padding: 32px;
+            background:#fff;
+            border-radius: 56px;    
+            margin-top:20px;
+                box-shadow: 0px 4px 32px #00000008;
+
+        }
+h1 {
+    margin: 0px;
+    position: relative;
+    top: 9px;
+    left: -4px;
+}
+        /* Hero Layout */
+        .hero {
+                text-align: center;
+    background-image: linear-gradient(0deg, rgb(0 0 0 / 68%) 0%, rgb(0 0 0 / 35%) 30%, rgb(0 0 0 / 0%) 70%), url(first.webp), url(first.webp);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-attachment: fixed;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 32px;
+    height: 350px;
+    color:#fff;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* Featured Projects (Grid) */
+        .project-interface {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .project-interface {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .project-item {
+            justify-content: space-between;
+            width: 100%;
+            padding: 15px;
+            transition:all 0.1s ease;
+        }
+
+        .project-item.active {
+            background:color(display-p3 0.11 0.738 0.308 / 1);
+            color:#fff;
+        }
+
+        /* About Grid */
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .about-card {
+            padding: 20px;
+            border: 1px solid #eee;
+        }
+
+        /* Quality & Stats Layout */
+        .quality-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+
+        .stat-card {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        /* All Projects (Chips) */
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .project-chip {
+            padding: 6px 14px;
+            font-size: 0.9rem;
+        }
+
+        /* UI Helpers */
+        .btn {
+                display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 23px;
+    cursor: pointer;
+    /* border: 1px solid #000; */
+    background: none;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 24px;
+    background: #f7f7f7;
+    box-shadow: inset 0px 0px 16px #00000008;
+}
+
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.6s ease-out;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        footer {
+            padding: 40px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo-container">
+            
+<svg width="64" height="64" viewBox="0 0 1435 1903" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_d_1634_5)">
+<g clip-path="url(#paint0_angular_1634_5_clip_path)" data-figma-skip-parse="true"><g transform="matrix(-0.4675 1.5923e-08 1.59229e-08 0.4675 717.5 1169)"><foreignObject x="-1002.14" y="-1002.14" width="2004.28" height="2004.28"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(0, 88, 61, 1) 0deg,rgba(0, 190, 123, 1) 181.711deg,rgba(0, 255, 17, 1) 290.751deg,rgba(145, 255, 162, 1) 349.598deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="935" height="935" rx="467.5" transform="matrix(0 1 1 0 250 701.5)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.34511718153953552,&#34;b&#34;:0.24158202111721039,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.74511718750,&#34;b&#34;:0.48432618379592896,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.066666670143604279,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:1.0,&#34;b&#34;:0.63627463579177856,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.34511718153953552,&#34;b&#34;:0.24158202111721039,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.74511718750,&#34;b&#34;:0.48432618379592896,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.066666670143604279,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.57208782434463501,&#34;g&#34;:1.0,&#34;b&#34;:0.63627463579177856,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:-935.0,&#34;m01&#34;:3.1845836929278448e-05,&#34;m02&#34;:1185.0,&#34;m10&#34;:3.1845920602791011e-05,&#34;m11&#34;:935.0,&#34;m12&#34;:701.50},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+<g clip-path="url(#paint1_angular_1634_5_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0.4675 -1.64759e-08 -1.6476e-08 -0.4675 717.5 701.5)"><foreignObject x="-1002.14" y="-1002.14" width="2004.28" height="2004.28"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(0, 64, 88, 1) 0deg,rgba(0, 190, 110, 1) 181.711deg,rgba(0, 255, 119, 1) 290.751deg,rgba(114, 255, 71, 1) 349.598deg,rgba(255, 219, 59, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="935" height="935" rx="467.5" transform="matrix(0 1 1 0 250 234)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.25308594107627869,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.74511718750,&#34;b&#34;:0.43465170264244080,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.46666666865348816,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.44800558686256409,&#34;g&#34;:1.0,&#34;b&#34;:0.28000730276107788,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.85929673910140991,&#34;b&#34;:0.23252780735492706,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.25308594107627869,&#34;b&#34;:0.34511718153953552,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:0.74511718750,&#34;b&#34;:0.43465170264244080,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:0.0,&#34;g&#34;:1.0,&#34;b&#34;:0.46666666865348816,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:0.44800558686256409,&#34;g&#34;:1.0,&#34;b&#34;:0.28000730276107788,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.85929673910140991,&#34;b&#34;:0.23252780735492706,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:935.00006103515625,&#34;m01&#34;:-3.2951946195680648e-05,&#34;m02&#34;:249.99998474121094,&#34;m10&#34;:-3.2951837056316435e-05,&#34;m11&#34;:-935.00006103515625,&#34;m12&#34;:1169.0},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+<rect width="935" height="935" rx="467.5" transform="matrix(0 1 1 0 250 701.5)" fill="url(#paint2_radial_1634_5)" fill-opacity="0.9"/>
+</g>
+<circle cx="717.5" cy="1168.5" r="455.5" transform="rotate(180 717.5 1168.5)" fill="url(#paint3_radial_1634_5)" style="mix-blend-mode:plus-lighter"/>
+<circle cx="717.5" cy="700.5" r="455.5" fill="url(#paint4_radial_1634_5)" style="mix-blend-mode:plus-lighter"/>
+<defs>
+<filter id="filter0_d_1634_5" x="0" y="0" width="1435" height="1902.5" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="16"/>
+<feGaussianBlur stdDeviation="125"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.36 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1634_5"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1634_5" result="shape"/>
+</filter>
+<clipPath id="paint0_angular_1634_5_clip_path"><rect width="935" height="935" rx="467.5" transform="matrix(0 1 1 0 250 701.5)"/></clipPath><clipPath id="paint1_angular_1634_5_clip_path"><rect width="935" height="935" rx="467.5" transform="matrix(0 1 1 0 250 234)"/></clipPath><radialGradient id="paint2_radial_1634_5" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(567.679 467.5) rotate(180) scale(567.679 663.35)">
+<stop offset="0.615427" stop-color="#F3FFBF" stop-opacity="0"/>
+<stop offset="1" stop-color="#F3FFBF"/>
+</radialGradient>
+<radialGradient id="paint3_radial_1634_5" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(733 1185) rotate(60.5263) scale(484.733)">
+<stop offset="0.899038" stop-opacity="0"/>
+<stop offset="0.956731" stop-color="#414141"/>
+<stop offset="1" stop-color="#C0C0C0"/>
+</radialGradient>
+<radialGradient id="paint4_radial_1634_5" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(733 717) rotate(60.5263) scale(484.733)">
+<stop offset="0.899038" stop-opacity="0"/>
+<stop offset="0.956731" stop-color="#414141"/>
+<stop offset="1" stop-color="#C0C0C0"/>
+</radialGradient>
+</defs>
+</svg>
+
+        </div>
+        <nav>
+            <a href="https://search3958.github.io/">ホーム</a>
+            <a href="https://search3958.github.io/i/newtab/">Newtab</a>
+            <a href="https://search3958.github.io/i/tools/">ツール</a>
+            <a href="https://github.com/search3958" target="_blank">GitHub</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <section id="hero" class="hero fade-in-up">
+            <h1>私はSentaro。<br>とにかく便利に</h1>
+            <div class="hero-btns">
+                <a href="#projects" class="btn">プロジェクトを見る</a>
+                <a href="https://github.com/search3958" class="btn">GitHubを確認</a>
+            </div>
+        </section>
+
+        <section id="projects" class="fade-in-up">
+            <h2>主なプロジェクト</h2>
+            <div class="project-interface">
+                <div class="project-list" id="projectList">
+                </div>
+                <div class="project-preview" id="previewPane">
+                    <h3 id="pTitle">プロジェクト名</h3>
+                    <p id="pDesc">こちらに詳細が表示されます。</p>
+                    <a href="#" id="pBtn" class="btn">開始</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-in-up">
+            <h2>私について</h2>
+            <div class="about-grid">
+                <div class="about-card">
+                    <span class="material-symbols-rounded">face</span>
+                    <h3>私の特徴</h3>
+                    <p>とにかく、自分が欲しいと思ったらすぐに作ってます。可能な限り使いやすく便利なものを作るように心がけています。</p>
+                </div>
+                <div class="about-card">
+                    <span class="material-symbols-rounded">flag</span>
+                    <h3>ミッション</h3>
+                    <p>日常のデジタル体験を効率化することを目指しています。ユーザー中心設計、モダンなUI/UX、パフォーマンスを重視しています。</p>
+                </div>
+                <div class="about-card">
+                    <span class="material-symbols-rounded">code</span>
+                    <h3>技術スタック</h3>
+                    <p>最新のWeb技術を活用。Web系とFlutterを主に扱います。京都を拠点とする学生開発者です。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-in-up">
+            <div class="quality-flex">
+                <div style="flex: 1.2;">
+                    <h2>信頼できる品質</h2>
+                    <p>常に新しい技術を使用し、ユーザーのニーズに合わせて直感的な体験を提供し続けています。</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card"><strong>1.3万+</strong><br>表示回数</div>
+                    <div class="stat-card"><strong>4.2万+</strong><br>イベント数</div>
+                    <div class="stat-card"><strong>3,766</strong><br>セッション</div>
+                    <div class="stat-card"><strong>78.5%</strong><br>エンゲージメント率</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="all-projects" class="fade-in-up">
+            <h2>その他</h2>
+            <div class="chip-container">
+                <a class="btn project-chip" href="https://search3958.github.io/toolboard">ToolBoard</a>
+                <a class="btn project-chip" href="https://search3958.github.io/m3color">M3 Gen</a>
+                <a class="btn project-chip" href="https://search3958.github.io/newtab/">NewTab</a>
+                <a class="btn project-chip" href="https://search3958.github.io/project/htmlos/1/">Hanul1234</a>
+                <a class="btn project-chip" href="https://search3958.github.io/docs/document/edit/">ドキュメント</a>
+                <a class="btn project-chip" href="https://search3958.github.io/accounts/">3958アカウント</a>
+                <a class="btn project-chip" href="https://search3958.github.io/3dspace">3D Space</a>
+                <a class="btn project-chip" href="https://search3958.github.io/uiscript/">UI Script</a>
+                <a class="btn project-chip" href="https://search3958.github.io/webmaker">WebCreator</a>
+                <a class="btn project-chip" href="https://search3958.github.io/tools/counter.html">カウンター</a>
+                <a class="btn project-chip" href="https://search3958.github.io/webmaker">thinkSocial</a>
+                <a class="btn project-chip" href="https://search3958.github.io/games/">クソゲー広場</a>
+                <a class="btn project-chip" href="https://search3958.github.io/tools">Tools</a>
+                <a class="btn project-chip" href="https://search3958.github.io/techpick10/">TechPick 10</a>
+                <a class="btn project-chip" href="https://search3958.github.io/firebasetext">火源台</a>
+                <a class="btn project-chip" href="https://search3958.github.io/project/images/">Images</a>
+                <a class="btn project-chip" href="https://search3958.github.io/project/images/2/">壁紙</a>
+                <a class="btn project-chip" href="https://search3958.github.io/tools/timer/ja.html">タイマー</a>
+                <a class="btn project-chip" href="https://search3958.github.io/tools/stopwatch/ja.html">ストップウォッチ</a>
+                <a class="btn project-chip" href="https://search3958.github.io/tools/dclock/ja.html">デジタル時計</a>
+                <a class="btn project-chip" href="https://search3958.github.io/tools/aclock/ja.html">アナログ時計</a>
+                <a class="btn project-chip" href="https://search3958.github.io/dictionary/html/">HTML要素辞書</a>
+                <a class="btn project-chip" href="https://search3958.github.io/baram/">Baram Code</a>
+            </div>
+        </section>
+
+        <section id="contact" class="fade-in-up">
+            <div style="text-align: center; border: 1px solid #ddd; padding: 40px;">
+                <h2>何か伝えることがありましたらどうぞ</h2>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform"
+                    class="btn">フォームを表示</a>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container" style="display: flex; justify-content: space-between; width: 100%;">
+            <div>Sentaro(@Search3958)</div>
+            <div style="display: flex; gap: 20px;">
+                <a href="https://search3958.github.io/accounts/lang" style="color: inherit;">Language</a>
+                <a href="http://search3958.github.io/policies/" style="color: inherit;">利用規約</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Project Data
+        const projects = [
+            { name: "Newtab6", desc: "革命的な新しいタブページ体験。美しいデザインと実用性を兼ね備えた次世代ツール。", url: "https://search3958.github.io/i/newtab/" },
+            { name: "ToolBoard", desc: "日常で使える便利ツールを一箇所に集約。生産性向上のための新たな選択肢。", url: "https://search3958.github.io/toolboard" },
+            { name: "thinkSocial", desc: "色情報も共有できるプラットフォーム。従来のSNSとは一線を画した体験。", url: "https://sns.thinking-grp.org/" },
+            { name: "WebP変換", desc: "ただ，高速にWebPへ変換します。", url: "https://search3958.github.io/tools/webp.html" }
+        ];
+
+        const list = document.getElementById('projectList');
+        const pTitle = document.getElementById('pTitle');
+        const pDesc = document.getElementById('pDesc');
+        const pBtn = document.getElementById('pBtn');
+
+        // Logic
+        projects.forEach((proj, i) => {
+            const el = document.createElement('div');
+            el.className = `btn project-item ${i === 0 ? 'active' : ''}`;
+            el.innerHTML = `<span>${proj.name}</span> <span class="material-symbols-rounded">arrow_forward</span>`;
+
+            const update = () => {
+                document.querySelectorAll('.project-item').forEach(item => item.classList.remove('active'));
+                el.classList.add('active');
+                pTitle.innerText = proj.name;
+                pDesc.innerText = proj.desc;
+                pBtn.href = proj.url;
+            };
+
+            el.addEventListener('mouseenter', update);
+            el.addEventListener('click', update);
+            list.appendChild(el);
+        });
+
+        // Observer
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in-up').forEach(el => obs.observe(el));
+    </script>
+</body>
+
+</html>
