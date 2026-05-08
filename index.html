@@ -1,823 +1,487 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sentaro - Tools & Projects</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <style>
-    /*==============================================================================
-      1. Variables & Reset
-    ==============================================================================*/
-    :root {
-      /* Colors */
-      --bg: #F5F6F8;
-      --bg-card: #FFFFFF;
-      --fg: #1A1C23;
-      --fg-muted: #6B7280;
-      --border: #E0E2E8;
-      --accent: #405B9C;
-      --surface-dark: #30313e;
-      --surface-mid: #393a4a;
-      --metal-light: #8793a8;
-      --metal-highlight: #bbc7dc;
-
-      /* Spacing */
-      --container-width: 1000px;
-      --header-height: 64px;
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wdth,wght@6..144,1..1000&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+<style>
+    *{
+        font-family: "Google Sans Flex", "Noto Sans KR",sans-serif;
+            line-height: 1.5 !important;
     }
+    body{
+        padding:0;
+        margin:0;
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
     }
+.first{
+    background:#69ffb4;
+    background-image: 
+    conic-gradient(from 45deg, #000000 0deg, #00FF8200 45deg), conic-gradient(from -45deg, #a8ffeb 0deg, #C3FF0000 45deg), conic-gradient(from 135deg, #e7fff9 0deg, #00FF4400 45deg), conic-gradient(from -135deg, #f8ffa7 0deg, #00FF4400 45deg);
+    padding:48px;
+    text-align:center;
+    font-weight:bold;
+    font-size:40px;
+    position:relative;
+    height: 144px;
+    overflow:hidden;
+    padding-top:80px;
 
-    html {
-      scroll-behavior: smooth; /* Native smooth scroll */
-    }
-
-    body {
-      font-family: 'Noto Sans JP', 'Inter', sans-serif;
-      background-color: var(--bg);
-      color: var(--fg);
-      line-height: 1.7;
-      -webkit-font-smoothing: antialiased;
-      /* Noise texture overlay */
-      position: relative;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      opacity: 0.03;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      z-index: 9999;
-    }
-
-    /*==============================================================================
-      2. Typography & Utilities
-    ==============================================================================*/
-    .font-display {
-      font-family: 'Inter', sans-serif;
-      letter-spacing: -0.02em;
-    }
-
-    .container {
-      max-width: var(--container-width);
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* Superellipse Support */
-    @supports (corner-shape: superellipse(1.6)) {
-      .superellipse {
-        corner-shape: superellipse(1.6);
-      }
-    }
-
-    /*==============================================================================
-      3. Buttons
-    ==============================================================================*/
+}
+.first:before{
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+    background-image: conic-gradient(from 180deg, #00C464 0deg, #00FF8200 45deg), conic-gradient(from 0deg, #9AFF8C 0deg, #C3FF0000 45deg), conic-gradient(from 90deg, #ACEAFF 0deg, #00FF4400 45deg), conic-gradient(from -90deg, #51FCFF 0deg, #00FF4400 45deg);
+    mix-blend-mode: overlay;
     
-    /* Primary Button - Exact specification */
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      border: none;
-      border-radius: 32px;
-      corner-shape: superellipse(1.6);
-      padding: 20px 28px;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      background: var(--surface-dark);
-      color: #fff;
-      box-shadow: inset 0 0px 12px 0 var(--surface-mid), 
-                  inset 0 -8px 16px 0 var(--metal-light), 
-                  0 6px 24px 0 rgba(0,0,0,0.3);
-      transition: transform 0.3s cubic-bezier(0,0,0,1), 
-                  box-shadow 0.2s cubic-bezier(0,0,0,1);
-      text-decoration: none;
-    }
 
-    .btn-primary:hover {
-      transform: translateY(-6px);
-      box-shadow: inset 0 -2px 26px 0 var(--surface-mid), 
-                  inset 0 -12px 24px 0 var(--metal-highlight), 
-                  0 6px 32px 0 rgba(0,0,0,0.45);
-    }
+}
+.small{
+    font-size:16px;
+    opacity:0.7;
+    transition: 1.5s all cubic-bezier(1,0,.18,1);
+    padding-top:0px;
+    font-weight:400;
+    font-variation-settings:
+    "slnt" 0,
+    "wdth" 100,
+    "GRAD" 0,
+    "ROND" 0;
 
-    .btn-primary:active {
-      transform: translateY(-2px);
-      transition: transform 0.06s cubic-bezier(0,0,0,1), 
-                  box-shadow 0.06s cubic-bezier(0,0,0,1);
-      box-shadow: inset 0 -2px 16px 0 var(--surface-mid), 
-                  inset 0 -16px 16px 0 rgba(187, 199, 220, 0.47), 
-                  0 2px 32px 0 rgba(0,0,0,0.45);
-    }
+}
+.small.before{
+    font-size:48px;
+    opacity:1;
+    padding-top:48px;
+    font-weight:bold;
+    font-variation-settings:
+    "slnt" 0,
+    "wdth" 160,
+    "GRAD" 0,
+    "ROND" 100;
 
-    /* Secondary Button - Matched height */
-    .btn-secondary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 20px 28px; /* Matched with primary */
-      background: var(--bg);
-      color: var(--fg);
-      border: 1px solid var(--border);
-      border-radius: 32px;
-      corner-shape: superellipse(1.6);
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-decoration: none;
-    }
+}
+.message{
+    transition: 2s all cubic-bezier(.06,.37,0,1),1s filter cubic-bezier(.19,.08,0,1);
+    opacity:1;
+    filter:blur(0px);
+    display:block;
+    transform:translateY(0px);
+    transition-delay:0.7s
+}
+.message.before{
+    opacity:0;
+    filter:blur(16px);
+    transform:translateY(120px);
+}
 
-    .btn-secondary:hover {
-      background: var(--bg-card);
-      border-color: var(--fg-muted);
-    }
 
-    .btn-secondary:active {
-      transform: scale(0.98);
-    }
+.xincard{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding-top:24px;
+    gap:4px;
+    flex-direction: column;
+    font-weight:bold;
+    text-align:center;
+    font-size:32px;
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(207, 217, 232, 1));
+}
+.app-icon{
+    border-radius:100px;
+    height:52px;
+    width:52px;
+    border-radius:100px;
+    background:#fff;
+    box-shadow:0px 4px 16px #0002;
+}
+.app-image{
+    width:70vw;
+}
+.xin-reveal{
+    opacity:0;
+    transform:translateY(18px);
+    transition: opacity 0.8s cubic-bezier(.16,1,.3,1), transform 0.8s cubic-bezier(.16,1,.3,1);
+    transition-delay: var(--xin-delay, 0s);
+    will-change: opacity, transform;
+}
+.xin-reveal.is-visible{
+    opacity:1;
+    transform:translateY(0);
+}
+.app-name{
+    display:inline-block;
+}
+.goodcard{ 
 
-    /* Small variant for cards */
-    .btn-small {
-      padding: 12px 20px;
-      font-size: 13px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding-top:24px;
+    text-align:center;
+    gap:4px;
+    font-size:32px;
+    flex-direction: column;
+    background-image: radial-gradient(circle at 50% 190%, rgba(0, 13, 25, 1), rgb(0 122 82) 66%, rgb(0 128 82) 73%, rgb(0 117 79) 80%, rgb(0 92 71) 87%, rgba(0, 13, 25, 1));
+    color:#fff;
+    padding-bottom:24px;
     }
+    .goodxiao{
+      padding:24px 32px;
+      border-radius:100px;
+      background-color:color(display-p3 0.4 1 0.573 / 1);
+      font-weight:bold;
+      color:#000;
+    }
+    .goodxiao.white{
+      background-color:#fff;
+      border-radius:12px;
+      padding:24px;
+    }
+    .primary-btn{
+      padding:8px 16px;
+      border-radius:100px;
+      font-weight:bold;
+      border:none;
+    }
+    header{
+      position:fixed;
+      background:#fffb;
+      color:#000;
+      top:0;
+      left:0;
+      width:100vw;
+      z-index:9999;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      backdrop-filter:blur(16px);
+      padding:12px 0;
+      gap:24px;
+      font-size:13px;
+    }
+    a{
+          text-decoration: none;
+        color:#000;
+    }
+    footer{
+      padding:48px 0px;
+      text-align:center;
+      font-size:20px;
 
-    /*==============================================================================
-      4. Components
-    ==============================================================================*/
-
-    /* Header */
-    .header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--header-height);
-      z-index: 100;
-      background: rgba(245, 246, 248, 0.7);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(224, 226, 232, 0.5);
     }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 100%;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-link {
-      padding: 8px 16px;
-      color: var(--fg-muted);
-      font-weight: 500;
-      font-size: 14px;
-      border-radius: 20px;
-      text-decoration: none;
-      transition: background 0.2s ease, color 0.2s ease;
-    }
-
-    .nav-link:hover {
-      background: rgba(64, 91, 156, 0.05);
-      color: var(--fg);
-    }
-
-    .nav-link.active {
-      background: rgba(64, 91, 156, 0.08);
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    /* Card */
-    .card {
-      background: var(--bg-card);
-      border-radius: 52px;
-      corner-shape: superellipse(1.6);
-      padding: 32px;
-      border: 1px solid var(--border);
-      box-shadow: 0 8px 16px -8px rgba(48, 49, 62, 0.06);
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
-                  box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    /* Tag */
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 12px;
-      border-radius: 16px;
-      corner-shape: superellipse(1.6);
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background: rgba(64, 91, 156, 0.06);
-      color: var(--accent);
-    }
-
-    /* Project List Item */
-    .project-list-item {
-      padding: 20px 24px;
-      border-radius: 32px;
-      corner-shape: superellipse(1.6);
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      user-select: none;
-    }
-
-    .project-list-item:hover {
-      background: rgba(64, 91, 156, 0.05);
-    }
-
-    .project-list-item:active {
-      transform: scale(0.99);
-    }
-
-    .project-list-item.active {
-      background: rgba(64, 91, 156, 0.08);
-    }
-
-    /* Tool Card */
-    .tool-card {
-      background: var(--bg-card);
-      border-radius: 28px;
-      corner-shape: superellipse(1.6);
-      padding: 16px 20px;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
-      cursor: pointer;
-    }
-
-    .tool-card:hover {
-      border-color: var(--accent);
-      background: #FDFDFD;
-      transform: translateY(-2px);
-    }
-
-    .tool-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 12px;
-      corner-shape: superellipse(1.6);
-      background: var(--surface-dark);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    /* Project Chip (Other Projects) */
-    .project-chip {
-      display: inline-block;
-      padding: 12px 20px;
-      border-radius: 32px;
-      corner-shape: superellipse(1.6);
-      background: var(--bg-card);
-      color: var(--fg);
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      border: 1px solid var(--border);
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                  box-shadow 0.3s ease, border-color 0.3s ease;
-    }
-
-    .project-chip:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(48, 49, 62, 0.08);
-      border-color: var(--accent);
-    }
-
-    /* Stat Card */
-    .stat-card {
-      background: var(--surface-dark);
-      border-radius: 32px;
-      corner-shape: superellipse(1.6);
-      padding: 24px;
-      color: white;
-      text-align: center;
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .stat-card:hover {
-      transform: scale(1.03);
-    }
-
-    /*==============================================================================
-      5. Layouts & Sections
-    ==============================================================================*/
-    
-    section {
-      padding: 96px 0;
-    }
-
-    /* Hero Section */
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: 48px;
-      align-items: center;
-    }
-    
-    @media (max-width: 768px) {
-      .hero-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .hero-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: center;
-      margin-top: 32px;
-    }
-
-    /* Projects Section */
-    .projects-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      gap: 32px;
-      align-items: start;
-    }
-
-    @media (max-width: 768px) {
-      .projects-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .preview-card {
-      position: sticky;
-      top: calc(var(--header-height) + 24px);
-      display: flex;
-      flex-direction: column;
-      min-height: 380px; /* Fixed height */
-    }
-    
-    .preview-content {
-      flex-grow: 1;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    
-    .preview-content.fade-out {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-
-    .preview-footer {
-      margin-top: auto;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* About Section */
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: 48px;
-      align-items: start;
-    }
-
-    @media (max-width: 768px) {
-      .about-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .tech-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-top: 32px;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    /* Tools & Other Projects Grid */
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-    }
-    
-    @media (max-width: 900px) {
-        .tools-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-    @media (max-width: 600px) {
-        .tools-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    .chips-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    /*==============================================================================
-      6. Animations
-    ==============================================================================*/
-    
-    .reveal {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), 
-                  transform 1s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Stagger Animation for children */
-    .stagger > * {
-      opacity: 0;
-      transform: translateY(25px);
-    }
-    
-    .stagger.visible > * {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
-                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    /* Stagger delays */
-    .stagger.visible > *:nth-child(1) { transition-delay: 0.05s; }
-    .stagger.visible > *:nth-child(2) { transition-delay: 0.1s; }
-    .stagger.visible > *:nth-child(3) { transition-delay: 0.15s; }
-    .stagger.visible > *:nth-child(4) { transition-delay: 0.2s; }
-    .stagger.visible > *:nth-child(5) { transition-delay: 0.25s; }
-    .stagger.visible > *:nth-child(6) { transition-delay: 0.3s; }
-    .stagger.visible > *:nth-child(7) { transition-delay: 0.35s; }
-    .stagger.visible > *:nth-child(8) { transition-delay: 0.4s; }
-    .stagger.visible > *:nth-child(9) { transition-delay: 0.45s; }
-    .stagger.visible > *:nth-child(10) { transition-delay: 0.5s; }
-    .stagger.visible > *:nth-child(11) { transition-delay: 0.55s; }
-    .stagger.visible > *:nth-child(12) { transition-delay: 0.6s; }
-
-  </style>
-</head>
+</style>
 <body>
-
-  <!-- Header -->
-  <header class="header">
-    <div class="container header-inner">
-      <a href="#" class="font-display" style="font-weight: 700; font-size: 18px; color: var(--surface-dark); text-decoration: none;">Sentaro</a>
-      <nav class="nav-links">
-        <a href="#home" class="nav-link active">ホーム</a>
-        <a href="#projects" class="nav-link">プロジェクト</a>
-        <a href="#tools" class="nav-link">ツール</a>
-        <a href="#about" class="nav-link">About</a>
-        <a href="https://github.com/search3958" target="_blank" class="nav-link" style="display: flex; align-items: center; gap: 8px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-          <span>GitHub</span>
-        </a>
-      </nav>
-    </div>
+  <header>
+      <a href="#">ホーム</a>
+      <a href="https://search3958.github.io/i/newtab/">NewTab</a>
+      <a href="https://search3958.github.io/i/tools/">ツール</a>
+      <a href="https://github.com/search3958/">GitHub</a>
   </header>
-
-  <main style="padding-top: var(--header-height);">
-    
-    <!-- Hero Section -->
-    <section id="home" style="min-height: 80vh; display: flex; align-items: center;">
-      <div class="container">
-        <div class="hero-grid">
-          <div>
-            <div class="reveal">
-              <span style="font-family: monospace; font-size: 12px; color: var(--accent); font-weight: 500; margin-bottom: 16px; display: block; letter-spacing: 0.05em;">DEVELOPER & CREATOR</span>
-            </div>
-            <h1 class="font-display reveal" style="font-size: 48px; font-weight: 700; line-height: 1.2; margin-bottom: 24px; transition-delay: 0.1s;">
-              私は<span style="color: var(--accent);">Sentaro</span>
-            </h1>
-            <p class="reveal" style="font-size: 18px; color: var(--fg-muted); margin-bottom: 16px; transition-delay: 0.2s;">
-              実用的なツールとプロジェクトを開発しています。<br>
-              日常のデジタル体験を、より効率的に。
-            </p>
-            <div class="hero-buttons reveal" style="transition-delay: 0.3s;">
-              <a href="#projects" class="btn-primary">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                プロジェクトを見る
-              </a>
-              <a href="https://github.com/search3958" target="_blank" class="btn-secondary">GitHubを確認</a>
-            </div>
-          </div>
-          <div class="reveal" style="transition-delay: 0.4s;">
-            <div class="card">
-              <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-                <div style="width: 12px; height: 12px; border-radius: 50%; background: #4ade80; animation: pulse 2s infinite;"></div>
-                <span style="font-size: 14px; font-weight: 500;">アクティブに開発中</span>
-              </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; text-align: center;">
-                <div style="padding: 16px; border-right: 1px solid var(--border);">
-                  <p class="font-display" style="font-size: 24px; font-weight: 700;">12+</p>
-                  <p style="font-size: 12px; color: var(--fg-muted);">Projects</p>
-                </div>
-                <div style="padding: 16px;">
-                  <p class="font-display" style="font-size: 24px; font-weight: 700;">20+</p>
-                  <p style="font-size: 12px; color: var(--fg-muted);">Tools</p>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div class="first">
+        <div class="small before">
+            Search3958
         </div>
-      </div>
-    </section>
-
-    <!-- Featured Projects -->
-    <section id="projects">
-      <div class="container">
-        <div class="reveal" style="margin-bottom: 48px;">
-          <h2 class="font-display" style="font-size: 28px; font-weight: 700; margin-bottom: 4px;">Featured Projects</h2>
-          <p style="color: var(--fg-muted);">注目のプロジェクト</p>
-        </div>
-        
-        <div class="projects-grid">
-          <!-- List -->
-          <div id="project-list" class="reveal" style="display: flex; flex-direction: column; gap: 8px;">
-             <!-- JS Populated -->
-          </div>
-          
-          <!-- Preview -->
-          <div id="project-preview" class="card preview-card reveal" style="transition-delay: 0.1s;">
-             <div id="preview-content" class="preview-content">
-               <span id="p-tag" class="tag" style="margin-bottom: 8px; display: inline-block;">Main</span>
-               <h3 id="p-title" class="font-display" style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Newtab5</h3>
-               <p id="p-desc" style="font-size: 14px; color: var(--fg-muted); line-height: 1.6;">革命的な新しいタブページ体験。美しいデザインと実用性を兼ね備えた次世代の新しいタブ。</p>
-             </div>
-             <div class="preview-footer">
-               <span id="p-price" style="font-size: 12px; color: var(--fg-muted);">価格: 無料 / 無制限</span>
-               <a id="p-btn" href="#" class="btn-secondary btn-small">使用開始</a>
-             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- About Me -->
-    <section id="about" style="background: white; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-      <div class="container">
-        <div class="about-grid">
-          <div class="reveal">
-            <h2 class="font-display" style="font-size: 28px; font-weight: 700; margin-bottom: 24px;">About Me</h2>
-            <p style="color: var(--fg-muted); margin-bottom: 16px;">とにかく、自分が欲しいと思ったらすぐに作ってます。また、可能な限りみんなが使いやすく便利なものを作るように心がけています。</p>
-            <p style="color: var(--fg-muted);">日常のデジタル体験をより豊かで効率的にすることを目指しています。使いやすさと美しさを両立するため、特にユーザー中心設計、モダンなUI/UX、パフォーマンス重視を重視しています。</p>
-            
-            <div class="tech-tags">
-              <div class="tool-card">
-                <div class="tool-icon" style="background: var(--accent);">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-                </div>
-                <span style="font-size: 14px; font-weight: 500;">Web Frontend</span>
-              </div>
-              <div class="tool-card">
-                <div class="tool-icon" style="background: var(--accent);">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                </div>
-                <span style="font-size: 14px; font-weight: 500;">Flutter</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Stats -->
-          <div class="stats-grid stagger">
-            <div class="stat-card">
-              <p class="font-display" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">1.3万+</p>
-              <p style="font-size: 12px; opacity: 0.7;">表示回数</p>
-            </div>
-            <div class="stat-card">
-              <p class="font-display" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">4.2万+</p>
-              <p style="font-size: 12px; opacity: 0.7;">イベント数</p>
-            </div>
-            <div class="stat-card">
-              <p class="font-display" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">3,766</p>
-              <p style="font-size: 12px; opacity: 0.7;">セッション</p>
-            </div>
-            <div class="stat-card">
-              <p class="font-display" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">78.5%</p>
-              <p style="font-size: 12px; opacity: 0.7;">エンゲージメント率</p>
-            </div>
-          </div>
-        </div>
-        <p class="reveal" style="font-size: 12px; color: var(--fg-muted); margin-top: 32px;">※2025.1.1から2025.11.9までの情報</p>
-      </div>
-    </section>
-
-    <!-- Tools -->
-    <section id="tools">
-      <div class="container">
-        <div class="reveal" style="margin-bottom: 48px;">
-          <h2 class="font-display" style="font-size: 28px; font-weight: 700; margin-bottom: 4px;">Quick Tools</h2>
-          <p style="color: var(--fg-muted);">便利なツール集</p>
-        </div>
-        <div id="tools-grid" class="tools-grid stagger"></div>
-      </div>
-    </section>
-
-    <!-- Other Projects -->
-    <section style="padding-top: 0;">
-      <div class="container">
-        <div class="reveal" style="margin-bottom: 32px;">
-          <h2 class="font-display" style="font-size: 28px; font-weight: 700; margin-bottom: 4px;">Other Projects</h2>
-        </div>
-        <div id="other-projects" class="chips-container reveal"></div>
-      </div>
-    </section>
-
-    <!-- Contact -->
-    <section>
-      <div class="container">
-        <div class="reveal" style="text-align: left;">
-          <h2 class="font-display" style="font-size: 28px; font-weight: 700; margin-bottom: 16px;">Contact</h2>
-          <p style="color: var(--fg-muted); margin-bottom: 24px; max-width: 500px;">何か伝えることがありましたらご遠慮なくどうぞ！</p>
-          
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform?usp=sharing&ouid=116246090197695118669" target="_blank" class="btn-primary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-            フォームを表示
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Footer -->
-  <footer style="padding: 32px 0; border-top: 1px solid var(--border);">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-      <div style="display: flex; align-items: center; gap: 16px;">
-        <span class="font-display" style="font-weight: 700;">Sentaro</span>
-        <a href="https://x.com/Search3958" target="_blank" style="color: var(--fg-muted); text-decoration: none; font-size: 14px;">@Search3958</a>
-      </div>
-      <div style="display: flex; align-items: center; gap: 24px; font-size: 14px;">
-        <a href="http://search3958.github.io/policies/" target="_blank" style="color: var(--fg-muted); text-decoration: none;">利用規約とプライバシーポリシー</a>
-        <select id="lang-switch" style="background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer;">
-          <option value="ja">日本語</option>
-          <option value="en">English</option>
-          <option value="zh-CN">简体中文</option>
-          <option value="zh-TW">繁體中文</option>
-          <option value="ko">한국어</option>
-          <option value="ko-KP">조선말</option>
-        </select>
-      </div>
+        <span class="message before">常に便利さを<br>追求し続けること</span>
     </div>
-  </footer>
-
-  <script>
-    // Data
-    const projects = [
-        { name: "Newtab5", desc: "革命的な新しいタブページ体験。美しいデザインと実用性を兼ね備えた次世代の新しいタブ。", tag: "Extension", price: "無料 / 無制限", url: "https://search3958.github.io/i/newtab/" },
-        { name: "ToolBoard", desc: "すべてのツールを一箇所にまとめた統合ダッシュボード。効率的な作業フローを実現。", tag: "Tools", price: "Dashboard", url: "https://search3958.github.io/toolboard" },
-        { name: "thinkSocial", desc: "新しい形のソーシャルメディア体験を提供するプラットフォーム。", tag: "Social", price: "Platform", url: "https://sns.thinking-grp.org/" },
-        { name: "3D Space", desc: "WebGLを活用した没入型3D体験。インタラクティブな空間設計。", tag: "3D", price: "WebGL", url: "https://search3958.github.io/3dspace/" },
-        { name: "文字カウンター", desc: "リアルタイムで文字数・行数をカウントするシンプルツール。", tag: "Tool", price: "Tool", url: "https://search3958.github.io/tools/counter.html" },
-        { name: "WebP変換", desc: "画像を次世代フォーマットWebPへドラッグ&ドロップで瞬時に変換。", tag: "Tool", price: "Tool", url: "https://search3958.github.io/tools/webp.html" },
-        { name: "コード軽量化", desc: "HTML, CSS, JSを圧縮してWebサイトのパフォーマンスを向上。", tag: "Tool", price: "Tool", url: "https://search3958.github.io/tools/smallcode.html" }
-    ];
-
-    const tools = [
-      { name: 'TechPick 10', url: 'https://search3958.github.io/techpick10/' }, 
-      { name: '火源台', url: 'https://search3958.github.io/firebasetext' }, 
-      { name: 'Images', url: 'https://search3958.github.io/project/images/' }, 
-      { name: '壁紙', url: 'https://search3958.github.io/project/images/2/' },
-      { name: 'タイマー', url: 'https://search3958.github.io/tools/timer/ja.html' }, 
-      { name: 'ストップウォッチ', url: 'https://search3958.github.io/tools/stopwatch/ja.html' }, 
-      { name: 'デジタル時計', url: 'https://search3958.github.io/tools/dclock/ja.html' }, 
-      { name: 'アナログ時計', url: 'https://search3958.github.io/tools/aclock/ja.html' },
-      { name: 'HTML要素辞書', url: 'https://search3958.github.io/dictionary/html/' }, 
-      { name: 'Baram Code', url: 'https://search3958.github.io/baram/' }, 
-      { name: '文字カウンター', url: 'https://search3958.github.io/tools/counter.html' }, 
-      { name: 'WebP変換', url: 'https://search3958.github.io/tools/webp.html' }
-    ];
-
-    const otherProjects = [
-      { name: 'ToolBoard', url: 'https://search3958.github.io/toolboard' }, { name: 'M3 Gen', url: 'https://search3958.github.io/m3color' },
-      { name: 'NewTab', url: 'https://search3958.github.io/newtab/' }, { name: 'Hanul1234', url: 'https://search3958.github.io/project/htmlos/1/' },
-      { name: 'ドキュメント', url: 'https://search3958.github.io/docs/document/edit/' }, { name: '3D Space', url: 'https://search3958.github.io/3dspace' },
-      { name: 'UI Script', url: 'https://search3958.github.io/uiscript/' }, { name: 'WebCreator', url: 'https://search3958.github.io/webmaker' },
-      { name: 'カウンター', url: 'https://search3958.github.io/tools/counter.html' }, { name: 'thinkSocial', url: 'https://search3958.github.io/webmaker' },
-      { name: 'クソゲー広場', url: 'https://search3958.github.io/games/' }, { name: 'Tools', url: 'https://search3958.github.io/tools' }
-    ];
-
-    // Render Functions
-    function renderProjects() {
-        const listContainer = document.getElementById('project-list');
-        const pContent = document.getElementById('preview-content');
-        const pTitle = document.getElementById('p-title');
-        const pDesc = document.getElementById('p-desc');
-        const pTag = document.getElementById('p-tag');
-        const pPrice = document.getElementById('p-price');
-        const pBtn = document.getElementById('p-btn');
-
-        const updatePreview = (proj) => {
-            pContent.classList.add('fade-out');
-            setTimeout(() => {
-                pTitle.innerText = proj.name;
-                pDesc.innerText = proj.desc;
-                pTag.innerText = proj.tag;
-                pPrice.innerText = proj.price;
-                pBtn.href = proj.url;
-                pContent.classList.remove('fade-out');
-            }, 300);
-        };
-
-        projects.forEach((proj, index) => {
-            const item = document.createElement('div');
-            item.className = `project-list-item ${index === 0 ? 'active' : ''}`;
-            item.innerHTML = `
-              <div style="font-weight: 500;">${proj.name}</div>
-              <div style="color: var(--fg-muted);">→</div>
-            `;
-            
-            item.addEventListener('click', () => {
-                if (item.classList.contains('active')) return;
-                document.querySelectorAll('.project-list-item').forEach(el => el.classList.remove('active'));
-                item.classList.add('active');
-                updatePreview(proj);
-            });
-            listContainer.appendChild(item);
-        });
-        
-        pBtn.href = projects[0].url;
-    }
-
-    function renderTools() {
-      const container = document.getElementById('tools-grid');
-      container.innerHTML = tools.map(tool => `
-        <div class="tool-card" onclick="window.location.href='${tool.url}'">
-          <div class="tool-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          </div>
-          <span style="font-size: 14px; font-weight: 500;">${tool.name}</span>
+    <div class="xincard">
+        <img class="app-icon xin-reveal" style="--xin-delay:0s;" src="/imgs/260501-newtab.png">
+        <div class="small xin-reveal" style="--xin-delay:0.08s;">
+            Newtab v6
         </div>
-      `).join('');
-    }
+        <span class="app-name xin-reveal" style="--xin-delay:0.16s;">新しい<br>新しいタブ</span>
+        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#213750;color:#fff;" onclick="window.location.href='https://search3958.github.io/i/newtab/'">今すぐ見る</button>
+        <img class="app-image xin-reveal" style="--xin-delay:0.32s;" src="/imgs/260501-newtab-image.png">
 
-    function renderOtherProjects() {
-        const container = document.getElementById('other-projects');
-        container.innerHTML = otherProjects.map(p => `
-          <a href="${p.url}" class="project-chip">${p.name}</a>
-        `).join('');
-    }
+    </div>
+    <div class="xincard" style="
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 1), #f1e8da);
+">
+        <img class="app-icon xin-reveal" style="--xin-delay:0s;" src="/imgs/260501-baram.png">
+        <div class="small xin-reveal" style="--xin-delay:0.08s;">
+            Baram Code
+        </div>
+        <span class="app-name xin-reveal" style="--xin-delay:0.16s;">風のように<br>素早く開発</span>
+        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#0E7A76;color:#fff;" onclick="window.location.href='https://search3958.github.io/baram/'">今すぐ見る</button>
+        <img class="app-image xin-reveal" style="--xin-delay:0.32s;" src="/imgs/260501-baram-image.png">
 
-    // Scroll Reveal
-    function setupReveal() {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
-        });
-      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    </div>
+    <div class="goodcard">
+      <span class="xin-reveal" style="--xin-delay:0s;">
+        日常のデジタル体験を<br>
+より<span style="color:color(display-p3 0.4 1 0.573 / 1);">豊かで効率的</span>にする<br>
+信頼できるプロダクトを<br>
+提供します</span>
+        <div class="xin-reveal" style="--xin-delay:0.12s;display:flex;gap:4px">
+          <div class="goodxiao"><div class="small">イベント数</div>42K+</div>
+          <div class="goodxiao white"><div class="small">アクセス回数</div>13K+</div>
+        </div>
+        <div class="xin-reveal" style="--xin-delay:0.24s;display:flex;gap:4px">
+          <div class="goodxiao white"><div class="small">セッション</div>3,766</div>
+          <div class="goodxiao"><div class="small">持続率</div>89%</div>
+        </div>
 
-      document.querySelectorAll('.reveal, .stagger').forEach(el => {
-        observer.observe(el);
-      });
-    }
-
-    // Init
-    document.addEventListener('DOMContentLoaded', () => {
-      renderProjects();
-      renderTools();
-      renderOtherProjects();
-      setupReveal();
-    });
-  </script>
-  <script src="frameworks/lang.js" data-xml="xml/index.xml"></script>
+    </div>
+    <footer>
+      <span><a href="https://search3958.github.io/policies/">利用規約とプライバシーポリシー</a>・<a href="https://search3958.github.io/accounts/lang">言語</a>・<a href="https://github.com/search3958/">GitHub</a></span>
+    </footer>
 </body>
-</html>
+<script>
+(() => {
+  "use strict";
+
+  const NS = "firstGradientAnim3958";
+  const target = document.querySelector(".first");
+
+  if (!target) {
+    console.warn(`[${NS}] .first が見つかりませんでした。`);
+    return;
+  }
+
+  const styleId = `${NS}-style`;
+  document.getElementById(styleId)?.remove();
+
+  const style = document.createElement("style");
+  style.id = styleId;
+
+  style.textContent = `
+@property --${NS}-intro-from {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 180deg;
+}
+
+@property --${NS}-stop {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --${NS}-from-1 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 45deg;
+}
+
+@property --${NS}-from-2 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: -45deg;
+}
+
+@property --${NS}-from-3 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 135deg;
+}
+
+@property --${NS}-from-4 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: -135deg;
+}
+
+@property --${NS}-before-from-1 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 180deg;
+}
+
+@property --${NS}-before-from-2 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --${NS}-before-from-3 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 90deg;
+}
+
+@property --${NS}-before-from-4 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: -90deg;
+}
+
+@property --${NS}-before-opacity {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+.first {
+  --${NS}-intro-from: 360deg;
+  --${NS}-stop: 0deg;
+
+  --${NS}-from-1: 45deg;
+  --${NS}-from-2: -45deg;
+  --${NS}-from-3: 135deg;
+  --${NS}-from-4: -135deg;
+
+  --${NS}-before-from-1: 180deg;
+  --${NS}-before-from-2: 0deg;
+  --${NS}-before-from-3: 90deg;
+  --${NS}-before-from-4: -90deg;
+  --${NS}-before-opacity: 0;
+
+  background-image:
+    conic-gradient(
+      from var(--${NS}-intro-from),
+      rgba(62, 255, 73, 1) 0deg,
+      rgba(92, 241, 166, 1) 161deg,
+      rgba(0, 255, 255, 1) 300deg,
+      rgba(255, 255, 255, 1) 360deg 360deg
+    );
+
+  animation:
+    ${NS}-intro 1s cubic-bezier(.46,0,.47,.34) forwards,
+    ${NS}-main 3s cubic-bezier(.08,.74,.08,1) 1s forwards;
+}
+
+.first::before {
+  opacity: var(--${NS}-before-opacity);
+
+  background-image:
+    conic-gradient(from var(--${NS}-before-from-1), #00C464 0deg, #00FF8200 var(--${NS}-stop)),
+    conic-gradient(from var(--${NS}-before-from-2), #9AFF8C 0deg, #C3FF0000 var(--${NS}-stop)),
+    conic-gradient(from var(--${NS}-before-from-3), #D6F5FF 0deg, #00FF4400 var(--${NS}-stop)),
+    conic-gradient(from var(--${NS}-before-from-4), #51FCFF 0deg, #00FF4400 var(--${NS}-stop));
+    
+  animation: ${NS}-before 3s cubic-bezier(.08,.74,.08,1) 1s forwards;
+  
+}
+
+@keyframes ${NS}-intro {
+  to {
+    --${NS}-intro-from: 45deg;
+  }
+}
+
+@keyframes ${NS}-main {
+  0% {
+    --${NS}-stop: 0deg;
+
+    --${NS}-from-1: 45deg;
+    --${NS}-from-2: -45deg;
+    --${NS}-from-3: 135deg;
+    --${NS}-from-4: -135deg;
+
+    background-image:
+      conic-gradient(from var(--${NS}-from-2), #a8ffeb 0deg, #C3FF0000 var(--${NS}-stop)),
+      conic-gradient(from var(--${NS}-from-3), #e7fff9 0deg, #00FF4400 var(--${NS}-stop)),
+      conic-gradient(from var(--${NS}-from-4), #f8ffa7 0deg, #00FF4400 var(--${NS}-stop)),
+      conic-gradient(
+        from var(--${NS}-from-1),
+        rgba(62, 255, 73, 1) 0deg,
+        rgba(92, 241, 166, 1) 161deg,
+        rgba(0, 255, 255, 1) 300deg,
+        rgba(255, 255, 255, 1) 360deg 360deg
+      );
+  }
+
+  100% {
+    --${NS}-stop: 45deg;
+
+    --${NS}-from-1: 0deg;
+    --${NS}-from-2: -90deg;
+    --${NS}-from-3: 90deg;
+    --${NS}-from-4: -180deg;
+
+    background-image:
+      conic-gradient(from var(--${NS}-from-2), #a8ffeb 0deg, #C3FF0000 var(--${NS}-stop)),
+      conic-gradient(from var(--${NS}-from-3), #e7fff9 0deg, #00FF4400 var(--${NS}-stop)),
+      conic-gradient(from var(--${NS}-from-4), #f8ffa7 0deg, #00FF4400 var(--${NS}-stop)),
+      conic-gradient(
+        from var(--${NS}-from-1),
+        rgba(62, 255, 73, 1) 0deg,
+        rgba(92, 241, 166, 1) 161deg,
+        rgba(0, 255, 255, 1) 300deg,
+        rgba(255, 255, 255, 1) 360deg 360deg
+      );
+  }
+}
+
+@keyframes ${NS}-before {
+  0% {
+    --${NS}-before-opacity: 1;
+    --${NS}-stop: 0deg;
+
+    --${NS}-before-from-1: 180deg;
+    --${NS}-before-from-2: 0deg;
+    --${NS}-before-from-3: 90deg;
+    --${NS}-before-from-4: -90deg;
+  }
+
+  100% {
+    --${NS}-before-opacity: 1;
+    --${NS}-stop: 45deg;
+
+    --${NS}-before-from-1: 135deg;
+    --${NS}-before-from-2: -45deg;
+    --${NS}-before-from-3: 45deg;
+    --${NS}-before-from-4: -135deg;
+  }
+}
+`;
+
+  document.head.appendChild(style);
+
+  target.addEventListener(
+    "animationend",
+    event => {
+      if (!event.animationName.startsWith(NS)) return;
+      console.info(`[${NS}] アニメーション完了: ${event.animationName}`);
+    },
+    { passive: true }
+  );
+
+  console.info(`[${NS}] before非表示 → intro → 逆方向main/before を開始しました。`);
+})();
+</script>
+
+<script>
+  window.addEventListener('load', () => {
+    // 3秒（3000ミリ秒）待機
+    setTimeout(() => {
+        // .first 内の .small と .message を取得
+        const elements = document.querySelectorAll('.first .small, .first .message');
+        
+        // 取得した要素から .before クラスを削除
+        elements.forEach(el => {
+            el.classList.remove('before');
+        });
+    }, 100);
+});
+</script>
+
+<script>
+(() => {
+  const reveals = document.querySelectorAll('.xincard .xin-reveal, .goodcard .xin-reveal');
+  if (!reveals.length) return;
+
+  const show = el => el.classList.add('is-visible');
+
+  if (!('IntersectionObserver' in window)) {
+    reveals.forEach(show);
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      show(entry.target);
+      obs.unobserve(entry.target);
+    });
+  }, {
+    threshold: 0.5,
+    rootMargin: "0px"
+  });
+
+  reveals.forEach(el => observer.observe(el));
+})();
+</script>
