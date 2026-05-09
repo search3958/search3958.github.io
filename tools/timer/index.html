@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>シンプルタイマー | Simple Timer</title>
+<link rel="canonical" href="https://search3958.github.io/tools/timer/ja.html">
+<meta name="description" content="シンプルで美しい、Material Design採用のタイマー。全画面表示、テーマカラー変更などカスタマイズ対応。">
+<meta name="theme-color" content="#5b2929">
+<link rel="icon" href="https://search3958.github.io/project/logos/3958logo_main.svg">
+
+
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Simple Timer | オンラインスタイマー">
+    <meta property="og:description" content="シンプルで美しいタイマーツール。テーマカラーなどをカスタマイズ可能。">
+    <meta property="og:site_name" content="Simple Timer">
+    <meta property="og:url" content="https://search3958.github.io/tools/timer/ja.html">
+    <meta property="og:image" content="https://search3958.github.io/project/logos/3958logo_main.svg">
+    <meta property="og:locale" content="ja_JP">
+    <link rel="icon" href="https://search3958.github.io/project/logos/3958logo_main.svg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Simple Timer">
+    <meta name="twitter:description" content="シンプルで美しいタイマーツール。全画面対応。">
+    <meta name="twitter:image" content="https://search3958.github.io/project/logos/3958logo_main.svg">
+
+    <script type="application/ld+json">
+    {
+      "@type": "WebSite",
+      "name": "タイマー",
+      "url": "https://search3958.github.io/tools/timer/ja.html",
+      "description": "おしゃれで高機能なオンラインタイマーツール",
+      "inLanguage": "ja"
+    }
+    </script>
+
+<style>
+    :root {
+	--primary: #5b2929;
+	--background: #f3f3f3;
+	--surface: #ffffffbb;
+	--on-surface: #121212;
+	--on-surface-variant: #454746;
+	--outline: #747775;
+	--radius-container: 28px;
+	--radius-button: 20px;
+	--radius-full: 9999px;
+	--font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	--font-clock: var(--font-base);
+	--background-light: #f3f3f3;
+	--surface-light: #ffffff99;
+	--on-surface-light: #121212;
+	--on-surface-variant-light: #454746;
+	--outline-light: #747775;
+	--background-dark: #000000;
+	--surface-dark: #1F1F1F99;
+	--on-surface-dark: #E0E0E0;
+	--on-surface-variant-dark: #A0A0A0;
+	--outline-dark: #404040
+}
+
+.dark-mode {
+	--background: var(--background-dark);
+	--surface: var(--surface-dark);
+	--on-surface: var(--on-surface-dark);
+	--on-surface-variant: var(--on-surface-variant-dark);
+	--outline: var(--outline-dark)
+}
+
+.font-mono {
+	--font-clock: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	-webkit-tap-highlight-color: transparent
+}
+
+body {
+	font-family: var(--font-base);
+	background-color: var(--background);
+	color: var(--on-surface);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	overflow: hidden;
+	transition: background-color 0.3s
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0
+}
+
+button {
+	cursor: pointer;
+	border: none;
+	background: none;
+	font-family: inherit
+}
+
+.app-title {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: var(--on-surface);
+	z-index: 10;
+	display: flex;
+	align-items: center
+}
+
+.stopwatch-container {
+	text-align: center;
+	padding: 2rem;
+	width: 100%;
+	max-width: 1100px;
+	display: flex;
+	flex-direction: column;
+	align-items: center
+}
+
+.gradient-frame {
+	width: fit-content;
+	height: fit-content;
+	padding: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 99999px;
+	background: linear-gradient(0deg, #DAF0FE, #4D5F72);
+	box-shadow: 0 22px 60px rgba(0, 0, 0, 0.1),
+    inset 0 0 40px #303f50;
+    corner-shape: superellipse(1.1);
+}
+
+.noise {
+	width: 57vw;
+	height: 57vh;
+	border-radius: 99999px;
+	background: conic-gradient(from 0deg, rgba(255, 255, 255, 0.2) 30%, rgba(254, 173, 0, 0.5) 48%, rgba(252, 136, 0, 0.6) 56%, #FF4040 100%), url("data:image/svg+xml,%3Csvg viewBox='0 0 400 310' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+	background-size: cover;
+	filter: contrast(130%) brightness(140%) drop-shadow(0 0 0 #ffffff);
+	box-shadow: 0 0 50px #303f50,inset 0 0 100px #fffb;
+    corner-shape: superellipse(1.1);
+}
+
+.timer-row {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 24px;
+	margin-top: 24px;
+	flex-wrap: wrap
+}
+
+.time-display {
+	font-family: var(--font-clock);
+	font-size: clamp(2.1rem, 8vw, 4.4rem);
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	display: flex;
+	justify-content: center;
+	align-items: baseline;
+	gap: 0.1em;
+	font-feature-settings: "tnum";
+	transition: font-family 0.3s;
+	margin-top: 0
+}
+
+.time-input {
+    background-color: var(--surface);
+    color: var(--on-surface);
+    border: none;
+    border-radius: 24px;
+    width: 54px;
+    text-align: center;
+    font-family: inherit;
+    font-size: 24px;
+    font-weight: inherit;
+    padding: 7px;
+    margin: 0;
+    -moz-appearance: textfield;
+    corner-shape: superellipse(1.6);
+}
+
+.time-input::-webkit-outer-spin-button,
+.time-input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0
+}
+
+.time-input:focus {
+	outline: 2px solid var(--primary);
+	border-color: var(--primary)
+}
+
+.time-input:disabled {
+	opacity: 1;
+	cursor: default;
+	border-color: transparent
+}
+
+.time-part {
+	color: var(--on-surface)
+}
+
+.fab-container {
+	position: absolute;
+	top: 24px;
+	right: 24px;
+	display: flex;
+	gap: 12px;
+	z-index: 10
+}
+
+.fab {
+	background-color: var(--surface);
+	color: var(--on-surface);
+	width: 56px;
+	height: 56px;
+	border-radius: 99px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.2s cubic-bezier(0.2, 0.0, 0, 1.0), box-shadow 0.2s, background-color 0.3s, color 0.3s
+}
+
+.fab:hover {
+	transform: scale(1.05);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.12)
+}
+
+.dark-mode .fab {
+	box-shadow: 0 4px 8px rgba(255, 255, 255, 0.05), 0 1px 3px rgba(255, 255, 255, 0.1)
+}
+
+.dark-mode .fab:hover {
+	box-shadow: 0 6px 12px rgba(255, 255, 255, 0.08), 0 2px 4px rgba(255, 255, 255, 0.12)
+}
+
+.fab:active {
+	transform: scale(0.95)
+}
+
+.fab svg {
+	width: 24px;
+	height: 24px;
+	fill: currentColor
+}
+
+.fullscreen-active body {
+	transition: background-color 0s
+}
+
+.fullscreen-active .app-title {
+	display: none
+}
+
+.controls-container {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 0
+}
+
+.control-btn {
+    width: auto;
+    height: auto;
+    padding: 15px;
+    border-radius: 99px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s, color 0.3s;
+}
+
+.dark-mode .control-btn {
+	box-shadow: 0 4px 8px rgba(255, 255, 255, 0.05), 0 1px 3px rgba(255, 255, 255, 0.1)
+}
+
+.control-btn:hover {
+	transform: scale(1.05)
+}
+
+.control-btn:active {
+	transform: scale(0.95)
+}
+
+.control-btn svg {
+	width: 24px;
+	height: 24px;
+	fill: currentColor
+}
+
+.primary-btn {
+	background-color: var(--primary);
+	color: #fff
+}
+
+.monotone-btn {
+	background-color: var(--surface);
+	color: var(--on-surface);
+	border: none
+}
+
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.1s ease;
+	z-index: 100;
+	padding: 20px
+}
+
+.modal-overlay.active {
+	opacity: 1;
+	pointer-events: auto
+}
+
+.modal-card {
+	transform: translateY(60px);
+    min-width: 300px;
+    padding: 24px;
+	background-color: var(--surface);
+    backdrop-filter: blur(24px) ;
+    border-radius: 40px;
+    corner-shape: superellipse(1.6);
+    box-shadow: 0px 2px 4px 0px #0001, 0px 4px 16px 0px #0001, 0px 4px 32px 0px #0002;
+    transition: all 0.1s cubic-bezier(.26, 0, .91, .54);
+
+}
+
+.modal-overlay.active .modal-card {
+	transform: translateY(0);
+    transition: all 0.5s cubic-bezier(.34, .24, 0, 1);
+}
+
+.modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center
+}
+
+.modal-title {
+	color: var(--on-surface);
+    font-weight: 400;
+    font-size: 2em;
+    margin: 0 0 16px 0;
+}
+
+.close-btn {
+	padding: 8px;
+	border-radius: var(--radius-full);
+	color: var(--on-surface-variant);
+	transition: background-color 0.2s
+}
+
+.close-btn:hover {
+	background-color: rgba(var(--on-surface-light), 0.05)
+}
+
+.dark-mode .close-btn:hover {
+	background-color: rgba(var(--on-surface-dark), 0.05)
+}
+
+.menu-list {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 8px
+}
+
+.menu-link {
+	display: flex;
+	align-items: center;
+	padding: 16px 20px;
+	text-decoration: none;
+	color: var(--on-surface);
+	background-color: var(--surface);
+	border-radius: var(--radius-button);
+	font-weight: 500;
+	transition: background-color 0.2s;
+
+    border: none;
+    padding: 16px 24px;
+    border-radius: 24px;
+    corner-shape: superellipse(1.8);
+    box-shadow: 0px 2px 4px 0px #0001, 0px 4px 16px 0px #0001;
+}
+
+.dark-mode .menu-link:hover {
+	background-color: #333333
+}
+
+.setting-group {
+	margin-bottom: 24px
+}
+
+.setting-label {
+	display: block;
+	margin-bottom: 12px;
+	font-size: 0.9rem;
+	color: var(--on-surface-variant);
+	font-weight: 600
+}
+
+.color-options {
+	display: flex;
+	gap: 16px;
+	justify-content: center
+}
+
+.color-btn {
+	width: 48px;
+	height: 48px;
+	border-radius: var(--radius-full);
+	position: relative;
+	transition: transform 0.2s
+}
+
+.color-btn:hover {
+	transform: scale(1.1)
+}
+
+.color-btn[aria-selected="true"]::after {
+	content: '';
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	bottom: -4px;
+	left: -4px;
+	border: 2px solid var(--on-surface);
+	border-radius: inherit
+}
+
+.font-options,
+.toggle-group {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px
+}
+
+.toggle-group {
+	grid-template-columns: 1fr
+}
+
+.font-btn,
+.toggle-btn {
+	padding: 12px;
+	border: 1px solid var(--outline);
+	border-radius: var(--radius-button);
+	font-size: 0.9rem;
+	color: var(--on-surface);
+	background-color: var(--surface);
+	transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+
+
+    border: none;
+    padding: 16px 24px;
+    border-radius: 24px;
+    corner-shape: superellipse(1.8);
+    box-shadow: 0px 2px 4px 0px #0001, 0px 4px 16px 0px #0001;
+}
+
+.font-btn.active,
+.toggle-btn.active {
+	background-color: var(--on-surface);
+	color: var(--surface);
+	border-color: var(--on-surface)
+}
+
+.switch-container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 0
+}
+
+.switch-label {
+	font-weight: 500
+}
+
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 48px;
+	height: 24px
+}
+
+.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: var(--outline);
+	transition: .4s;
+	border-radius: 24px
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 18px;
+	width: 18px;
+	left: 3px;
+	bottom: 3px;
+	background-color: var(--surface);
+	transition: .4s;
+	border-radius: 50%
+}
+
+input:checked+.slider {
+	background-color: var(--primary)
+}
+
+input:checked+.slider:before {
+	transform: translateX(24px)
+}
+
+@media (max-width:600px) {
+	.app-title {
+		display: none
+	}
+
+	.fab-container {
+		top: 16px;
+		right: 16px;
+		gap: 8px
+	}
+
+	.modal-card {
+		padding: 24px;
+		border-radius: 20px
+	}
+
+	.timer-row {
+		gap: 12px;
+		margin-top: 16px
+	}
+
+	.time-display {
+		flex-direction: row;
+		align-items: center;
+		font-size: 11vw;
+		margin-top: 0
+	}
+
+	.time-hhmm {
+		font-size: 1em;
+		margin-bottom: -0.1em
+	}
+
+	.time-mm {
+		font-size: 1em;
+		margin-bottom: -0.1em
+	}
+
+	.time-ss {
+		font-size: 1em;
+		margin-top: 0
+	}
+}
+
+.time-separator {
+	color: var(--on-surface);
+	font-size: 35px;
+}
+
+@media (max-width:600px) and (orientation:portrait) {
+	.fullscreen-active .stopwatch-container {
+		min-height: 100vh;
+		justify-content: center
+	}
+}
+
+iframe,
+ins {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100vw;
+	height: 130px;
+	max-height: 130px !important;
+	background: #fff9
+}
+
+#alarm-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: var(--primary);
+	z-index: 2000;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.3s
+}
+
+#alarm-overlay.active {
+	opacity: 1;
+	pointer-events: auto
+}
+
+.alarm-time {
+	color: #ffffff;
+	font-size: clamp(4rem, 20vw, 15rem);
+	font-weight: 700;
+	font-family: var(--font-clock);
+	font-feature-settings: "tnum"
+}
+
+.alarm-close-btn {
+	margin-top: 32px;
+	background-color: #ffffff;
+	color: #000000;
+	font-size: 1.5rem;
+	font-weight: 600;
+	padding: 16px 48px;
+	border-radius: 50px;
+	border: none;
+	cursor: pointer;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+	transition: transform 0.1s
+}
+
+.alarm-close-btn:hover {
+	transform: scale(1.05)
+}
+
+.alarm-close-btn:active {
+	transform: scale(0.95)
+}
+
+.sound-select {
+	width: 100%;
+	padding: 12px;
+	border-radius: var(--radius-button);
+	border: 1px solid var(--outline);
+	background-color: var(--background);
+	color: var(--on-surface);
+	font-size: 1rem;
+	margin-bottom: 8px
+}
+
+.license-text {
+	font-size: 0.8rem;
+	color: var(--on-surface-variant);
+	line-height: 1.4
+}
+
+.license-text a {
+	color: var(--primary);
+	text-decoration: underline
+}
+</style>
+
+</head>
+<!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-7N56NHPY3C"></script><script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-7N56NHPY3C');</script>
+<body>
+
+<h1 class="app-title">
+
+
+<svg class="logo-svg" width="64" height="64" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_in_38_22)">
+<g clip-path="url(#paint0_angular_38_22_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 0.017 -0.017 0 40 32)"><foreignObject x="-1058.82" y="-1058.82" width="2117.65" height="2117.65"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(221, 174, 174, 1) 0deg,rgba(100, 50, 0, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><circle cx="40" cy="32" r="17" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.86666667461395264,&#34;g&#34;:0.68235296010971069,&#34;b&#34;:0.68235296010971069,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.39304763078689575,&#34;g&#34;:0.19652381539344788,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.86666667461395264,&#34;g&#34;:0.68235296010971069,&#34;b&#34;:0.68235296010971069,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.39304763078689575,&#34;g&#34;:0.19652381539344788,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:2.0818996229250058e-15,&#34;m01&#34;:-34.0,&#34;m02&#34;:57.0,&#34;m10&#34;:34.0,&#34;m11&#34;:2.0818996229250058e-15,&#34;m12&#34;:15.0},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+</g>
+<g filter="url(#filter1_in_38_22)">
+<g clip-path="url(#paint1_angular_38_22_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 -0.017 -0.017 0 40 49)"><foreignObject x="-1058.82" y="-1058.82" width="2117.65" height="2117.65"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(239, 148, 148, 1) 0deg,rgba(45, 32, 14, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><circle cx="17" cy="17" r="17" transform="matrix(1 0 0 -1 23 66)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.93990385532379150,&#34;g&#34;:0.58210915327072144,&#34;b&#34;:0.58210915327072144,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.17647059261798859,&#34;g&#34;:0.12581700086593628,&#34;b&#34;:0.054901961237192154,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.93990385532379150,&#34;g&#34;:0.58210915327072144,&#34;b&#34;:0.58210915327072144,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.17647059261798859,&#34;g&#34;:0.12581700086593628,&#34;b&#34;:0.054901961237192154,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:2.0818996229250058e-15,&#34;m01&#34;:-34.0,&#34;m02&#34;:57.0,&#34;m10&#34;:-34.0,&#34;m11&#34;:-2.0818996229250058e-15,&#34;m12&#34;:66.0},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+</g>
+<g filter="url(#filter2_in_38_22)">
+<g clip-path="url(#paint2_angular_38_22_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0 -0.017 -0.017 0 39.7256 49)"><foreignObject x="-1000" y="-1000" width="2000" height="2000"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(255, 255, 255, 1) 0deg,rgba(255, 185, 138, 1) 88.2692deg,rgba(199, 84, 61, 1) 268.269deg,rgba(240, 213, 91, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><path d="M39.7256 32C46.0178 32 51.5107 35.4189 54.4502 40.5C51.5107 45.5811 46.0178 49 39.7256 49C33.4332 49 27.9394 45.5813 25 40.5C27.9394 35.4187 33.4332 32 39.7256 32Z" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.72678411006927490,&#34;b&#34;:0.54464018344879150,&#34;a&#34;:1.0},&#34;position&#34;:0.24519230425357819},{&#34;color&#34;:{&#34;r&#34;:0.78299653530120850,&#34;g&#34;:0.33248090744018555,&#34;b&#34;:0.24237777292728424,&#34;a&#34;:1.0},&#34;position&#34;:0.74519228935241699},{&#34;color&#34;:{&#34;r&#34;:0.94315278530120850,&#34;g&#34;:0.83621650934219360,&#34;b&#34;:0.35986393690109253,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.72678411006927490,&#34;b&#34;:0.54464018344879150,&#34;a&#34;:1.0},&#34;position&#34;:0.24519230425357819},{&#34;color&#34;:{&#34;r&#34;:0.78299653530120850,&#34;g&#34;:0.33248090744018555,&#34;b&#34;:0.24237777292728424,&#34;a&#34;:1.0},&#34;position&#34;:0.74519228935241699},{&#34;color&#34;:{&#34;r&#34;:0.94315278530120850,&#34;g&#34;:0.83621650934219360,&#34;b&#34;:0.35986393690109253,&#34;a&#34;:1.0},&#34;position&#34;:1.0}],&#34;transform&#34;:{&#34;m00&#34;:2.0818996229250058e-15,&#34;m01&#34;:-34.0,&#34;m02&#34;:56.72558593750,&#34;m10&#34;:-34.0,&#34;m11&#34;:-2.0818996229250058e-15,&#34;m12&#34;:66.0},&#34;opacity&#34;:1.0,&#34;blendMode&#34;:&#34;NORMAL&#34;,&#34;visible&#34;:true}"/>
+</g>
+<defs>
+<filter id="filter0_in_38_22" x="23" y="15" width="34" height="34" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="4.45"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.054902 0 0 0 0 0.113725 0 0 0 0 0.176471 0 0 0 1 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_38_22"/>
+<feTurbulence type="fractalNoise" baseFrequency="3.3333332538604736 3.3333332538604736" stitchTiles="stitch" numOctaves="3" result="noise" seed="3387" />
+<feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise" />
+<feComponentTransfer in="alphaNoise" result="coloredNoise1">
+<feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/>
+</feComponentTransfer>
+<feComposite operator="in" in2="effect1_innerShadow_38_22" in="coloredNoise1" result="noise1Clipped" />
+<feFlood flood-color="rgba(14, 29, 45, 0.25)" result="color1Flood" />
+<feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1" />
+<feMerge result="effect2_noise_38_22">
+<feMergeNode in="effect1_innerShadow_38_22" />
+<feMergeNode in="color1" />
+</feMerge>
+</filter>
+<clipPath id="paint0_angular_38_22_clip_path"><circle cx="40" cy="32" r="17"/></clipPath><filter id="filter1_in_38_22" x="23" y="32" width="34" height="34" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="4.45"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.054902 0 0 0 0 0.113725 0 0 0 0 0.176471 0 0 0 1 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_38_22"/>
+<feTurbulence type="fractalNoise" baseFrequency="3.3333332538604736 3.3333332538604736" stitchTiles="stitch" numOctaves="3" result="noise" seed="3387" />
+<feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise" />
+<feComponentTransfer in="alphaNoise" result="coloredNoise1">
+<feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/>
+</feComponentTransfer>
+<feComposite operator="in" in2="effect1_innerShadow_38_22" in="coloredNoise1" result="noise1Clipped" />
+<feFlood flood-color="rgba(14, 29, 45, 0.25)" result="color1Flood" />
+<feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1" />
+<feMerge result="effect2_noise_38_22">
+<feMergeNode in="effect1_innerShadow_38_22" />
+<feMergeNode in="color1" />
+</feMerge>
+</filter>
+<clipPath id="paint1_angular_38_22_clip_path"><circle cx="17" cy="17" r="17" transform="matrix(1 0 0 -1 23 66)"/></clipPath><filter id="filter2_in_38_22" x="25" y="32" width="29.4502" height="17" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="2.05"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.501972 0 0 0 0 0.501972 0 0 0 0 0.501972 0 0 0 1 0"/>
+<feBlend mode="plus-lighter" in2="shape" result="effect1_innerShadow_38_22"/>
+<feTurbulence type="fractalNoise" baseFrequency="3.3333332538604736 3.3333332538604736" stitchTiles="stitch" numOctaves="3" result="noise" seed="3387" />
+<feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise" />
+<feComponentTransfer in="alphaNoise" result="coloredNoise1">
+<feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/>
+</feComponentTransfer>
+<feComposite operator="in" in2="effect1_innerShadow_38_22" in="coloredNoise1" result="noise1Clipped" />
+<feFlood flood-color="#FFF4" result="color1Flood" />
+<feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1" />
+<feMerge result="effect2_noise_38_22">
+<feMergeNode in="effect1_innerShadow_38_22" />
+<feMergeNode in="color1" />
+</feMerge>
+</filter>
+<clipPath id="paint2_angular_38_22_clip_path"><path d="M39.7256 32C46.0178 32 51.5107 35.4189 54.4502 40.5C51.5107 45.5811 46.0178 49 39.7256 49C33.4332 49 27.9394 45.5813 25 40.5C27.9394 35.4187 33.4332 32 39.7256 32Z"/></clipPath></defs>
+</svg>
+
+タイマー</h1>
+
+<nav class="fab-container">
+<button class="fab" onclick="toggleFullscreen()" aria-label="全画面表示の切り替え">
+<svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+</button>
+<button class="fab" onclick="openModal('menu-modal')" aria-label="メニューを開く">
+<svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+</button>
+<button class="fab" onclick="openModal('settings-modal')" aria-label="設定を開く">
+<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84a.484.484 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.27.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+</button>
+</nav>
+
+<main class="stopwatch-container">
+<div class="gradient-frame" aria-hidden="true">
+<div class="noise"></div>
+</div>
+<div class="timer-row">
+<div class="time-display">
+    <input type="number" id="time-hh" class="time-input" value="00" min="0" max="99" placeholder="00" onblur="formatInput(this)">
+    <span class="time-separator">:</span>
+    <input type="number" id="time-mm" class="time-input" value="00" min="0" max="59" placeholder="00" onblur="formatInput(this, 59)">
+    <span class="time-separator">:</span>
+    <input type="number" id="time-ss" class="time-input" value="00" min="0" max="59" placeholder="00" onblur="formatInput(this, 59)">
+</div>
+<div class="controls-container">
+<button id="reset-btn" class="control-btn monotone-btn" onclick="resetTimer()" aria-label="リセット">
+<svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+</button>
+<button id="start-pause-btn" class="control-btn primary-btn" onclick="startPauseTimer()" aria-label="開始">
+<svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+<svg id="pause-icon" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+<span id="start-pause-text" style="display:none;"></span>
+</button>
+</div>
+</div>
+</main>
+
+
+<div id="menu-modal" class="modal-overlay" onclick="closeModal(event, 'menu-modal')">
+<div class="modal-card">
+<div class="modal-header">
+<h2 class="modal-title">メニュー</h2>
+<button class="close-btn" onclick="closeModal(null, 'menu-modal')" aria-label="閉じる">
+<svg width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+</button>
+</div>
+<ul class="menu-list">
+<li><a href="https://search3958.github.io/" class="menu-link">私について</a></li>
+<li><a href="https://search3958.github.io/tools/dclock/ja.html" class="menu-link">デジタル時計</a></li>
+<li><a href="https://search3958.github.io/tools/aclock/ja.html" class="menu-link">アナログ時計</a></li>
+<li><a href="https://search3958.github.io/tools/timer/ja.html" class="menu-link">タイマー</a></li>
+                <li><a href="https://search3958.github.io/tools/stopwatch/ja.html" class="menu-link">ストップウォッチ</a></li>
+<li><a href="https://search3958.github.io/tools/counter.html" class="menu-link">文字カウンター</a></li>
+</ul>
+</div>
+</div>
+
+<div id="settings-modal" class="modal-overlay" onclick="closeModal(event, 'settings-modal')">
+<div class="modal-card">
+<div class="modal-header">
+<h2 class="modal-title">設定</h2>
+<button class="close-btn" onclick="closeModal(null, 'settings-modal')" aria-label="閉じる">
+<svg width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+</button>
+</div>
+
+<div class="setting-group">
+<span class="setting-label">通知音</span>
+<select id="sound-select" class="sound-select" onchange="saveSoundPreference()">
+    <option value="Phobos.ogg">Phobos (デフォルト)</option>
+    <option value="Dione.ogg">Dione</option>
+    <option value="Sedna.ogg">Sedna</option>
+    <option value="Timer.ogg">Timer</option>
+</select>
+<p class="license-text">
+    Sound files from <a href="https://github.com/EvilScout/Lineage-OS-Sounds" target="_blank" rel="noopener">Lineage-OS-Sounds</a>.<br>
+    Licensed under <a href="https://github.com/EvilScout/Lineage-OS-Sounds/blob/main/LICENSE" target="_blank" rel="noopener">Apache License 2.0</a>.
+</p>
+</div>
+
+<div class="setting-group">
+<span class="setting-label">表示テーマ</span>
+<div class="toggle-group">
+<button id="theme-auto" class="toggle-btn" onclick="setDarkMode('auto')">OSに合わせる</button>
+<button id="theme-light" class="toggle-btn" onclick="setDarkMode('light')">ライトモード</button>
+<button id="theme-dark" class="toggle-btn" onclick="setDarkMode('dark')">ダークモード</button>
+</div>
+</div>
+
+<div class="setting-group" style="display:none">
+<span class="setting-label">テーマカラー</span>
+<div class="color-options">
+<button class="color-btn" style="background-color: #5b2929;" onclick="setTheme('#5b2929')" aria-label="レッド"></button>
+<button class="color-btn" style="background-color: #545657;" onclick="setTheme('#545657')" aria-label="グレー"></button>
+<button class="color-btn" style="background-color: #0025c9;" onclick="setTheme('#0025c9')" aria-label="ブルー"></button>
+<button class="color-btn" style="background-color: #fcba03;" onclick="setTheme('#fcba03')" aria-label="パープル"></button>
+</div>
+</div>
+
+<div class="setting-group" style="display:none">
+<span class="setting-label">時計フォント</span>
+<div class="font-options">
+<button class="font-btn" id="font-mono" onclick="setFont('mono')">Monospace</button>
+<button class="font-btn" id="font-sans" onclick="setFont('sans')">Sans-Serif</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="alarm-overlay">
+    <div class="alarm-time">00:00:00</div>
+    <button class="alarm-close-btn" onclick="stopAlarm()">閉じる</button>
+</div>
+
+<script>
+const hhInput = document.getElementById('time-hh');
+const mmInput = document.getElementById('time-mm');
+const ssInput = document.getElementById('time-ss');
+const startPauseBtn = document.getElementById('start-pause-btn');
+const playIcon = document.getElementById('play-icon');
+const pauseIcon = document.getElementById('pause-icon');
+const startPauseText = document.getElementById('start-pause-text');
+const alarmOverlay = document.getElementById('alarm-overlay');
+const soundSelect = document.getElementById('sound-select');
+const progressCircle = document.querySelector('.noise');
+let timerInterval = null;
+let rafId = null;
+let isRunning = false;
+let totalSeconds = 0;
+let initialTotalSeconds = 0;
+let endTime = 0;
+let audio = new Audio();
+const BASE_SOUND_URL = 'https://search3958.github.io/tools/timer/';
+
+function loadSound() {
+  const selectedSound = localStorage.getItem('timer_sound') || 'Phobos.ogg';
+  soundSelect.value = selectedSound;
+  audio.src = BASE_SOUND_URL + selectedSound;
+  audio.loop = true;
+}
+
+function saveSoundPreference() {
+  const selectedSound = soundSelect.value;
+  localStorage.setItem('timer_sound', selectedSound);
+  audio.src = BASE_SOUND_URL + selectedSound;
+}
+
+function paintNoise(startDeg) {
+  if (!progressCircle) return;
+  progressCircle.style.background =
+    `conic-gradient(from ${startDeg}deg,rgba(255,255,255,0.4) 30%,rgba(254,173,0,0.2) 48%,rgba(252,136,0,0.346) 56%,#ff2020 100%),` +
+    `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 310' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`;
+}
+
+function setProgress(remainingSeconds) {
+  if (!progressCircle || initialTotalSeconds <= 0) {
+    paintNoise(0);
+    return;
+  }
+  const elapsed = Math.max(0, initialTotalSeconds - remainingSeconds);
+  const deg = Math.min(360, (elapsed / initialTotalSeconds) * 360);
+  paintNoise(deg);
+}
+
+function formatInput(input, maxVal) {
+  let val = parseInt(input.value, 10);
+  if (Number.isNaN(val) || val < 0) val = 0;
+  if (maxVal && val > maxVal) val = maxVal;
+  input.value = String(val).padStart(2, '0');
+  if (!isRunning) {
+    calculateTotalSeconds();
+    setProgress(totalSeconds);
+  }
+}
+
+function calculateTotalSeconds() {
+  const h = parseInt(hhInput.value, 10) || 0;
+  const m = parseInt(mmInput.value, 10) || 0;
+  const s = parseInt(ssInput.value, 10) || 0;
+  totalSeconds = h * 3600 + m * 60 + s;
+}
+
+function updateDisplay(secondsRemaining) {
+  if (secondsRemaining < 0) secondsRemaining = 0;
+  const h = Math.floor(secondsRemaining / 3600);
+  const m = Math.floor((secondsRemaining % 3600) / 60);
+  const s = secondsRemaining % 60;
+  hhInput.value = String(h).padStart(2, '0');
+  mmInput.value = String(m).padStart(2, '0');
+  ssInput.value = String(s).padStart(2, '0');
+}
+
+function setInputsDisabled(disabled) {
+  hhInput.disabled = disabled;
+  mmInput.disabled = disabled;
+  ssInput.disabled = disabled;
+}
+
+function startTimer() {
+  calculateTotalSeconds();
+  if (totalSeconds <= 0) return;
+  if (initialTotalSeconds <= 0 || totalSeconds > initialTotalSeconds) {
+    initialTotalSeconds = totalSeconds;
+  }
+  audio.load();
+  endTime = Date.now() + totalSeconds * 1000;
+  isRunning = true;
+  setInputsDisabled(true);
+  playIcon.style.display = 'none';
+  pauseIcon.style.display = 'block';
+  startPauseBtn.setAttribute('aria-label', '一時停止');
+  startPauseText.textContent = '一時停止';
+  runTimerFrame();
+}
+
+function pauseTimer() {
+  clearInterval(timerInterval);
+  cancelAnimationFrame(rafId);
+  rafId = null;
+  isRunning = false;
+  setInputsDisabled(false);
+  calculateTotalSeconds();
+  playIcon.style.display = 'block';
+  pauseIcon.style.display = 'none';
+  startPauseBtn.setAttribute('aria-label', '開始');
+  startPauseText.textContent = '開始';
+}
+
+function runTimerFrame() {
+  const remainingMs = endTime - Date.now();
+  const remainingForDisplay = Math.ceil(remainingMs / 1000);
+  const remainingForProgress = Math.max(0, remainingMs / 1000);
+
+  if (remainingMs <= 0) {
+    updateDisplay(0);
+    setProgress(0);
+    triggerAlarm();
+    return;
+  }
+
+  updateDisplay(remainingForDisplay);
+  setProgress(remainingForProgress);
+  rafId = requestAnimationFrame(runTimerFrame);
+}
+
+function resetTimer() {
+  pauseTimer();
+  hhInput.value = '00';
+  mmInput.value = '00';
+  ssInput.value = '00';
+  totalSeconds = 0;
+  initialTotalSeconds = 0;
+  setProgress(0);
+  stopAlarm();
+}
+
+function startPauseTimer() {
+  if (isRunning) {
+    pauseTimer();
+  } else {
+    startTimer();
+  }
+}
+
+function triggerAlarm() {
+  pauseTimer();
+  hhInput.value = '00';
+  mmInput.value = '00';
+  ssInput.value = '00';
+  alarmOverlay.classList.add('active');
+  audio.play().catch((e) => console.log('Audio play failed:', e));
+}
+
+function stopAlarm() {
+  alarmOverlay.classList.remove('active');
+  audio.pause();
+  audio.currentTime = 0;
+}
+
+loadSound();
+calculateTotalSeconds();
+setProgress(totalSeconds);
+// --- Common Functions (Fullscreen, Modal, Settings) ---
+function toggleFullscreen(){const body = document.body;const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;if(isFullscreen){if(document.exitFullscreen){document.exitFullscreen();}else if(document.mozCancelFullScreen){document.mozCancelFullScreen();}else if(document.webkitExitFullscreen){document.webkitExitFullscreen();}else if(document.msExitFullscreen){document.msExitFullscreen();}}else{if(body.requestFullscreen){body.requestFullscreen();}else if(body.mozRequestFullScreen){body.mozRequestFullScreen();}else if(body.webkitRequestFullscreen){body.webkitRequestFullscreen();}else if(body.msRequestFullscreen){body.msRequestFullscreen();}}}document.addEventListener('fullscreenchange',onFullscreenChange);document.addEventListener('webkitfullscreenchange',onFullscreenChange);document.addEventListener('mozfullscreenchange',onFullscreenChange);document.addEventListener('MSFullscreenChange',onFullscreenChange);function onFullscreenChange(){const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;const root = document.documentElement;const STORAGE_DARK_MODE_KEY = 'stopwatch_dark_mode';document.body.classList.toggle('fullscreen-active',isFullscreen);if(isFullscreen){root.classList.add('dark-mode');}else{const restoredMode = localStorage.getItem(STORAGE_DARK_MODE_KEY)|| 'auto';setDarkMode(restoredMode,false);}}function openModal(id){document.getElementById(id).classList.add('active');}function closeModal(event,id){if(!event || event.target.id === id || event.target.closest('.close-btn')){document.getElementById(id).classList.remove('active');}}const root = document.documentElement;const rootStyle = root.style;const PREFERS_DARK_MEDIA_QUERY = window.matchMedia('(prefers-color-scheme:dark)');const STORAGE_COLOR_KEY = 'stopwatch_color';const STORAGE_FONT_KEY = 'stopwatch_font';const STORAGE_DARK_MODE_KEY = 'stopwatch_dark_mode';const FONT_MONO_CLASS = 'font-mono';const savedColor = localStorage.getItem(STORAGE_COLOR_KEY)|| '#5b2929';const savedFont = localStorage.getItem(STORAGE_FONT_KEY)|| 'sans';const savedDarkMode = localStorage.getItem(STORAGE_DARK_MODE_KEY)|| 'auto';setTheme(savedColor,false);setFont(savedFont,false);setDarkMode(savedDarkMode,false);PREFERS_DARK_MEDIA_QUERY.addEventListener('change',(event)=>{if(localStorage.getItem(STORAGE_DARK_MODE_KEY)=== 'auto'){applyDarkMode(event.matches);}});function setTheme(color,save = true){rootStyle.setProperty('--primary',color);document.querySelector('meta[name="theme-color"]').setAttribute('content',color);document.querySelectorAll('.color-btn').forEach(btn =>{btn.setAttribute('aria-selected','false');if(btn.getAttribute('style').includes(color)){btn.setAttribute('aria-selected','true');}});if(save)localStorage.setItem(STORAGE_COLOR_KEY,color);}function setFont(type,save = true){if(type === 'mono'){root.classList.add(FONT_MONO_CLASS);document.getElementById('font-mono').classList.add('active');document.getElementById('font-sans').classList.remove('active');}else{root.classList.remove(FONT_MONO_CLASS);document.getElementById('font-mono').classList.remove('active');document.getElementById('font-sans').classList.add('active');}if(save)localStorage.setItem(STORAGE_FONT_KEY,type);}function applyDarkMode(isDark){root.classList.toggle('dark-mode',isDark);}function setDarkMode(mode,save = true){let isDark = false;document.getElementById('theme-auto').classList.remove('active');document.getElementById('theme-light').classList.remove('active');document.getElementById('theme-dark').classList.remove('active');if(mode === 'auto'){isDark = PREFERS_DARK_MEDIA_QUERY.matches;document.getElementById('theme-auto').classList.add('active');}else if(mode === 'dark'){isDark = true;document.getElementById('theme-dark').classList.add('active');}else{isDark = false;document.getElementById('theme-light').classList.add('active');}applyDarkMode(isDark);if(save)localStorage.setItem(STORAGE_DARK_MODE_KEY,mode);}
+</script>
+</body>  <script src="check.js"></script>
+</html>
