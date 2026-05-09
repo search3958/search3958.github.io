@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+  <lang id="ja">
+    <text key="t1">タイマー</text>
+    <text key="t2">リセット</text>
+    <text key="t3">開始</text>
+    <text key="t4">一時停止</text>
+    <text key="t5">メニュー</text>
+    <text key="t6">私について</text>
+    <text key="t7">デジタル時計</text>
+    <text key="t8">アナログ時計</text>
+    <text key="t9">ストップウォッチ</text>
+    <text key="t10">文字カウンター</text>
+    <text key="t11">設定</text>
+    <text key="t12">通知音</text>
+    <text key="t13">Phobos (デフォルト)</text>
+    <text key="t14">表示テーマ</text>
+    <text key="t15">OSに合わせる</text>
+    <text key="t16">ライトモード</text>
+    <text key="t17">ダークモード</text>
+    <text key="t18">テーマカラー</text>
+    <text key="t19">時計フォント</text>
+    <text key="t20">閉じる</text>
+  </lang>
+
+  <lang id="en">
+    <text key="t1">Timer</text>
+    <text key="t2">Reset</text>
+    <text key="t3">Start</text>
+    <text key="t4">Pause</text>
+    <text key="t5">Menu</text>
+    <text key="t6">About Me</text>
+    <text key="t7">Digital Clock</text>
+    <text key="t8">Analog Clock</text>
+    <text key="t9">Stopwatch</text>
+    <text key="t10">Character Counter</text>
+    <text key="t11">Settings</text>
+    <text key="t12">Notification Sound</text>
+    <text key="t13">Phobos (Default)</text>
+    <text key="t14">Display Theme</text>
+    <text key="t15">Match OS</text>
+    <text key="t16">Light Mode</text>
+    <text key="t17">Dark Mode</text>
+    <text key="t18">Theme Color</text>
+    <text key="t19">Clock Font</text>
+    <text key="t20">Close</text>
+  </lang>
+</dictionary>
