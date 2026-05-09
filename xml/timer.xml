@@ -45,4 +45,96 @@
     <text key="t19">Clock Font</text>
     <text key="t20">Close</text>
   </lang>
+
+  <lang id="zh-CN">
+    <text key="t1">计时器</text>
+    <text key="t2">重置</text>
+    <text key="t3">开始</text>
+    <text key="t4">暂停</text>
+    <text key="t5">菜单</text>
+    <text key="t6">关于我</text>
+    <text key="t7">数字时钟</text>
+    <text key="t8">模拟时钟</text>
+    <text key="t9">秒表</text>
+    <text key="t10">文字计数器</text>
+    <text key="t11">设置</text>
+    <text key="t12">通知音</text>
+    <text key="t13">Phobos（默认）</text>
+    <text key="t14">显示主题</text>
+    <text key="t15">跟随系统</text>
+    <text key="t16">浅色模式</text>
+    <text key="t17">深色模式</text>
+    <text key="t18">主题颜色</text>
+    <text key="t19">时钟字体</text>
+    <text key="t20">关闭</text>
+  </lang>
+
+  <lang id="zh-TW">
+    <text key="t1">計時器</text>
+    <text key="t2">重設</text>
+    <text key="t3">開始</text>
+    <text key="t4">暫停</text>
+    <text key="t5">選單</text>
+    <text key="t6">關於我</text>
+    <text key="t7">數位時鐘</text>
+    <text key="t8">類比時鐘</text>
+    <text key="t9">碼錶</text>
+    <text key="t10">文字計數器</text>
+    <text key="t11">設定</text>
+    <text key="t12">通知音效</text>
+    <text key="t13">Phobos（預設）</text>
+    <text key="t14">顯示主題</text>
+    <text key="t15">跟隨系統</text>
+    <text key="t16">淺色模式</text>
+    <text key="t17">深色模式</text>
+    <text key="t18">主題顏色</text>
+    <text key="t19">時鐘字型</text>
+    <text key="t20">關閉</text>
+  </lang>
+
+  <lang id="ko">
+    <text key="t1">타이머</text>
+    <text key="t2">초기화</text>
+    <text key="t3">시작</text>
+    <text key="t4">일시정지</text>
+    <text key="t5">메뉴</text>
+    <text key="t6">소개</text>
+    <text key="t7">디지털 시계</text>
+    <text key="t8">아날로그 시계</text>
+    <text key="t9">스톱워치</text>
+    <text key="t10">문자 카운터</text>
+    <text key="t11">설정</text>
+    <text key="t12">알림 소리</text>
+    <text key="t13">Phobos (기본값)</text>
+    <text key="t14">표시 테마</text>
+    <text key="t15">OS에 맞춤</text>
+    <text key="t16">라이트 모드</text>
+    <text key="t17">다크 모드</text>
+    <text key="t18">테마 색상</text>
+    <text key="t19">시계 글꼴</text>
+    <text key="t20">닫기</text>
+  </lang>
+
+  <lang id="ko-KP">
+    <text key="t1">시간재기</text>
+    <text key="t2">초기화</text>
+    <text key="t3">시작</text>
+    <text key="t4">멈춤</text>
+    <text key="t5">메뉴</text>
+    <text key="t6">나에 대하여</text>
+    <text key="t7">전자시계</text>
+    <text key="t8">바늘시계</text>
+    <text key="t9">초시계</text>
+    <text key="t10">글자세기</text>
+    <text key="t11">설정</text>
+    <text key="t12">알림소리</text>
+    <text key="t13">Phobos (기본)</text>
+    <text key="t14">표시주제</text>
+    <text key="t15">체계에 맞춤</text>
+    <text key="t16">밝은 방식</text>
+    <text key="t17">어두운 방식</text>
+    <text key="t18">주제색</text>
+    <text key="t19">시계글꼴</text>
+    <text key="t20">닫기</text>
+  </lang>
 </dictionary>
