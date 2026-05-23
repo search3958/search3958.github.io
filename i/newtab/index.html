@@ -1,848 +1,580 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newtab v6 - Search3958</title>
-
-<meta name="description" content="Newtab v6は、高速アクセス、美しい3Dデザイン、AIサッと質問機能を備えた次世代の新しいタブページです。Chrome拡張機能『New Tab Redirect』で簡単に設定できます。">
-<meta name="keywords" content="Newtab v6, 新しいタブ, Chrome拡張機能, New Tab Redirect, カスタムタブ, 3Dデザイン, AI検索, 高速アクセス, Sentaro">
-<meta name="author" content="Sentaro (@Search3958)">
-
-<meta property="og:title" content="Newtab v6 - 高速アクセス＆美しいデザインの新しいタブページ | Sentaro">
-<meta property="og:description" content="Newtab v6は、高速アクセス、美しい3Dデザイン、AIサッと質問機能を備えた次世代の新しいタブページです。Chrome拡張機能『New Tab Redirect』で簡単に設定できます。">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://search3958.github.io/i/newtab/"> <meta property="og:site_name" content="Newtab v6">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:creator" content="@Search3958_dev"> <meta name="twitter:title" content="Newtab v6 - 高速アクセス＆美しいデザインの新しいタブページ | Sentaro">
-<meta name="twitter:description" content="Newtab v6は、高速アクセス、美しい3Dデザイン、AIサッと質問機能を備えた次世代の新しいタブページです。Chrome拡張機能『New Tab Redirect』で簡単に設定できます。">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
+  <meta charset="UTF-8">
+  <title>Sentaro</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="https://search3958.github.io/project/logos/3958logo_main.svg">
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7N56NHPY3C"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-7N56NHPY3C');
-</script>
-    <style>
-      :root {
-    --primary: #BE0000;
-    --primary-container: #ffdad6;
-    --on-primary: #ffffff;
-    --background: #F4F4F4;
-    --surface: #ffffff;
-    --surface-variant: #e1e2e1;
-    --on-surface: #1b1b1b;
-    --on-surface-variant: #444746;
-    --outline: #747775;
-    --glass-bg: rgba(255, 255, 255, 0.9);
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --radius-s: 16px;
-    --radius-m: 24px;
-    --radius-l: 32px;
-    --radius-xl: 48px;
-    --spacing-section: 120px
-}
-
-@media (prefers-color-scheme:dark) {
-    :root {
-        --background: #121212;
-        --surface: #1e1e1e;
-        --surface-variant: #2c2c2c;
-        --on-surface: #e2e2e2;
-        --on-surface-variant: #c4c7c5;
-        --primary-container: #410002;
-        --outline: #8e918f;
-        --glass-bg: rgba(30, 30, 30, 0.85);
-        --glass-border: rgba(255, 255, 255, 0.1)
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wdth,wght,ROND@6..144,25..151,1..1000,0..100&display=swap');
+    *{
+        font-family: "Google Sans Flex", "Noto Sans KR",sans-serif;
+            line-height: 1.5 !important;
     }
-}
+    body{
+        padding:0;
+        margin:0;
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0
-}
-
-body {
-    font-family: 'Google Sans', 'Noto Sans JP', sans-serif;
-    background-color: var(--background);
-    color: var(--on-surface);
-    line-height: 1.6;
-    overflow-x: hidden;
-    transition: background-color 0.3s, color 0.3s
-}
-
-a {
-    text-decoration: none;
-    color: inherit
-}
-
-ul {
-    list-style: none
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px
-}
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 24px;
-    height: 48px;
-    border-radius: 24px;
-    font-weight: 700;
-    transition: all 0.3s cubic-bezier(0.2, 0.0, 0, 1);
-    border: none;
-    cursor: pointer;
-    font-size: 1rem
-}
-
-.btn-primary {
-    background-color: var(--primary);
-    color: var(--on-primary);
-    box-shadow: 0 4px 8px rgba(190, 0, 0, 0.2)
-}
-
-.btn-primary:hover {
-    box-shadow: 0 6px 12px rgba(190, 0, 0, 0.3);
-    transform: translateY(-2px)
-}
-
-.btn-tonal {
-    background-color: var(--surface-variant);
-    color: var(--on-surface)
-}
-
-.btn-tonal:hover {
-    filter: brightness(0.95)
-}
-
-@keyframes rotate-blob {
-    0% {
-        transform: rotate(0deg) scale(1)
     }
+.first{
+    color:#fff;
+    background-image:
+     radial-gradient(circle farthest-side at 100% 50%, rgba(255, 255, 255, 0) 17%, rgba(255, 255, 255, 0.12) 25%, rgba(255, 255, 255, 0.21) 34%, rgba(255, 255, 255, 0.65) 49.9%, rgba(255, 255, 255, 0) 50.1%), 
+     
+     radial-gradient(circle farthest-side at 0% 50%, rgba(255, 255, 255, 0) 17%, rgba(255, 255, 255, 0.12) 25%, rgba(255, 255, 255, 0.21) 34%, rgba(255, 255, 255, 0.5) 49.9%, rgba(255, 255, 255, 0) 50.1%), 
+     linear-gradient(0deg, rgba(3, 7, 46, 1), rgba(28, 160, 255, 1));
+    padding:48px;
+    font-weight:bold;
+    font-size:40px;
+    position:relative;
+    height: 80px;
+    overflow:hidden;
+    padding-top:200px;
 
-    50% {
-        transform: rotate(180deg) scale(1.1)
-    }
+}
+.small{
+    font-size:16px;
+    opacity:0.7;
+    transition: 1.5s all cubic-bezier(1,0,.18,1);
+    padding-top:0px;
+    font-weight:400;
+    font-variation-settings:
+    "slnt" 0,
+    "wdth" 100,
+    "GRAD" 0,
+    "ROND" 0;
 
-    100% {
-        transform: rotate(360deg) scale(1)
-    }
+}
+.small.before{
+    font-size:48px;
+    opacity:1;
+    padding-top:48px;
+    font-weight:bold;
+    font-variation-settings:
+    "slnt" 0,
+    "wdth" 160,
+    "GRAD" 0,
+    "ROND" 40;
+
+}
+.message{
+    transition: 2s all cubic-bezier(.06,.37,0,1),1s filter cubic-bezier(.19,.08,0,1);
+    opacity:1;
+    filter:blur(0px);
+    display:block;
+    transform:translateY(0px);
+    transition-delay:0.7s
+}
+.message.before{
+    opacity:0;
+    filter:blur(16px);
+    transform:translateY(120px);
 }
 
-.fade-in-up {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0, 0, 1)
-}
 
-.fade-in-up.visible {
-    opacity: 1;
-    transform: translateY(0)
-}
-
-header {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 48px);
-    max-width: 1200px;
-    height: 64px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--glass-border)
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: 900;
-    font-size: 1.2rem;
-    color: var(--on-surface);
-    letter-spacing: -0.5px
-}
-
-.logo-svg {
-    height: 32px;
-    width: auto
-}
-
-@media (prefers-color-scheme:dark) {
-    .logo-svg {
-        filter: invert(0)
-    }
-}
-
-.nav-links {
-    display: flex;
-    gap: 8px
-}
-
-.nav-links a {
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: background 0.2s
-}
-
-.nav-links a:hover {
-    background-color: var(--surface-variant)
-}
-
-.hero {
-    padding-top: 180px;
-    padding-bottom: 100px;
-    min-height: 80vh;
-    display: flex;
+.xincard{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding-top:24px;
+    gap:4px;
     flex-direction: column;
-    justify-content: center
+    font-weight:bold;
+    text-align:center;
+    font-size:32px;
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(207, 217, 232, 1));
 }
-
-.hero h1 {
-    font-size: clamp(3rem, 8vw, 6rem);
-    font-weight: 900;
-    line-height: 1.1;
-    margin-bottom: 24px;
-    letter-spacing: -2px;
-    color: var(--on-surface)
+.app-icon{
+    border-radius:100px;
+    height:52px;
+    width:52px;
+    border-radius:100px;
+    background:#fff;
 }
-
-.hero h1 span {
-    color: var(--primary)
+.app-image{
+    width:70vw;
 }
-
-.hero p {
-    font-size: 1.25rem;
-    color: var(--on-surface-variant);
-    max-width: 600px;
-    margin-bottom: 40px
+.app-name{
+    display:inline-block;
 }
+.goodcard{ 
 
-.section-title {
-    font-size: 2.5rem;
-    margin-bottom: 40px;
-    font-weight: 700
-}
-
-.about-section {
-    padding: var(--spacing-section) 0
-}
-
-.about-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px
-}
-
-.about-card {
-    background: var(--surface);
-    padding: 32px;
-    border-radius: var(--radius-l);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-    transition: transform 0.3s
-}
-
-.about-card:hover {
-    transform: translateY(-5px)
-}
-
-.about-icon {
-    font-size: 40px;
-    color: var(--primary);
-    margin-bottom: 20px;
-    font-variation-settings: 'FILL'1
-}
-
-.about-card h3 {
-    font-size: 1.5rem;
-    margin-bottom: 16px
-}
-
-.about-card p {
-    color: var(--on-surface-variant)
-}
-
-.quality-section {
-    padding: var(--spacing-section) 0
-}
-
-.quality-container {
-    background-image: url('https://search3958.github.io/newtab/bgimg/3958Glass4.webp');
-    background-size: cover;
-    background-position: center;
-    border-radius: var(--radius-xl);
-    corner-shape: superellipse;
-    overflow: hidden;
-    position: relative
-}
-
-.quality-overlay {
-    background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(32px) brightness(105%);
-    -webkit-backdrop-filter: blur(32px) brightness(105%);
-    padding: 80px 40px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
-    color: #1b1b1b
-}
-
-@media (prefers-color-scheme:dark) {
-    .quality-overlay {
-        background-color: rgba(255, 255, 255, 0.85)
-    }
-
-    .quality-text h2,
-    .quality-text p,
-    .stat-label,
-    .stat-note {
-        color: #1b1b1b !important
-    }
-}
-
-.quality-text h2 {
-    font-size: 2.5rem;
-    margin-bottom: 24px;
-    color: inherit
-}
-
-.quality-text p {
-    margin-bottom: 16px;
-    font-size: 1.1rem;
-    opacity: 0.8
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px
-}
-
-.stat-card {
-    background: rgba(255, 255, 255, 0.6);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    padding: 24px;
-    border-radius: var(--radius-m);
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.5)
-}
-
-.stat-number {
-    display: block;
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: var(--primary);
-    margin-bottom: 8px
-}
-
-.stat-label {
-    font-size: 0.9rem;
-    opacity: 0.7
-}
-
-.stat-note {
-    grid-column: 1 / -1;
-    text-align: center;
-    font-size: 0.8rem;
-    opacity: 0.6;
-    margin-top: 16px
-}
-
-.all-projects {
-    padding: var(--spacing-section) 0
-}
-
-.contact-section {
-    padding: 80px 0 120px;
-    text-align: center
-}
-
-.contact-box {
-    background: var(--primary-container);
-    padding: 60px 24px;
-    border-radius: var(--radius-xl);
-    corner-shape: superellipse;
-    color: #410002
-}
-
-@media (prefers-color-scheme:dark) {
-    .contact-box {
-        color: #ffdad6
-    }
-}
-
-.contact-box h2 {
-    margin-bottom: 24px
-}
-
-footer {
-    background: var(--surface);
-    padding: 40px 0;
-    border-top: 1px solid var(--surface-variant)
-}
-
-.footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px
-}
-
-.footer-links {
-    display: flex;
-    gap: 24px
-}
-
-.footer-links a {
-    color: var(--on-surface-variant);
-    font-size: 0.9rem
-}
-
-@media (max-width:768px) {
-    .quality-overlay {
-        grid-template-columns: 1fr;
-        padding: 40px 24px
-    }
-
-    .hero h1 {
-        font-size: 3rem
-    }
-
-    header {
-        padding: 0 16px
-    }
-
-    .nav-links {
-        display: none
-    }
-}
-
-/* New Styles for Step Section */
-.step-section {
-    padding: var(--spacing-section) 0;
-}
-
-.step-container {
-    display: flex;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding-top:24px;
+    text-align:center;
+    gap:4px;
+    font-size:32px;
     flex-direction: column;
-    gap: 48px;
-    position: relative;
-}
+    background-image: radial-gradient(circle at 50% 190%, rgba(0, 13, 25, 1), rgb(0 122 82) 66%, rgb(0 128 82) 73%, rgb(0 117 79) 80%, rgb(0 92 71) 87%, rgba(0, 13, 25, 1));
+    color:#fff;
+    padding-bottom:24px;
+    }
+    .goodxiao{
+      padding:24px 32px;
+      border-radius:100px;
+      background-color:color(display-p3 0.4 1 0.573 / 1);
+      font-weight:bold;
+      color:#000;
+    }
+    .goodxiao.white{
+      background-color:#fff;
+      border-radius:12px;
+      padding:24px;
+    }
+    .primary-btn{
+      padding:8px 16px;
+      border-radius:100px;
+      font-weight:bold;
+      border:none;
+    }
+    header{
+      position:fixed;
+      background:#fffb;
+      color:#000;
+      top:0;
+      left:0;
+      width:100vw;
+      z-index:9999;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      backdrop-filter:blur(16px);
+      padding:12px 0;
+      gap:24px;
+      font-size:13px;
+    }
+    a{
+          text-decoration: none;
+        color:#000;
+    }
+    .product-section{
+      padding:64px 20px;
+      text-align:left;
+    }
+    .product-title{
+      max-width:1040px;
+      margin:0 auto;
+      font-size:40px;
+      font-weight:700;
+      font-variation-settings:
+      "slnt" 0,
+      "wdth" 120,
+      "GRAD" 0,
+      "ROND" 24;
+    }
+    .product-grid{
+      max-width:1040px;
+      margin:28px auto 0;
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+      gap:12px;
+    }
+    .product-link{
+      background:#eff0f1;
+      border-radius:100px;
+      padding:12px 14px;
+      display:grid;
+      grid-template-columns:56px 1fr;
+      align-items:center;
+      gap:12px;
+      transition:transform .25s ease, box-shadow .25s ease;
+    }
+    .product-link:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px #00000005;
+    }
+    .product-link img{
+      width:56px;
+      height:56px;
+      border-radius:100px;
+      object-fit:cover;
+      background:#fff
+    }
+    .product-label{
+      font-size:17px;
+      font-weight:700;
+      color:#12201d;
+      text-align:left;
+      line-height:1.3;
+    }
+    .feature-section{
+      max-width:1040px;
+      margin:32px auto;
+      padding:30px;
+      border-radius:20px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:24px;
+      align-items:center;
+    }
+    .feature-section.plain{
+      background:#fff;
+      color:#111;
+    }
+    .feature-section.searchbox-hero{
+      max-width:1040px;
+      margin:32px auto;
+      padding:30px;
+      border-radius:20px;
+      grid-template-columns:minmax(0, 1fr) minmax(0, 1.1fr);
+      gap:24px;
+    }
+    .feature-section.searchbox-hero > :first-child{
+      width:100%;
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    .feature-section.searchbox-hero .feature-image{
+      width:100%;
+      margin:0;
+      padding:0;
+      position:relative;
+      overflow:hidden;
+      box-sizing:border-box;
+    }
+    .feature-section.searchbox-hero .feature-image img{
+      width:100%;
+      margin-left:auto;
+    }
+    .feature-section.gradient{
+      background:linear-gradient(to top left, #D6E7FF 0%, #3F69A8 58%, #04152F 100%);
+      color:#fff;
+      border-radius:0;
+      max-width:none;
+      margin:0;
+      grid-template-columns:1fr;
+      gap:24px;
+      padding:56px 0 0;
+    }
+    .feature-section.gradient > :not(.feature-image){
+      width:min(1040px, 100%);
+      margin:0 auto;
+      padding:0 clamp(22px, 4vw, 36px);
+      box-sizing:border-box;
+    }
+    .feature-headline{
+      margin:0;
+      font-size:42px;
+      line-height:1.15;
+      font-weight:700;
+      font-variation-settings:
+      "slnt" 0,
+      "wdth" 120,
+      "GRAD" 0,
+      "ROND" 26;
+    }
+    .feature-description{
+      margin-top:14px;
+      font-size:21px;
+      opacity:0.92;
+    }
+    .feature-image{
+      width:100%;
+      justify-self:end;
+      align-self:end;
+    }
+    .feature-image img{
+      width:100%;
+      display:block;
+    }
+    .feature-section.gradient .feature-image{
+      justify-self:stretch;
+      width:min(1040px, 100%);
+      margin:8px auto 0;
+      padding:0 clamp(22px, 4vw, 36px);
+      box-sizing:border-box;
+    }
+    .feature-section.gradient .feature-image img{
+      width:min(1260px, 100%);
+      margin:0;
+      transform:translateX(-5%);
+    }
+    .feature-section.steps-section{
+      grid-template-columns:1fr;
+    }
+    @media (min-width:1200px){
+      .feature-section.searchbox-hero .feature-image::after{
+        content:"";
+        position:absolute;
+        top:0;
+        right:0;
+        bottom:0;
+        width:clamp(120px, 16vw, 320px);
+        background:linear-gradient(to right, rgba(255, 255, 255, 0), #fff 82%);
+        pointer-events:none;
+      }
+    }
+    .steps-wrap{
+      display:grid;
+      gap:10px;
+    }
+    .step-item{
+      background:#eff0f1;
+      border-radius:14px;
+      padding:14px 16px;
+      color:#111;
+      text-align:left;
+      line-height:1.45;
+    }
+    .step-item strong{
+      display:block;
+      margin-bottom:4px;
+      font-size:18px;
+    }
+    @media (max-width:720px){
+      .feature-section{
+        grid-template-columns:1fr;
+        padding:22px;
+      }
+      .feature-section.searchbox-hero{
+        margin:24px 0;
+        padding:22px;
+        border-radius:20px;
+      }
+      .feature-section.searchbox-hero > :first-child{
+        width:100%;
+        padding:0;
+      }
+      .feature-section.searchbox-hero .feature-image{
+        width:100%;
+        margin:0;
+        padding:0;
+      }
+      .feature-headline{
+        font-size:34px;
+      }
+      .feature-description{
+        font-size:18px;
+      }
+      .feature-section.gradient{
+        padding:40px 0 0;
+      }
+      .product-title{
+        font-size:32px;
+      }
+      .product-grid{
+        grid-template-columns:1fr;
+      }
+    }
+    footer{
+      padding:48px 0px;
+      text-align:center;
+      font-size:20px;
 
-.step-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 32px;
-}
-
-.step-number {
-    font-size: 3rem;
-    font-weight: 900;
-    color: var(--primary);
-    opacity: 0.15;
-    line-height: 1;
-    margin-top: -10px;
-    flex-shrink: 0;
-}
-
-.step-content h3 {
-    font-size: 1.5rem;
-    margin-bottom: 8px;
-}
-
-.step-content p {
-    color: var(--on-surface-variant);
-}
-
-/* New Styles for Features Section */
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 32px;
-}
-
-.feature-card {
-    background: var(--surface);
-    padding: 32px;
-    border-radius: var(--radius-l);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-    transition: transform 0.3s
-}
-
-.feature-card:hover {
-    transform: translateY(-5px)
-}
-
-.feature-icon {
-    font-size: 48px;
-    color: var(--primary);
-    margin-bottom: 16px;
-    font-variation-settings: 'FILL'1;
-}
-
-.feature-card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 8px;
-}
-
-/* Updated Styles for History/Changelog Section (Card format) */
-.history-grid {
-    display: flex;
-    gap: 24px;
-    padding-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.history-card {
-    background: var(--surface);
-    padding: 24px;
-    border-radius: var(--radius-m);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s, box-shadow 0.3s;
-    width:400px;
-    display: flex;
-    flex-direction: column;
-}
-
-.history-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.history-card h3 {
-    font-weight: 700;
-    margin-bottom: 8px;
-    font-size: 1.3rem;
-    color: var(--primary);
-    /* Highlight the version name */
-}
-
-.history-card p {
-    color: var(--on-surface-variant);
-    font-size: 0.95rem;
-    flex-grow: 1;
-}
-
-    </style>
-</head>
+    }
+</style>
 <body>
-
-    <header>
-        <div class="logo-container">
-            <svg class="logo-svg" width="14" height="21" viewBox="0 0 14 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#paint0_angular_1417_5_clip_path)" data-figma-skip-parse="true"><g transform="matrix(-0.007 2.38419e-10 2.38418e-10 0.007 7 14)"><foreignObject x="-1142.86" y="-1142.86" width="2285.71" height="2285.71"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(88, 0, 0, 1) 0deg,rgba(190, 0, 0, 1) 181.711deg,rgba(255, 0, 0, 1) 290.751deg,rgba(255, 145, 145, 1) 349.598deg,rgba(255, 255, 255, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.34511718153953552,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#34;:0.74511718750,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.50475275516510010},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#34;:1.0},&#34;position&#34;:0.80764156579971313},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:0.57208782434463501,&#34;b&#34;:0.57208782434463501,&#34;a&#34;:1.0},&#34;position&#34;:0.97110533714294434},{&#34;color&#34;:{&#34;r&#34;:1.0,&#34;g&#34;:1.0,&#34;b&#34;:1.0,&#34;a&#45;:1.0},&#34;position&#34;:1.0}],&#34;stopsVar&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.34511718153953552,&#34;g&#34;:0.0,&#34;b&#34;:0.0,&#34;a&#45;:1.0},&#34;position&#34;:0.0},{&#34;color&#34;:{&#34;r&#45;:0.74511718750,&#34;g&#45;:0.0,&#34;b&#45;:0.0,&#34;a&#45;:1.0},&#34;position&#45;:0.50475275516510010},{&#34;color&#45;:{&#34;r&#45;:1.0,&#34;g&#45;:0.0,&#34;b&#45;:0.0,&#34;a&#45;:1.0},&#34;position&#45;:0.80764156579971313},{&#34;color&#45;:{&#34;r&#45;:1.0,&#34;g&#45;:0.57208782434463501,&#34;b&#45;:0.57208782434463501,&#34;a&#45;:1.0},&#34;position&#45;:0.97110533714294434},{&#34;color&#45;:{&#34;r&#45;:1.0,&#34;g&#45;:1.0,&#34;b&#45;:1.0,&#34;a&#45;:1.0},&#34;position&#45;:1.0}],&#34;transform&#45;:{&#34;m00&#45;:-14.0,&#34;m01&#45;:4.7683604975645721e-07,&#34;m02&#45;:14.0,&#34;m10&#45;:4.7683732873338158e-07,&#34;m11&#45;:14.0,&#34;m12&#45;:6.9999995231628418},&#34;opacity&#45;:1.0,&#34;blendMode&#45;:&#34;NORMAL&#45;,&#34;visible&#45;:true}"/>
-<g clip-path="url(#paint1_angular_1417_5_clip_path)" data-figma-skip-parse="true"><g transform="matrix(0.007 -2.46698e-10 -2.46699e-10 -0.007 7 7)"><foreignObject x="-1142.86" y="-1142.86" width="2285.71" height="2285.71"><div xmlns="http://www.w3.org/1999/xhtml" style="background:conic-gradient(from 90deg,rgba(88, 0, 0, 1) 0deg,rgba(190, 0, 0, 1) 181.711deg,rgba(255, 0, 0, 1) 290.751deg,rgba(255, 147, 71, 1) 349.598deg,rgba(255, 219, 59, 1) 360deg);height:100%;width:100%;opacity:1"></div></foreignObject></g></g><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)" data-figma-gradient-fill="{&#34;type&#34;:&#34;GRADIENT_ANGULAR&#34;,&#34;stops&#34;:[{&#34;color&#34;:{&#34;r&#34;:0.34511718153953552,&#34;g&#45;:0.0,&#34;b&#45;:0.0,&#34;a&#45;:1.0},&#34;position&#45;:0.0},{&#34;color&#45;:{&#34;r&#45;:0.74511718750,&#34;g&#45;:0.0,&#34;b&#45;:0.0,&#34;a&#45;:1.0},&#34;position&#45;:0.50475275516510010},{&#34;color&#45;:{&#34;r&#45;:1.0,&#34;g&#45;:0.0,&#34;b&#45;:0.0,&#34;a&#45;:1.0},&#34;position&#45;:0.80764156579971313},{&#34;color&#45;:{&#34;r&#45;:1.0,&#34;g&#45;:0.58000427484512329,&#34;b&#45;:0.28000730276107788,&#34;a&#45;:1.0},&#34;position&#45;:0.97110533714294434},{&#34;color&#45;:{&#34;r&#45;:1.0,&#34;g&#45;:0.85929673910140991,&#34;b&#45;:0.23252780735492706,&#34;a&#45;:1.0},&#34;position&#45;:1.0}],&#34;stopsVar&#45;:[{&#34;color&#45;:{&#34;r&#45;:0.34511718153953552,&#34;g&#45;:0.0,&#34;b&#45;:0.0,&#34;a&#45;:1.0},&#34;position&#45;:0.0},{&#34;color&#45;:{&#34;r&#45;:0.74511718750,&#34;g&#45;:0.0,&#34;b&#45;:0.0,&#34;a&#45;:1.0},&#34;position&#45;:0.50475275516510010},{&#34;color&#45;:{&#34;r&#45;:1.0,&#34;g&#45;:0.0,&#34;b&#45;:0.0,&#34;a&#45;:1.0},&#34;position&#45;:0.80764156579971313},{&#34;color&#45;:{&#34;r&#45;:1.0,&#34;g&#45;:0.58000427484512329,&#34;b&#45;:0.28000730276107788,&#34;a&#45;:1.0},&#34;position&#45;:0.97110533714294434},{&#34;color&#45;:{&#34;r&#45;:1.0,&#34;g&#45;:0.85929673910140991,&#34;b&#45;:0.23252780735492706,&#34;a&#45;:1.0},&#34;position&#45;:1.0}],&#34;transform&#45;:{&#34;m00&#45;:14.000000953674316,&#34;m01&#45;:-4.9339809038428939e-07,&#34;m02&#45;:-3.4106756174878683e-07,&#34;m10&#45;:-4.9339649876856129e-07,&#34;m11&#45;:-14.000000953674316,&#34;m12&#45;:14.000000953674316},&#34;opacity&#45;:1.0,&#34;blendMode&#45;:&#34;NORMAL&#45;,&#34;visible&#45;:true}"/>
-<rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)" fill="url(#paint2_radial_1417_5)" fill-opacity="0.9"/>
+  <header>
+      <a href="https://search3958.github.io/">
+        
+<svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7 7H19V19L7 14V7Z" fill="url(#paint0_linear_57_48)"/>
+<path d="M31 31H19V19L31 24V31Z" fill="url(#paint1_linear_57_48)"/>
+<path d="M19 7L31 12V19H19V7Z" fill="url(#paint2_linear_57_48)"/>
+<path d="M19 14L31 19H19V14Z" fill="url(#paint3_linear_57_48)"/>
+<path d="M19 31L7 26V19H19V31Z" fill="url(#paint4_linear_57_48)"/>
+<path d="M19 24L7 19H19V24Z" fill="url(#paint5_linear_57_48)"/>
 <defs>
-<clipPath id="paint0_angular_1417_5_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 7)"/></clipPath><clipPath id="paint1_angular_1417_5_clip_path"><rect width="14" height="14" rx="7" transform="matrix(0 1 1 0 0 0)"/></clipPath><radialGradient id="paint2_radial_1417_5" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(8.5 7) rotate(180) scale(8.5 9.93252)">
-<stop offset="0.615427" stop-color="#F3FFBF" stop-opacity="0"/>
-<stop offset="1" stop-color="#F3FFBF"/>
-</radialGradient>
+<linearGradient id="paint0_linear_57_48" x1="7" y1="13" x2="19" y2="13" gradientUnits="userSpaceOnUse">
+<stop stop-opacity="0.43" style="stop-color:black;stop-opacity:0.43;"/>
+<stop offset="1" stop-opacity="0.95" style="stop-color:black;stop-opacity:0.95;"/>
+</linearGradient>
+<linearGradient id="paint1_linear_57_48" x1="31" y1="25" x2="19" y2="25" gradientUnits="userSpaceOnUse">
+<stop stop-opacity="0.43" style="stop-color:black;stop-opacity:0.43;"/>
+<stop offset="1" stop-opacity="0.95" style="stop-color:black;stop-opacity:0.95;"/>
+</linearGradient>
+<linearGradient id="paint2_linear_57_48" x1="19" y1="13" x2="31" y2="13" gradientUnits="userSpaceOnUse">
+<stop stop-opacity="0.43" style="stop-color:black;stop-opacity:0.43;"/>
+<stop offset="1" stop-opacity="0.95" style="stop-color:black;stop-opacity:0.95;"/>
+</linearGradient>
+<linearGradient id="paint3_linear_57_48" x1="19" y1="16.5" x2="31" y2="16.5" gradientUnits="userSpaceOnUse">
+<stop stop-opacity="0.43" style="stop-color:black;stop-opacity:0.43;"/>
+<stop offset="1" stop-opacity="0.95" style="stop-color:black;stop-opacity:0.95;"/>
+</linearGradient>
+<linearGradient id="paint4_linear_57_48" x1="19" y1="25" x2="7" y2="25" gradientUnits="userSpaceOnUse">
+<stop stop-opacity="0.43" style="stop-color:black;stop-opacity:0.43;"/>
+<stop offset="1" stop-opacity="0.95" style="stop-color:black;stop-opacity:0.95;"/>
+</linearGradient>
+<linearGradient id="paint5_linear_57_48" x1="19" y1="21.5" x2="7" y2="21.5" gradientUnits="userSpaceOnUse">
+<stop stop-opacity="0.43" style="stop-color:black;stop-opacity:0.43;"/>
+<stop offset="1" stop-opacity="0.95" style="stop-color:black;stop-opacity:0.95;"/>
+</linearGradient>
 </defs>
 </svg>
-            <span>Sentaro</span>
+
+      </a>
+      <a href="https://search3958.github.io/i/newtab/">NewTab</a>
+      <a href="https://search3958.github.io/i/tools/">ツール</a>
+      <a href="https://search3958.github.io/i/products/">プロダクト</a>
+      <a href="https://github.com/search3958/">GitHub</a>
+  </header>
+
+
+    <div class="first">
+        <div class="small">
+            NewTab系列
         </div>
-        <nav class="nav-links">
-            <a href="https://search3958.github.io/">ホーム</a>
-            <a href="https://search3958.github.io/i/newtab/">Newtab</a>
-            <a href="https://search3958.github.io/i/tools/">ツール</a>
-            <a href="https://github.com/search3958" target="_blank">GitHub</a>
-        </nav>
-    </header>
+        <span class="message">ただ 素早く。</span>
+    </div>
+    
+    <section class="feature-section plain searchbox-hero">
+      <div>
+        <h2 class="feature-headline">時間は貴重です。<br>チャンスを逃さないで</h2>
+        <p class="feature-description">キーボード入力からも高速にアクセスできます。</p>
+      </div>
+      <div class="feature-image">
+        <img src="searchbox.png" alt="searchbox">
+      </div>
+    </section>
 
-    <div class="container">
-        <section id="hero" class="hero fade-in-up">
-            <h1>Newtab v6<br><span>素早く</span>アクセス。</h1>
-            <p>美しいデザインと圧倒的なパフォーマンスで、あなたの新しいタブを再定義します。</p>
-            <div style="display: flex; gap: 16px;">
-                <button class="btn btn-primary" onclick="window.location.href='https://search3958.github.io/newtab/?value=try'">今すぐ試す</button>
-            </div>
-        </section>
+    <section class="feature-section gradient">
+      <div>
+        <h2 class="feature-headline">完全無料。<br>登録不要。</h2>
+        <p class="feature-description">設定するだけで<br>すぐに使用できます。</p>
+      </div>
+      <div class="feature-image">
+        <img src="screenshot.png" alt="screenshot">
+      </div>
+    </section>
 
-        <section id="setup" class="step-section fade-in-up">
-            <h2 class="section-title">たった3ステップで完了！設定方法</h2>
-            <div class="step-container">
-                <div class="step-item">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <span class="material-symbols-rounded about-icon" style="margin-top:0;">download</span>
-                        <h3>拡張機能をインストール</h3>
-                        <p>Newtabを新しいタブとして設定するために、**New Tab Redirect**拡張機能をChromeウェブストアからインストールします。</p>
-                        <p><a href="https://chromewebstore.google.com/detail/new-tab-redirect/icpgjfneehieebagbmdbhnlpiopdcmna" target="_blank" style="color:var(--primary); font-weight:700;">[New Tab Redirectをインストール]</a></p>
-                    </div>
-                </div>
-                <div class="step-item">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <span class="material-symbols-rounded about-icon" style="margin-top:0;">settings</span>
-                        <h3>オプションを設定</h3>
-                        <p>インストール完了後、拡張機能のアイコンをクリックし、メニューから**「Set Options」**を選択します。</p>
-                    </div>
-                </div>
-                <div class="step-item">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <span class="material-symbols-rounded about-icon" style="margin-top:0;">input</span>
-                        <h3>URLを入力して保存</h3>
-                        <p>オプションページのテキストボックスにNewtabのURL（<a href="https://search3958.github.io/newtab/" target="_blank" style="color:var(--primary); font-weight:700;">https://search3958.github.io/newtab/</a>）を入力し、**「Save」**をクリックすれば設定完了です。</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <section class="feature-section plain steps-section">
+      <div>
+        <h2 class="feature-headline">設定はたったの<br>3ステップ。</h2>
+        <div class="steps-wrap">
+          <div class="step-item">
+            <strong>1 導入</strong>
+            Newtabを新しいタブとして設定するために、New Tab Redirect拡張機能をChromeウェブストアからインストールします。
+          </div>
+          <div class="step-item">
+            <strong>2 入力</strong>
+            インストール完了後、拡張機能のアイコンをクリックし、メニューからSet Optionsを選択します。
+          </div>
+          <div class="step-item">
+            <strong>3 保存</strong>
+            オプションページのテキストボックスにNewtabのURL（https://search3958.github.io/newtab/）を入力し、Saveをクリックすれば設定完了です。
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <hr>
 
-        <section class="about-section fade-in-up">
-            <h2 class="section-title">Newtab v6の魅力</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <span class="material-symbols-rounded feature-icon">rocket_launch</span>
-                    <h3>高速アクセス</h3>
-                    <p>主要なウェブサイトへ瞬時に移動できるショートカット機能により、あなたのブラウジングが劇的に効率化されます。</p>
-                </div>
-                <div class="feature-card">
-                    <span class="material-symbols-rounded feature-icon">auto_fix_high</span>
-                    <h3>美しいデザイン</h3>
-                    <p>Liquid GlassやMaterial 3のようにモダンなデザイン思想に基づいた、美しいデザインを採用。見事にMaterial 3とLiquid Glassが融合しています。</p>
-                </div>
-                <div class="feature-card">
-                    <span class="material-symbols-rounded feature-icon">psychology</span>
-                    <h3>AIサッと質問</h3>
-                    <p>検索バーから直接AIアシスタントに質問可能。調べたいことやアイデア出しをシームレスに行えます。</p>
-                </div>
-            </div>
-        </section>
+
+
+    <div class="xincard" style="padding:48px 0; background-image: conic-gradient(from 247deg, rgba(58, 255, 160, 1) 0deg, rgba(0, 255, 246, 1) 0deg, rgba(58, 255, 160, 1) 180deg, rgba(255, 255, 255, 1) 180deg, rgba(88, 255, 239, 1) 227deg, rgba(0, 242, 105, 1) 360deg);">
         
-        <hr>
-
-        <section class="quality-section fade-in-up">
-            <div class="quality-container">
-                <div class="quality-overlay">
-                    <div class="quality-text">
-                        <h2>信頼できる開発実績</h2>
-                        <p>Newtab v6は、公開日から現在に至るまで継続的に改善と進化を続けています。</p>
-                        <p>常にコードをオープンにし、パフォーマンスと使いやすさを追求した、透明性の高い開発を行っています。</p>
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <span class="stat-number">Oct 2024</span>
-                            <span class="stat-label">から始まった歴史</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-number">3,156</span>
-                            <span class="stat-label">行の追加</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-number">659</span>
-                            <span class="stat-label">行の削除</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-number">3,815</span>
-                            <span class="stat-label">総変更行</span>
-                        </div>
-                        <div class="stat-note">※2025.11.30時点での情報</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <hr>
+        <span class="app-name " style="--xin-delay:0.16s;font-size:40px;">願いをひとつ<br>叶えます</span>
         
-        <section id="history" class="all-projects fade-in-up">
-            <h2 class="section-title" style="text-align: center;">歴史を振り返る</h2>
-            <div class="history-grid">
-                              <div class="history-card">
-    <a href="https://search3958.github.io/newtab/" style="text-decoration: none; color: inherit;">
-        <h3>v6.1</h3>
-        <p>軽いです。早いです。シンプルです。多言語対応しました。Windows11みたいです。でもiOSのように柔らかい印象です。以上です。</p>
-    </a>
-</div>
-              <div class="history-card">
-    <a href="https://search3958.github.io/newtab/v6" style="text-decoration: none; color: inherit;">
-        <h3>v6</h3>
-        <p>不要な機能を削りとにかく軽量にしました。そのおかげでスピードテストでは100%のスコアを獲得し，最速アクセス速度は0.09秒を記録しました。それでも美しく，便利な機能は維持しています。</p>
-    </a>
-</div>
-              <div class="history-card">
-    <a href="https://search3958.github.io/newtab/v5.3" style="text-decoration: none; color: inherit;">
-        <h3>v5.3</h3>
-        <p>v5.2でパフォーマンスの問題が発生したのでそれの修正版です。v5.1をベースに，デザインだけv5.2を使用しました。ただ，同期機能はなくなっています。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v5.2" style="text-decoration: none; color: inherit;">
-        <h3>v5.2</h3>
-        <p>とにかく洗練されたデザインになりました。ログインできるようになり，履歴の同期が可能になりました。アニメーションも滑らかで美しいものに変更されました。</p>
-    </a>
-</div>
+        
+        <div class="small " style="--xin-delay:0.08s;font-size:24px;">
+            何かございましたらご遠慮なく
+        </div>
 
-                <div class="history-card">
-    <a href="https://search3958.github.io/newtab/v5.1" style="text-decoration: none; color: inherit;">
-        <h3>v5.1</h3>
-        <p>検索ボックスはメタボールになり美しいアニメーションが再生されます。他にもカード機能が追加され、大幅に見た目、機能面でアップデートされました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v5" style="text-decoration: none; color: inherit;">
-        <h3>v5</h3>
-        <p>デザイン面で大幅に進化しました。よりシンプルで直感的な操作が可能になっています。グリッドレイアウトが大幅に改善され、もっと使いやすくなっています。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v4.1" style="text-decoration: none; color: inherit;">
-        <h3>v4.1</h3>
-        <p>7.27アップデート。読み込み速度が向上しました。新たにグリッドレイアウト、拡張機能が追加されました。直接URLにアクセスする機能も復活しました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v4" style="text-decoration: none; color: inherit;">
-        <h3>v4</h3>
-        <p>Liquid Glassデザインを採用しながら、独自デザインも採用しています。また、シュートカットは正方形になり、小さい画面でも表示できる量が増えました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v3.6" style="text-decoration: none; color: inherit;">
-        <h3>v3.6</h3>
-        <p>WinUI3のようなデザインを採用して、よりモダンなデザインになりました。特にWindows 11標準アプリにとてもよく馴染むデザインです。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v2.1/index2" style="text-decoration: none; color: inherit;">
-        <h3>Lite</h3>
-        <p>v2.1の新しいタブをベースに高速化しています。Chromeデフォルトのタブのようにショートカットは右上のボタンで表示できるようにしました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v3.5" style="text-decoration: none; color: inherit;">
-        <h3>v3.5</h3>
-        <p>OneUI 7らしいデザインを採用しました。また、ウィジェット・AI検索機能も追加され、機能面でも大幅にアップグレードし使いやすくなりました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v3" style="text-decoration: none; color: inherit;">
-        <h3>v3</h3>
-        <p>今回のデザインはかなりiPadOS 18やtvOSの影響を受けています。大きな変更点は、Material3ライクなデザインではなくなったことです。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v2.1/index2" style="text-decoration: none; color: inherit;">
-        <h3>Elemental</h3>
-        <p>v2.1の新しいタブをベースに再デザインしています。Elementalはthinkingグループのデザインで、この特別版ではそのデザインになっています。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v2.1/index2" style="text-decoration: none; color: inherit;">
-        <h3>v2.1</h3>
-        <p>背景に画像を設定できる機能、検索エンジン機能が追加されました。そして、今回新たにスクロールしてショートカットを表示する形式になりました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v2" style="text-decoration: none; color: inherit;">
-        <h3>v2</h3>
-        <p>サイト全体を再構築し、コードを簡素化し読み込み速度が大幅向上しました。履歴機能追加、UI改善、アニメーション強化、一部デザイン変更なども含まれます。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/old/" style="text-decoration: none; color: inherit;">
-        <h3>v1</h3>
-        <p>この時から、周りの人が使い始めました。Newtabを多くの人に使ってもらいたいため、無料で公開しています。これがNewtabの始まりです！</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/old/first" style="text-decoration: none; color: inherit;">
-        <h3>First</h3>
-        <p>よく使うサイトへすぐアクセスするために作られました。この時はまだ自分しか使っていません。これがNewtabの本当に0の状態からの最初のバージョンです。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://codepen.io/sentaroTakenaka/pen/MWdRQgY" style="text-decoration: none; color: inherit;">
-        <h3>Portal</h3>
-        <p>授業のあまり時間に短時間で作ったものです。まだ何もなく、結局このコードは使わなかったですが、このアイデアをもとにNewtabの開発を始めました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://sites.google.com/view/c-portal-takesen/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF?authuser=0" style="text-decoration: none; color: inherit;">
-        <h3>C Portal</h3>
-        <p>本当にNewtabの考えが始まった一番最初です。まだ私が小学生の時に作ったものです。ただ、Newtabの開始はこの3年後ほどです。</p>
-    </a>
-</div>
-            </div>
-        </section>
 
-        <hr>
+        <button class="primary-btn " style="--xin-delay:0.24s;background:#fff;color:#000;" onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform?usp=sharing&ouid=116246090197695118669'">お問い合わせフォーム</button>
 
-        <section id="contact" class="contact-section fade-in-up">
-            <div class="contact-box">
-                <h2>何か伝えることがありましたらご遠慮なくどうぞ！</h2>
-                <button class="btn btn-primary" style="background-color: #410002; color: #fff;" onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform?usp=sharing&ouid=116246090197695118669'">フォームを表示</button>
-            </div>
-        </section>
     </div>
 
     <footer>
-        <div class="container footer-content">
-            <div class="logo-container" style="font-size:1rem;">Sentaro(@Search3958)</div>
-            <div class="footer-links">
-                <a href="http://search3958.github.io/policies/" target="_blank">利用規約とプライバシーポリシー</a>            </div>
-        </div>
+      <span><a href="https://search3958.github.io/policies/">利用規約とプライバシーポリシー</a>・<a href="https://search3958.github.io/accounts/lang">言語</a>・<a href="https://github.com/search3958/">GitHub</a></span>
+<br>
+<svg width="64" height="64" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="38" height="38" rx="19" fill="white" style="fill:white;fill-opacity:1;"/>
+<g filter="url(#filter0_ii_54_22)">
+<path d="M7 7H19V19L7 14V7Z" fill="#105D50" style="fill:#105D50;fill:color(display-p3 0.0628 0.3651 0.3147);fill-opacity:1;"/>
+</g>
+<g filter="url(#filter1_ii_54_22)">
+<path d="M31 31H19V19L31 24V31Z" fill="#105D50" style="fill:#105D50;fill:color(display-p3 0.0628 0.3651 0.3147);fill-opacity:1;"/>
+</g>
+<g filter="url(#filter2_iii_54_22)">
+<path d="M19 7L31 12V19H19V7Z" fill="#006420" style="fill:#006420;fill:color(display-p3 0.0000 0.3922 0.1255);fill-opacity:1;"/>
+</g>
+<path d="M19 14L31 19H19V14Z" fill="#024718" fill-opacity="0.25" style="fill:#024718;fill:color(display-p3 0.0096 0.2777 0.0954);fill-opacity:0.25;"/>
+<g filter="url(#filter3_iii_54_22)">
+<path d="M19 31L7 26V19H19V31Z" fill="#006420" style="fill:#006420;fill:color(display-p3 0.0000 0.3922 0.1255);fill-opacity:1;"/>
+</g>
+<path d="M19 24L7 19H19V24Z" fill="#BCFFD1" fill-opacity="0.4" style="fill:#BCFFD1;fill:color(display-p3 0.7357 1.0000 0.8203);fill-opacity:0.4;"/>
+<defs>
+<filter id="filter0_ii_54_22" x="7" y="7" width="14" height="14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="2"/>
+<feGaussianBlur stdDeviation="1.5"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 1 0 0 0 0 0.833333 0 0 0 0.69 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_54_22"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="2"/>
+<feGaussianBlur stdDeviation="1.5"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.538893 0 0 0 0 1 0 0 0 0 0.692596 0 0 0 1 0"/>
+<feBlend mode="normal" in2="effect1_innerShadow_54_22" result="effect2_innerShadow_54_22"/>
+</filter>
+<filter id="filter1_ii_54_22" x="17" y="17" width="14" height="14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="-2"/>
+<feGaussianBlur stdDeviation="1.5"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 1 0 0 0 0 0.833333 0 0 0 0.69 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_54_22"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="-2"/>
+<feGaussianBlur stdDeviation="1.5"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.538893 0 0 0 0 1 0 0 0 0 0.692596 0 0 0 1 0"/>
+<feBlend mode="normal" in2="effect1_innerShadow_54_22" result="effect2_innerShadow_54_22"/>
+</filter>
+<filter id="filter2_iii_54_22" x="15" y="3" width="16" height="20" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="-4"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 1 0 0 0 0 0.833333 0 0 0 0.69 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_54_22"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="-4"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 1 0 0 0 0 0.833333 0 0 0 0.69 0"/>
+<feBlend mode="normal" in2="effect1_innerShadow_54_22" result="effect2_innerShadow_54_22"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.538893 0 0 0 0 1 0 0 0 0 0.692596 0 0 0 1 0"/>
+<feBlend mode="normal" in2="effect2_innerShadow_54_22" result="effect3_innerShadow_54_22"/>
+</filter>
+<filter id="filter3_iii_54_22" x="7" y="15" width="15" height="20" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="3"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 1 0 0 0 0 0.833333 0 0 0 0.69 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_54_22"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="-4"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 1 0 0 0 0 0.833333 0 0 0 0.69 0"/>
+<feBlend mode="normal" in2="effect1_innerShadow_54_22" result="effect2_innerShadow_54_22"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.538893 0 0 0 0 1 0 0 0 0 0.692596 0 0 0 1 0"/>
+<feBlend mode="normal" in2="effect2_innerShadow_54_22" result="effect3_innerShadow_54_22"/>
+</filter>
+</defs>
+</svg>
+
     </footer>
-
-    <script>
-        // Scroll Animation Observer
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: "0px 0px -50px 0px"
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    // 履歴セクションは全て表示するためunobserveしない
-                    if (entry.target.id !== 'history') {
-                        observer.unobserve(entry.target);
-                    }
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.fade-in-up').forEach(el => {
-            observer.observe(el);
-        });
-
-    </script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
-     crossorigin="anonymous"></script>
-     <script src="search3958.github.iocheck.js"></script>
-
-</body>  <script src="check.js"></script>
+</body>
 </html>
