@@ -99,21 +99,9 @@
     width:52px;
     border-radius:100px;
     background:#fff;
-    box-shadow:0px 4px 16px #0002;
 }
 .app-image{
     width:70vw;
-}
-.xin-reveal{
-    opacity:0;
-    transform:translateY(18px);
-    transition: opacity 0.8s cubic-bezier(.16,1,.3,1), transform 0.8s cubic-bezier(.16,1,.3,1);
-    transition-delay: var(--xin-delay, 0s);
-    will-change: opacity, transform;
-}
-.xin-reveal.is-visible{
-    opacity:1;
-    transform:translateY(0);
 }
 .app-name{
     display:inline-block;
@@ -170,6 +158,64 @@
           text-decoration: none;
         color:#000;
     }
+    .product-section{
+      padding:64px 20px;
+      text-align:left;
+    }
+    .product-title{
+      max-width:1040px;
+      margin:0 auto;
+      font-size:40px;
+      font-weight:700;
+      font-variation-settings:
+      "slnt" 0,
+      "wdth" 120,
+      "GRAD" 0,
+      "ROND" 24;
+    }
+    .product-grid{
+      max-width:1040px;
+      margin:28px auto 0;
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+      gap:12px;
+    }
+    .product-link{
+      background:#eff0f1;
+      border-radius:100px;
+      padding:12px 14px;
+      display:grid;
+      grid-template-columns:56px 1fr;
+      align-items:center;
+      gap:12px;
+      transition:transform .25s ease, box-shadow .25s ease;
+    }
+    .product-link:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px #00000005;
+    }
+    .product-link img{
+      width:56px;
+      height:56px;
+      border-radius:100px;
+      object-fit:cover;
+      background:#fff
+    }
+    .product-label{
+      font-size:17px;
+      font-weight:700;
+      color:#12201d;
+      text-align:left;
+      line-height:1.3;
+    }
+    @media (max-width:720px){
+      .product-title{
+        font-size:32px;
+      }
+      .product-grid{
+        grid-template-columns:1fr;
+      }
+    }
     footer{
       padding:48px 0px;
       text-align:center;
@@ -222,76 +268,71 @@
       <a href="https://search3958.github.io/i/products/">プロダクト</a>
       <a href="https://github.com/search3958/">GitHub</a>
   </header>
-    <div class="first">
-        <div class="small before">
-            私はSentaro
-        </div>
-        <span class="message before">常に便利さを<br>追求し続けます</span>
-    </div>
-    <div class="xincard">
-        <img class="app-icon xin-reveal" style="--xin-delay:0s;" src="/imgs/260501-newtab.png">
-        <div class="small xin-reveal" style="--xin-delay:0.08s;">
-            Newtab v6
-        </div>
-        <span class="app-name xin-reveal" style="--xin-delay:0.16s;">新しい<br>新しいタブ</span>
-        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#213750;color:#fff;" onclick="window.location.href='https://search3958.github.io/i/newtab/'">今すぐ見る</button>
-        <img class="app-image xin-reveal" style="--xin-delay:0.32s;" src="/imgs/260501-newtab-image.png">
 
-    </div>
-    <div class="xincard" style="
-    background-image: linear-gradient(180deg, rgba(255, 255, 255, 1), #f1e8da);
-">
-        <img class="app-icon xin-reveal" style="--xin-delay:0s;" src="/imgs/260501-baram.png">
-        <div class="small xin-reveal" style="--xin-delay:0.08s;">
-            Baram Code
-        </div>
-        <span class="app-name xin-reveal" style="--xin-delay:0.16s;">風のように<br>素早く開発</span>
-        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#0E7A76;color:#fff;" onclick="window.location.href='https://search3958.github.io/baram/'">今すぐ見る</button>
-        <img class="app-image xin-reveal" style="--xin-delay:0.32s;" src="/imgs/260501-baram-image.png">
-
-    </div><div class="xincard">
-        <img class="app-icon xin-reveal" style="--xin-delay:0s;" src="/imgs/260501-newtab.png">
-        <div class="small xin-reveal" style="--xin-delay:0.08s;">
-            Newtab v6
-        </div>
-        <span class="app-name xin-reveal" style="--xin-delay:0.16s;">新しい<br>新しいタブ</span>
-        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#213750;color:#fff;" onclick="window.location.href='https://search3958.github.io/i/newtab/'">今すぐ見る</button>
-        <img class="app-image xin-reveal" style="--xin-delay:0.32s;" src="/imgs/260501-newtab-image.png">
-
-    </div>
-    <div class="goodcard">
-      <span class="xin-reveal" style="--xin-delay:0s;">
-        日常のデジタル体験を<br>
-より<span style="color:color(display-p3 0.4 1 0.573 / 1);">豊かで効率的</span>にする<br>
-信頼できるプロダクトを<br>
-提供します</span>
-        <div class="xin-reveal" style="--xin-delay:0.12s;display:flex;gap:4px">
-          <div class="goodxiao"><div class="small">イベント数</div>42K+</div>
-          <div class="goodxiao white"><div class="small">アクセス回数</div>13K+</div>
-        </div>
-        <div class="xin-reveal" style="--xin-delay:0.24s;display:flex;gap:4px">
-          <div class="goodxiao white"><div class="small">セッション</div>3,766</div>
-          <div class="goodxiao"><div class="small">持続率</div>89%</div>
-        </div>
-
-
-    </div>
+    <section class="product-section">
+      <h2 class="product-title">すべてのプロダクト</h2>
+      <div class="product-grid">
+        <a class="product-link" href="https://search3958.github.io/tools/aclock/ja.html">
+          <img src="imgs/aclock.png" alt="アナログ時計">
+          <span class="product-label">アナログ時計</span>
+        </a>
+        <a class="product-link" href="https://search3958.github.io/baram/">
+          <img src="imgs/baramcode.png" alt="Baram Code">
+          <span class="product-label">Baram Code</span>
+        </a>
+        <a class="product-link" href="https://search3958.github.io/tools/dclock/ja.html">
+          <img src="imgs/dclock.png" alt="デジタル時計">
+          <span class="product-label">デジタル時計</span>
+        </a>
+        <a class="product-link" href="https://search3958.github.io/project/images/2/">
+          <img src="imgs/images.png" alt="画像">
+          <span class="product-label">画像</span>
+        </a>
+        <a class="product-link" href="https://search3958.github.io/tools/timer/">
+          <img src="imgs/timer.png" alt="タイマー">
+          <span class="product-label">タイマー</span>
+        </a>
+        <a class="product-link" href="https://search3958.github.io/tools/stopwatch/ja.html">
+          <img src="imgs/stopwatch.png" alt="ストップウォッチ">
+          <span class="product-label">ストップウォッチ</span>
+        </a>
+        <a class="product-link" href="https://search3958.github.io/tools/counter.html">
+          <img src="imgs/textcounter.png" alt="文字カウンター">
+          <span class="product-label">文字カウンター</span>
+        </a>
+        <a class="product-link" href="https://search3958.github.io/tools/webp.html">
+          <img src="imgs/webp.png" alt="WebP変換">
+          <span class="product-label">WebP変換</span>
+        </a>
+        <a class="product-link" href="https://search3958.github.io/toolboard">
+          <img src="imgs/toolboard.png" alt="ToolBoard">
+          <span class="product-label">ToolBoard</span>
+        </a>
+        <a class="product-link" href="https://search3958.github.io/i/newtab/">
+          <img src="imgs/newtab.png" alt="NewTab">
+          <span class="product-label">NewTab</span>
+        </a>
+        <a class="product-link" href="https://search3958.github.io/uiscript/">
+          <img src="imgs/techpick10.png" alt="UI Script">
+          <span class="product-label">UI Script</span>
+        </a>
+      </div>
+    </section>
 
 
     <div class="xincard" style="padding:48px 0; background-image: conic-gradient(from 247deg, rgba(58, 255, 160, 1) 0deg, rgba(0, 255, 246, 1) 0deg, rgba(58, 255, 160, 1) 180deg, rgba(255, 255, 255, 1) 180deg, rgba(88, 255, 239, 1) 227deg, rgba(0, 242, 105, 1) 360deg);">
         
-        <span class="app-name xin-reveal" style="--xin-delay:0.16s;font-size:40px;">お客様の声を<br>お待ちしております</span>
+        <span class="app-name " style="--xin-delay:0.16s;font-size:40px;">お客様の声が<br>大切なんです</span>
         
         
-        <div class="small xin-reveal" style="--xin-delay:0.08s;font-size:24px;">
+        <div class="small " style="--xin-delay:0.08s;font-size:24px;">
             何かございましたらご遠慮なく
         </div>
 
 
-        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#fff;color:#000;" onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform?usp=sharing&ouid=116246090197695118669'">お問い合わせフォーム</button>
+        <button class="primary-btn " style="--xin-delay:0.24s;background:#fff;color:#000;" onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform?usp=sharing&ouid=116246090197695118669'">お問い合わせフォーム</button>
 
     </div>
-
 
     <footer>
       <span><a href="https://search3958.github.io/policies/">利用規約とプライバシーポリシー</a>・<a href="https://search3958.github.io/accounts/lang">言語</a>・<a href="https://github.com/search3958/">GitHub</a></span>
@@ -394,260 +435,4 @@
 
     </footer>
 </body>
-<script>
-(() => {
-  "use strict";
-
-  const NS = "firstGradientAnim3958";
-  const target = document.querySelector(".first");
-
-  if (!target) {
-    console.warn(`[${NS}] .first が見つかりませんでした。`);
-    return;
-  }
-
-  const styleId = `${NS}-style`;
-  document.getElementById(styleId)?.remove();
-
-  const style = document.createElement("style");
-  style.id = styleId;
-
-  style.textContent = `
-@property --${NS}-intro-from {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 180deg;
-}
-
-@property --${NS}-stop {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@property --${NS}-from-1 {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 45deg;
-}
-
-@property --${NS}-from-2 {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: -45deg;
-}
-
-@property --${NS}-from-3 {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 135deg;
-}
-
-@property --${NS}-from-4 {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: -135deg;
-}
-
-@property --${NS}-before-from-1 {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 180deg;
-}
-
-@property --${NS}-before-from-2 {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@property --${NS}-before-from-3 {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 90deg;
-}
-
-@property --${NS}-before-from-4 {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: -90deg;
-}
-
-@property --${NS}-before-opacity {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 0;
-}
-
-.first {
-  --${NS}-intro-from: 360deg;
-  --${NS}-stop: 0deg;
-
-  --${NS}-from-1: 45deg;
-  --${NS}-from-2: -45deg;
-  --${NS}-from-3: 135deg;
-  --${NS}-from-4: -135deg;
-
-  --${NS}-before-from-1: 180deg;
-  --${NS}-before-from-2: 0deg;
-  --${NS}-before-from-3: 90deg;
-  --${NS}-before-from-4: -90deg;
-  --${NS}-before-opacity: 0;
-
-  background-image:
-    conic-gradient(
-      from var(--${NS}-intro-from),
-      rgba(62, 255, 73, 1) 0deg,
-      rgba(92, 241, 166, 1) 161deg,
-      rgba(0, 255, 255, 1) 300deg,
-      rgba(255, 255, 255, 1) 360deg 360deg
-    );
-
-  animation:
-    ${NS}-intro 1s cubic-bezier(.46,0,.47,.34) forwards,
-    ${NS}-main 3s cubic-bezier(.08,.74,.08,1) 1s forwards;
-}
-
-.first::before {
-  opacity: var(--${NS}-before-opacity);
-
-  background-image:
-    conic-gradient(from var(--${NS}-before-from-1), #00C464 0deg, #00FF8200 var(--${NS}-stop)),
-    conic-gradient(from var(--${NS}-before-from-2), #9AFF8C 0deg, #C3FF0000 var(--${NS}-stop)),
-    conic-gradient(from var(--${NS}-before-from-3), #D6F5FF 0deg, #00FF4400 var(--${NS}-stop)),
-    conic-gradient(from var(--${NS}-before-from-4), #51FCFF 0deg, #00FF4400 var(--${NS}-stop));
-    
-  animation: ${NS}-before 3s cubic-bezier(.08,.74,.08,1) 1s forwards;
-  
-}
-
-@keyframes ${NS}-intro {
-  to {
-    --${NS}-intro-from: 45deg;
-  }
-}
-
-@keyframes ${NS}-main {
-  0% {
-    --${NS}-stop: 0deg;
-
-    --${NS}-from-1: 45deg;
-    --${NS}-from-2: -45deg;
-    --${NS}-from-3: 135deg;
-    --${NS}-from-4: -135deg;
-
-    background-image:
-      conic-gradient(from var(--${NS}-from-2), #a8ffeb 0deg, #C3FF0000 var(--${NS}-stop)),
-      conic-gradient(from var(--${NS}-from-3), #e7fff9 0deg, #00FF4400 var(--${NS}-stop)),
-      conic-gradient(from var(--${NS}-from-4), #f8ffa7 0deg, #00FF4400 var(--${NS}-stop)),
-      conic-gradient(
-        from var(--${NS}-from-1),
-        rgba(62, 255, 73, 1) 0deg,
-        rgba(92, 241, 166, 1) 161deg,
-        rgba(0, 255, 255, 1) 300deg,
-        rgba(255, 255, 255, 1) 360deg 360deg
-      );
-  }
-
-  100% {
-    --${NS}-stop: 45deg;
-
-    --${NS}-from-1: 0deg;
-    --${NS}-from-2: -90deg;
-    --${NS}-from-3: 90deg;
-    --${NS}-from-4: -180deg;
-
-    background-image:
-      conic-gradient(from var(--${NS}-from-2), #a8ffeb 0deg, #C3FF0000 var(--${NS}-stop)),
-      conic-gradient(from var(--${NS}-from-3), #e7fff9 0deg, #00FF4400 var(--${NS}-stop)),
-      conic-gradient(from var(--${NS}-from-4), #f8ffa7 0deg, #00FF4400 var(--${NS}-stop)),
-      conic-gradient(
-        from var(--${NS}-from-1),
-        rgba(62, 255, 73, 1) 0deg,
-        rgba(92, 241, 166, 1) 161deg,
-        rgba(0, 255, 255, 1) 300deg,
-        rgba(255, 255, 255, 1) 360deg 360deg
-      );
-  }
-}
-
-@keyframes ${NS}-before {
-  0% {
-    --${NS}-before-opacity: 1;
-    --${NS}-stop: 0deg;
-
-    --${NS}-before-from-1: 180deg;
-    --${NS}-before-from-2: 0deg;
-    --${NS}-before-from-3: 90deg;
-    --${NS}-before-from-4: -90deg;
-  }
-
-  100% {
-    --${NS}-before-opacity: 1;
-    --${NS}-stop: 45deg;
-
-    --${NS}-before-from-1: 135deg;
-    --${NS}-before-from-2: -45deg;
-    --${NS}-before-from-3: 45deg;
-    --${NS}-before-from-4: -135deg;
-  }
-}
-`;
-
-  document.head.appendChild(style);
-
-  target.addEventListener(
-    "animationend",
-    event => {
-      if (!event.animationName.startsWith(NS)) return;
-      console.info(`[${NS}] アニメーション完了: ${event.animationName}`);
-    },
-    { passive: true }
-  );
-
-  console.info(`[${NS}] before非表示 → intro → 逆方向main/before を開始しました。`);
-})();
-</script>
-
-<script>
-  window.addEventListener('load', () => {
-    // 3秒（3000ミリ秒）待機
-    setTimeout(() => {
-        // .first 内の .small と .message を取得
-        const elements = document.querySelectorAll('.first .small, .first .message');
-        
-        // 取得した要素から .before クラスを削除
-        elements.forEach(el => {
-            el.classList.remove('before');
-        });
-    }, 100);
-});
-</script>
-
-<script>
-(() => {
-  const reveals = document.querySelectorAll('.xincard .xin-reveal, .goodcard .xin-reveal');
-  if (!reveals.length) return;
-
-  const show = el => el.classList.add('is-visible');
-
-  if (!('IntersectionObserver' in window)) {
-    reveals.forEach(show);
-    return;
-  }
-
-  const observer = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      show(entry.target);
-      obs.unobserve(entry.target);
-    });
-  }, {
-    threshold: 0.5,
-    rootMargin: "0px"
-  });
-
-  reveals.forEach(el => observer.observe(el));
-})();
-</script>
 </html>
