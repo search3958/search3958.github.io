@@ -170,6 +170,85 @@
           text-decoration: none;
         color:#000;
     }
+    .products-marquee-section{
+      padding:64px 0;
+      text-align:center;
+      overflow:hidden;
+    }
+    .products-marquee-title{
+      margin:0;
+      font-size:44px;
+      line-height:1.2;
+      font-variation-settings:
+      "slnt" 0,
+      "wdth" 132,
+      "GRAD" 0,
+      "ROND" 30;
+    }
+    .products-marquee{
+      width:min(1120px, 92vw);
+      margin:26px auto 0;
+      overflow:hidden;
+      mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    }
+    .products-marquee-track{
+      display:flex;
+      width:max-content;
+      animation: products-marquee-scroll 34s linear infinite;
+      height:120px;
+    }
+    .products-marquee-group{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding-right:14px;
+    }
+    .products-marquee-item {
+    display: block;
+    width: 96px;
+    border-radius: 100px;
+    overflow: hidden;
+    box-shadow: 0 2px 13px #0002;
+    background: #fff;
+    transform: translateZ(0);
+    height: 96px;
+}
+    .products-marquee-item img{
+      display:block;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .products-list-btn{
+      margin-top:24px;
+      background:#fff;
+      color:#07342a;
+    }
+    @keyframes products-marquee-scroll{
+      from{
+        transform:translateX(0);
+      }
+      to{
+        transform:translateX(-50%);
+      }
+    }
+    @media (max-width:720px){
+      .products-marquee-title{
+        font-size:34px;
+      }
+      .products-marquee-item{
+        width:130px;
+      }
+      .products-marquee-item img{
+        height:90px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .products-marquee-track{
+        animation:none;
+      }
+    }
     footer{
       padding:48px 0px;
       text-align:center;
@@ -179,7 +258,7 @@
 </style>
 <body>
   <header>
-      <a href="#">
+      <a href="https://search3958.github.io/">
         
 <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M7 7H19V19L7 14V7Z" fill="url(#paint0_linear_57_48)"/>
@@ -278,6 +357,40 @@
     </div>
 
 
+    <section class="products-marquee-section">
+      <h2 class="products-marquee-title">まだまだ<br>たくさんあります</h2>
+      <div class="products-marquee">
+        <div class="products-marquee-track">
+          <div class="products-marquee-group">
+            <div class="products-marquee-item"><img src="/i/products/imgs/aclock.png" alt="アナログ時計"></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/baramcode.png" alt="Baram Code"></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/dclock.png" alt="デジタル時計"></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/images.png" alt="画像"></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/timer.png" alt="タイマー"></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/stopwatch.png" alt="ストップウォッチ"></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/textcounter.png" alt="文字カウンター"></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/webp.png" alt="WebP変換"></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/toolboard.png" alt="ToolBoard"></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/newtab.png" alt="NewTab"></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/techpick10.png" alt="UI Script"></div>
+          </div>
+          <div class="products-marquee-group" aria-hidden="true">
+            <div class="products-marquee-item"><img src="/i/products/imgs/aclock.png" alt=""></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/baramcode.png" alt=""></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/dclock.png" alt=""></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/images.png" alt=""></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/timer.png" alt=""></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/stopwatch.png" alt=""></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/textcounter.png" alt=""></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/webp.png" alt=""></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/toolboard.png" alt=""></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/newtab.png" alt=""></div>
+            <div class="products-marquee-item"><img src="/i/products/imgs/techpick10.png" alt=""></div>
+          </div>
+        </div>
+      </div>
+      <button class="primary-btn products-list-btn" style="background-color: color(display-p3 0.4 1 0.573 / 1);" onclick="window.location.href='https://search3958.github.io/i/products/'">プロダクト一覧</button>
+    </section>
     <div class="xincard" style="padding:48px 0; background-image: conic-gradient(from 247deg, rgba(58, 255, 160, 1) 0deg, rgba(0, 255, 246, 1) 0deg, rgba(58, 255, 160, 1) 180deg, rgba(255, 255, 255, 1) 180deg, rgba(88, 255, 239, 1) 227deg, rgba(0, 242, 105, 1) 360deg);">
         
         <span class="app-name xin-reveal" style="--xin-delay:0.16s;font-size:40px;">お客様の声を<br>お待ちしております</span>
