@@ -312,8 +312,8 @@
     }
     .step-item{
       background:#eff0f1;
-      border-radius:14px;
-      padding:14px 16px;
+      border-radius:32px;
+      padding:24px;
       color:#111;
       text-align:left;
       line-height:1.45;
@@ -321,7 +321,41 @@
     .step-item strong{
       display:block;
       margin-bottom:4px;
-      font-size:18px;
+      font-size:24px;
+    }
+    .history-grid{
+      max-width:1040px;
+      margin:32px auto 48px;
+      padding:0 30px;
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+    }
+    .history-card{
+      background:#eff0f1;
+      border-radius:32px;
+      padding:24px;
+      color:#111;
+      text-align:left;
+      line-height:1.5;
+      min-height:100%;
+      box-sizing:border-box;
+    }
+    .history-card a{
+      display:block;
+      height:100%;
+      color:inherit;
+      text-decoration:none;
+    }
+    .history-card h3{
+      margin:0 0 8px;
+      font-size:24px;
+      line-height:1.2;
+    }
+    .history-card p{
+      margin:0;
+      font-size:16px;
+      opacity:0.92;
     }
     @media (max-width:720px){
       .feature-section{
@@ -356,6 +390,18 @@
       }
       .product-grid{
         grid-template-columns:1fr;
+      }
+      .history-grid{
+        grid-template-columns:1fr;
+        margin:24px auto;
+        padding:0 22px 40px;
+      }
+      .history-card{
+        border-radius:24px;
+        padding:20px;
+      }
+      .history-card h3{
+        font-size:22px;
       }
     }
     footer{
@@ -460,6 +506,123 @@
     </section>
 
 
+    <div class="history-grid">
+                              <div class="history-card">
+    <a href="https://search3958.github.io/newtab/" style="text-decoration: none; color: inherit;">
+        <h3>v6.1</h3>
+        <p>軽いです。早いです。シンプルです。多言語対応しました。Windows11みたいです。でもiOSのように柔らかい印象です。以上です。</p>
+    </a>
+</div>
+              <div class="history-card">
+    <a href="https://search3958.github.io/newtab/v6" style="text-decoration: none; color: inherit;">
+        <h3>v6</h3>
+        <p>不要な機能を削りとにかく軽量にしました。そのおかげでスピードテストでは100%のスコアを獲得し，最速アクセス速度は0.09秒を記録しました。それでも美しく，便利な機能は維持しています。</p>
+    </a>
+</div>
+              <div class="history-card">
+    <a href="https://search3958.github.io/newtab/v5.3" style="text-decoration: none; color: inherit;">
+        <h3>v5.3</h3>
+        <p>v5.2でパフォーマンスの問題が発生したのでそれの修正版です。v5.1をベースに，デザインだけv5.2を使用しました。ただ，同期機能はなくなっています。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/v5.2" style="text-decoration: none; color: inherit;">
+        <h3>v5.2</h3>
+        <p>とにかく洗練されたデザインになりました。ログインできるようになり，履歴の同期が可能になりました。アニメーションも滑らかで美しいものに変更されました。</p>
+    </a>
+</div>
+
+                <div class="history-card">
+    <a href="https://search3958.github.io/newtab/v5.1" style="text-decoration: none; color: inherit;">
+        <h3>v5.1</h3>
+        <p>検索ボックスはメタボールになり美しいアニメーションが再生されます。他にもカード機能が追加され、大幅に見た目、機能面でアップデートされました。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/v5" style="text-decoration: none; color: inherit;">
+        <h3>v5</h3>
+        <p>デザイン面で大幅に進化しました。よりシンプルで直感的な操作が可能になっています。グリッドレイアウトが大幅に改善され、もっと使いやすくなっています。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/v4.1" style="text-decoration: none; color: inherit;">
+        <h3>v4.1</h3>
+        <p>7.27アップデート。読み込み速度が向上しました。新たにグリッドレイアウト、拡張機能が追加されました。直接URLにアクセスする機能も復活しました。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/v4" style="text-decoration: none; color: inherit;">
+        <h3>v4</h3>
+        <p>Liquid Glassデザインを採用しながら、独自デザインも採用しています。また、シュートカットは正方形になり、小さい画面でも表示できる量が増えました。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/v3.6" style="text-decoration: none; color: inherit;">
+        <h3>v3.6</h3>
+        <p>WinUI3のようなデザインを採用して、よりモダンなデザインになりました。特にWindows 11標準アプリにとてもよく馴染むデザインです。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/v2.1/index2" style="text-decoration: none; color: inherit;">
+        <h3>Lite</h3>
+        <p>v2.1の新しいタブをベースに高速化しています。Chromeデフォルトのタブのようにショートカットは右上のボタンで表示できるようにしました。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/v3.5" style="text-decoration: none; color: inherit;">
+        <h3>v3.5</h3>
+        <p>OneUI 7らしいデザインを採用しました。また、ウィジェット・AI検索機能も追加され、機能面でも大幅にアップグレードし使いやすくなりました。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/v3" style="text-decoration: none; color: inherit;">
+        <h3>v3</h3>
+        <p>今回のデザインはかなりiPadOS 18やtvOSの影響を受けています。大きな変更点は、Material3ライクなデザインではなくなったことです。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/v2.1/index2" style="text-decoration: none; color: inherit;">
+        <h3>Elemental</h3>
+        <p>v2.1の新しいタブをベースに再デザインしています。Elementalはthinkingグループのデザインで、この特別版ではそのデザインになっています。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/v2.1/index2" style="text-decoration: none; color: inherit;">
+        <h3>v2.1</h3>
+        <p>背景に画像を設定できる機能、検索エンジン機能が追加されました。そして、今回新たにスクロールしてショートカットを表示する形式になりました。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/v2" style="text-decoration: none; color: inherit;">
+        <h3>v2</h3>
+        <p>サイト全体を再構築し、コードを簡素化し読み込み速度が大幅向上しました。履歴機能追加、UI改善、アニメーション強化、一部デザイン変更なども含まれます。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/old/" style="text-decoration: none; color: inherit;">
+        <h3>v1</h3>
+        <p>この時から、周りの人が使い始めました。Newtabを多くの人に使ってもらいたいため、無料で公開しています。これがNewtabの始まりです！</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://search3958.github.io/newtab/old/first" style="text-decoration: none; color: inherit;">
+        <h3>First</h3>
+        <p>よく使うサイトへすぐアクセスするために作られました。この時はまだ自分しか使っていません。これがNewtabの本当に0の状態からの最初のバージョンです。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://codepen.io/sentaroTakenaka/pen/MWdRQgY" style="text-decoration: none; color: inherit;">
+        <h3>Portal</h3>
+        <p>授業のあまり時間に短時間で作ったものです。まだ何もなく、結局このコードは使わなかったですが、このアイデアをもとにNewtabの開発を始めました。</p>
+    </a>
+</div>
+<div class="history-card">
+    <a href="https://sites.google.com/view/c-portal-takesen/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF?authuser=0" style="text-decoration: none; color: inherit;">
+        <h3>C Portal</h3>
+        <p>本当にNewtabの考えが始まった一番最初です。まだ私が小学生の時に作ったものです。ただ、Newtabの開始はこの3年後ほどです。</p>
+    </a>
+</div>
+            </div>
 
 
     <div class="xincard" style="padding:48px 0; background-image: conic-gradient(from 247deg, rgba(58, 255, 160, 1) 0deg, rgba(0, 255, 246, 1) 0deg, rgba(58, 255, 160, 1) 180deg, rgba(255, 255, 255, 1) 180deg, rgba(88, 255, 239, 1) 227deg, rgba(0, 242, 105, 1) 360deg);">
