@@ -75,15 +75,19 @@ const scene = new THREE.Scene(); scene.fog = new THREE.FogExp2('#000000', 0.005)
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); camera.position.set(0, -2, 78); camera.lookAt(0, 0, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.VSMShadowMap; // 非常に柔らかい影を実現する方式に変更
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0; renderer.outputColorSpace = THREE.SRGBColorSpace;
 document.body.appendChild(renderer.domElement);
+
 const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.dampingFactor = 0.05; controls.minDistance = 1; controls.maxDistance = 500;
 
 scene.add(new THREE.AmbientLight('#ffffff', 0.6));
 const mainLight = new THREE.DirectionalLight('#ffffff', 3.5); mainLight.position.set(40, 60, 40); mainLight.castShadow = true;
-mainLight.shadow.mapSize.set(2048, 2048); mainLight.shadow.camera.left = -40; mainLight.shadow.camera.right = 40; mainLight.shadow.camera.top = 40; mainLight.shadow.camera.bottom = -40;
-mainLight.shadow.bias = -0.0005; scene.add(mainLight);
+mainLight.shadow.mapSize.set(1024, 1024); // VSMでは適度な解像度の方がボケが綺麗に出ます
+mainLight.shadow.camera.left = -40; mainLight.shadow.camera.right = 40; mainLight.shadow.camera.top = 40; mainLight.shadow.camera.bottom = -40;
+mainLight.shadow.radius = 20; // ぼかしを最大級に
+mainLight.shadow.blurSamples = 32; // ぼかしの滑らかさ
+mainLight.shadow.bias = -0.001; scene.add(mainLight);
 const fillLight = new THREE.PointLight('#80a0ff', 150, 100); fillLight.position.set(-30, -20, 20); scene.add(fillLight);
 
 const textureLoader = new THREE.TextureLoader(); const handTexture = textureLoader.load('hand.svg'); handTexture.colorSpace = THREE.SRGBColorSpace; handTexture.minFilter = THREE.LinearFilter; handTexture.generateMipmaps = false;
