@@ -127,8 +127,8 @@
   <input type="range" id="rDamp" min="0.5" max="25" value="14" step="0.5">
   <label>風力 <span class="val" id="vWind">6</span></label>
   <input type="range" id="rWind" min="1" max="120" value="6">
-  <label>風の半径 <span class="val" id="vRadius">15</span></label>
-  <input type="range" id="rRadius" min="1" max="30" value="15">
+  <label>風の半径 <span class="val" id="vRadius">27</span></label>
+  <input type="range" id="rRadius" min="1" max="30" value="27">
   <label>伝播率 <span class="val" id="vProp">0.32</span></label>
   <input type="range" id="rProp" min="0" max="0.8" value="0.32" step="0.01">
   <label>曲げ量 <span class="val" id="vBend">0.55</span></label>
@@ -182,7 +182,7 @@ async function setupHandTracking() {
 setupHandTracking();
 
 const PANEL_W = 18.0, PANEL_H = 13.86, SEG_X = 8, SEG_Y = 6;
-const params = { stiffness: 92, damping: 14, windScale: 6, windRadius: 15, propagation: 0.32, windDecay: 0.96, bendAmount: 0.55, baseAngle: Math.PI * 0.12 };
+const params = { stiffness: 92, damping: 14, windScale: 6, windRadius: 27, propagation: 0.32, windDecay: 0.96, bendAmount: 0.55, baseAngle: Math.PI * 0.12 };
 
 const ctrlToggle = document.getElementById('ctrlToggle'), ctrlPanel = document.getElementById('ctrlPanel');
 ctrlToggle.addEventListener('click', () => ctrlPanel.classList.toggle('hidden'));
@@ -243,7 +243,7 @@ async function initPapers() {
   const zRotArray = new Float32Array(totalInstances), dummy = new THREE.Object3D(), tmpColor = new THREE.Color();
   const palettes = [{h:0,s:0.95,l:0.55},{h:0.08,s:1,l:0.55},{h:0.15,s:1,l:0.5},{h:0.35,s:0.9,l:0.5},{h:0.5,s:1,l:0.5},{h:0.62,s:0.95,l:0.6},{h:0.78,s:0.9,l:0.55},{h:0.9,s:0.95,l:0.55}];
   rects.forEach((rect, i) => {
-    const px = (parseFloat(rect.getAttribute('x')) - 571) * 0.04, py = -(parseFloat(rect.getAttribute('y')) - 288) * 0.04, pz = (Math.random() - 0.5) * 1.5;
+    const px = (parseFloat(rect.getAttribute('x')) - 571) * 0.06, py = -(parseFloat(rect.getAttribute('y')) - 288) * 0.06, pz = (Math.random() - 0.5) * 1.5;
     const zRot = (parseFloat(rect.getAttribute('y')) / 576 - 0.5) * (Math.PI / 3); zRotArray[i] = zRot;
     const p = palettes[i % palettes.length]; tmpColor.setHSL(p.h, p.s, p.l); instancedMesh.setColorAt(i, tmpColor);
     const initialAngle = params.baseAngle + (Math.random() - 0.5) * 0.1; angleArray[i] = initialAngle;
