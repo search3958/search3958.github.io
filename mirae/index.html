@@ -9,7 +9,7 @@
   html, body {
     overflow: hidden;
     width: 100%; height: 100%;
-    background: #080a0f;
+    background: #040508;
     font-family: 'Noto Serif JP', serif;
   }
   canvas { display: block; }
@@ -17,26 +17,26 @@
   .bg-glow {
     position: fixed;
     border-radius: 50%;
-    filter: blur(140px);
+    filter: blur(160px); /* ぼかしを少し強く */
     pointer-events: none;
     z-index: 0;
   }
   .bg-glow.warm {
-    width: 500px; height: 500px;
-    top: 15%; left: 25%;
-    background: #c87a2a;
-    opacity: 0.06;
+    width: 600px; height: 600px;
+    top: 10%; left: 20%;
+    background: #ff2a2a; /* より鮮やかに */
+    opacity: 0.05;
   }
   .bg-glow.cool {
-    width: 450px; height: 450px;
-    top: 50%; right: 15%;
-    background: #2a5ec8;
+    width: 550px; height: 550px;
+    top: 45%; right: 10%;
+    background: #2a52ff;
     opacity: 0.05;
   }
   .bg-glow.accent {
-    width: 300px; height: 300px;
-    bottom: 10%; left: 50%;
-    background: #c82a6e;
+    width: 400px; height: 400px;
+    bottom: 5%; left: 45%;
+    background: #2aff70;
     opacity: 0.04;
   }
 
@@ -44,20 +44,20 @@
     position: fixed;
     top: 24px; left: 50%;
     transform: translateX(-50%);
-    color: rgba(255,240,220,0.45);
+    color: rgba(200,220,255,0.5);
     font-weight: 300;
     font-size: 18px;
     letter-spacing: 0.5em;
     pointer-events: none;
     z-index: 10;
-    text-shadow: 0 0 30px rgba(255,200,100,0.1);
+    text-shadow: 0 0 30px rgba(100,150,255,0.2);
   }
 
   .hint {
     position: fixed;
     bottom: 22px; left: 50%;
     transform: translateX(-50%);
-    color: rgba(255,240,220,0.2);
+    color: rgba(200,220,255,0.25);
     font-weight: 300;
     font-size: 12px;
     letter-spacing: 0.12em;
@@ -71,10 +71,10 @@
     position: fixed;
     top: 16px; right: 16px;
     width: 32px; height: 32px;
-    background: rgba(255,240,220,0.06);
-    border: 1px solid rgba(255,240,220,0.12);
+    background: rgba(200,220,255,0.08);
+    border: 1px solid rgba(200,220,255,0.15);
     border-radius: 6px;
-    color: rgba(255,240,220,0.4);
+    color: rgba(200,220,255,0.5);
     font-size: 16px;
     cursor: pointer;
     z-index: 20;
@@ -82,14 +82,14 @@
     transition: background 0.3s;
     backdrop-filter: blur(8px);
   }
-  .ctrl-toggle:hover { background: rgba(255,240,220,0.12); }
+  .ctrl-toggle:hover { background: rgba(200,220,255,0.15); }
 
   .ctrl-panel {
     position: fixed;
     top: 56px; right: 16px;
     width: 220px;
-    background: rgba(12,14,22,0.85);
-    border: 1px solid rgba(255,240,220,0.08);
+    background: rgba(10,12,20,0.9);
+    border: 1px solid rgba(200,220,255,0.1);
     border-radius: 10px;
     padding: 14px 16px;
     z-index: 20;
@@ -103,7 +103,7 @@
   }
   .ctrl-panel label {
     display: block;
-    color: rgba(255,240,220,0.35);
+    color: rgba(200,220,255,0.4);
     font-size: 11px;
     letter-spacing: 0.05em;
     margin-bottom: 3px;
@@ -112,12 +112,12 @@
   .ctrl-panel input[type="range"] {
     width: 100%;
     margin-bottom: 10px;
-    accent-color: #c89040;
+    accent-color: #4a80c8;
     height: 3px;
   }
   .ctrl-panel .val {
     float: right;
-    color: rgba(255,200,100,0.5);
+    color: rgba(100,180,255,0.6);
     font-size: 10px;
   }
 
@@ -209,8 +209,8 @@ bindSlider('rBend', 'bendAmount', 'vBend');
 
 /* ===== Three.js 初期化 ===== */
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#080a0f');
-scene.fog = new THREE.FogExp2('#080a0f', 0.015);
+scene.background = new THREE.Color('#040508');
+scene.fog = new THREE.FogExp2('#040508', 0.015);
 
 const camera = new THREE.PerspectiveCamera(
   45, window.innerWidth / window.innerHeight, 0.1, 1000
@@ -224,7 +224,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.6; // 露出を大幅に上げる (1.1 -> 1.6)
+renderer.toneMappingExposure = 1.0; // 露出を下げて色を濃く出す (1.4 -> 1.0)
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -235,9 +235,9 @@ controls.maxDistance = 300;
 controls.maxPolarAngle = Math.PI * 0.88;
 
 /* ===== ライティング ===== */
-scene.add(new THREE.AmbientLight('#ffffff', 1.0)); // 環境光を白く明るく
+scene.add(new THREE.AmbientLight('#ffffff', 0.8)); // 環境光を少し強めて陰影を和らげる
 
-const dirLight1 = new THREE.DirectionalLight('#ffffff', 2.8); // メインライトを強化
+const dirLight1 = new THREE.DirectionalLight('#ffffff', 1.5); // 直接光を弱めて白飛びを防ぐ
 dirLight1.position.set(30, 50, 80);
 dirLight1.castShadow = true;
 dirLight1.shadow.mapSize.set(2048, 2048);
@@ -246,16 +246,16 @@ sc.near = 1; sc.far = 250;
 sc.left = -60; sc.right = 60; sc.top = 60; sc.bottom = -60;
 scene.add(dirLight1);
 
-const dirLight2 = new THREE.DirectionalLight('#ffffff', 1.2); // サブライトも強化
+const dirLight2 = new THREE.DirectionalLight('#ffffff', 0.5); 
 dirLight2.position.set(-40, -30, 40);
 scene.add(dirLight2);
 
-const rimLight = new THREE.DirectionalLight('#ffffff', 0.8);
+const rimLight = new THREE.DirectionalLight('#ffffff', 0.3);
 rimLight.position.set(0, 0, -60);
 scene.add(rimLight);
 
 // マウス追従ライト
-const mouseLight = new THREE.PointLight('#ffffff', 0, 25, 2);
+const mouseLight = new THREE.PointLight('#ffffff', 0, 40, 1.2); 
 mouseLight.position.set(0, 0, 5);
 scene.add(mouseLight);
 
@@ -270,12 +270,11 @@ geometry.translate(-PANEL_W / 2, 0, 0);
 const material = new THREE.MeshStandardMaterial({
   map: handTexture,
   side: THREE.DoubleSide,
-  roughness: 0.4, // 少しツヤを出して光を反射しやすく
-  metalness: 0.1,
+  roughness: 0.5,
+  metalness: 0.0,
   transparent: true,
-  opacity: 1.0, // 不透明度を最大に
-  alphaTest: 0.1,
-  emissive: new THREE.Color('#333333'), // わずかに自発光させて暗部を減らす
+  opacity: 1.0,
+  alphaTest: 0.5, // 境界をはっきりさせて枠線感を消す
 });
 
 material.onBeforeCompile = (shader) => {
@@ -381,10 +380,14 @@ async function initPapers() {
   const tmpColor = new THREE.Color();
 
   const palettes = [
-    { h: 0.09, s: 0.06, l: 0.88 }, { h: 0.07, s: 0.04, l: 0.92 },
-    { h: 0.12, s: 0.08, l: 0.84 }, { h: 0.01, s: 0.05, l: 0.87 },
-    { h: 0.55, s: 0.04, l: 0.89 }, { h: 0.28, s: 0.05, l: 0.86 },
-    { h: 0.75, s: 0.04, l: 0.88 },
+    { h: 0.00, s: 0.95, l: 0.55 }, // 鮮やかな赤
+    { h: 0.08, s: 1.00, l: 0.55 }, // 鮮やかなオレンジ
+    { h: 0.15, s: 1.00, l: 0.50 }, // 鮮やかな黄色
+    { h: 0.35, s: 0.90, l: 0.50 }, // 鮮やかな緑
+    { h: 0.50, s: 1.00, l: 0.50 }, // 鮮やかなシアン
+    { h: 0.62, s: 0.95, l: 0.60 }, // 鮮やかな青
+    { h: 0.78, s: 0.90, l: 0.55 }, // 鮮やかな紫
+    { h: 0.90, s: 0.95, l: 0.55 }, // 鮮やかなピンク
   ];
 
   rects.forEach((rect, i) => {
@@ -399,8 +402,9 @@ async function initPapers() {
     const zRot = (svgY / 576 - 0.5) * (Math.PI / 3);
     zRotArray[i] = zRot;
 
-    // テクスチャの色を活かすため、InstanceColorは白ベースにする
-    tmpColor.setRGB(1, 1, 1);
+    // パレットから色を選択して適用 (i % length でバラバラに)
+    const p = palettes[i % palettes.length];
+    tmpColor.setHSL(p.h, p.s, p.l);
     instancedMesh.setColorAt(i, tmpColor);
 
     const initialAngle = params.baseAngle + (Math.random() - 0.5) * 0.1;
@@ -410,8 +414,8 @@ async function initPapers() {
       position: new THREE.Vector3(px, py, pz),
       angle: initialAngle, angularVelocity: 0,
       wind: 0, directWind: 0,
-      // 風の影響による色変化用のベース
-      baseHue: 0, baseSat: 0, baseLit: 1.0, 
+      // 各インスタンスの色を保持
+      color: { h: p.h, s: p.s, l: p.l }
     });
 
     dummy.position.set(px, py, pz);
@@ -439,7 +443,7 @@ for (let i = 0; i < DUST; i++) {
   dustVel[i*3] = (Math.random()-0.5)*0.02; dustVel[i*3+1] = (Math.random()-0.5)*0.02; dustVel[i*3+2] = (Math.random()-0.5)*0.005;
 }
 dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
-const dustMat = new THREE.PointsMaterial({ color: '#fff5e0', size: 0.05, transparent: true, opacity: 0.25, blending: THREE.AdditiveBlending, depthWrite: false });
+const dustMat = new THREE.PointsMaterial({ color: '#e0f0ff', size: 0.05, transparent: true, opacity: 0.25, blending: THREE.AdditiveBlending, depthWrite: false });
 scene.add(new THREE.Points(dustGeo, dustMat));
 
 /* ===== マウス・風 ===== */
@@ -534,8 +538,8 @@ function animate() {
     angleArray[i] = p.angle;
 
     const wi = Math.min(Math.abs(p.wind) * 5, 1);
-    // 常に明るい白を維持し、風でわずかに発光感を出す
-    tmpCol.setHSL(0, 0, Math.min(1.0 + wi * 0.2, 1.2)); 
+    // 保持している色をベースに、風でわずかに発光感を出す
+    tmpCol.setHSL(p.color.h, p.color.s, Math.min(p.color.l + wi * 0.15, 1.0)); 
     instancedMesh.setColorAt(i, tmpCol);
   }
   angleAttr.needsUpdate = true;
