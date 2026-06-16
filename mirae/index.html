@@ -167,8 +167,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 /* ===== 定数 ===== */
-const PANEL_W = 0.88;
-const PANEL_H = 0.88;
+const PANEL_W = 9.0; // さらに大きく変更 (6.0 -> 9.0)
+const PANEL_H = 6.93; // アスペクト比を維持 (9.0 * 181/235)
 const SEG_X = 8;
 const SEG_Y = 6;
 
@@ -181,7 +181,7 @@ const params = {
   propagation: 0.22,
   windDecay: 0.96,
   bendAmount: 0.9,
-  baseAngle: Math.PI * 0.12,
+  baseAngle: -Math.PI * 0.12, // 左向きに変更 (符号反転)
 };
 
 /* ===== UIコントロール ===== */
@@ -213,9 +213,9 @@ scene.background = new THREE.Color('#080a0f');
 scene.fog = new THREE.FogExp2('#080a0f', 0.015);
 
 const camera = new THREE.PerspectiveCamera(
-  45, window.innerWidth / window.innerHeight, 0.1, 200
+  45, window.innerWidth / window.innerHeight, 0.1, 1000
 );
-camera.position.set(0, -2, 28);
+camera.position.set(0, -2, 65); // カメラをさらに引く (45 -> 65)
 camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -224,34 +224,34 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.4;
+renderer.toneMappingExposure = 1.2;
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
-controls.minDistance = 8;
-controls.maxDistance = 55;
+controls.minDistance = 20;
+controls.maxDistance = 300; // 最大距離を拡大
 controls.maxPolarAngle = Math.PI * 0.88;
 
 /* ===== ライティング ===== */
-scene.add(new THREE.AmbientLight('#3d4f6f', 0.6));
+scene.add(new THREE.AmbientLight('#3d4f6f', 0.8));
 
-const dirLight1 = new THREE.DirectionalLight('#fff0d6', 1.8);
-dirLight1.position.set(12, 18, 14);
+const dirLight1 = new THREE.DirectionalLight('#fff0d6', 2.2);
+dirLight1.position.set(30, 45, 40); // ライトの位置を広げる
 dirLight1.castShadow = true;
 dirLight1.shadow.mapSize.set(2048, 2048);
 const sc = dirLight1.shadow.camera;
-sc.near = 1; sc.far = 60;
-sc.left = -18; sc.right = 18; sc.top = 18; sc.bottom = -18;
+sc.near = 1; sc.far = 150;
+sc.left = -50; sc.right = 50; sc.top = 50; sc.bottom = -50;
 scene.add(dirLight1);
 
-const dirLight2 = new THREE.DirectionalLight('#7ea8d6', 0.65);
-dirLight2.position.set(-10, -8, 10);
+const dirLight2 = new THREE.DirectionalLight('#7ea8d6', 0.8);
+dirLight2.position.set(-20, -15, 20);
 scene.add(dirLight2);
 
-const rimLight = new THREE.DirectionalLight('#ffa54d', 0.35);
-rimLight.position.set(0, 0, -15);
+const rimLight = new THREE.DirectionalLight('#ffa54d', 0.45);
+rimLight.position.set(0, 0, -30);
 scene.add(rimLight);
 
 // マウス追従ライト
@@ -259,16 +259,22 @@ const mouseLight = new THREE.PointLight('#ffc870', 0, 15, 2);
 mouseLight.position.set(0, 0, 5);
 scene.add(mouseLight);
 
-/* ===== 紙パネル生成 (Async Init) ===== */
+/* ===== 手パネル生成 (Async Init) ===== */
+const textureLoader = new THREE.TextureLoader();
+const handTexture = textureLoader.load('hand.svg');
+
 const geometry = new THREE.PlaneGeometry(PANEL_W, PANEL_H, SEG_X, SEG_Y);
-geometry.translate(PANEL_W / 2, 0, 0);
+// 右辺をピボットにする（左向きに振れるように）ためX方向にマイナスオフセット
+geometry.translate(-PANEL_W / 2, 0, 0);
 
 const material = new THREE.MeshStandardMaterial({
+  map: handTexture,
   side: THREE.DoubleSide,
   roughness: 0.88,
   metalness: 0.0,
   transparent: true,
   opacity: 0.94,
+  alphaTest: 0.1, // 背景透過のため
 });
 
 material.onBeforeCompile = (shader) => {
@@ -288,12 +294,14 @@ material.onBeforeCompile = (shader) => {
       float ang = aAngle;
       float ca = cos(ang);
       float sa = sin(ang);
+      // Y軸回転
       float nx = objectNormal.x * ca + objectNormal.z * sa;
       float nz = -objectNormal.x * sa + objectNormal.z * ca;
       objectNormal.x = nx;
       objectNormal.z = nz;
 
-      float xN = clamp(position.x / ${PANEL_W.toFixed(4)}, 0.0, 1.0);
+      // 曲げ補正 (右端が固定なので position.x は負の値。0に向かって曲がるようにクランプ)
+      float xN = clamp(-position.x / ${PANEL_W.toFixed(4)}, 0.0, 1.0);
       float bendAng = ang * xN * uBendAmount;
       float cb = cos(bendAng);
       float sb = sin(bendAng);
@@ -321,7 +329,7 @@ material.onBeforeCompile = (shader) => {
       transformed.x = position.x * ca + position.z * sa;
       transformed.z = -position.x * sa + position.z * ca;
 
-      float xN = clamp(position.x / ${PANEL_W.toFixed(4)}, 0.0, 1.0);
+      float xN = clamp(-position.x / ${PANEL_W.toFixed(4)}, 0.0, 1.0);
       float bendAng = ang * xN * uBendAmount;
       float cb = cos(bendAng);
       float sb = sin(bendAng);
@@ -382,16 +390,16 @@ async function initPapers() {
     const svgX = parseFloat(rect.getAttribute('x'));
     const svgY = parseFloat(rect.getAttribute('y'));
     
-    const px = (svgX - 571) * 0.022;
-    const py = -(svgY - 288) * 0.022;
+    // スケールをさらに広げる (0.04 -> 0.06) して重なりすぎを防ぐ
+    const px = (svgX - 571) * 0.06;
+    const py = -(svgY - 288) * 0.06;
     const pz = (Math.random() - 0.5) * 1.5;
 
     const zRot = (svgY / 576 - 0.5) * (Math.PI / 3);
     zRotArray[i] = zRot;
 
-    const pIdx = Math.random() < 0.7 ? Math.floor(Math.random() * 3) : Math.floor(Math.random() * palettes.length);
-    const pal = palettes[pIdx];
-    tmpColor.setHSL(pal.h + (Math.random()-0.5)*0.02, pal.s + (Math.random()-0.5)*0.02, pal.l + (Math.random()-0.5)*0.04);
+    // テクスチャの色を活かすため、InstanceColorは白ベースにする
+    tmpColor.setRGB(1, 1, 1);
     instancedMesh.setColorAt(i, tmpColor);
 
     const initialAngle = params.baseAngle + (Math.random() - 0.5) * 0.1;
@@ -401,7 +409,8 @@ async function initPapers() {
       position: new THREE.Vector3(px, py, pz),
       angle: initialAngle, angularVelocity: 0,
       wind: 0, directWind: 0,
-      baseHue: pal.h, baseSat: pal.s, baseLit: pal.l,
+      // 風の影響による色変化用のベース
+      baseHue: 0, baseSat: 0, baseLit: 1.0, 
     });
 
     dummy.position.set(px, py, pz);
@@ -519,11 +528,13 @@ function animate() {
   for (let i = 0; i < totalInstances; i++) {
     const p = papers[i];
     p.angularVelocity += (-stiff * (p.angle - baseAng) - damp * p.angularVelocity + p.wind * wScale) * dt;
+    // 角度制限 (左向きなので baseAng を中心に制限)
     p.angle = Math.max(baseAng - 2.6, Math.min(baseAng + 2.6, p.angle + p.angularVelocity * dt));
     angleArray[i] = p.angle;
 
     const wi = Math.min(Math.abs(p.wind) * 5, 1);
-    tmpCol.setHSL(p.baseHue + wi * 0.04, Math.min(p.baseSat + wi * 0.25, 0.55), Math.min(p.baseLit + wi * 0.1, 1.0));
+    // テクスチャの色を維持しつつ、風で少し明るくする
+    tmpCol.setHSL(0, 0, Math.min(p.baseLit + wi * 0.1, 1.0));
     instancedMesh.setColorAt(i, tmpCol);
   }
   angleAttr.needsUpdate = true;
