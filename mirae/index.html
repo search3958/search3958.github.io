@@ -141,16 +141,16 @@
 <div class="ctrl-panel" id="ctrlPanel">
   <label>バネ強さ <span class="val" id="vStiff">92</span></label>
   <input type="range" id="rStiff" min="10" max="200" value="92">
-  <label>ダンピング <span class="val" id="vDamp">15</span></label>
-  <input type="range" id="rDamp" min="0.5" max="25" value="15" step="0.5">
-  <label>風力 <span class="val" id="vWind">33</span></label>
-  <input type="range" id="rWind" min="5" max="120" value="33">
-  <label>風の半径 <span class="val" id="vRadius">3</span></label>
-  <input type="range" id="rRadius" min="1" max="18" value="3">
-  <label>伝播率 <span class="val" id="vProp">0.22</span></label>
-  <input type="range" id="rProp" min="0" max="0.5" value="0.22" step="0.01">
-  <label>曲げ量 <span class="val" id="vBend">0.9</span></label>
-  <input type="range" id="rBend" min="0" max="1.5" value="0.9" step="0.05">
+  <label>ダンピング <span class="val" id="vDamp">14</span></label>
+  <input type="range" id="rDamp" min="0.5" max="25" value="14" step="0.5">
+  <label>風力 <span class="val" id="vWind">6</span></label>
+  <input type="range" id="rWind" min="1" max="120" value="6">
+  <label>風の半径 <span class="val" id="vRadius">11</span></label>
+  <input type="range" id="rRadius" min="1" max="30" value="11">
+  <label>伝播率 <span class="val" id="vProp">0.32</span></label>
+  <input type="range" id="rProp" min="0" max="0.8" value="0.32" step="0.01">
+  <label>曲げ量 <span class="val" id="vBend">0.55</span></label>
+  <input type="range" id="rBend" min="0" max="1.5" value="0.55" step="0.05">
 </div>
 
 <script type="importmap">
@@ -167,21 +167,21 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 /* ===== 定数 ===== */
-const PANEL_W = 9.0; // さらに大きく変更 (6.0 -> 9.0)
-const PANEL_H = 6.93; // アスペクト比を維持 (9.0 * 181/235)
+const PANEL_W = 18.0; // さらに2倍 (9.0 -> 18.0)
+const PANEL_H = 13.86; // アスペクト比を維持
 const SEG_X = 8;
 const SEG_Y = 6;
 
 /* ===== 調整可能パラメータ ===== */
 const params = {
   stiffness: 92,
-  damping: 15,
-  windScale: 33,
-  windRadius: 3,
-  propagation: 0.22,
+  damping: 14,
+  windScale: 6,
+  windRadius: 11,
+  propagation: 0.32,
   windDecay: 0.96,
-  bendAmount: 0.9,
-  baseAngle: -Math.PI * 0.12, // 左向きに変更 (符号反転)
+  bendAmount: 0.55,
+  baseAngle: Math.PI * 0.12, // 手前を向くように正の値に変更
 };
 
 /* ===== UIコントロール ===== */
@@ -215,7 +215,7 @@ scene.fog = new THREE.FogExp2('#080a0f', 0.015);
 const camera = new THREE.PerspectiveCamera(
   45, window.innerWidth / window.innerHeight, 0.1, 1000
 );
-camera.position.set(0, -2, 65); // カメラをさらに引く (45 -> 65)
+camera.position.set(0, -2, 55); // カメラを前に戻す (120 -> 55)
 camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -224,38 +224,38 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.2;
+renderer.toneMappingExposure = 1.6; // 露出を大幅に上げる (1.1 -> 1.6)
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
 controls.minDistance = 20;
-controls.maxDistance = 300; // 最大距離を拡大
+controls.maxDistance = 300; 
 controls.maxPolarAngle = Math.PI * 0.88;
 
 /* ===== ライティング ===== */
-scene.add(new THREE.AmbientLight('#3d4f6f', 0.8));
+scene.add(new THREE.AmbientLight('#ffffff', 1.0)); // 環境光を白く明るく
 
-const dirLight1 = new THREE.DirectionalLight('#fff0d6', 2.2);
-dirLight1.position.set(30, 45, 40); // ライトの位置を広げる
+const dirLight1 = new THREE.DirectionalLight('#ffffff', 2.8); // メインライトを強化
+dirLight1.position.set(30, 50, 80);
 dirLight1.castShadow = true;
 dirLight1.shadow.mapSize.set(2048, 2048);
 const sc = dirLight1.shadow.camera;
-sc.near = 1; sc.far = 150;
-sc.left = -50; sc.right = 50; sc.top = 50; sc.bottom = -50;
+sc.near = 1; sc.far = 250;
+sc.left = -60; sc.right = 60; sc.top = 60; sc.bottom = -60;
 scene.add(dirLight1);
 
-const dirLight2 = new THREE.DirectionalLight('#7ea8d6', 0.8);
-dirLight2.position.set(-20, -15, 20);
+const dirLight2 = new THREE.DirectionalLight('#ffffff', 1.2); // サブライトも強化
+dirLight2.position.set(-40, -30, 40);
 scene.add(dirLight2);
 
-const rimLight = new THREE.DirectionalLight('#ffa54d', 0.45);
-rimLight.position.set(0, 0, -30);
+const rimLight = new THREE.DirectionalLight('#ffffff', 0.8);
+rimLight.position.set(0, 0, -60);
 scene.add(rimLight);
 
 // マウス追従ライト
-const mouseLight = new THREE.PointLight('#ffc870', 0, 15, 2);
+const mouseLight = new THREE.PointLight('#ffffff', 0, 25, 2);
 mouseLight.position.set(0, 0, 5);
 scene.add(mouseLight);
 
@@ -270,11 +270,12 @@ geometry.translate(-PANEL_W / 2, 0, 0);
 const material = new THREE.MeshStandardMaterial({
   map: handTexture,
   side: THREE.DoubleSide,
-  roughness: 0.88,
-  metalness: 0.0,
+  roughness: 0.4, // 少しツヤを出して光を反射しやすく
+  metalness: 0.1,
   transparent: true,
-  opacity: 0.94,
-  alphaTest: 0.1, // 背景透過のため
+  opacity: 1.0, // 不透明度を最大に
+  alphaTest: 0.1,
+  emissive: new THREE.Color('#333333'), // わずかに自発光させて暗部を減らす
 });
 
 material.onBeforeCompile = (shader) => {
@@ -390,9 +391,9 @@ async function initPapers() {
     const svgX = parseFloat(rect.getAttribute('x'));
     const svgY = parseFloat(rect.getAttribute('y'));
     
-    // スケールをさらに広げる (0.04 -> 0.06) して重なりすぎを防ぐ
-    const px = (svgX - 571) * 0.06;
-    const py = -(svgY - 288) * 0.06;
+    // 重なりを許容するためスケールを縮小 (0.12 -> 0.04)
+    const px = (svgX - 571) * 0.04;
+    const py = -(svgY - 288) * 0.04;
     const pz = (Math.random() - 0.5) * 1.5;
 
     const zRot = (svgY / 576 - 0.5) * (Math.PI / 3);
@@ -533,8 +534,8 @@ function animate() {
     angleArray[i] = p.angle;
 
     const wi = Math.min(Math.abs(p.wind) * 5, 1);
-    // テクスチャの色を維持しつつ、風で少し明るくする
-    tmpCol.setHSL(0, 0, Math.min(p.baseLit + wi * 0.1, 1.0));
+    // 常に明るい白を維持し、風でわずかに発光感を出す
+    tmpCol.setHSL(0, 0, Math.min(1.0 + wi * 0.2, 1.2)); 
     instancedMesh.setColorAt(i, tmpCol);
   }
   angleAttr.needsUpdate = true;
