@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>風の紙 - Paper Wind Simulation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    overflow: hidden;
+    width: 100%; height: 100%;
+    background: #080a0f;
+    font-family: 'Noto Serif JP', serif;
+  }
+  canvas { display: block; }
+
+  .bg-glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(140px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-glow.warm {
+    width: 500px; height: 500px;
+    top: 15%; left: 25%;
+    background: #c87a2a;
+    opacity: 0.06;
+  }
+  .bg-glow.cool {
+    width: 450px; height: 450px;
+    top: 50%; right: 15%;
+    background: #2a5ec8;
+    opacity: 0.05;
+  }
+  .bg-glow.accent {
+    width: 300px; height: 300px;
+    bottom: 10%; left: 50%;
+    background: #c82a6e;
+    opacity: 0.04;
+  }
+
+  .title {
+    position: fixed;
+    top: 24px; left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,240,220,0.45);
+    font-weight: 300;
+    font-size: 18px;
+    letter-spacing: 0.5em;
+    pointer-events: none;
+    z-index: 10;
+    text-shadow: 0 0 30px rgba(255,200,100,0.1);
+  }
+
+  .hint {
+    position: fixed;
+    bottom: 22px; left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,240,220,0.2);
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    pointer-events: none;
+    z-index: 10;
+    transition: opacity 1s ease;
+  }
+
+  /* パラメータコントロール */
+  .ctrl-toggle {
+    position: fixed;
+    top: 16px; right: 16px;
+    width: 32px; height: 32px;
+    background: rgba(255,240,220,0.06);
+    border: 1px solid rgba(255,240,220,0.12);
+    border-radius: 6px;
+    color: rgba(255,240,220,0.4);
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 20;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s;
+    backdrop-filter: blur(8px);
+  }
+  .ctrl-toggle:hover { background: rgba(255,240,220,0.12); }
+
+  .ctrl-panel {
+    position: fixed;
+    top: 56px; right: 16px;
+    width: 220px;
+    background: rgba(12,14,22,0.85);
+    border: 1px solid rgba(255,240,220,0.08);
+    border-radius: 10px;
+    padding: 14px 16px;
+    z-index: 20;
+    backdrop-filter: blur(12px);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .ctrl-panel.hidden {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+  }
+  .ctrl-panel label {
+    display: block;
+    color: rgba(255,240,220,0.35);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    margin-bottom: 3px;
+    font-weight: 300;
+  }
+  .ctrl-panel input[type="range"] {
+    width: 100%;
+    margin-bottom: 10px;
+    accent-color: #c89040;
+    height: 3px;
+  }
+  .ctrl-panel .val {
+    float: right;
+    color: rgba(255,200,100,0.5);
+    font-size: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .title { font-size: 14px; letter-spacing: 0.3em; }
+    .ctrl-panel { width: 180px; }
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="bg-glow warm"></div>
+<div class="bg-glow cool"></div>
+<div class="bg-glow accent"></div>
+
+<div class="title">風の紙</div>
+<div class="hint" id="hint">マウスを動かして風を起こす</div>
+
+<button class="ctrl-toggle" id="ctrlToggle" aria-label="設定パネル切替">&#9881;</button>
+<div class="ctrl-panel" id="ctrlPanel">
+  <label>バネ強さ <span class="val" id="vStiff">60</span></label>
+  <input type="range" id="rStiff" min="10" max="200" value="60">
+  <label>ダンピング <span class="val" id="vDamp">5</span></label>
+  <input type="range" id="rDamp" min="0.5" max="25" value="5" step="0.5">
+  <label>風力 <span class="val" id="vWind">40</span></label>
+  <input type="range" id="rWind" min="5" max="120" value="40">
+  <label>風の半径 <span class="val" id="vRadius">7</span></label>
+  <input type="range" id="rRadius" min="2" max="18" value="7">
+  <label>伝播率 <span class="val" id="vProp">0.06</span></label>
+  <input type="range" id="rProp" min="0" max="0.3" value="0.06" step="0.01">
+  <label>曲げ量 <span class="val" id="vBend">0.35</span></label>
+  <input type="range" id="rBend" min="0" max="1.5" value="0.35" step="0.05">
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* ===== 定数 ===== */
+const GRID = 20;
+const SPACING = 1.15;
+const PANEL_W = 0.88;
+const PANEL_H = 0.88;
+const SEG_X = 8;
+const SEG_Y = 6;
+const TOTAL = GRID * GRID;
+
+/* ===== 調整可能パラメータ ===== */
+const params = {
+  stiffness: 60,
+  damping: 5,
+  windScale: 40,
+  windRadius: 7,
+  propagation: 0.06,
+  windDecay: 0.96,
+  bendAmount: 0.35,
+};
+
+/* ===== UIコントロール ===== */
+const ctrlToggle = document.getElementById('ctrlToggle');
+const ctrlPanel = document.getElementById('ctrlPanel');
+ctrlToggle.addEventListener('click', () => {
+  ctrlPanel.classList.toggle('hidden');
+});
+
+// スライダーバインド
+function bindSlider(id, param, valId) {
+  const slider = document.getElementById(id);
+  const valEl = document.getElementById(valId);
+  slider.addEventListener('input', () => {
+    params[param] = parseFloat(slider.value);
+    valEl.textContent = slider.value;
+  });
+}
+bindSlider('rStiff', 'stiffness', 'vStiff');
+bindSlider('rDamp', 'damping', 'vDamp');
+bindSlider('rWind', 'windScale', 'vWind');
+bindSlider('rRadius', 'windRadius', 'vRadius');
+bindSlider('rProp', 'propagation', 'vProp');
+bindSlider('rBend', 'bendAmount', 'vBend');
+
+/* ===== Three.js 初期化 ===== */
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#080a0f');
+scene.fog = new THREE.FogExp2('#080a0f', 0.015);
+
+const camera = new THREE.PerspectiveCamera(
+  45, window.innerWidth / window.innerHeight, 0.1, 200
+);
+camera.position.set(0, -6, 28);
+camera.lookAt(0, 0, 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.4;
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.minDistance = 8;
+controls.maxDistance = 55;
+controls.maxPolarAngle = Math.PI * 0.88;
+
+/* ===== ライティング ===== */
+scene.add(new THREE.AmbientLight('#3d4f6f', 0.6));
+
+const dirLight1 = new THREE.DirectionalLight('#fff0d6', 1.8);
+dirLight1.position.set(12, 18, 14);
+dirLight1.castShadow = true;
+dirLight1.shadow.mapSize.set(2048, 2048);
+const sc = dirLight1.shadow.camera;
+sc.near = 1; sc.far = 60;
+sc.left = -18; sc.right = 18; sc.top = 18; sc.bottom = -18;
+scene.add(dirLight1);
+
+const dirLight2 = new THREE.DirectionalLight('#7ea8d6', 0.65);
+dirLight2.position.set(-10, -8, 10);
+scene.add(dirLight2);
+
+const rimLight = new THREE.DirectionalLight('#ffa54d', 0.35);
+rimLight.position.set(0, 0, -15);
+scene.add(rimLight);
+
+// マウス追従ライト
+const mouseLight = new THREE.PointLight('#ffc870', 0, 15, 2);
+mouseLight.position.set(0, 0, 5);
+scene.add(mouseLight);
+
+/* ===== 紙パネル生成 ===== */
+const geometry = new THREE.PlaneGeometry(PANEL_W, PANEL_H, SEG_X, SEG_Y);
+// 左辺をピボットにするためX方向にオフセット
+geometry.translate(PANEL_W / 2, 0, 0);
+
+const material = new THREE.MeshStandardMaterial({
+  side: THREE.DoubleSide,
+  roughness: 0.88,
+  metalness: 0.0,
+  transparent: true,
+  opacity: 0.94,
+});
+
+// onBeforeCompile で頂点シェーダーに曲げ変形を追加
+material.onBeforeCompile = (shader) => {
+  // Uniform追加（曲げ量をリアルタイム調整）
+  shader.uniforms.uBendAmount = { value: params.bendAmount };
+
+  shader.vertexShader = shader.vertexShader.replace(
+    '#include <common>',
+    `#include <common>
+    attribute float aAngle;
+    uniform float uBendAmount;`
+  );
+
+  // 法線変形
+  shader.vertexShader = shader.vertexShader.replace(
+    '#include <beginnormal_vertex>',
+    `#include <beginnormal_vertex>
+    {
+      float ang = aAngle;
+      float ca = cos(ang);
+      float sa = sin(ang);
+
+      // Y軸回転（法線）
+      float nx = objectNormal.x * ca + objectNormal.z * sa;
+      float nz = -objectNormal.x * sa + objectNormal.z * ca;
+      objectNormal.x = nx;
+      objectNormal.z = nz;
+
+      // 曲げによる法線補正
+      float xN = clamp(position.x / ${PANEL_W.toFixed(4)}, 0.0, 1.0);
+      float bendAng = ang * xN * uBendAmount;
+      float cb = cos(bendAng);
+      float sb = sin(bendAng);
+      float bnx = objectNormal.x * cb + objectNormal.z * sb;
+      float bnz = -objectNormal.x * sb + objectNormal.z * cb;
+      objectNormal.x = bnx;
+      objectNormal.z = bnz;
+    }`
+  );
+
+  // 位置変形
+  shader.vertexShader = shader.vertexShader.replace(
+    '#include <begin_vertex>',
+    `#include <begin_vertex>
+    {
+      float ang = aAngle;
+      float ca = cos(ang);
+      float sa = sin(ang);
+
+      // Y軸回転（位置）
+      transformed.x = position.x * ca + position.z * sa;
+      transformed.z = -position.x * sa + position.z * ca;
+
+      // 曲げ効果: x座標に応じた追加Z変位で紙がしなる
+      float xN = clamp(position.x / ${PANEL_W.toFixed(4)}, 0.0, 1.0);
+      float bendAng = ang * xN * uBendAmount;
+      float cb = cos(bendAng);
+      float sb = sin(bendAng);
+      float bx = transformed.x * cb + transformed.z * sb;
+      float bz = -transformed.x * sb + transformed.z * cb;
+      transformed.x = bx;
+      transformed.z = bz;
+    }`
+  );
+
+  material.userData.shader = shader;
+};
+
+// bendAmountのリアルタイム反映
+function updateBendUniform() {
+  if (material.userData.shader) {
+    material.userData.shader.uniforms.uBendAmount.value = params.bendAmount;
+  }
+}
+
+const instancedMesh = new THREE.InstancedMesh(geometry, material, TOTAL);
+instancedMesh.castShadow = true;
+instancedMesh.receiveShadow = true;
+scene.add(instancedMesh);
+
+/* ===== パネルデータ ===== */
+const papers = [];
+const dummy = new THREE.Object3D();
+const tmpColor = new THREE.Color();
+const angleArray = new Float32Array(TOTAL);
+
+const halfW = (GRID - 1) * SPACING / 2;
+const halfH = (GRID - 1) * SPACING / 2;
+
+// 色パレット（和紙風）
+const palettes = [
+  { h: 0.09, s: 0.06, l: 0.88 },  // クリーム
+  { h: 0.07, s: 0.04, l: 0.92 },  // ほぼ白
+  { h: 0.12, s: 0.08, l: 0.84 },  // 薄黄
+  { h: 0.01, s: 0.05, l: 0.87 },  // 薄桃
+  { h: 0.55, s: 0.04, l: 0.89 },  // 薄水
+  { h: 0.28, s: 0.05, l: 0.86 },  // 薄緑
+  { h: 0.75, s: 0.04, l: 0.88 },  // 薄藤
+];
+
+for (let iy = 0; iy < GRID; iy++) {
+  for (let ix = 0; ix < GRID; ix++) {
+    const idx = iy * GRID + ix;
+    const px = ix * SPACING - halfW;
+    const py = iy * SPACING - halfH;
+
+    // 色選択（70%クリーム系、30%その他）
+    const pIdx = Math.random() < 0.7
+      ? Math.floor(Math.random() * 3)
+      : Math.floor(Math.random() * palettes.length);
+    const pal = palettes[pIdx];
+    const h = pal.h + (Math.random() - 0.5) * 0.02;
+    const s = pal.s + (Math.random() - 0.5) * 0.02;
+    const l = pal.l + (Math.random() - 0.5) * 0.04;
+
+    tmpColor.setHSL(h, s, l);
+    instancedMesh.setColorAt(idx, tmpColor);
+
+    angleArray[idx] = 0;
+
+    papers.push({
+      idx, position: new THREE.Vector3(px, py, 0),
+      angle: 0, angularVelocity: 0,
+      wind: 0, directWind: 0,
+      gridX: ix, gridY: iy,
+      baseHue: h, baseSat: s, baseLit: l,
+    });
+
+    // 行列（位置のみ、回転はシェーダー制御）
+    dummy.position.set(px, py, 0);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(1, 1, 1);
+    dummy.updateMatrix();
+    instancedMesh.setMatrixAt(idx, dummy.matrix);
+  }
+}
+
+// aAngle を InstancedBufferAttribute として登録
+const angleAttr = new THREE.InstancedBufferAttribute(angleArray, 1);
+instancedMesh.geometry.setAttribute('aAngle', angleAttr);
+
+instancedMesh.instanceMatrix.needsUpdate = true;
+instancedMesh.instanceColor.needsUpdate = true;
+
+/* ===== 浮遊パーティクル（埃） ===== */
+const DUST = 250;
+const dustGeo = new THREE.BufferGeometry();
+const dustPos = new Float32Array(DUST * 3);
+const dustVel = new Float32Array(DUST * 3); // 速度も持つ
+for (let i = 0; i < DUST; i++) {
+  dustPos[i * 3]     = (Math.random() - 0.5) * 32;
+  dustPos[i * 3 + 1] = (Math.random() - 0.5) * 32;
+  dustPos[i * 3 + 2] = (Math.random() - 0.5) * 8;
+  dustVel[i * 3]     = (Math.random() - 0.5) * 0.02;
+  dustVel[i * 3 + 1] = (Math.random() - 0.5) * 0.02;
+  dustVel[i * 3 + 2] = (Math.random() - 0.5) * 0.005;
+}
+dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+
+const dustMat = new THREE.PointsMaterial({
+  color: '#fff5e0', size: 0.05,
+  transparent: true, opacity: 0.25,
+  sizeAttenuation: true,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+});
+scene.add(new THREE.Points(dustGeo, dustMat));
+
+/* ===== マウス・風の状態 ===== */
+const mouseNDC = new THREE.Vector2(9999, 9999);
+const raycaster = new THREE.Raycaster();
+const intersectPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+const mouseWorld = new THREE.Vector3();
+const prevMouseWorld = new THREE.Vector3();
+let mouseInited = false;
+let mouseActive = false;
+let hintHidden = false;
+
+function onPointerMove(x, y) {
+  mouseNDC.x = (x / window.innerWidth) * 2 - 1;
+  mouseNDC.y = -(y / window.innerHeight) * 2 + 1;
+  mouseActive = true;
+  if (!hintHidden) {
+    document.getElementById('hint').style.opacity = '0';
+    hintHidden = true;
+  }
+}
+
+window.addEventListener('mousemove', (e) => onPointerMove(e.clientX, e.clientY));
+window.addEventListener('touchstart', (e) => {
+  onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+});
+window.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
+window.addEventListener('mouseleave', () => { mouseActive = false; });
+window.addEventListener('touchend', () => { mouseActive = false; });
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+/* ===== アニメーションループ ===== */
+const clock = new THREE.Clock();
+let elapsed = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  const dt = Math.min(clock.getDelta(), 0.04);
+  elapsed += dt;
+
+  // bendAmount uniform更新
+  updateBendUniform();
+
+  // マウス3D位置取得（カメラ向きに合わせた平面で）
+  if (mouseActive) {
+    const camDir = new THREE.Vector3();
+    camera.getWorldDirection(camDir);
+    intersectPlane.setFromNormalAndCoplanarPoint(camDir.negate(), new THREE.Vector3(0, 0, 0));
+
+    raycaster.setFromCamera(mouseNDC, camera);
+    const hit = raycaster.ray.intersectPlane(intersectPlane, mouseWorld);
+
+    if (hit) {
+      if (mouseInited) {
+        const dx = mouseWorld.x - prevMouseWorld.x;
+        const dy = mouseWorld.y - prevMouseWorld.y;
+        const invDt = 1 / Math.max(dt, 0.001);
+        const speedX = Math.max(-60, Math.min(60, dx * invDt));
+        const speedY = Math.max(-60, Math.min(60, dy * invDt));
+
+        const radius = params.windRadius;
+        for (const p of papers) {
+          const dist = p.position.distanceTo(mouseWorld);
+          if (dist < radius) {
+            const att = Math.pow(1 - dist / radius, 1.5);
+            // 横方向の風 → Y軸回転トルク
+            p.directWind += speedX * att * 0.12;
+            // 縦方向の風も少し影響
+            p.directWind += speedY * att * 0.025;
+          }
+        }
+      }
+      prevMouseWorld.copy(mouseWorld);
+      mouseInited = true;
+
+      // マウスライト追従
+      mouseLight.position.set(mouseWorld.x, mouseWorld.y, 4);
+      mouseLight.intensity = 1.2;
+    }
+  } else {
+    mouseLight.intensity *= 0.92;
+  }
+
+  // 自然の微風（常に微かに揺らぐ）
+  for (const p of papers) {
+    const breeze = Math.sin(elapsed * 0.6 + p.gridX * 0.35 + p.gridY * 0.22) * 0.006
+                 + Math.sin(elapsed * 1.1 + p.gridX * 0.18 - p.gridY * 0.4) * 0.003;
+    p.directWind += breeze * dt;
+  }
+
+  // 風の伝播計算
+  const tempWinds = new Float32Array(TOTAL);
+  for (let i = 0; i < TOTAL; i++) {
+    tempWinds[i] = papers[i].wind + papers[i].directWind;
+    papers[i].directWind = 0;
+  }
+
+  const propRate = params.propagation;
+  const decay = params.windDecay;
+  for (let iy = 0; iy < GRID; iy++) {
+    for (let ix = 0; ix < GRID; ix++) {
+      const idx = iy * GRID + ix;
+      let nSum = 0, nCnt = 0;
+      if (ix > 0)        { nSum += tempWinds[idx - 1];    nCnt++; }
+      if (ix < GRID - 1) { nSum += tempWinds[idx + 1];    nCnt++; }
+      if (iy > 0)        { nSum += tempWinds[idx - GRID];  nCnt++; }
+      if (iy < GRID - 1) { nSum += tempWinds[idx + GRID];  nCnt++; }
+      const avg = nCnt > 0 ? nSum / nCnt : 0;
+      papers[idx].wind = tempWinds[idx] * (1 - propRate) + avg * propRate;
+      papers[idx].wind *= decay;
+    }
+  }
+
+  // 物理シミュレーション（バネ-ダンパモデル）
+  const stiff = params.stiffness;
+  const damp = params.damping;
+  const wScale = params.windScale;
+
+  for (let i = 0; i < TOTAL; i++) {
+    const p = papers[i];
+    const torque = -stiff * p.angle - damp * p.angularVelocity + p.wind * wScale;
+    p.angularVelocity += torque * dt;
+    p.angle += p.angularVelocity * dt;
+    // 角度制限
+    p.angle = Math.max(-Math.PI * 0.85, Math.min(Math.PI * 0.85, p.angle));
+    angleArray[i] = p.angle;
+  }
+  angleAttr.needsUpdate = true;
+
+  // 色の動的更新（風の強さで鮮やかに）
+  for (let i = 0; i < TOTAL; i++) {
+    const p = papers[i];
+    const wi = Math.min(Math.abs(p.wind) * 5, 1);
+    tmpColor.setHSL(
+      p.baseHue + wi * 0.04,
+      Math.min(p.baseSat + wi * 0.25, 0.55),
+      Math.min(p.baseLit + wi * 0.1, 1.0)
+    );
+    instancedMesh.setColorAt(i, tmpColor);
+  }
+  instancedMesh.instanceColor.needsUpdate = true;
+
+  // 埃パーティクル更新
+  const dp = dustGeo.attributes.position.array;
+  for (let i = 0; i < DUST; i++) {
+    const i3 = i * 3;
+    dp[i3]     += dustVel[i3]     + Math.sin(elapsed * 0.3 + i) * 0.002;
+    dp[i3 + 1] += dustVel[i3 + 1] + Math.cos(elapsed * 0.25 + i * 0.7) * 0.0015;
+    dp[i3 + 2] += dustVel[i3 + 2];
+    // 範囲外でリセット
+    if (Math.abs(dp[i3]) > 16) dp[i3] *= -0.5;
+    if (Math.abs(dp[i3 + 1]) > 16) dp[i3 + 1] *= -0.5;
+    if (Math.abs(dp[i3 + 2]) > 5) dp[i3 + 2] *= -0.5;
+  }
+  dustGeo.attributes.position.needsUpdate = true;
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+</body>
+</html>
