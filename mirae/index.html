@@ -167,8 +167,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 /* ===== 定数 ===== */
-const PANEL_W = 18.0; // さらに2倍 (9.0 -> 18.0)
-const PANEL_H = 13.86; // アスペクト比を維持
+const PANEL_W = 10.0; // さらに2倍 (9.0 -> 18.0)
+const PANEL_H = 6.5; // アスペクト比を維持
 const SEG_X = 8;
 const SEG_Y = 6;
 
@@ -222,59 +222,60 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.VSMShadowMap; // より柔らかな影
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.0; // 露出を下げて色を濃く出す (1.4 -> 1.0)
+renderer.toneMappingExposure = 1.2;
+renderer.outputColorSpace = THREE.SRGBColorSpace; // 正しい色空間
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.dampingFactor = 0.06;
-controls.minDistance = 20;
-controls.maxDistance = 300; 
-controls.maxPolarAngle = Math.PI * 0.88;
+controls.dampingFactor = 0.05;
 
-/* ===== ライティング ===== */
-scene.add(new THREE.AmbientLight('#ffffff', 0.8)); // 環境光を少し強めて陰影を和らげる
+/* ===== ライティング (物理単位を意識) ===== */
+const ambientLight = new THREE.AmbientLight('#ffffff', 0.5);
+scene.add(ambientLight);
 
-const dirLight1 = new THREE.DirectionalLight('#ffffff', 1.5); // 直接光を弱めて白飛びを防ぐ
-dirLight1.position.set(30, 50, 80);
-dirLight1.castShadow = true;
-dirLight1.shadow.mapSize.set(2048, 2048);
-const sc = dirLight1.shadow.camera;
-sc.near = 1; sc.far = 250;
-sc.left = -60; sc.right = 60; sc.top = 60; sc.bottom = -60;
-scene.add(dirLight1);
+// メインの面光源的な方向
+const mainLight = new THREE.DirectionalLight('#ffffff', 3.0);
+mainLight.position.set(50, 100, 50);
+mainLight.castShadow = true;
+mainLight.shadow.mapSize.set(2048, 2048);
+mainLight.shadow.radius = 4;
+mainLight.shadow.blurSamples = 25;
+mainLight.shadow.camera.left = -50; mainLight.shadow.camera.right = 50;
+mainLight.shadow.camera.top = 50; mainLight.shadow.camera.bottom = -50;
+scene.add(mainLight);
 
-const dirLight2 = new THREE.DirectionalLight('#ffffff', 0.5); 
-dirLight2.position.set(-40, -30, 40);
-scene.add(dirLight2);
+const fillLight = new THREE.PointLight('#80a0ff', 200, 100);
+fillLight.position.set(-30, -20, 20);
+scene.add(fillLight);
 
-const rimLight = new THREE.DirectionalLight('#ffffff', 0.3);
-rimLight.position.set(0, 0, -60);
-scene.add(rimLight);
-
-// マウス追従ライト
-const mouseLight = new THREE.PointLight('#ffffff', 0, 40, 1.2); 
-mouseLight.position.set(0, 0, 5);
+// マウスライト (物理的な点光源)
+const mouseLight = new THREE.PointLight('#ffffff', 0, 50);
 scene.add(mouseLight);
 
-/* ===== 手パネル生成 (Async Init) ===== */
+/* ===== 手パネル生成 (PBR Material) ===== */
 const textureLoader = new THREE.TextureLoader();
 const handTexture = textureLoader.load('hand.svg');
+handTexture.colorSpace = THREE.SRGBColorSpace;
 
 const geometry = new THREE.PlaneGeometry(PANEL_W, PANEL_H, SEG_X, SEG_Y);
-// 右辺をピボットにする（左向きに振れるように）ためX方向にマイナスオフセット
 geometry.translate(-PANEL_W / 2, 0, 0);
 
-const material = new THREE.MeshStandardMaterial({
+const material = new THREE.MeshPhysicalMaterial({
   map: handTexture,
   side: THREE.DoubleSide,
-  roughness: 0.5,
-  metalness: 0.0,
+  roughness: 0.3,
+  metalness: 0.05,
+  reflectivity: 0.5,
+  clearcoat: 0.3,
+  clearcoatRoughness: 0.2,
   transparent: true,
   opacity: 1.0,
-  alphaTest: 0.5, // 境界をはっきりさせて枠線感を消す
+  alphaTest: 0.5,
+  emissive: new THREE.Color('#ffffff'),
+  emissiveIntensity: 0, // 動的に変更
 });
 
 material.onBeforeCompile = (shader) => {
@@ -284,6 +285,8 @@ material.onBeforeCompile = (shader) => {
     `#include <common>
     attribute float aAngle;
     attribute float aZRotation;
+    attribute float aWind;
+    varying float vWind;
     uniform float uBendAmount;`
   );
 
@@ -291,16 +294,15 @@ material.onBeforeCompile = (shader) => {
     '#include <beginnormal_vertex>',
     `#include <beginnormal_vertex>
     {
+      vWind = aWind;
       float ang = aAngle;
       float ca = cos(ang);
       float sa = sin(ang);
-      // Y軸回転
       float nx = objectNormal.x * ca + objectNormal.z * sa;
       float nz = -objectNormal.x * sa + objectNormal.z * ca;
       objectNormal.x = nx;
       objectNormal.z = nz;
 
-      // 曲げ補正 (右端が固定なので position.x は負の値。0に向かって曲がるようにクランプ)
       float xN = clamp(-position.x / ${PANEL_W.toFixed(4)}, 0.0, 1.0);
       float bendAng = ang * xN * uBendAmount;
       float cb = cos(bendAng);
@@ -346,6 +348,19 @@ material.onBeforeCompile = (shader) => {
       transformed.y = ry;
     }`
   );
+
+  // フラグメントシェーダーで風による発光を物理的に加算
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <common>',
+    `#include <common>
+    varying float vWind;`
+  );
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <emissivemap_fragment>',
+    `#include <emissivemap_fragment>
+    totalEmissiveRadiance += diffuseColor.rgb * vWind * 0.4;`
+  );
+
   material.userData.shader = shader;
 };
 
@@ -359,6 +374,7 @@ function updateBendUniform() {
 let instancedMesh;
 let papers = [];
 let angleArray, angleAttr;
+let windArray, windAttr;
 let totalInstances = 0;
 
 async function initPapers() {
@@ -375,26 +391,26 @@ async function initPapers() {
   scene.add(instancedMesh);
 
   angleArray = new Float32Array(totalInstances);
+  windArray = new Float32Array(totalInstances);
   const zRotArray = new Float32Array(totalInstances);
   const dummy = new THREE.Object3D();
   const tmpColor = new THREE.Color();
 
   const palettes = [
-    { h: 0.00, s: 0.95, l: 0.55 }, // 鮮やかな赤
-    { h: 0.08, s: 1.00, l: 0.55 }, // 鮮やかなオレンジ
-    { h: 0.15, s: 1.00, l: 0.50 }, // 鮮やかな黄色
-    { h: 0.35, s: 0.90, l: 0.50 }, // 鮮やかな緑
-    { h: 0.50, s: 1.00, l: 0.50 }, // 鮮やかなシアン
-    { h: 0.62, s: 0.95, l: 0.60 }, // 鮮やかな青
-    { h: 0.78, s: 0.90, l: 0.55 }, // 鮮やかな紫
-    { h: 0.90, s: 0.95, l: 0.55 }, // 鮮やかなピンク
+    { h: 0.00, s: 0.95, l: 0.55 }, // 赤
+    { h: 0.08, s: 1.00, l: 0.55 }, // オレンジ
+    { h: 0.15, s: 1.00, l: 0.50 }, // 黄色
+    { h: 0.35, s: 0.90, l: 0.50 }, // 緑
+    { h: 0.50, s: 1.00, l: 0.50 }, // シアン
+    { h: 0.62, s: 0.95, l: 0.60 }, // 青
+    { h: 0.78, s: 0.90, l: 0.55 }, // 紫
+    { h: 0.90, s: 0.95, l: 0.55 }, // ピンク
   ];
 
   rects.forEach((rect, i) => {
     const svgX = parseFloat(rect.getAttribute('x'));
     const svgY = parseFloat(rect.getAttribute('y'));
     
-    // 重なりを許容するためスケールを縮小 (0.12 -> 0.04)
     const px = (svgX - 571) * 0.04;
     const py = -(svgY - 288) * 0.04;
     const pz = (Math.random() - 0.5) * 1.5;
@@ -402,20 +418,18 @@ async function initPapers() {
     const zRot = (svgY / 576 - 0.5) * (Math.PI / 3);
     zRotArray[i] = zRot;
 
-    // パレットから色を選択して適用 (i % length でバラバラに)
     const p = palettes[i % palettes.length];
     tmpColor.setHSL(p.h, p.s, p.l);
     instancedMesh.setColorAt(i, tmpColor);
 
     const initialAngle = params.baseAngle + (Math.random() - 0.5) * 0.1;
     angleArray[i] = initialAngle;
+    windArray[i] = 0;
 
     papers.push({
       position: new THREE.Vector3(px, py, pz),
       angle: initialAngle, angularVelocity: 0,
       wind: 0, directWind: 0,
-      // 各インスタンスの色を保持
-      color: { h: p.h, s: p.s, l: p.l }
     });
 
     dummy.position.set(px, py, pz);
@@ -424,8 +438,10 @@ async function initPapers() {
   });
 
   angleAttr = new THREE.InstancedBufferAttribute(angleArray, 1);
+  windAttr = new THREE.InstancedBufferAttribute(windArray, 1);
   instancedMesh.geometry.setAttribute('aAngle', angleAttr);
   instancedMesh.geometry.setAttribute('aZRotation', new THREE.InstancedBufferAttribute(zRotArray, 1));
+  instancedMesh.geometry.setAttribute('aWind', windAttr);
   
   instancedMesh.instanceMatrix.needsUpdate = true;
   instancedMesh.instanceColor.needsUpdate = true;
@@ -537,13 +553,13 @@ function animate() {
     p.angle = Math.max(baseAng - 2.6, Math.min(baseAng + 2.6, p.angle + p.angularVelocity * dt));
     angleArray[i] = p.angle;
 
-    const wi = Math.min(Math.abs(p.wind) * 5, 1);
-    // 保持している色をベースに、風でわずかに発光感を出す
-    tmpCol.setHSL(p.color.h, p.color.s, Math.min(p.color.l + wi * 0.15, 1.0)); 
-    instancedMesh.setColorAt(i, tmpCol);
+    // 風の強さをシェーダーに渡す (物理的な発光計算に使用)
+    windArray[i] = Math.min(Math.abs(p.wind) * 4, 1.5);
   }
   angleAttr.needsUpdate = true;
-  instancedMesh.instanceColor.needsUpdate = true;
+  windAttr.needsUpdate = true;
+  // インスタンスカラーの毎フレーム更新は不要になった (静的に初期化)
+  // instancedMesh.instanceColor.needsUpdate = true;
 
   const dp = dustGeo.attributes.position.array;
   for (let i = 0; i < DUST; i++) {
