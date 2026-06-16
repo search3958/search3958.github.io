@@ -9,36 +9,32 @@
   html, body {
     overflow: hidden;
     width: 100%; height: 100%;
-    background: #040508;
+    background: #000;
     font-family: 'Noto Serif JP', serif;
   }
-  canvas { display: block; }
+  canvas { display: block; position: relative; z-index: 2; }
+
+  #videoBackground {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: blur(60px);
+    opacity: 0.1;
+    z-index: 0;
+    transform: scaleX(-1);
+  }
 
   .bg-glow {
     position: fixed;
     border-radius: 50%;
-    filter: blur(160px); /* ぼかしを少し強く */
+    filter: blur(160px);
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
   }
-  .bg-glow.warm {
-    width: 600px; height: 600px;
-    top: 10%; left: 20%;
-    background: #ff2a2a; /* より鮮やかに */
-    opacity: 0.05;
-  }
-  .bg-glow.cool {
-    width: 550px; height: 550px;
-    top: 45%; right: 10%;
-    background: #2a52ff;
-    opacity: 0.05;
-  }
-  .bg-glow.accent {
-    width: 400px; height: 400px;
-    bottom: 5%; left: 45%;
-    background: #2aff70;
-    opacity: 0.04;
-  }
+  .bg-glow.warm { width: 600px; height: 600px; top: 10%; left: 20%; background: #ff2a2a; opacity: 0.05; }
+  .bg-glow.cool { width: 550px; height: 550px; top: 45%; right: 10%; background: #2a52ff; opacity: 0.05; }
+  .bg-glow.accent { width: 400px; height: 400px; bottom: 5%; left: 45%; background: #2aff70; opacity: 0.04; }
 
   .title {
     position: fixed;
@@ -66,7 +62,6 @@
     transition: opacity 1s ease;
   }
 
-  /* パラメータコントロール */
   .ctrl-toggle {
     position: fixed;
     top: 16px; right: 16px;
@@ -96,46 +91,33 @@
     backdrop-filter: blur(12px);
     transition: opacity 0.3s, transform 0.3s;
   }
-  .ctrl-panel.hidden {
-    opacity: 0;
-    transform: translateY(-8px);
-    pointer-events: none;
-  }
-  .ctrl-panel label {
-    display: block;
-    color: rgba(200,220,255,0.4);
-    font-size: 11px;
-    letter-spacing: 0.05em;
-    margin-bottom: 3px;
-    font-weight: 300;
-  }
-  .ctrl-panel input[type="range"] {
-    width: 100%;
-    margin-bottom: 10px;
-    accent-color: #4a80c8;
-    height: 3px;
-  }
-  .ctrl-panel .val {
-    float: right;
-    color: rgba(100,180,255,0.6);
-    font-size: 10px;
+  .ctrl-panel.hidden { opacity: 0; transform: translateY(-8px); pointer-events: none; }
+  .ctrl-panel label { display: block; color: rgba(200,220,255,0.4); font-size: 11px; letter-spacing: 0.05em; margin-bottom: 3px; font-weight: 300; }
+  .ctrl-panel input[type="range"] { width: 100%; margin-bottom: 10px; accent-color: #4a80c8; height: 3px; }
+  .ctrl-panel .val { float: right; color: rgba(100,180,255,0.6); font-size: 10px; }
+
+  .hand-cursor {
+    position: fixed; width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.33); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2); pointer-events: none; z-index: 100; display: none; transform: translate(-50%, -50%);
   }
 
-  @media (max-width: 600px) {
-    .title { font-size: 14px; letter-spacing: 0.3em; }
-    .ctrl-panel { width: 180px; }
-  }
+  @media (max-width: 600px) { .title { font-size: 14px; letter-spacing: 0.3em; } .ctrl-panel { width: 180px; } }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
 </head>
 <body>
+
+<video id="videoBackground" autoplay playsinline muted></video>
+<div id="handCursor0" class="hand-cursor"></div>
+<div id="handCursor1" class="hand-cursor"></div>
 
 <div class="bg-glow warm"></div>
 <div class="bg-glow cool"></div>
 <div class="bg-glow accent"></div>
 
 <div class="title">風の紙</div>
-<div class="hint" id="hint">マウスを動かして風を起こす</div>
+<div class="hint" id="hint">カメラに手をかざすかマウスを動かす</div>
 
 <button class="ctrl-toggle" id="ctrlToggle" aria-label="設定パネル切替">&#9881;</button>
 <div class="ctrl-panel" id="ctrlPanel">
@@ -145,8 +127,8 @@
   <input type="range" id="rDamp" min="0.5" max="25" value="14" step="0.5">
   <label>風力 <span class="val" id="vWind">6</span></label>
   <input type="range" id="rWind" min="1" max="120" value="6">
-  <label>風の半径 <span class="val" id="vRadius">11</span></label>
-  <input type="range" id="rRadius" min="1" max="30" value="11">
+  <label>風の半径 <span class="val" id="vRadius">15</span></label>
+  <input type="range" id="rRadius" min="1" max="30" value="15">
   <label>伝播率 <span class="val" id="vProp">0.32</span></label>
   <input type="range" id="rProp" min="0" max="0.8" value="0.32" step="0.01">
   <label>曲げ量 <span class="val" id="vBend">0.55</span></label>
@@ -166,416 +148,202 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-/* ===== 定数 ===== */
-const PANEL_W = 10.0; // さらに2倍 (9.0 -> 18.0)
-const PANEL_H = 6.5; // アスペクト比を維持
-const SEG_X = 8;
-const SEG_Y = 6;
+const videoElement = document.getElementById('videoBackground');
+let handLandmarks = [], hintHidden = false;
 
-/* ===== 調整可能パラメータ ===== */
-const params = {
-  stiffness: 92,
-  damping: 14,
-  windScale: 6,
-  windRadius: 11,
-  propagation: 0.32,
-  windDecay: 0.96,
-  bendAmount: 0.55,
-  baseAngle: Math.PI * 0.12, // 手前を向くように正の値に変更
-};
+async function setupHandTracking() {
+  const handsScript = document.createElement('script');
+  handsScript.src = "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js";
+  document.head.appendChild(handsScript);
+  const cameraScript = document.createElement('script');
+  cameraScript.src = "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js";
+  document.head.appendChild(cameraScript);
 
-/* ===== UIコントロール ===== */
-const ctrlToggle = document.getElementById('ctrlToggle');
-const ctrlPanel = document.getElementById('ctrlPanel');
-ctrlToggle.addEventListener('click', () => {
-  ctrlPanel.classList.toggle('hidden');
-});
-
-// スライダーバインド
-function bindSlider(id, param, valId) {
-  const slider = document.getElementById(id);
-  const valEl = document.getElementById(valId);
-  slider.addEventListener('input', () => {
-    params[param] = parseFloat(slider.value);
-    valEl.textContent = slider.value;
+  await new Promise((resolve, reject) => {
+    let loaded = 0;
+    const check = () => { if(++loaded === 2) resolve(); };
+    cameraScript.onload = check; handsScript.onload = check;
+    cameraScript.onerror = reject; handsScript.onerror = reject;
   });
+
+  const hands = new window.Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
+  hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+  hands.onResults((results) => {
+    handLandmarks = results.multiHandLandmarks;
+    if (handLandmarks.length > 0 && !hintHidden) { document.getElementById('hint').style.opacity = '0'; hintHidden = true; }
+  });
+
+  const mpCamera = new window.Camera(videoElement, {
+    onFrame: async () => { await hands.send({ image: videoElement }); },
+    width: 1280, height: 720
+  });
+  mpCamera.start();
 }
-bindSlider('rStiff', 'stiffness', 'vStiff');
-bindSlider('rDamp', 'damping', 'vDamp');
-bindSlider('rWind', 'windScale', 'vWind');
-bindSlider('rRadius', 'windRadius', 'vRadius');
-bindSlider('rProp', 'propagation', 'vProp');
-bindSlider('rBend', 'bendAmount', 'vBend');
+setupHandTracking();
 
-/* ===== Three.js 初期化 ===== */
+const PANEL_W = 18.0, PANEL_H = 13.86, SEG_X = 8, SEG_Y = 6;
+const params = { stiffness: 92, damping: 14, windScale: 6, windRadius: 15, propagation: 0.32, windDecay: 0.96, bendAmount: 0.55, baseAngle: Math.PI * 0.12 };
+
+const ctrlToggle = document.getElementById('ctrlToggle'), ctrlPanel = document.getElementById('ctrlPanel');
+ctrlToggle.addEventListener('click', () => ctrlPanel.classList.toggle('hidden'));
+function bindSlider(id, param, valId) {
+  const slider = document.getElementById(id), valEl = document.getElementById(valId);
+  slider.addEventListener('input', () => { params[param] = parseFloat(slider.value); valEl.textContent = slider.value; });
+}
+bindSlider('rStiff', 'stiffness', 'vStiff'); bindSlider('rDamp', 'damping', 'vDamp'); bindSlider('rWind', 'windScale', 'vWind'); bindSlider('rRadius', 'windRadius', 'vRadius'); bindSlider('rProp', 'propagation', 'vProp'); bindSlider('rBend', 'bendAmount', 'vBend');
+
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#040508');
-scene.fog = new THREE.FogExp2('#040508', 0.015);
+scene.fog = new THREE.FogExp2('#000000', 0.015);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, -2, 55); camera.lookAt(0, 0, 0);
 
-const camera = new THREE.PerspectiveCamera(
-  45, window.innerWidth / window.innerHeight, 0.1, 1000
-);
-camera.position.set(0, -2, 55); // カメラを前に戻す (120 -> 55)
-camera.lookAt(0, 0, 0);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.VSMShadowMap; // より柔らかな影
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.2;
-renderer.outputColorSpace = THREE.SRGBColorSpace; // 正しい色空間
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.VSMShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
+controls.enableDamping = true; controls.dampingFactor = 0.05;
 
-/* ===== ライティング (物理単位を意識) ===== */
-const ambientLight = new THREE.AmbientLight('#ffffff', 0.5);
-scene.add(ambientLight);
-
-// メインの面光源的な方向
-const mainLight = new THREE.DirectionalLight('#ffffff', 3.0);
-mainLight.position.set(50, 100, 50);
-mainLight.castShadow = true;
-mainLight.shadow.mapSize.set(2048, 2048);
-mainLight.shadow.radius = 4;
-mainLight.shadow.blurSamples = 25;
-mainLight.shadow.camera.left = -50; mainLight.shadow.camera.right = 50;
-mainLight.shadow.camera.top = 50; mainLight.shadow.camera.bottom = -50;
+scene.add(new THREE.AmbientLight('#ffffff', 0.5));
+const mainLight = new THREE.DirectionalLight('#ffffff', 4.0);
+mainLight.position.set(25, 15, 40); mainLight.castShadow = true;
+mainLight.shadow.mapSize.set(2048, 2048); mainLight.shadow.radius = 4; mainLight.shadow.blurSamples = 25;
 scene.add(mainLight);
-
 const fillLight = new THREE.PointLight('#80a0ff', 200, 100);
-fillLight.position.set(-30, -20, 20);
-scene.add(fillLight);
+fillLight.position.set(-30, -20, 20); scene.add(fillLight);
 
-// マウスライト (物理的な点光源)
-const mouseLight = new THREE.PointLight('#ffffff', 0, 50);
-scene.add(mouseLight);
-
-/* ===== 手パネル生成 (PBR Material) ===== */
 const textureLoader = new THREE.TextureLoader();
 const handTexture = textureLoader.load('hand.svg');
 handTexture.colorSpace = THREE.SRGBColorSpace;
-
 const geometry = new THREE.PlaneGeometry(PANEL_W, PANEL_H, SEG_X, SEG_Y);
 geometry.translate(-PANEL_W / 2, 0, 0);
 
-const material = new THREE.MeshPhysicalMaterial({
-  map: handTexture,
-  side: THREE.DoubleSide,
-  roughness: 0.3,
-  metalness: 0.05,
-  reflectivity: 0.5,
-  clearcoat: 0.3,
-  clearcoatRoughness: 0.2,
-  transparent: true,
-  opacity: 1.0,
-  alphaTest: 0.5,
-  emissive: new THREE.Color('#ffffff'),
-  emissiveIntensity: 0, // 動的に変更
-});
-
+const material = new THREE.MeshPhysicalMaterial({ map: handTexture, side: THREE.DoubleSide, roughness: 0.3, metalness: 0.05, reflectivity: 0.5, clearcoat: 0.3, clearcoatRoughness: 0.2, transparent: true, opacity: 1.0, alphaTest: 0.5, emissive: new THREE.Color('#ffffff'), emissiveIntensity: 0 });
 material.onBeforeCompile = (shader) => {
   shader.uniforms.uBendAmount = { value: params.bendAmount };
-  shader.vertexShader = shader.vertexShader.replace(
-    '#include <common>',
-    `#include <common>
-    attribute float aAngle;
-    attribute float aZRotation;
-    attribute float aWind;
-    varying float vWind;
-    uniform float uBendAmount;`
-  );
-
-  shader.vertexShader = shader.vertexShader.replace(
-    '#include <beginnormal_vertex>',
-    `#include <beginnormal_vertex>
-    {
-      vWind = aWind;
-      float ang = aAngle;
-      float ca = cos(ang);
-      float sa = sin(ang);
-      float nx = objectNormal.x * ca + objectNormal.z * sa;
-      float nz = -objectNormal.x * sa + objectNormal.z * ca;
-      objectNormal.x = nx;
-      objectNormal.z = nz;
-
-      float xN = clamp(-position.x / ${PANEL_W.toFixed(4)}, 0.0, 1.0);
-      float bendAng = ang * xN * uBendAmount;
-      float cb = cos(bendAng);
-      float sb = sin(bendAng);
-      float bnx = objectNormal.x * cb + objectNormal.z * sb;
-      float bnz = -objectNormal.x * sb + objectNormal.z * cb;
-      objectNormal.x = bnx;
-      objectNormal.z = bnz;
-
-      float cz = cos(aZRotation);
-      float sz = sin(aZRotation);
-      float rnx = objectNormal.x * cz - objectNormal.y * sz;
-      float rny = objectNormal.x * sz + objectNormal.y * cz;
-      objectNormal.x = rnx;
-      objectNormal.y = rny;
-    }`
-  );
-
-  shader.vertexShader = shader.vertexShader.replace(
-    '#include <begin_vertex>',
-    `#include <begin_vertex>
-    {
-      float ang = aAngle;
-      float ca = cos(ang);
-      float sa = sin(ang);
-      transformed.x = position.x * ca + position.z * sa;
-      transformed.z = -position.x * sa + position.z * ca;
-
-      float xN = clamp(-position.x / ${PANEL_W.toFixed(4)}, 0.0, 1.0);
-      float bendAng = ang * xN * uBendAmount;
-      float cb = cos(bendAng);
-      float sb = sin(bendAng);
-      float bx = transformed.x * cb + transformed.z * sb;
-      float bz = -transformed.x * sb + transformed.z * cb;
-      transformed.x = bx;
-      transformed.z = bz;
-
-      float cz = cos(aZRotation);
-      float sz = sin(aZRotation);
-      float rx = transformed.x * cz - transformed.y * sz;
-      float ry = transformed.x * sz + transformed.y * cz;
-      transformed.x = rx;
-      transformed.y = ry;
-    }`
-  );
-
-  // フラグメントシェーダーで風による発光を物理的に加算
-  shader.fragmentShader = shader.fragmentShader.replace(
-    '#include <common>',
-    `#include <common>
-    varying float vWind;`
-  );
-  shader.fragmentShader = shader.fragmentShader.replace(
-    '#include <emissivemap_fragment>',
-    `#include <emissivemap_fragment>
-    totalEmissiveRadiance += diffuseColor.rgb * vWind * 0.4;`
-  );
-
+  shader.vertexShader = shader.vertexShader.replace('#include <common>',`#include <common>\nattribute float aAngle; attribute float aZRotation; attribute float aWind;\nvarying float vWind; uniform float uBendAmount;`);
+  shader.vertexShader = shader.vertexShader.replace('#include <beginnormal_vertex>',`#include <beginnormal_vertex>\n{ vWind = aWind; float ang = aAngle; float ca = cos(ang); float sa = sin(ang); float nx = objectNormal.x * ca + objectNormal.z * sa; float nz = -objectNormal.x * sa + objectNormal.z * ca; objectNormal.x = nx; objectNormal.z = nz; float xN = clamp(-position.x / ${PANEL_W.toFixed(4)}, 0.0, 1.0); float bendAng = ang * xN * uBendAmount; float cb = cos(bendAng); float sb = sin(bendAng); float bnx = objectNormal.x * cb + objectNormal.z * sb; float bnz = -objectNormal.x * sb + objectNormal.z * cb; objectNormal.x = bnx; objectNormal.z = bnz; float cz = cos(aZRotation); float sz = sin(aZRotation); float rnx = objectNormal.x * cz - objectNormal.y * sz; float rny = objectNormal.x * sz + objectNormal.y * cz; objectNormal.x = rnx; objectNormal.y = rny; }`);
+  shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>\n{ float ang = aAngle; float ca = cos(ang); float sa = sin(ang); transformed.x = position.x * ca + position.z * sa; transformed.z = -position.x * sa + position.z * ca; float xN = clamp(-position.x / ${PANEL_W.toFixed(4)}, 0.0, 1.0); float bendAng = ang * xN * uBendAmount; float cb = cos(bendAng); float sb = sin(bendAng); float bx = transformed.x * cb + transformed.z * sb; float bz = -transformed.x * sb + transformed.z * cb; transformed.x = bx; transformed.z = bz; float cz = cos(aZRotation); float sz = sin(aZRotation); float rx = transformed.x * cz - transformed.y * sz; float ry = transformed.x * sz + transformed.y * cz; transformed.x = rx; transformed.y = ry; }`);
+  shader.fragmentShader = shader.fragmentShader.replace('#include <common>',`#include <common>\nvarying float vWind;`);
+  shader.fragmentShader = shader.fragmentShader.replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>\ntotalEmissiveRadiance += diffuseColor.rgb * vWind * 0.4;`);
   material.userData.shader = shader;
 };
+function updateBendUniform() { if (material.userData.shader) material.userData.shader.uniforms.uBendAmount.value = params.bendAmount; }
 
-function updateBendUniform() {
-  if (material.userData.shader) {
-    material.userData.shader.uniforms.uBendAmount.value = params.bendAmount;
-  }
-}
-
-// グローバルデータ
-let instancedMesh;
-let papers = [];
-let angleArray, angleAttr;
-let windArray, windAttr;
-let totalInstances = 0;
-
+let instancedMesh, papers = [], angleArray, angleAttr, windArray, windAttr, totalInstances = 0;
 async function initPapers() {
-  const response = await fetch('b.svg');
-  const svgText = await response.text();
-  const parser = new DOMParser();
-  const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-  const rects = svgDoc.querySelectorAll('rect');
-  
-  totalInstances = rects.length;
-  instancedMesh = new THREE.InstancedMesh(geometry, material, totalInstances);
-  instancedMesh.castShadow = true;
-  instancedMesh.receiveShadow = true;
-  scene.add(instancedMesh);
-
-  angleArray = new Float32Array(totalInstances);
-  windArray = new Float32Array(totalInstances);
-  const zRotArray = new Float32Array(totalInstances);
-  const dummy = new THREE.Object3D();
-  const tmpColor = new THREE.Color();
-
-  const palettes = [
-    { h: 0.00, s: 0.95, l: 0.55 }, // 赤
-    { h: 0.08, s: 1.00, l: 0.55 }, // オレンジ
-    { h: 0.15, s: 1.00, l: 0.50 }, // 黄色
-    { h: 0.35, s: 0.90, l: 0.50 }, // 緑
-    { h: 0.50, s: 1.00, l: 0.50 }, // シアン
-    { h: 0.62, s: 0.95, l: 0.60 }, // 青
-    { h: 0.78, s: 0.90, l: 0.55 }, // 紫
-    { h: 0.90, s: 0.95, l: 0.55 }, // ピンク
-  ];
-
+  const response = await fetch('b.svg'); const svgText = await response.text();
+  const rects = (new DOMParser()).parseFromString(svgText, 'image/svg+xml').querySelectorAll('rect');
+  totalInstances = rects.length; instancedMesh = new THREE.InstancedMesh(geometry, material, totalInstances);
+  instancedMesh.castShadow = true; instancedMesh.receiveShadow = true; scene.add(instancedMesh);
+  angleArray = new Float32Array(totalInstances); windArray = new Float32Array(totalInstances);
+  const zRotArray = new Float32Array(totalInstances), dummy = new THREE.Object3D(), tmpColor = new THREE.Color();
+  const palettes = [{h:0,s:0.95,l:0.55},{h:0.08,s:1,l:0.55},{h:0.15,s:1,l:0.5},{h:0.35,s:0.9,l:0.5},{h:0.5,s:1,l:0.5},{h:0.62,s:0.95,l:0.6},{h:0.78,s:0.9,l:0.55},{h:0.9,s:0.95,l:0.55}];
   rects.forEach((rect, i) => {
-    const svgX = parseFloat(rect.getAttribute('x'));
-    const svgY = parseFloat(rect.getAttribute('y'));
-    
-    const px = (svgX - 571) * 0.04;
-    const py = -(svgY - 288) * 0.04;
-    const pz = (Math.random() - 0.5) * 1.5;
-
-    const zRot = (svgY / 576 - 0.5) * (Math.PI / 3);
-    zRotArray[i] = zRot;
-
-    const p = palettes[i % palettes.length];
-    tmpColor.setHSL(p.h, p.s, p.l);
-    instancedMesh.setColorAt(i, tmpColor);
-
-    const initialAngle = params.baseAngle + (Math.random() - 0.5) * 0.1;
-    angleArray[i] = initialAngle;
-    windArray[i] = 0;
-
-    papers.push({
-      position: new THREE.Vector3(px, py, pz),
-      angle: initialAngle, angularVelocity: 0,
-      wind: 0, directWind: 0,
-    });
-
-    dummy.position.set(px, py, pz);
-    dummy.updateMatrix();
-    instancedMesh.setMatrixAt(i, dummy.matrix);
+    const px = (parseFloat(rect.getAttribute('x')) - 571) * 0.04, py = -(parseFloat(rect.getAttribute('y')) - 288) * 0.04, pz = (Math.random() - 0.5) * 1.5;
+    const zRot = (parseFloat(rect.getAttribute('y')) / 576 - 0.5) * (Math.PI / 3); zRotArray[i] = zRot;
+    const p = palettes[i % palettes.length]; tmpColor.setHSL(p.h, p.s, p.l); instancedMesh.setColorAt(i, tmpColor);
+    const initialAngle = params.baseAngle + (Math.random() - 0.5) * 0.1; angleArray[i] = initialAngle;
+    papers.push({ position: new THREE.Vector3(px, py, pz), angle: initialAngle, angularVelocity: 0, wind: 0, directWind: 0 });
+    dummy.position.set(px, py, pz); dummy.updateMatrix(); instancedMesh.setMatrixAt(i, dummy.matrix);
   });
-
-  angleAttr = new THREE.InstancedBufferAttribute(angleArray, 1);
-  windAttr = new THREE.InstancedBufferAttribute(windArray, 1);
-  instancedMesh.geometry.setAttribute('aAngle', angleAttr);
-  instancedMesh.geometry.setAttribute('aZRotation', new THREE.InstancedBufferAttribute(zRotArray, 1));
-  instancedMesh.geometry.setAttribute('aWind', windAttr);
-  
-  instancedMesh.instanceMatrix.needsUpdate = true;
-  instancedMesh.instanceColor.needsUpdate = true;
-
+  angleAttr = new THREE.InstancedBufferAttribute(angleArray, 1); windAttr = new THREE.InstancedBufferAttribute(windArray, 1);
+  instancedMesh.geometry.setAttribute('aAngle', angleAttr); instancedMesh.geometry.setAttribute('aZRotation', new THREE.InstancedBufferAttribute(zRotArray, 1));
+  instancedMesh.geometry.setAttribute('aWind', windAttr); instancedMesh.instanceMatrix.needsUpdate = true; instancedMesh.instanceColor.needsUpdate = true;
   animate();
 }
 
-/* ===== 浮遊パーティクル ===== */
-const DUST = 250;
-const dustGeo = new THREE.BufferGeometry();
-const dustPos = new Float32Array(DUST * 3);
-const dustVel = new Float32Array(DUST * 3);
+const DUST = 250, dustGeo = new THREE.BufferGeometry(), dustPos = new Float32Array(DUST * 3), dustVel = new Float32Array(DUST * 3);
 for (let i = 0; i < DUST; i++) {
   dustPos[i*3] = (Math.random()-0.5)*32; dustPos[i*3+1] = (Math.random()-0.5)*32; dustPos[i*3+2] = (Math.random()-0.5)*8;
   dustVel[i*3] = (Math.random()-0.5)*0.02; dustVel[i*3+1] = (Math.random()-0.5)*0.02; dustVel[i*3+2] = (Math.random()-0.5)*0.005;
 }
 dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
-const dustMat = new THREE.PointsMaterial({ color: '#e0f0ff', size: 0.05, transparent: true, opacity: 0.25, blending: THREE.AdditiveBlending, depthWrite: false });
-scene.add(new THREE.Points(dustGeo, dustMat));
+scene.add(new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: '#e0f0ff', size: 0.05, transparent: true, opacity: 0.25, blending: THREE.AdditiveBlending, depthWrite: false })));
 
-/* ===== マウス・風 ===== */
-const mouseNDC = new THREE.Vector2(9999, 9999);
-const raycaster = new THREE.Raycaster();
-const intersectPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-const mouseWorld = new THREE.Vector3();
-const prevMouseWorld = new THREE.Vector3();
-let mouseInited = false, mouseActive = false, hintHidden = false;
+const raycaster = new THREE.Raycaster(), intersectPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+const handWorldPos = new THREE.Vector3(), prevHandWorldPos = [new THREE.Vector3(), new THREE.Vector3()], handInited = [false, false];
 
-function onPointerMove(x, y) {
-  mouseNDC.x = (x / window.innerWidth) * 2 - 1;
-  mouseNDC.y = -(y / window.innerHeight) * 2 + 1;
-  mouseActive = true;
-  if (!hintHidden) { document.getElementById('hint').style.opacity = '0'; hintHidden = true; }
-}
+/* ===== マウスインタラクション復元 ===== */
+const mouseNDC = new THREE.Vector2(9999, 9999), mouseWorld = new THREE.Vector3(), prevMouseWorld = new THREE.Vector3();
+let mouseInited = false, mouseActive = false;
+function onPointerMove(x, y) { mouseNDC.x = (x / window.innerWidth) * 2 - 1; mouseNDC.y = -(y / window.innerHeight) * 2 + 1; mouseActive = true; if (!hintHidden) { document.getElementById('hint').style.opacity = '0'; hintHidden = true; } }
 window.addEventListener('mousemove', (e) => onPointerMove(e.clientX, e.clientY));
 window.addEventListener('touchstart', (e) => onPointerMove(e.touches[0].clientX, e.touches[0].clientY));
 window.addEventListener('touchmove', (e) => { e.preventDefault(); onPointerMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
 window.addEventListener('mouseleave', () => { mouseActive = false; });
 window.addEventListener('touchend', () => { mouseActive = false; });
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
 
-/* ===== アニメーションループ ===== */
+window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+
 const clock = new THREE.Clock();
 let elapsed = 0;
-const tmpCol = new THREE.Color();
 
 function animate() {
   requestAnimationFrame(animate);
-  const dt = Math.min(clock.getDelta(), 0.04);
-  elapsed += dt;
+  const dt = Math.min(clock.getDelta(), 0.04); elapsed += dt; updateBendUniform();
 
-  updateBendUniform();
+  document.getElementById('handCursor0').style.display = 'none';
+  document.getElementById('handCursor1').style.display = 'none';
 
+  // マウスによる風
   if (mouseActive) {
-    const camDir = new THREE.Vector3();
-    camera.getWorldDirection(camDir);
+    const camDir = new THREE.Vector3(); camera.getWorldDirection(camDir);
     intersectPlane.setFromNormalAndCoplanarPoint(camDir.negate(), new THREE.Vector3(0, 0, 0));
     raycaster.setFromCamera(mouseNDC, camera);
-    const hit = raycaster.ray.intersectPlane(intersectPlane, mouseWorld);
-    if (hit) {
+    if (raycaster.ray.intersectPlane(intersectPlane, mouseWorld)) {
       if (mouseInited) {
-        const speedX = Math.max(-60, Math.min(60, (mouseWorld.x - prevMouseWorld.x) / Math.max(dt, 0.001)));
-        const speedY = Math.max(-60, Math.min(60, (mouseWorld.y - prevMouseWorld.y) / Math.max(dt, 0.001)));
-        const radius = params.windRadius;
-        for (const p of papers) {
-          const dist = p.position.distanceTo(mouseWorld);
-          if (dist < radius) {
-            const att = Math.pow(1 - dist / radius, 1.5);
-            p.directWind += (speedX * 0.12 + speedY * 0.025) * att;
-          }
-        }
+        const speedX = Math.max(-80, Math.min(80, (mouseWorld.x - prevMouseWorld.x) / Math.max(dt, 0.001)));
+        const speedY = Math.max(-80, Math.min(80, (mouseWorld.y - prevMouseWorld.y) / Math.max(dt, 0.001)));
+        for (const p of papers) { const dist = p.position.distanceTo(mouseWorld); if (dist < params.windRadius) p.directWind += (speedX * 0.15 + speedY * 0.03) * Math.pow(1 - dist / params.windRadius, 1.5); }
       }
-      prevMouseWorld.copy(mouseWorld);
-      mouseInited = true;
-      mouseLight.position.set(mouseWorld.x, mouseWorld.y, 4);
-      mouseLight.intensity = 1.2;
+      prevMouseWorld.copy(mouseWorld); mouseInited = true;
     }
-  } else { mouseLight.intensity *= 0.92; }
-
-  for (const p of papers) {
-    p.directWind += (Math.sin(elapsed * 0.6 + p.position.x * 0.35 + p.position.y * 0.22) * 0.006 + Math.sin(elapsed * 1.1 + p.position.x * 0.18 - p.position.y * 0.4) * 0.003) * dt;
   }
 
+  // 手トラッキングによる風
+  if (handLandmarks && handLandmarks.length > 0) {
+    handLandmarks.forEach((landmarks, handIdx) => {
+      const lm = landmarks[8];
+      const cursor = document.getElementById(`handCursor${handIdx}`);
+      if (cursor) { cursor.style.display = 'block'; cursor.style.left = `${(1 - lm.x) * window.innerWidth}px`; cursor.style.top = `${lm.y * window.innerHeight}px`; }
+      const ndcX = (1 - lm.x) * 2 - 1, ndcY = (1 - lm.y) * 2 - 1;
+      raycaster.setFromCamera({ x: ndcX, y: ndcY }, camera);
+      if (raycaster.ray.intersectPlane(intersectPlane, handWorldPos)) {
+        if (handInited[handIdx]) {
+          const speedX = Math.max(-80, Math.min(80, (handWorldPos.x - prevHandWorldPos[handIdx].x) / Math.max(dt, 0.001)));
+          const speedY = Math.max(-80, Math.min(80, (handWorldPos.y - prevHandWorldPos[handIdx].y) / Math.max(dt, 0.001)));
+          for (const p of papers) { const dist = p.position.distanceTo(handWorldPos); if (dist < params.windRadius) p.directWind += (speedX * 0.15 + speedY * 0.03) * Math.pow(1 - dist / params.windRadius, 1.5); }
+        }
+        prevHandWorldPos[handIdx].copy(handWorldPos); handInited[handIdx] = true;
+      }
+    });
+  }
+
+  for (const p of papers) p.directWind += (Math.sin(elapsed * 0.6 + p.position.x * 0.35 + p.position.y * 0.22) * 0.006 + Math.sin(elapsed * 1.1 + p.position.x * 0.18 - p.position.y * 0.4) * 0.003) * dt;
   const tempWinds = papers.map(p => p.wind + p.directWind);
   papers.forEach(p => p.directWind = 0);
-
-  const propRate = params.propagation, decay = params.windDecay;
   for (let i = 0; i < totalInstances; i++) {
     let nSum = 0, nCnt = 0;
-    for (let j = 0; j < totalInstances; j++) {
-      if (i === j) continue;
-      const d2 = papers[i].position.distanceToSquared(papers[j].position);
-      if (d2 < 16) {
-        const weight = 1 - Math.sqrt(d2) / 4;
-        nSum += tempWinds[j] * weight; nCnt += weight;
-      }
-    }
-    papers[i].wind = (tempWinds[i] * (1 - propRate) + (nCnt > 0 ? nSum / nCnt : 0) * propRate) * decay;
+    for (let j = 0; j < totalInstances; j++) { if (i === j) continue; const d2 = papers[i].position.distanceToSquared(papers[j].position); if (d2 < 16) { const weight = 1 - Math.sqrt(d2) / 4; nSum += tempWinds[j] * weight; nCnt += weight; } }
+    papers[i].wind = (tempWinds[i] * (1 - params.propagation) + (nCnt > 0 ? nSum / nCnt : 0) * params.propagation) * params.windDecay;
   }
-
-  const stiff = params.stiffness, damp = params.damping, wScale = params.windScale, baseAng = params.baseAngle;
   for (let i = 0; i < totalInstances; i++) {
-    const p = papers[i];
-    p.angularVelocity += (-stiff * (p.angle - baseAng) - damp * p.angularVelocity + p.wind * wScale) * dt;
-    // 角度制限 (左向きなので baseAng を中心に制限)
-    p.angle = Math.max(baseAng - 2.6, Math.min(baseAng + 2.6, p.angle + p.angularVelocity * dt));
-    angleArray[i] = p.angle;
-
-    // 風の強さをシェーダーに渡す (物理的な発光計算に使用)
-    windArray[i] = Math.min(Math.abs(p.wind) * 4, 1.5);
+    const p = papers[i]; p.angularVelocity += (-params.stiffness * (p.angle - params.baseAngle) - params.damping * p.angularVelocity + p.wind * params.windScale) * dt;
+    p.angle = Math.max(params.baseAngle - 2.6, Math.min(params.baseAngle + 2.6, p.angle + p.angularVelocity * dt));
+    angleArray[i] = p.angle; windArray[i] = Math.min(Math.abs(p.wind) * 4, 1.5);
   }
-  angleAttr.needsUpdate = true;
-  windAttr.needsUpdate = true;
-  // インスタンスカラーの毎フレーム更新は不要になった (静的に初期化)
-  // instancedMesh.instanceColor.needsUpdate = true;
-
+  angleAttr.needsUpdate = true; windAttr.needsUpdate = true;
   const dp = dustGeo.attributes.position.array;
   for (let i = 0; i < DUST; i++) {
-    const i3 = i * 3;
-    dp[i3] += dustVel[i3] + Math.sin(elapsed * 0.3 + i) * 0.002;
-    dp[i3+1] += dustVel[i3+1] + Math.cos(elapsed * 0.25 + i * 0.7) * 0.0015;
-    dp[i3+2] += dustVel[i3+2];
-    if (Math.abs(dp[i3]) > 16) dp[i3] *= -0.5;
-    if (Math.abs(dp[i3+1]) > 16) dp[i3+1] *= -0.5;
-    if (Math.abs(dp[i3+2]) > 5) dp[i3+2] *= -0.5;
+    const i3 = i * 3; dp[i3] += dustVel[i3] + Math.sin(elapsed * 0.3 + i) * 0.002; dp[i3+1] += dustVel[i3+1] + Math.cos(elapsed * 0.25 + i * 0.7) * 0.0015; dp[i3+2] += dustVel[i3+2];
+    if (Math.abs(dp[i3]) > 16) dp[i3] *= -0.5; if (Math.abs(dp[i3+1]) > 16) dp[i3+1] *= -0.5; if (Math.abs(dp[i3+2]) > 5) dp[i3+2] *= -0.5;
   }
-  dustGeo.attributes.position.needsUpdate = true;
-  controls.update();
-  renderer.render(scene, camera);
+  dustGeo.attributes.position.needsUpdate = true; controls.update(); renderer.render(scene, camera);
 }
-
 initPapers();
 </script>
 </body>
