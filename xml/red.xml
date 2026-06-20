@@ -45,7 +45,13 @@
         <text key="r32">利用規約とプライバシーポリシー</text>
         <text key="r33">言語</text>
         <text key="r34">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">ホーム</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">第一目標</text>
+        <text key="nav_tools">ツール</text>
+        <text key="nav_products">プロダクト</text>
+        <text key="nav_github">GitHub</text></lang>
     <lang id="en">
         <text key="r1">Search3958</text>
         <text key="r2">Primary Goals</text>
@@ -91,7 +97,13 @@
         <text key="r32">Terms &amp; Privacy Policy</text>
         <text key="r33">Language</text>
         <text key="r34">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">Home</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">Primary Goals</text>
+        <text key="nav_tools">Tools</text>
+        <text key="nav_products">Products</text>
+        <text key="nav_github">GitHub</text></lang>
     <lang id="zh-CN">
         <text key="r1">Search3958</text>
         <text key="r2">首要目标</text>
@@ -137,7 +149,13 @@
         <text key="r32">服务条款和隐私政策</text>
         <text key="r33">语言</text>
         <text key="r34">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">首页</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">首要目标</text>
+        <text key="nav_tools">工具</text>
+        <text key="nav_products">产品</text>
+        <text key="nav_github">GitHub</text></lang>
     <lang id="zh-TW">
         <text key="r1">Search3958</text>
         <text key="r2">首要目標</text>
@@ -183,12 +201,18 @@
         <text key="r32">服務條款和隱私政策</text>
         <text key="r33">語言</text>
         <text key="r34">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">首頁</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">首要目標</text>
+        <text key="nav_tools">工具</text>
+        <text key="nav_products">產品</text>
+        <text key="nav_github">GitHub</text></lang>
     <lang id="ko">
         <text key="r1">Search3958</text>
         <text key="r2">주요 목표</text>
         <text key="r3">중요 가치관</text>
-        <text key="r4">모두를 위해</text>
+        <text key="r4">모두 위해</text>
         <text key="r5_1">모든 사람에게 서비스를 제공합니다.</text>
         <text key="r5_2">기본 기능은 모두 무료로 이용 가능합니다.</text>
         <text key="r6">편의 제공</text>
@@ -229,12 +253,18 @@
         <text key="r32">이용약관 및 개인정보 처리방침</text>
         <text key="r33">언어</text>
         <text key="r34">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">홈</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">주요 목표</text>
+        <text key="nav_tools">도구</text>
+        <text key="nav_products">제품</text>
+        <text key="nav_github">GitHub</text></lang>
     <lang id="ko-KP">
         <text key="r1">Search3958</text>
         <text key="r2">주요 목표</text>
         <text key="r3">중요 가치관</text>
-        <text key="r4">모두를 위해</text>
+        <text key="r4">모두 위해</text>
         <text key="r5_1">모든 사람들에게 봉사를 제공합니다.</text>
         <text key="r5_2">모든 기초 기능은 무료로 리용 가능합니다.</text>
         <text key="r6">편의 제공</text>
@@ -275,5 +305,11 @@
         <text key="r32">리용약관 및 프라이버시정책</text>
         <text key="r33">언어</text>
         <text key="r34">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">홈</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">주요 목표</text>
+        <text key="nav_tools">도구</text>
+        <text key="nav_products">제품들</text>
+        <text key="nav_github">GitHub</text></lang>
 </dictionary>

@@ -21,7 +21,43 @@
     <text key="t18">テーマカラー</text>
     <text key="t19">時計フォント</text>
     <text key="t20">閉じる</text>
-  </lang>
+          <text key="nav_home">ホーム</text>
+            <text key="nav_home">Home</text>
+            <text key="nav_home">首页</text>
+            <text key="nav_home">首頁</text>
+            <text key="nav_home">홈</text>
+            <text key="nav_home">홈</text>
+            <text key="nav_newtab">NewTab</text>
+            <text key="nav_newtab">NewTab</text>
+            <text key="nav_newtab">NewTab</text>
+            <text key="nav_newtab">NewTab</text>
+            <text key="nav_newtab">NewTab</text>
+            <text key="nav_newtab">NewTab</text>
+            <text key="nav_red">第一目標</text>
+            <text key="nav_red">Primary Goals</text>
+            <text key="nav_red">首要目标</text>
+            <text key="nav_red">首要目標</text>
+            <text key="nav_red">주요 목표</text>
+            <text key="nav_red">주요 목표</text>
+            <text key="nav_tools">ツール</text>
+            <text key="nav_tools">Tools</text>
+            <text key="nav_tools">工具</text>
+            <text key="nav_tools">工具</text>
+            <text key="nav_tools">도구</text>
+            <text key="nav_tools">도구</text>
+            <text key="nav_products">プロダクト</text>
+            <text key="nav_products">Products</text>
+            <text key="nav_products">产品</text>
+            <text key="nav_products">產品</text>
+            <text key="nav_products">제품</text>
+            <text key="nav_products">제품들</text>
+            <text key="nav_github">GitHub</text>
+            <text key="nav_github">GitHub</text>
+            <text key="nav_github">GitHub</text>
+            <text key="nav_github">GitHub</text>
+            <text key="nav_github">GitHub</text>
+            <text key="nav_github">GitHub</text>
+    </lang>
 
   <lang id="en">
     <text key="t1">Timer</text>

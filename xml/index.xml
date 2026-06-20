@@ -39,6 +39,12 @@
         <text key="i25">利用規約とプライバシーポリシー</text>
         <text key="i26">言語</text>
         <text key="i27">GitHub</text>
+        <text key="nav_home">ホーム</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">第一目標</text>
+        <text key="nav_tools">ツール</text>
+        <text key="nav_products">プロダクト</text>
+        <text key="nav_github">GitHub</text>
     </lang>
     <lang id="en">
         <text key="i1">I'm Sentaro</text>
@@ -56,7 +62,11 @@
         <text key="i10_1">Develop as fast as</text>
         <text key="i10_2">the wind</text>
         <text key="i11_1">We provide reliable products that make</text>
-        <text key="i11_2">digital daily life richer and more efficient</text>
+        <text key="i11_2">digital daily life richer and more</text>
+        <text key="i11_3">efficient</text>
+        <text key="i11_4"></text>
+        <text key="i11_5">We provide reliable products</text>
+        <text key="i11_6"></text>
         <text key="i12">Events</text>
         <text key="i13">42K+</text>
         <text key="i14">Access Count</text>
@@ -75,6 +85,12 @@
         <text key="i25">Terms &amp; Privacy Policy</text>
         <text key="i26">Language</text>
         <text key="i27">GitHub</text>
+        <text key="nav_home">Home</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">Primary Goals</text>
+        <text key="nav_tools">Tools</text>
+        <text key="nav_products">Products</text>
+        <text key="nav_github">GitHub</text>
     </lang>
     <lang id="zh-CN">
         <text key="i1">我是Sentaro</text>
@@ -92,7 +108,11 @@
         <text key="i10_1">如风般</text>
         <text key="i10_2">快速开发</text>
         <text key="i11_1">提供值得信赖的产品，让数字</text>
-        <text key="i11_2">日常生活更丰富、更高效</text>
+        <text key="i11_2">日常生活更</text>
+        <text key="i11_3">丰富、更</text>
+        <text key="i11_4">高效</text>
+        <text key="i11_5">值得信赖的产品</text>
+        <text key="i11_6">提供</text>
         <text key="i12">事件数</text>
         <text key="i13">42K+</text>
         <text key="i14">访问次数</text>
@@ -111,6 +131,12 @@
         <text key="i25">服务条款和隐私政策</text>
         <text key="i26">语言</text>
         <text key="i27">GitHub</text>
+        <text key="nav_home">首页</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">首要目标</text>
+        <text key="nav_tools">工具</text>
+        <text key="nav_products">产品</text>
+        <text key="nav_github">GitHub</text>
     </lang>
     <lang id="zh-TW">
         <text key="i1">我是Sentaro</text>
@@ -128,7 +154,11 @@
         <text key="i10_1">如風般</text>
         <text key="i10_2">快速開發</text>
         <text key="i11_1">提供值得信賴的產品，讓數位</text>
-        <text key="i11_2">日常生活更豐富、更高效</text>
+        <text key="i11_2">日常生活更</text>
+        <text key="i11_3">豐富、更</text>
+        <text key="i11_4">高效</text>
+        <text key="i11_5">值得信賴的產品</text>
+        <text key="i11_6">提供</text>
         <text key="i12">事件數</text>
         <text key="i13">42K+</text>
         <text key="i14">瀏覽次數</text>
@@ -147,6 +177,12 @@
         <text key="i25">服務條款和隱私政策</text>
         <text key="i26">語言</text>
         <text key="i27">GitHub</text>
+        <text key="nav_home">首頁</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">首要目標</text>
+        <text key="nav_tools">工具</text>
+        <text key="nav_products">產品</text>
+        <text key="nav_github">GitHub</text>
     </lang>
     <lang id="ko">
         <text key="i1">저는 Sentaro입니다</text>
@@ -164,9 +200,11 @@
         <text key="i10_1">바람처럼</text>
         <text key="i10_2">빠른 개발</text>
         <text key="i11_1">디지털 일상을 더욱 풍부하고</text>
-        <text key="i11_2">효율적으로 만드는</text>
-        <text key="i11_3">신뢰할 수 있는 제품을</text>
-        <text key="i11_4">제공합니다</text>
+        <text key="i11_2">효율적으로</text>
+        <text key="i11_3">만드는</text>
+        <text key="i11_4"></text>
+        <text key="i11_5">신뢰할 수 있는 제품을</text>
+        <text key="i11_6">제공합니다</text>
         <text key="i12">이벤트 수</text>
         <text key="i13">42K+</text>
         <text key="i14">접근 횟수</text>
@@ -185,6 +223,12 @@
         <text key="i25">이용약관 및 개인정보 처리방침</text>
         <text key="i26">언어</text>
         <text key="i27">GitHub</text>
+        <text key="nav_home">홈</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">주요 목표</text>
+        <text key="nav_tools">도구</text>
+        <text key="nav_products">제품</text>
+        <text key="nav_github">GitHub</text>
     </lang>
     <lang id="ko-KP">
         <text key="i1">나는 Sentaro입니다</text>
@@ -202,9 +246,11 @@
         <text key="i10_1">바람처럼</text>
         <text key="i10_2">빠른 구축</text>
         <text key="i11_1">수자적 일상을 더욱 풍부하고</text>
-        <text key="i11_2">능률적으로 만드는</text>
-        <text key="i11_3">믿을수 있는 제품들을</text>
-        <text key="i11_4">제공합니다</text>
+        <text key="i11_2">능률적으로</text>
+        <text key="i11_3">만드는</text>
+        <text key="i11_4"></text>
+        <text key="i11_5">믿을수 있는 제품들을</text>
+        <text key="i11_6">제공합니다</text>
         <text key="i12">이벤트수</text>
         <text key="i13">42K+</text>
         <text key="i14">열람횟수</text>
@@ -223,5 +269,11 @@
         <text key="i25">리용약관 및 프라이버시정책</text>
         <text key="i26">언어</text>
         <text key="i27">GitHub</text>
+        <text key="nav_home">홈</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">주요 목표</text>
+        <text key="nav_tools">도구</text>
+        <text key="nav_products">제품들</text>
+        <text key="nav_github">GitHub</text>
     </lang>
 </dictionary>

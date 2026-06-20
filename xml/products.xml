@@ -20,7 +20,13 @@
         <text key="p16">利用規約とプライバシーポリシー</text>
         <text key="p17">言語</text>
         <text key="p18">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">ホーム</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">第一目標</text>
+        <text key="nav_tools">ツール</text>
+        <text key="nav_products">プロダクト</text>
+        <text key="nav_github">GitHub</text></lang>
     <lang id="en">
         <text key="p1">All Products</text>
         <text key="p2">Analog Clock</text>
@@ -41,7 +47,13 @@
         <text key="p16">Terms &amp; Privacy Policy</text>
         <text key="p17">Language</text>
         <text key="p18">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">Home</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">Primary Goals</text>
+        <text key="nav_tools">Tools</text>
+        <text key="nav_products">Products</text>
+        <text key="nav_github">GitHub</text></lang>
     <lang id="zh-CN">
         <text key="p1">所有产品</text>
         <text key="p2">模拟时钟</text>
@@ -62,7 +74,13 @@
         <text key="p16">服务条款和隐私政策</text>
         <text key="p17">语言</text>
         <text key="p18">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">首页</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">首要目标</text>
+        <text key="nav_tools">工具</text>
+        <text key="nav_products">产品</text>
+        <text key="nav_github">GitHub</text></lang>
     <lang id="zh-TW">
         <text key="p1">所有產品</text>
         <text key="p2">模擬時鐘</text>
@@ -83,7 +101,13 @@
         <text key="p16">服務條款和隱私政策</text>
         <text key="p17">語言</text>
         <text key="p18">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">首頁</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">首要目標</text>
+        <text key="nav_tools">工具</text>
+        <text key="nav_products">產品</text>
+        <text key="nav_github">GitHub</text></lang>
     <lang id="ko">
         <text key="p1">모든 제품</text>
         <text key="p2">아날로그 시계</text>
@@ -104,7 +128,13 @@
         <text key="p16">이용약관 및 개인정보 처리방침</text>
         <text key="p17">언어</text>
         <text key="p18">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">홈</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">주요 목표</text>
+        <text key="nav_tools">도구</text>
+        <text key="nav_products">제품</text>
+        <text key="nav_github">GitHub</text></lang>
     <lang id="ko-KP">
         <text key="p1">모든 제품들</text>
         <text key="p2">바늘시계</text>
@@ -125,5 +155,11 @@
         <text key="p16">리용약관 및 프라이버시정책</text>
         <text key="p17">언어</text>
         <text key="p18">GitHub</text>
-    </lang>
+    
+        <text key="nav_home">홈</text>
+        <text key="nav_newtab">NewTab</text>
+        <text key="nav_red">주요 목표</text>
+        <text key="nav_tools">도구</text>
+        <text key="nav_products">제품들</text>
+        <text key="nav_github">GitHub</text></lang>
 </dictionary>
