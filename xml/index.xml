@@ -36,7 +36,7 @@
         <text key="i22_2">お待ちしております</text>
         <text key="i23">何かございましたらご遠慮なく</text>
         <text key="i24">お問い合わせフォーム</text>
-        <text key="i25">利用規約とプライバシーポリシー</text>
+        <text key="i25">利用規約と個人情報政策</text>
         <text key="i26">言語</text>
         <text key="i27">GitHub</text>
         <text key="nav_home">ホーム</text>
@@ -185,7 +185,7 @@
         <text key="nav_github">GitHub</text>
     </lang>
     <lang id="ko">
-        <text key="i1">저는 Sentaro입니다</text>
+        <text key="i1">제가 Sentaro</text>
         <text key="i2_1">끊임없이 편의성을</text>
         <text key="i2_2">추구합니다</text>
         <text key="i3">Newtab v6</text>
@@ -231,11 +231,11 @@
         <text key="nav_github">GitHub</text>
     </lang>
     <lang id="ko-KP">
-        <text key="i1">나는 Sentaro입니다</text>
+        <text key="i1">내라 Sentaro</text>
         <text key="i2_1">끊임없이 편리성을</text>
         <text key="i2_2">추구합니다</text>
         <text key="i3">Newtab v6</text>
-        <text key="i4_1">새로운</text>
+        <text key="i4_1">우리식의</text>
         <text key="i4_2">새 탭페지</text>
         <text key="i5">지금 보기</text>
         <text key="i6_1">주요 목표와</text>
@@ -266,7 +266,7 @@
         <text key="i22_2">의하여 이뤄집니다</text>
         <text key="i23">편하게 말씀해주십시오</text>
         <text key="i24">문의서식</text>
-        <text key="i25">리용약관 및 프라이버시정책</text>
+        <text key="i25">리용약관 및 개인정보처리정책</text>
         <text key="i26">언어</text>
         <text key="i27">GitHub</text>
         <text key="nav_home">홈</text>
