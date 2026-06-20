@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
   <meta charset="UTF-8">
-  <title>Sentaro - NewTab v6</title>
+  <title>Sentaro - 第一目標</title>
    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="https://search3958.github.io/project/logos/3958logo_main.svg">
 <style>
@@ -15,13 +15,40 @@
         margin:0;
 
     }
+    
+        .shape {
+            /* 💡 ここを好きなサイズに変えれば、縦横自由に引き伸ばされます */
+            width: 46px;
+            height: 40px;
+
+            /* SVGのパスをマスクとして背景に指定（viewBoxを指定しているので引き伸ばし可能に） */
+            -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 17'><path d='M9.5 0C2.7 0 0 2.5 0 2.5L1.58676 6.35355C2.85548 9.43474 3.66844 12.6844 4 16H22C21.8333 16 22.2 17 23 13C23.8 9 24.8333 6 25.5 4C24.8333 4.33333 22.8 5.1 20 5.5C17.2 5.9 15.8333 6 15.5 6C11 6 16.3 0 9.5 0Z' fill='black'/></svg>");
+            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 17'><path d='M9.5 0C2.7 0 0 2.5 0 2.5L1.58676 6.35355C2.85548 9.43474 3.66844 12.6844 4 16H22C21.8333 16 22.2 17 23 13C23.8 9 24.8333 6 25.5 4C24.8333 4.33333 22.8 5.1 20 5.5C17.2 5.9 15.8333 6 15.5 6C11 6 16.3 0 9.5 0Z' fill='black'/></svg>");
+
+            /* マスクのサイズ設定：要素全体に広げる指示 */
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+
+            /* 💡 元のラジアルグラデーション（サイズに合わせて適宜調整してください） */
+            background: radial-gradient(
+                circle at -20px 30px,
+                #700000 0%,
+                #DF0000 59.1346%,
+                #740000 61.5385%,
+                #E70000 100%
+            );
+            color:#ffedda;
+            padding:10px;
+            padding-left:20px;
+            font-size:24px;
+            font-weight: bold;
+        }
 .first{
     color:#fff;
-    background-image:
-     radial-gradient(circle farthest-side at 100% 50%, rgba(255, 255, 255, 0) 17%, rgba(255, 255, 255, 0.12) 25%, rgba(255, 255, 255, 0.21) 34%, rgba(255, 255, 255, 0.65) 49.9%, rgba(255, 255, 255, 0) 50.1%), 
-     
-     radial-gradient(circle farthest-side at 0% 50%, rgba(255, 255, 255, 0) 17%, rgba(255, 255, 255, 0.12) 25%, rgba(255, 255, 255, 0.21) 34%, rgba(255, 255, 255, 0.5) 49.9%, rgba(255, 255, 255, 0) 50.1%), 
-     linear-gradient(0deg, rgba(3, 7, 46, 1), rgba(28, 160, 255, 1));
+    
+    background-image: conic-gradient(from 247deg, #880000 0deg, rgba(188, 0, 0, 1) 0deg, rgba(255, 226, 40, 1) 180deg, rgb(144, 8, 8) 180deg, #e20707ff 227deg, #e87f08ff 360deg) ,radial-gradient(circle at 38% 51%, rgba(255, 229, 41, 0), rgba(255, 249, 205, 0.56));
     padding:48px;
     font-weight:bold;
     font-size:40px;
@@ -30,6 +57,18 @@
     overflow:hidden;
     padding-top:200px;
 
+}
+h3{
+  background: linear-gradient(180deg, #CB0000 0%, #880000 100%);
+  width:fit-content;
+  color:#FFEAB6;
+  padding:8px 16px;
+  font-size:28px;
+  font-family:serif;
+  border-radius:100px;
+  corner-shape:squircle;
+  margin-left:22px;
+  margin-bottom:0px;
 }
 .small{
     font-size:16px;
@@ -56,13 +95,28 @@
     "ROND" 40;
 
 }
+p.gold{
+  background: linear-gradient(180deg, #FFDD58 0%, #FFFBB0 48%, #FFBF00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: serif;
+  font-weight:bold;
+  font-size:24px;
+  filter:drop-shadow(0 8px 16px #0005);
+  margin:0px;
+  margin-bottom:16px;
+
+}
 .message{
     transition: 2s all cubic-bezier(.06,.37,0,1),1s filter cubic-bezier(.19,.08,0,1);
     opacity:1;
-    filter:blur(0px);
+    filter:drop-shadow(0 8px 16px#0008);
     display:block;
     transform:translateY(0px);
-    transition-delay:0.7s
+    transition-delay:0.7s;
+    font-family: serif;
+    color:#FFEDA7;
+
 }
 .message.before{
     opacity:0;
@@ -74,14 +128,13 @@
 .xincard{
     display:flex;
     justify-content:center;
-    align-items:center;
-    padding-top:24px;
-    gap:4px;
+    align-items:flex-start;
+    padding:48px 22px;
+    gap:16px;
     flex-direction: column;
     font-weight:bold;
-    text-align:center;
     font-size:32px;
-    background-image: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(207, 217, 232, 1));
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(207, 217, 232, 1)),radial-gradient(circle at 38% 51%, rgba(255, 229, 41, 0), rgba(255, 249, 205, 0.56));
 }
 .app-icon{
     border-radius:100px;
@@ -106,7 +159,6 @@
     gap:4px;
     font-size:32px;
     flex-direction: column;
-    background-image: radial-gradient(circle at 50% 190%, rgba(0, 13, 25, 1), rgb(0 122 82) 66%, rgb(0 128 82) 73%, rgb(0 117 79) 80%, rgb(0 92 71) 87%, rgba(0, 13, 25, 1));
     color:#fff;
     padding-bottom:24px;
     }
@@ -139,7 +191,7 @@
       display:flex;
       justify-content:center;
       align-items:center;
-      backdrop-filter:blur(16px);
+      backdrop-filter:brightness(1.4) blur(16px);
       padding:12px 0;
       gap:24px;
       font-size:13px;
@@ -198,62 +250,6 @@
       text-align:left;
       line-height:1.3;
     }
-    .feature-section{
-      max-width:1040px;
-      margin:32px auto;
-      padding:30px;
-      border-radius:20px;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:24px;
-      align-items:center;
-    }
-    .feature-section.plain{
-      background:#fff;
-      color:#111;
-    }
-    .feature-section.searchbox-hero{
-      max-width:1040px;
-      margin:32px auto;
-      padding:30px;
-      border-radius:20px;
-      grid-template-columns:minmax(0, 1fr) minmax(0, 1.1fr);
-      gap:24px;
-    }
-    .feature-section.searchbox-hero > :first-child{
-      width:100%;
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
-    .feature-section.searchbox-hero .feature-image{
-      width:100%;
-      margin:0;
-      padding:0;
-      position:relative;
-      overflow:hidden;
-      box-sizing:border-box;
-    }
-    .feature-section.searchbox-hero .feature-image img{
-      width:100%;
-      margin-left:auto;
-    }
-    .feature-section.gradient{
-      background:linear-gradient(to top left, #D6E7FF 0%, #3F69A8 58%, #04152F 100%);
-      color:#fff;
-      border-radius:0;
-      max-width:none;
-      margin:0;
-      grid-template-columns:1fr;
-      gap:24px;
-      padding:56px 0 0;
-    }
-    .feature-section.gradient > :not(.feature-image){
-      width:min(1040px, 100%);
-      margin:0 auto;
-      padding:0 clamp(22px, 4vw, 36px);
-      box-sizing:border-box;
-    }
     .feature-headline{
       margin:0;
       font-size:42px;
@@ -294,7 +290,7 @@
     .feature-section.steps-section{
       grid-template-columns:1fr;
     }
-    @media (min-width:1200px){
+    
       .feature-section.searchbox-hero .feature-image::after{
         content:"";
         position:absolute;
@@ -305,10 +301,9 @@
         background:linear-gradient(to right, rgba(255, 255, 255, 0), #fff 82%);
         pointer-events:none;
       }
-    }
     .steps-wrap{
       display:grid;
-      gap:10px;
+      gap:16px;
     }
     .step-item{
       background:#eff0f1;
@@ -318,10 +313,19 @@
       text-align:left;
       line-height:1.45;
     }
+    .step-item.red{
+      background:#fff;
+      display:flex;
+    align-items: center;
+    gap:10px;
+    }
     .step-item strong{
       display:block;
       margin-bottom:4px;
-      font-size:24px;
+      font-size:28px;
+      color:#A30000;
+      font-family:serif;
+      font-weight:black;
     }
     .history-grid{
       max-width:1040px;
@@ -330,6 +334,9 @@
       display:grid;
       grid-template-columns:repeat(2, minmax(0, 1fr));
       gap:14px;
+    }
+    .feature-section{
+      padding:22px;
     }
     .history-card{
       background:#eff0f1;
@@ -460,186 +467,119 @@
 
     <div class="first">
         <div class="small">
-            NewTab系列
+           Search3958
         </div>
-        <span class="message">ただ 素早く。</span>
+        <span class="message">第一目標</span>
     </div>
+    <h3>重要価値観</h3>
     
-    <section class="feature-section plain searchbox-hero">
+    <section class="feature-section plain steps-section">
       <div>
-        <h2 class="feature-headline">時間は貴重です。<br>チャンスを逃さないで</h2>
-        <p class="feature-description">キーボード入力からも高速にアクセスできます。</p>
-      </div>
-      <div class="feature-image">
-        <img src="searchbox.png" alt="searchbox">
+        <div class="steps-wrap">
+          <div class="step-item">
+             <div class="shape">1</div>
+            <strong>全員の為</strong>
+            サービスを全ての人に提供します。<br>すべてにおいて基礎機能は無料で利用可能です。
+          </div>
+          <div class="step-item">
+             <div class="shape">2</div>
+            <strong>便利提供</strong>
+            洗練されたサービスをお届けします。<br>日常生活の面倒をなくし効率化することを重要とします。
+          </div>
+          <div class="step-item">
+             <div class="shape">3</div>
+            <strong>安全確保</strong>
+            必ずお客様の情報を保護します。<br>全体でプライバシーポリシーに従いデータを処理します。
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="feature-section gradient">
+    <section class="feature-section plain steps-section" style="background: linear-gradient(77.417deg, #880000 0%, #FF4800 100%);">
+      <p class="gold">2025.1.1 - 2025.12.30</p>
+      <p class="gold" style="font-size:52px;">輝く功績</p>
       <div>
-        <h2 class="feature-headline">完全無料。<br>登録不要。</h2>
-        <p class="feature-description">設定するだけで<br>すぐに使用できます。</p>
-      </div>
-      <div class="feature-image">
-        <img src="screenshot.png" alt="screenshot">
+        <div class="steps-wrap">
+          
+          <div class="step-item red">
+             <div class="shape"></div>
+             <div>
+            <strong>16000の表示</strong>
+            約1.6万回の表示回数を達成しました。<br>
+前年度から300.8%の大幅な向上です。
+            </div>
+          </div>
+
+          <div class="step-item red">
+             <div class="shape"></div>
+             <div>
+            <strong>373</strong>
+            アクティブユーザーが373人に達しました。<br>
+前年度から400.6%の大幅な向上です。
+            </div>
+          </div>
+
+          <div class="step-item red">
+             <div class="shape"></div>
+             <div>
+            <strong>7585訪問</strong>
+            1度で平均3のページを閲覧しています。<br>
+503.3%の最も大きな向上です
+            </div>
+          </div>
+
+          <div class="step-item red">
+             <div class="shape"></div>
+             <div>
+            <strong>81%の反応</strong>
+            約81.9%の高いエンゲージメント率を記録しました。<br>
+前年度からの11.4%向上しました。
+            </div>
+          </div>
+
+          <div class="step-item red">
+             <div class="shape"></div>
+             <div>
+            <strong>永遠の成長と活躍</strong>
+2026.6.20時点で1.1万回表示と505人の<br>
+アクティブユーザーを達成しています。
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </section>
+
+<h3>最新消息</h3>
+
 
     <section class="feature-section plain steps-section">
       <div>
-        <h2 class="feature-headline">設定はたったの<br>3ステップ。</h2>
         <div class="steps-wrap">
           <div class="step-item">
-            <strong>1 導入</strong>
-            Newtabを新しいタブとして設定するために、New Tab Redirect拡張機能をChromeウェブストアからインストールします。
+            <strong style='font-family: "Google Sans Flex", "Noto Sans KR",sans-serif;color:#000;font-weight:400;'>NewTabから<br>
+始まった歴史</strong>
+            これが全ての始まりです<br>
+
+        <button class="primary-btn " style="--xin-delay:0.24s;background: #C70000;color:#FFEBAE;" onclick="window.location.href='https://search3958.github.io/i/newtab/'">今すぐ見る</button>
+
           </div>
           <div class="step-item">
-            <strong>2 入力</strong>
-            インストール完了後、拡張機能のアイコンをクリックし、メニューからSet Optionsを選択します。
-          </div>
-          <div class="step-item">
-            <strong>3 保存</strong>
-            オプションページのテキストボックスにNewtabのURL（https://search3958.github.io/newtab/）を入力し、Saveをクリックすれば設定完了です。
+
+            <strong style='font-family: "Google Sans Flex", "Noto Sans KR",sans-serif;color:#000;font-weight:400;'>新時代</strong>
+            アプリの時代です<br>
+
+        <button class="primary-btn " style="--xin-delay:0.24s;background: #C70000;color:#FFEBAE;" onclick="window.location.href='https://play.google.com/store/apps/dev?id=5714216887541621486'">PlayStoreを訪問</button>
+
           </div>
         </div>
       </div>
     </section>
 
-
-    <div class="history-grid">
-                              <div class="history-card">
-    <a href="https://search3958.github.io/newtab/" style="text-decoration: none; color: inherit;">
-        <h3>v6.3</h3>
-        <p>時計モードが追加されています。壁紙にはブラーが施されましたので視認性が向上しました。その他バグ修正も含まれます。</p>
-    </a>
-</div>
-                              <div class="history-card">
-    <a href="https://search3958.github.io/newtab/V6.2" style="text-decoration: none; color: inherit;">
-        <h3>v6.2</h3>
-        <p>V5時代を思い出させるグリッドレイアウトです。角には丸みが与えられ、柔らかい印象になりました。</p>
-    </a>
-</div>
-                              <div class="history-card">
-    <a href="https://search3958.github.io/newtab/V6.1" style="text-decoration: none; color: inherit;">
-        <h3>v6.1</h3>
-        <p>軽いです。早いです。シンプルです。多言語対応しました。Windows11みたいです。でもiOSのように柔らかい印象です。以上です。</p>
-    </a>
-</div>
-              <div class="history-card">
-    <a href="https://search3958.github.io/newtab/v6" style="text-decoration: none; color: inherit;">
-        <h3>v6</h3>
-        <p>不要な機能を削りとにかく軽量にしました。そのおかげでスピードテストでは100%のスコアを獲得し，最速アクセス速度は0.09秒を記録しました。それでも美しく，便利な機能は維持しています。</p>
-    </a>
-</div>
-              <div class="history-card">
-    <a href="https://search3958.github.io/newtab/v5.3" style="text-decoration: none; color: inherit;">
-        <h3>v5.3</h3>
-        <p>v5.2でパフォーマンスの問題が発生したのでそれの修正版です。v5.1をベースに，デザインだけv5.2を使用しました。ただ，同期機能はなくなっています。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v5.2" style="text-decoration: none; color: inherit;">
-        <h3>v5.2</h3>
-        <p>とにかく洗練されたデザインになりました。ログインできるようになり，履歴の同期が可能になりました。アニメーションも滑らかで美しいものに変更されました。</p>
-    </a>
-</div>
-
-                <div class="history-card">
-    <a href="https://search3958.github.io/newtab/v5.1" style="text-decoration: none; color: inherit;">
-        <h3>v5.1</h3>
-        <p>検索ボックスはメタボールになり美しいアニメーションが再生されます。他にもカード機能が追加され、大幅に見た目、機能面でアップデートされました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v5" style="text-decoration: none; color: inherit;">
-        <h3>v5</h3>
-        <p>デザイン面で大幅に進化しました。よりシンプルで直感的な操作が可能になっています。グリッドレイアウトが大幅に改善され、もっと使いやすくなっています。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v4.1" style="text-decoration: none; color: inherit;">
-        <h3>v4.1</h3>
-        <p>7.27アップデート。読み込み速度が向上しました。新たにグリッドレイアウト、拡張機能が追加されました。直接URLにアクセスする機能も復活しました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v4" style="text-decoration: none; color: inherit;">
-        <h3>v4</h3>
-        <p>Liquid Glassデザインを採用しながら、独自デザインも採用しています。また、シュートカットは正方形になり、小さい画面でも表示できる量が増えました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v3.6" style="text-decoration: none; color: inherit;">
-        <h3>v3.6</h3>
-        <p>WinUI3のようなデザインを採用して、よりモダンなデザインになりました。特にWindows 11標準アプリにとてもよく馴染むデザインです。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v2.1/index2" style="text-decoration: none; color: inherit;">
-        <h3>Lite</h3>
-        <p>v2.1の新しいタブをベースに高速化しています。Chromeデフォルトのタブのようにショートカットは右上のボタンで表示できるようにしました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v3.5" style="text-decoration: none; color: inherit;">
-        <h3>v3.5</h3>
-        <p>OneUI 7らしいデザインを採用しました。また、ウィジェット・AI検索機能も追加され、機能面でも大幅にアップグレードし使いやすくなりました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v3" style="text-decoration: none; color: inherit;">
-        <h3>v3</h3>
-        <p>今回のデザインはかなりiPadOS 18やtvOSの影響を受けています。大きな変更点は、Material3ライクなデザインではなくなったことです。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v2.1/index2" style="text-decoration: none; color: inherit;">
-        <h3>Elemental</h3>
-        <p>v2.1の新しいタブをベースに再デザインしています。Elementalはthinkingグループのデザインで、この特別版ではそのデザインになっています。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v2.1/index2" style="text-decoration: none; color: inherit;">
-        <h3>v2.1</h3>
-        <p>背景に画像を設定できる機能、検索エンジン機能が追加されました。そして、今回新たにスクロールしてショートカットを表示する形式になりました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/v2" style="text-decoration: none; color: inherit;">
-        <h3>v2</h3>
-        <p>サイト全体を再構築し、コードを簡素化し読み込み速度が大幅向上しました。履歴機能追加、UI改善、アニメーション強化、一部デザイン変更なども含まれます。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/old/" style="text-decoration: none; color: inherit;">
-        <h3>v1</h3>
-        <p>この時から、周りの人が使い始めました。Newtabを多くの人に使ってもらいたいため、無料で公開しています。これがNewtabの始まりです！</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://search3958.github.io/newtab/old/first" style="text-decoration: none; color: inherit;">
-        <h3>First</h3>
-        <p>よく使うサイトへすぐアクセスするために作られました。この時はまだ自分しか使っていません。これがNewtabの本当に0の状態からの最初のバージョンです。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://codepen.io/sentaroTakenaka/pen/MWdRQgY" style="text-decoration: none; color: inherit;">
-        <h3>Portal</h3>
-        <p>授業のあまり時間に短時間で作ったものです。まだ何もなく、結局このコードは使わなかったですが、このアイデアをもとにNewtabの開発を始めました。</p>
-    </a>
-</div>
-<div class="history-card">
-    <a href="https://sites.google.com/view/c-portal-takesen/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF?authuser=0" style="text-decoration: none; color: inherit;">
-        <h3>C Portal</h3>
-        <p>本当にNewtabの考えが始まった一番最初です。まだ私が小学生の時に作ったものです。ただ、Newtabの開始はこの3年後ほどです。</p>
-    </a>
-</div>
-            </div>
-
-
-    <div class="xincard" style="padding:48px 0; background-image: conic-gradient(from 247deg, rgba(58, 255, 160, 1) 0deg, rgba(0, 255, 246, 1) 0deg, rgba(58, 255, 160, 1) 180deg, rgba(255, 255, 255, 1) 180deg, rgba(88, 255, 239, 1) 227deg, rgba(0, 242, 105, 1) 360deg);">
+    <div class="xincard" style=" color:#FFFBB0;background: radial-gradient(circle at 38% 51%, rgba(255, 229, 41, 0), rgba(255, 229, 41, 0.1), rgba(255, 229, 41, 0.4), rgb(255 249 205)),linear-gradient(77.417deg, #880000 0%, #FF4800 100%);">
         
-        <span class="app-name " style="--xin-delay:0.16s;font-size:40px;">願いをひとつ<br>叶えます</span>
+        <span class="app-name " style="--xin-delay:0.16s;font-size:40px;">お客様の声により<br>成り立ちます</span>
         
         
         <div class="small " style="--xin-delay:0.08s;font-size:24px;">
