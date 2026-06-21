@@ -1,17 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <script type="importmap">
+    {
+      "imports": {
+        "@material/web/": "https://esm.run/@material/web/"
+      }
+    }
+  </script>
+  <script type="module">
+    import '@material/web/all.js';
+    import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
+
+    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+  </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>サジョン - マルチ辞書検索アプリ</title>
+    <title>千里辞書 - マルチ辞書検索アプリ</title>
     <meta name="description" content="日本語・英語・韓国語の辞書を横断的に検索できるマルチ辞書検索アプリ。国語辞典、英和辞典、韓国語辞典をワンストップで。">
     <meta name="keywords" content="辞書, 検索, 国語, 英和, 韓国語, マルチ辞書, 辞典アプリ, dictionary, 사전">
-    <meta property="og:title" content="サジョン - マルチ辞書検索アプリ">
+    <meta property="og:title" content="千里辞書 - マルチ辞書検索アプリ">
     <meta property="og:description" content="日本語・英語・韓国語の辞書を横断的に検索できるマルチ辞書検索アプリ。">
     <meta property="og:type" content="website">
     <meta property="og:image" content="icon.png">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="サジョン - マルチ辞書検索アプリ">
+    <meta name="twitter:title" content="千里辞書 - マルチ辞書検索アプリ">
     <meta name="twitter:description" content="日本語・英語・韓国語の辞書を横断的に検索できるマルチ辞書検索アプリ。">
     <link rel="icon" type="image/png" href="icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
@@ -26,8 +39,13 @@
             --text-muted: #888888;
             --btn-gray: #f4f4f4;
             --transition-speed: 0.3s;
+            --md-ripple-hover-color:#0000;
         }
-
+        a{
+            color:#00a053;
+            text-decoration:none;
+            margin:2px;
+        }
         * { box-sizing: border-box; font-family: 'Noto Sans JP', sans-serif; }
         body, html { margin: 0; padding: 0; height: 100vh; background-color: var(--bg-color); color: var(--text-main); overflow: hidden; }
 
@@ -35,7 +53,7 @@
 
         /* ナビゲーション共通 */
         nav { transition: all var(--transition-speed) ease; display: flex; }
-        #toggleBtn {
+        #toggleBtn {position:relative;
             display: flex; align-items: center; justify-content: center;
             background-color: var(--btn-gray); border: none; cursor: pointer;
             color: var(--text-main); transition: all var(--transition-speed) ease;
@@ -43,7 +61,7 @@
 
   
         .nav-items { display: flex; transition: all var(--transition-speed) ease; }
-        .nav-item {
+        .nav-item {position:relative;
             background: transparent; border: none; border-radius: 99px; font-size: 16px; font-weight: 500;
             color: var(--text-main); cursor: pointer; transition: background-color 0.2s, color 0.2s; white-space: nowrap;
         }
@@ -55,8 +73,8 @@
         #app.layout-side #toggleBtn { gap: 8px; padding: 12px 20px; border-radius: 24px; width: fit-content; font-size: 15px; font-weight: 500; }
         #app.layout-side .nav-items { flex-direction: column; gap: 8px; }
         #app.layout-side .nav-item { text-align: left; padding: 16px 20px; }
-        #app.layout-side main { flex: 1; padding-top: 24px; }
-        #app.layout-side .content-box { border-radius: 32px 0 0 0; } /* 左上のみ角丸 */
+        #app.layout-side main { flex: 1; padding: 24px 32px 0 0; }
+        #app.layout-side .content-box { border-radius: 32px 0 0 0; margin-right: -32px; }
 
         /* トップバーモード */
         #app.layout-top { flex-direction: column; }
@@ -71,25 +89,67 @@
         /* メイン領域 */
         main { display: flex; flex-direction: column; transition: padding var(--transition-speed) ease; }
         
-        .header-controls { margin-bottom: 16px; max-width: 640px; display: flex; flex-direction: column; gap: 16px; min-height: 56px; justify-content: center;}
+        .header-controls { margin-bottom: 16px; display: flex; flex-direction: column; gap: 16px; min-height: 56px; justify-content: center;}
         
         /* 検索バー */
         .search-container { display: flex; align-items: center; width: 100%; gap: 10px; transition: opacity 0.2s; }
         .search-input {
-            flex: 1; min-width: 0; border: none; background: linear-gradient(to right, #f8f8f8, rgba(248,248,248,0.3));
+            flex: 1; min-width: 0; border: none; background: linear-gradient(to right, #efefef, #fff0);
             padding: 16px 24px; font-size: 16px; border-radius: 24px; outline: none; color: var(--text-main);
         }
-        .action-btn {
+        .action-btn {position:relative;
             width: 48px; height: 48px; border-radius: 50%;
             border: none; background: #05F380; cursor: pointer; display: flex; align-items: center; justify-content: center;
             color: #000; transition: background-color 0.2s, transform 0.15s; flex-shrink: 0;
         }
         .action-btn:active { transform: scale(0.92); }
         .action-btn.saved { background: #00c8ff; }
+        .history-btn {
+            width: 48px; height: 48px; border-radius: 50%;
+            border: none; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: #fff; transition: background-color 0.2s; flex-shrink: 0;
+        }
+        .history-btn:hover { background-color: #333; }
+
+        .history-list { list-style: none; padding: 0; margin: 0; }
+        .history-list li {
+            padding: 14px 20px; border-radius: 12px; cursor: pointer; transition: background-color 0.15s;
+            display: flex; align-items: center; gap: 12px; font-size: 15px;
+        }
+        .history-list li:hover { background-color: rgba(0,0,0,0.05); }
+        .history-list li .material-symbols-outlined { font-size: 20px; color: var(--text-muted); }
+        .history-list .history-date { margin-left: auto; font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+        /* 全画面ダイアログ */
+        .dialog-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+        }
+        .dialog-overlay.open { opacity: 1; pointer-events: auto; }
+        .dialog-panel {
+            background: var(--bg-color); width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            transform: translateY(40px); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dialog-overlay.open .dialog-panel { transform: translateY(0); }
+        .dialog-header {
+            display: flex; align-items: center; padding: 20px 24px; gap: 16px;
+            border-bottom: 1px solid #e0e0e0; flex-shrink: 0;
+        }
+        .dialog-header h2 { margin: 0; font-size: 18px; font-weight: 700; flex: 1; }
+        .dialog-close {
+            width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--btn-gray);
+            cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            color: #000;
+        }
+        .dialog-body { flex: 1; overflow-y: auto; padding: 16px 24px; }
+        .dialog-body .history-list li { padding: 16px 20px; }
+        .dialog-body .history-list li:active { background-color: rgba(0,0,0,0.08); }
 
         /* 戻るボタン (保存詳細表示用) */
         .back-container { display: none; align-items: center; transition: opacity 0.2s; }
-        .back-btn {
+        .back-btn {position:relative;
             display: flex; align-items: center; gap: 8px; border: none; background: var(--btn-gray);
             padding: 12px 20px; border-radius: 24px; cursor: pointer; font-size: 15px; font-weight: 500;
         }
@@ -99,8 +159,8 @@
             overflow-y: auto; transition: border-radius var(--transition-speed) ease;
         }
 
-        .results { max-width: 800px; line-height: 1.6; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .results { line-height: 1.6; animation: fadeIn 1.5s cubic-bezier(0.3, 0.2, 0, 1); height:100%;}
+        @keyframes fadeIn { from { filter:blur(10px);opacity: 0; transform: translateY(60px) scale(0.1,0.5); } to {filter:blur(0px); opacity: 1; transform: translateY(0) scale(1); } }
 
         /* 保存リストのUI */
         .saved-item-card {
@@ -114,7 +174,16 @@
         .delete-btn { background: none; border: none; color: #ba1a1a; cursor: pointer; padding: 8px; border-radius: 50%; }
         .delete-btn:hover { background-color: rgba(186, 26, 26, 0.1); }
 
-        .msg { color: var(--text-muted); }
+        .msg {
+    color: var(--text-muted);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap:16px;
+    text-align:center;
+}
         .error { color: #ba1a1a; }
         .wiki-content h2 { font-size: 1.25rem; margin-top: 1.5em; border-bottom: 1px solid #ddd; padding-bottom: 8px;}
         .wiki-content h3 { font-size: 1.1rem; margin-top: 1em; }
@@ -127,17 +196,17 @@
 
 <div id="app" class="layout-side">
     <nav>
-        <button id="toggleBtn">
+        <button id="toggleBtn"><md-ripple></md-ripple>
             <span class="material-symbols-outlined" id="toggleIcon">chevron_right</span>
             <span class="text">メニューを移動</span>
         </button>
         <div class="nav-items">
-            <button class="nav-item active" data-val="ja">国語</button>
-            <button class="nav-item" data-val="en">英語</button>
-            <button class="nav-item" data-val="en-ja">英和・和英</button>
-            <button class="nav-item" data-val="ko">韓国語</button>
-            <button class="nav-item" data-val="ja-ko">日韓・韓日</button>
-            <button class="nav-item" data-val="saved">保存済み</button>
+            <button class="nav-item active" data-val="ja">日本語<md-ripple></md-ripple></button>
+            <button class="nav-item" data-val="en">英語<md-ripple></md-ripple></button>
+            <button class="nav-item" data-val="en-ja">英和・和英<md-ripple></md-ripple></button>
+            <button class="nav-item" data-val="ko">朝鮮語/韓国語<md-ripple></md-ripple></button>
+            <button style="display:none" class="nav-item" data-val="ja-ko">日韓・韓日<md-ripple></md-ripple></button>
+            <button class="nav-item" data-val="saved">保存済み<md-ripple></md-ripple></button>
         </div>
     </nav>
 
@@ -145,12 +214,15 @@
         <div class="header-controls">
             <div class="search-container" id="searchContainer">
                 <input type="text" id="searchInput" class="search-input" placeholder="検索単語を入力..." autocomplete="off">
-                <button id="actionBtn" class="action-btn">
+                <button id="historyBtn" class="history-btn" title="検索履歴">
+                    <span class="material-symbols-outlined">history</span>
+                </button>
+                <button id="actionBtn" class="action-btn"><md-ripple></md-ripple>
                     <span class="material-symbols-outlined" id="actionIcon">search</span>
                 </button>
             </div>
             <div class="back-container" id="backContainer">
-                <button class="back-btn" id="backBtn">
+                <button class="back-btn" id="backBtn"><md-ripple></md-ripple>
                     <span class="material-symbols-outlined">arrow_back</span> 戻る
                 </button>
             </div>
@@ -158,12 +230,30 @@
 
         <div class="content-box">
             <div id="results" class="results">
-                <div class="msg">単語を入力してEnterキーを押すか、検索ボタンを押してください。</div>
+                <div class="msg"><img src="logo.png" height="48px"><p>千里辞書へようこそ<br>すべての学習者を歓迎します</p>
+                    <div>
+                        <a href="https://search3958.github.io/policies/">利用規約と個人情報政策</a>
+                        <a href="https://search3958.github.io/">私について</a>
+                        <a href="https://search3958.github.io/accounts/lang?next=https://search3958.github.io/tools/sajon/">Language</a>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 </div>
 
-<script src="app.js"></script> 
+<div class="dialog-overlay" id="historyDialog">
+    <div class="dialog-panel">
+        <div class="dialog-header">
+            <h2>検索履歴</h2>
+            <button class="dialog-close" id="historyClose">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="dialog-body" id="historyBody"></div>
+    </div>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>

@@ -1,14 +1,19 @@
 // --- IndexedDB Wrapper ---
 const DB_NAME = "DictAppDB";
-const STORE_NAME = "saved_words";
+const STORE_WORDS = "saved_words";
+const STORE_HISTORY = "search_history";
+const MAX_HISTORY = 60;
 
 function initDB() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, 1);
+        const request = indexedDB.open(DB_NAME, 2);
         request.onupgradeneeded = (e) => {
             const db = e.target.result;
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+            if (!db.objectStoreNames.contains(STORE_WORDS)) {
+                db.createObjectStore(STORE_WORDS, { keyPath: "id", autoIncrement: true });
+            }
+            if (!db.objectStoreNames.contains(STORE_HISTORY)) {
+                db.createObjectStore(STORE_HISTORY, { keyPath: "id", autoIncrement: true });
             }
         };
         request.onsuccess = () => resolve(request.result);
@@ -16,11 +21,49 @@ function initDB() {
     });
 }
 
+async function saveHistory(word, dictType) {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_HISTORY, "readwrite");
+        const store = tx.objectStore(STORE_HISTORY);
+        store.add({ word, dictType, timestamp: Date.now() });
+        tx.oncomplete = async () => {
+            const all = await getHistory(dictType);
+            if (all.length > MAX_HISTORY) {
+                const toDelete = all.slice(MAX_HISTORY);
+                const tx2 = db.transaction(STORE_HISTORY, "readwrite");
+                const store2 = tx2.objectStore(STORE_HISTORY);
+                toDelete.forEach(item => store2.delete(item.id));
+                tx2.oncomplete = () => resolve();
+                tx2.onerror = () => reject(tx2.error);
+            } else {
+                resolve();
+            }
+        };
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+async function getHistory(dictType) {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_HISTORY, "readonly");
+        const request = tx.objectStore(STORE_HISTORY).getAll();
+        request.onsuccess = () => {
+            const filtered = request.result
+                .filter(item => item.dictType === dictType)
+                .sort((a, b) => b.timestamp - a.timestamp);
+            resolve(filtered);
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
 async function saveWordData(word, dictType, html) {
     const db = await initDB();
     return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, "readwrite");
-        tx.objectStore(STORE_NAME).add({ word, dictType, html, timestamp: Date.now() });
+        const tx = db.transaction(STORE_WORDS, "readwrite");
+        tx.objectStore(STORE_WORDS).add({ word, dictType, html, timestamp: Date.now() });
         tx.oncomplete = () => resolve();
         tx.onerror = () => reject(tx.error);
     });
@@ -29,8 +72,8 @@ async function saveWordData(word, dictType, html) {
 async function getSavedWords() {
     const db = await initDB();
     return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, "readonly");
-        const request = tx.objectStore(STORE_NAME).getAll();
+        const tx = db.transaction(STORE_WORDS, "readonly");
+        const request = tx.objectStore(STORE_WORDS).getAll();
         request.onsuccess = () => resolve(request.result.sort((a, b) => b.timestamp - a.timestamp));
         request.onerror = () => reject(request.error);
     });
@@ -39,8 +82,8 @@ async function getSavedWords() {
 async function deleteWordData(id) {
     const db = await initDB();
     return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, "readwrite");
-        tx.objectStore(STORE_NAME).delete(id);
+        const tx = db.transaction(STORE_WORDS, "readwrite");
+        tx.objectStore(STORE_WORDS).delete(id);
         tx.oncomplete = () => resolve();
         tx.onerror = () => reject(tx.error);
     });
@@ -49,8 +92,8 @@ async function deleteWordData(id) {
 async function isWordSaved(word, dictType) {
     const db = await initDB();
     return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, "readonly");
-        const request = tx.objectStore(STORE_NAME).getAll();
+        const tx = db.transaction(STORE_WORDS, "readonly");
+        const request = tx.objectStore(STORE_WORDS).getAll();
         request.onsuccess = () => {
             const found = request.result.some(item => item.word === word && item.dictType === dictType);
             resolve(found);
@@ -62,14 +105,26 @@ async function isWordSaved(word, dictType) {
 async function getSavedWordHtml(word, dictType) {
     const db = await initDB();
     return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, "readonly");
-        const request = tx.objectStore(STORE_NAME).getAll();
+        const tx = db.transaction(STORE_WORDS, "readonly");
+        const request = tx.objectStore(STORE_WORDS).getAll();
         request.onsuccess = () => {
             const item = request.result.find(item => item.word === word && item.dictType === dictType);
             resolve(item ? item.html : null);
         };
         request.onerror = () => reject(request.error);
     });
+}
+
+function cleanHtml(html) {
+    return html
+        .replace(/<br\s*\/?>\s*<br\s*\/?>/g, '')
+        .replace(/<p>\s*<\/p>/g, '')
+        .replace(/<div>\s*<\/div>/g, '')
+        .replace(/(<hr\s*\/?>\s*){2,}/g, '<hr>')
+        .replace(/>\s+</g, '>\n<')
+        .split('\n')
+        .filter(line => line.trim() !== '')
+        .join('\n');
 }
 
 // --- App State & UI Elements ---
@@ -93,6 +148,10 @@ const elements = {
     searchContainer: document.getElementById('searchContainer'),
     backContainer: document.getElementById('backContainer'),
     backBtn: document.getElementById('backBtn'),
+    historyBtn: document.getElementById('historyBtn'),
+    historyDialog: document.getElementById('historyDialog'),
+    historyBody: document.getElementById('historyBody'),
+    historyClose: document.getElementById('historyClose'),
 };
 
 // --- レイアウト切り替え ---
@@ -175,6 +234,7 @@ function updateTopBarUI() {
     } else {
         elements.searchContainer.style.display = 'flex';
         elements.backContainer.style.display = 'none';
+        elements.historyBtn.style.display = isSavedTab ? 'none' : 'flex';
     }
 }
 
@@ -183,6 +243,46 @@ elements.backBtn.addEventListener('click', () => {
     updateTopBarUI();
     renderSavedList();
 });
+
+elements.historyBtn.addEventListener('click', async () => {
+    if (isSavedTab) return;
+    await renderHistory();
+    elements.historyDialog.classList.add('open');
+});
+
+elements.historyClose.addEventListener('click', () => {
+    elements.historyDialog.classList.remove('open');
+});
+
+elements.historyDialog.addEventListener('click', (e) => {
+    if (e.target === elements.historyDialog) {
+        elements.historyDialog.classList.remove('open');
+    }
+});
+
+async function renderHistory() {
+    const history = await getHistory(currentDictType);
+    if (history.length === 0) {
+        elements.historyBody.innerHTML = "<div class='msg'>検索履歴はありません。</div>";
+        return;
+    }
+    let html = '<ul class="history-list">';
+    history.forEach(item => {
+        const d = new Date(item.timestamp);
+        const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+        html += `<li data-word="${item.word}"><span class="material-symbols-outlined">history</span>${item.word}<span class="history-date">${dateStr}</span></li>`;
+    });
+    html += '</ul>';
+    elements.historyBody.innerHTML = html;
+
+    elements.historyBody.querySelectorAll('.history-list li').forEach(li => {
+        li.addEventListener('click', () => {
+            elements.historyDialog.classList.remove('open');
+            elements.searchInput.value = li.dataset.word;
+            performSearch();
+        });
+    });
+}
 
 // --- アクションボタン (検索 or 保存) ---
 elements.actionBtn.addEventListener('click', async () => {
@@ -235,6 +335,7 @@ async function performSearch() {
         elements.actionIcon.textContent = 'bookmark';
         elements.actionBtn.title = '保存済み';
         elements.actionBtn.classList.add('saved');
+        saveHistory(word, currentDictType);
         return;
     }
 
@@ -303,11 +404,12 @@ async function performSearch() {
         }
 
         lastResultHtml = html;
-        elements.resultsDiv.innerHTML = html;
+        elements.resultsDiv.innerHTML = cleanHtml(html);
         const saved = await isWordSaved(lastSearchedWord, currentDictType);
         elements.actionIcon.textContent = saved ? 'bookmark' : 'bookmark_border';
         elements.actionBtn.title = saved ? '保存済み' : '保存する';
         elements.actionBtn.classList.toggle('saved', saved);
+        saveHistory(word, currentDictType);
 
     } catch (error) {
         elements.resultsDiv.innerHTML = `<div class='msg error'>${error.message}</div>`;
@@ -352,7 +454,7 @@ async function renderSavedList(filterWord = "") {
         card.addEventListener('click', () => {
             isDetailView = true;
             updateTopBarUI();
-            elements.resultsDiv.innerHTML = item.html;
+            elements.resultsDiv.innerHTML = cleanHtml(item.html);
         });
 
         elements.resultsDiv.appendChild(card);
