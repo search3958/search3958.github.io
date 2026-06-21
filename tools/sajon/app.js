@@ -63,7 +63,7 @@ async function saveWordData(word, dictType, html) {
     const db = await initDB();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE_WORDS, "readwrite");
-        tx.objectStore(STORE_WORDS).add({ word, dictType, html, timestamp: Date.now() });
+        tx.objectStore(STORE_WORDS).add({ word, dictType, html: cleanHtml(html), timestamp: Date.now() });
         tx.oncomplete = () => resolve();
         tx.onerror = () => reject(tx.error);
     });
@@ -116,15 +116,51 @@ async function getSavedWordHtml(word, dictType) {
 }
 
 function cleanHtml(html) {
-    return html
-        .replace(/<br\s*\/?>\s*<br\s*\/?>/g, '')
-        .replace(/<p>\s*<\/p>/g, '')
-        .replace(/<div>\s*<\/div>/g, '')
-        .replace(/(<hr\s*\/?>\s*){2,}/g, '<hr>')
-        .replace(/>\s+</g, '>\n<')
-        .split('\n')
-        .filter(line => line.trim() !== '')
-        .join('\n');
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    removeBlankLines(tmp);
+    return tmp.innerHTML;
+}
+
+function removeBlankLines(el) {
+    const blockTags = new Set(['H1','H2','H3','H4','H5','H6','HR','UL','OL','LI','P','DIV','BLOCKQUOTE','TABLE','PRE','DL','DT','DD']);
+    const children = Array.from(el.childNodes);
+    let brCount = 0;
+
+    for (let i = children.length - 1; i >= 0; i--) {
+        const node = children[i];
+
+        if (node.nodeType === Node.TEXT_NODE) {
+            const text = node.textContent.replace(/[\u200B\u00A0]/g, '').trim();
+            if (text === '') {
+                el.removeChild(node);
+                continue;
+            }
+        }
+
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.tagName === 'BR') {
+                brCount++;
+                if (brCount > 1) {
+                    el.removeChild(node);
+                }
+                continue;
+            } else {
+                brCount = 0;
+            }
+
+            if (node.innerHTML !== undefined) {
+                removeBlankLines(node);
+            }
+
+            const isEmpty = !['BR','HR','IMG','INPUT'].includes(node.tagName) &&
+                node.textContent.replace(/[\u200B\u00A0]/g, '').trim() === '';
+
+            if (isEmpty) {
+                el.removeChild(node);
+            }
+        }
+    }
 }
 
 // --- App State & UI Elements ---
