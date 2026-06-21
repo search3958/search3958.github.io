@@ -3,14 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>マルチ辞書検索アプリ</title>
+    <title>サジョン - マルチ辞書検索アプリ</title>
+    <meta name="description" content="日本語・英語・韓国語の辞書を横断的に検索できるマルチ辞書検索アプリ。国語辞典、英和辞典、韓国語辞典をワンストップで。">
+    <meta name="keywords" content="辞書, 検索, 国語, 英和, 韓国語, マルチ辞書, 辞典アプリ, dictionary, 사전">
+    <meta property="og:title" content="サジョン - マルチ辞書検索アプリ">
+    <meta property="og:description" content="日本語・英語・韓国語の辞書を横断的に検索できるマルチ辞書検索アプリ。">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="icon.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="サジョン - マルチ辞書検索アプリ">
+    <meta name="twitter:description" content="日本語・英語・韓国語の辞書を横断的に検索できるマルチ辞書検索アプリ。">
+    <link rel="icon" type="image/png" href="icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #ffffff;
             --surface-color: #f2f2f2;
-            --active-bg: #b9fbc0;
+            --active-bg: #05F380;
             --active-text: #000000;
             --text-main: #333333;
             --text-muted: #888888;
@@ -61,20 +71,21 @@
         /* メイン領域 */
         main { display: flex; flex-direction: column; transition: padding var(--transition-speed) ease; }
         
-        .header-controls { margin-bottom: 16px; max-width: 600px; display: flex; flex-direction: column; gap: 16px; min-height: 56px; justify-content: center;}
+        .header-controls { margin-bottom: 16px; max-width: 640px; display: flex; flex-direction: column; gap: 16px; min-height: 56px; justify-content: center;}
         
         /* 検索バー */
-        .search-container { position: relative; display: flex; align-items: center; width: 100%; transition: opacity 0.2s; }
+        .search-container { display: flex; align-items: center; width: 100%; gap: 10px; transition: opacity 0.2s; }
         .search-input {
-            width: 100%; border: none; background: linear-gradient(to right, #f8f8f8, rgba(248,248,248,0.3));
-            padding: 16px 56px 16px 24px; font-size: 16px; border-radius: 24px; outline: none; color: var(--text-main);
+            flex: 1; min-width: 0; border: none; background: linear-gradient(to right, #f8f8f8, rgba(248,248,248,0.3));
+            padding: 16px 24px; font-size: 16px; border-radius: 24px; outline: none; color: var(--text-main);
         }
         .action-btn {
-            position: absolute; right: 8px; width: 40px; height: 40px; border-radius: 50%;
-            border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            color: var(--text-main); transition: background-color 0.2s;
+            width: 48px; height: 48px; border-radius: 50%;
+            border: none; background: #05F380; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: #000; transition: background-color 0.2s, transform 0.15s; flex-shrink: 0;
         }
-        .action-btn:hover { background-color: rgba(0,0,0,0.05); }
+        .action-btn:active { transform: scale(0.92); }
+        .action-btn.saved { background: #00c8ff; }
 
         /* 戻るボタン (保存詳細表示用) */
         .back-container { display: none; align-items: center; transition: opacity 0.2s; }

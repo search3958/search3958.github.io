@@ -46,6 +46,32 @@ async function deleteWordData(id) {
     });
 }
 
+async function isWordSaved(word, dictType) {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, "readonly");
+        const request = tx.objectStore(STORE_NAME).getAll();
+        request.onsuccess = () => {
+            const found = request.result.some(item => item.word === word && item.dictType === dictType);
+            resolve(found);
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function getSavedWordHtml(word, dictType) {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, "readonly");
+        const request = tx.objectStore(STORE_NAME).getAll();
+        request.onsuccess = () => {
+            const item = request.result.find(item => item.word === word && item.dictType === dictType);
+            resolve(item ? item.html : null);
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
 // --- App State & UI Elements ---
 const KRDICT_API_KEY = "EE34BD8FDD19B110D40B4BBE6766F801";
 let currentDictType = "ja";
@@ -53,6 +79,7 @@ let lastSearchedWord = "";
 let lastResultHtml = "";
 let isSavedTab = false;
 let isDetailView = false;
+const tabCache = {}; // { html, word, actionIcon }
 
 const elements = {
     app: document.getElementById('app'),
@@ -82,6 +109,17 @@ elements.toggleBtn.addEventListener('click', () => {
 // --- タブ切り替え ---
 elements.navItems.forEach(item => {
     item.addEventListener('click', () => {
+        const prevVal = document.querySelector('.nav-item.active')?.getAttribute('data-val');
+        if (prevVal && !isDetailView) {
+            tabCache[prevVal] = {
+                html: elements.resultsDiv.innerHTML,
+                word: elements.searchInput.value,
+                icon: elements.actionIcon.textContent,
+                title: elements.actionBtn.title,
+                saved: elements.actionBtn.classList.contains('saved'),
+            };
+        }
+
         elements.navItems.forEach(nav => nav.classList.remove('active'));
         item.classList.add('active');
         const val = item.getAttribute('data-val');
@@ -90,19 +128,40 @@ elements.navItems.forEach(item => {
             isSavedTab = true;
             isDetailView = false;
             elements.searchInput.placeholder = "保存済みから検索...";
-            elements.searchInput.value = "";
             elements.actionIcon.textContent = "search";
+            elements.actionBtn.title = "検索";
+            elements.actionBtn.classList.remove('saved');
             updateTopBarUI();
-            renderSavedList();
+
+            const cached = tabCache['saved'];
+            if (cached) {
+                elements.resultsDiv.innerHTML = cached.html;
+                elements.searchInput.value = cached.word;
+            } else {
+                renderSavedList();
+            }
         } else {
             isSavedTab = false;
             isDetailView = false;
             currentDictType = val;
             elements.searchInput.placeholder = "検索単語を入力...";
-            elements.searchInput.value = "";
-            elements.actionIcon.textContent = "search";
-            elements.resultsDiv.innerHTML = "<div class='msg'>単語を入力してEnterキーを押すか、検索ボタンを押してください。</div>";
             updateTopBarUI();
+
+            const cached = tabCache[val];
+            if (cached) {
+                elements.resultsDiv.innerHTML = cached.html;
+                elements.searchInput.value = cached.word;
+                elements.actionIcon.textContent = cached.icon;
+                elements.actionBtn.title = cached.title;
+                elements.actionBtn.classList.toggle('saved', cached.saved);
+                lastSearchedWord = cached.word;
+            } else {
+                elements.searchInput.value = "";
+                elements.actionIcon.textContent = "search";
+                elements.actionBtn.title = "検索";
+                elements.actionBtn.classList.remove('saved');
+                elements.resultsDiv.innerHTML = "<div class='msg'>単語を入力してEnterキーを押すか、検索ボタンを押してください。</div>";
+            }
         }
         elements.searchInput.focus();
     });
@@ -135,9 +194,11 @@ elements.actionBtn.addEventListener('click', async () => {
             performSearch();
         }
     } else if (icon === 'bookmark_border') {
-        // 保存処理
         await saveWordData(lastSearchedWord, currentDictType, lastResultHtml);
-        elements.actionIcon.textContent = 'bookmark'; // 保存完了アイコン
+        elements.actionIcon.textContent = 'bookmark';
+        elements.actionBtn.title = '保存済み';
+        elements.actionBtn.classList.add('saved');
+        delete tabCache['saved'];
     }
 });
 
@@ -152,8 +213,11 @@ elements.searchInput.addEventListener('keydown', (e) => {
 });
 
 elements.searchInput.addEventListener('input', () => {
-    // 入力内容が変わったら検索アイコンに戻す
-    if (!isSavedTab) elements.actionIcon.textContent = 'search';
+    if (!isSavedTab) {
+        elements.actionIcon.textContent = 'search';
+        elements.actionBtn.title = '検索';
+        elements.actionBtn.classList.remove('saved');
+    }
 });
 
 // --- 検索処理本体 (Supabase Edge Functions 経由) ---
@@ -163,6 +227,16 @@ async function performSearch() {
 
     elements.resultsDiv.innerHTML = "<div class='msg'><span class='material-symbols-outlined spin'>sync</span> 検索中...</div>";
     lastSearchedWord = word;
+
+    const savedHtml = await getSavedWordHtml(word, currentDictType);
+    if (savedHtml) {
+        lastResultHtml = savedHtml;
+        elements.resultsDiv.innerHTML = savedHtml;
+        elements.actionIcon.textContent = 'bookmark';
+        elements.actionBtn.title = '保存済み';
+        elements.actionBtn.classList.add('saved');
+        return;
+    }
 
     try {
         let targetUrl = "";
@@ -230,7 +304,10 @@ async function performSearch() {
 
         lastResultHtml = html;
         elements.resultsDiv.innerHTML = html;
-        elements.actionIcon.textContent = 'bookmark_border'; // 保存可能状態へ変更
+        const saved = await isWordSaved(lastSearchedWord, currentDictType);
+        elements.actionIcon.textContent = saved ? 'bookmark' : 'bookmark_border';
+        elements.actionBtn.title = saved ? '保存済み' : '保存する';
+        elements.actionBtn.classList.toggle('saved', saved);
 
     } catch (error) {
         elements.resultsDiv.innerHTML = `<div class='msg error'>${error.message}</div>`;
@@ -249,6 +326,7 @@ async function renderSavedList(filterWord = "") {
 
     if (filtered.length === 0) {
         elements.resultsDiv.innerHTML = "<div class='msg'>保存された単語はありません。</div>";
+        tabCache['saved'] = { html: elements.resultsDiv.innerHTML, word: filterWord, icon: 'search', title: '検索', saved: false };
         return;
     }
 
@@ -264,14 +342,13 @@ async function renderSavedList(filterWord = "") {
             <button class="delete-btn material-symbols-outlined">delete</button>
         `;
 
-        // 削除ボタン
         card.querySelector('.delete-btn').addEventListener('click', async (e) => {
             e.stopPropagation();
             await deleteWordData(item.id);
-            renderSavedList(elements.searchInput.value); // 再描画
+            delete tabCache['saved'];
+            renderSavedList(elements.searchInput.value);
         });
 
-        // 詳細を開く
         card.addEventListener('click', () => {
             isDetailView = true;
             updateTopBarUI();
@@ -280,4 +357,6 @@ async function renderSavedList(filterWord = "") {
 
         elements.resultsDiv.appendChild(card);
     });
+
+    tabCache['saved'] = { html: elements.resultsDiv.innerHTML, word: filterWord, icon: 'search', title: '検索', saved: false };
 }
