@@ -163,6 +163,18 @@ function removeBlankLines(el) {
     }
 }
 
+function translateAttrs() {
+    if (!window.translator || window.translator.currentLang === 'ja' || window.translator.map.size === 0) return;
+    document.querySelectorAll('[data-tr-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-tr-placeholder');
+        if (translator.map.has(key)) el.placeholder = translator.map.get(key);
+    });
+    document.querySelectorAll('[data-tr-title]').forEach(el => {
+        const key = el.getAttribute('data-tr-title');
+        if (translator.map.has(key)) el.title = translator.map.get(key);
+    });
+}
+
 // --- App State & UI Elements ---
 const KRDICT_API_KEY = "EE34BD8FDD19B110D40B4BBE6766F801";
 let currentDictType = "ja";
@@ -498,3 +510,8 @@ async function renderSavedList(filterWord = "") {
 
     tabCache['saved'] = { html: elements.resultsDiv.innerHTML, word: filterWord, icon: 'search', title: '検索', saved: false };
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(translateAttrs, 500);
+    setInterval(translateAttrs, 3000);
+});
