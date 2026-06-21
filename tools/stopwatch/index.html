@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>シンプルタイマー | Simple Timer</title>
-<link rel="canonical" href="https://search3958.github.io/tools/timer/">
-<meta name="description" content="シンプルで美しい、Material Design採用のタイマー。全画面表示、テーマカラー変更などカスタマイズ対応。">
+<title>シンプルストップウォッチ | Simple Stopwatch</title>
+<link rel="canonical" href="https://search3958.github.io/tools/stopwatch/">
+<meta name="description" content="シンプルで美しい、Material Design採用のストップウォッチ。全画面表示、テーマカラー変更などカスタマイズ対応。">
 <meta name="theme-color" content="#5b2929">
 <link rel="icon" href="https://search3958.github.io/project/logos/3958logo_main.svg">
 
@@ -39,7 +39,7 @@
 
 <style>
     :root {
-	--primary: #5b2929;
+	--primary: #3e536f;
 	--background: #f3f3f3;
 	--surface: #ffffffbb;
 	--on-surface: #121212;
@@ -152,7 +152,7 @@ button {
 	width: 57vw;
 	height: 57vh;
 	border-radius: 99999px;
-	background: conic-gradient(from 0deg, rgba(255, 255, 255, 0.2) 30%, rgba(254, 173, 0, 0.5) 48%, rgba(252, 136, 0, 0.6) 56%, #FF4040 100%), url("data:image/svg+xml,%3Csvg viewBox='0 0 400 310' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+	background: conic-gradient(from 0deg,rgba(255,255,255,0.4) 10%,#AAB1B555 20%,#78818C 70%,#0079A8 100%), url("data:image/svg+xml,%3Csvg viewBox='0 0 400 310' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 	background-size: cover;
 	filter: contrast(130%) brightness(140%) drop-shadow(0 0 0 #ffffff);
 	box-shadow: 0 0 50px #303f50,inset 0 0 100px #fffb;
@@ -184,36 +184,15 @@ button {
 }
 
 .time-input {
-    background-color: var(--surface);
     color: var(--on-surface);
     border: none;
-    border-radius: 24px;
     width: 54px;
     text-align: center;
     font-family: inherit;
-    font-size: 24px;
+    font-size: 32px;
     font-weight: inherit;
-    padding: 7px;
     margin: 0;
-    -moz-appearance: textfield;
-    corner-shape: superellipse(1.6);
-}
-
-.time-input::-webkit-outer-spin-button,
-.time-input::-webkit-inner-spin-button {
-	-webkit-appearance: none;
-	margin: 0
-}
-
-.time-input:focus {
-	outline: 2px solid var(--primary);
-	border-color: var(--primary)
-}
-
-.time-input:disabled {
-	opacity: 1;
-	cursor: default;
-	border-color: transparent
+    display: inline-block;
 }
 
 .time-part {
@@ -616,25 +595,7 @@ ins {
 }
 
 #alarm-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background-color: var(--primary);
-	z-index: 2000;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	opacity: 0;
-	pointer-events: none;
-	transition: opacity 0.3s
-}
-
-#alarm-overlay.active {
-	opacity: 1;
-	pointer-events: auto
+	display: none
 }
 
 .alarm-time {
@@ -645,48 +606,12 @@ ins {
 	font-feature-settings: "tnum"
 }
 
-.alarm-close-btn {
-	margin-top: 32px;
-	background-color: #ffffff;
-	color: #000000;
-	font-size: 1.5rem;
-	font-weight: 600;
-	padding: 16px 48px;
-	border-radius: 50px;
-	border: none;
-	cursor: pointer;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-	transition: transform 0.1s
-}
-
-.alarm-close-btn:hover {
-	transform: scale(1.05)
-}
-
-.alarm-close-btn:active {
-	transform: scale(0.95)
-}
-
 .sound-select {
-	width: 100%;
-	padding: 12px;
-	border-radius: var(--radius-button);
-	border: 1px solid var(--outline);
-	background-color: var(--background);
-	color: var(--on-surface);
-	font-size: 1rem;
-	margin-bottom: 8px
+	display: none
 }
 
 .license-text {
-	font-size: 0.8rem;
-	color: var(--on-surface-variant);
-	line-height: 1.4
-}
-
-.license-text a {
-	color: var(--primary);
-	text-decoration: underline
+	display: none
 }
 </style>
 
@@ -695,11 +620,9 @@ ins {
 <body>
 
 <h1 class="app-title">
-
 <img class="logo-svg" width="48" height="32" src="https://search3958.github.io/project/logos/3958logo_main.svg">
 
-
-タイマー</h1>
+ストップウォッチ</h1>
 
 <nav class="fab-container">
 <button class="fab" onclick="toggleFullscreen()" aria-label="全画面表示の切り替え">
@@ -719,11 +642,11 @@ ins {
 </div>
 <div class="timer-row">
 <div class="time-display">
-    <input type="number" id="time-hh" class="time-input" value="00" min="0" max="99" placeholder="00" onblur="formatInput(this)">
+    <span id="time-hh" class="time-input">00</span>
     <span class="time-separator">:</span>
-    <input type="number" id="time-mm" class="time-input" value="00" min="0" max="59" placeholder="00" onblur="formatInput(this, 59)">
+    <span id="time-mm" class="time-input">00</span>
     <span class="time-separator">:</span>
-    <input type="number" id="time-ss" class="time-input" value="00" min="0" max="59" placeholder="00" onblur="formatInput(this, 59)">
+    <span id="time-ss" class="time-input">00</span>
 </div>
 <div class="controls-container">
 <button id="reset-btn" class="control-btn monotone-btn" onclick="resetTimer()" aria-label="リセット">
@@ -768,20 +691,6 @@ ins {
 </div>
 
 <div class="setting-group">
-<span class="setting-label">通知音</span>
-<select id="sound-select" class="sound-select" onchange="saveSoundPreference()">
-    <option value="Phobos.ogg">Phobos (デフォルト)</option>
-    <option value="Dione.ogg">Dione</option>
-    <option value="Sedna.ogg">Sedna</option>
-    <option value="Timer.ogg">Timer</option>
-</select>
-<p class="license-text">
-    Sound files from <a href="https://github.com/EvilScout/Lineage-OS-Sounds" target="_blank" rel="noopener">Lineage-OS-Sounds</a>.<br>
-    Licensed under <a href="https://github.com/EvilScout/Lineage-OS-Sounds/blob/main/LICENSE" target="_blank" rel="noopener">Apache License 2.0</a>.
-</p>
-</div>
-
-<div class="setting-group">
 <span class="setting-label">表示テーマ</span>
 <div class="toggle-group">
 <button id="theme-auto" class="toggle-btn" onclick="setDarkMode('auto')">OSに合わせる</button>
@@ -790,15 +699,14 @@ ins {
 </div>
 </div>
 
-
 <div class="setting-group">
 <span class="setting-label">重要情報</span>
 <div class="toggle-group">
 <button class="toggle-btn" onclick="window.location.href='https://search3958.github.io/policies/'">利用規約と個人情報政策</button>
-<button class="toggle-btn" onclick="window.location.href='https://search3958.github.io/accounts/lang?next=https://search3958.github.io/tools/timer/'">Language</button>
+<button id="theme-light" class="toggle-btn" onclick="setDarkMode('light')">ライトモード</button>
+<button id="theme-dark" class="toggle-btn" onclick="setDarkMode('dark')">ダークモード</button>
 </div>
 </div>
-
 
 <div class="setting-group" style="display:none">
 <span class="setting-label">テーマカラー</span>
@@ -820,105 +728,47 @@ ins {
 </div>
 </div>
 
-<div id="alarm-overlay">
-    <div class="alarm-time">00:00:00</div>
-    <button class="alarm-close-btn" onclick="stopAlarm()">閉じる</button>
-</div>
-
 <script>
-const hhInput = document.getElementById('time-hh');
-const mmInput = document.getElementById('time-mm');
-const ssInput = document.getElementById('time-ss');
+const hhDisplay = document.getElementById('time-hh');
+const mmDisplay = document.getElementById('time-mm');
+const ssDisplay = document.getElementById('time-ss');
 const startPauseBtn = document.getElementById('start-pause-btn');
 const playIcon = document.getElementById('play-icon');
 const pauseIcon = document.getElementById('pause-icon');
 const startPauseText = document.getElementById('start-pause-text');
-const alarmOverlay = document.getElementById('alarm-overlay');
-const soundSelect = document.getElementById('sound-select');
 const progressCircle = document.querySelector('.noise');
-let timerInterval = null;
 let rafId = null;
 let isRunning = false;
-let totalSeconds = 0;
-let initialTotalSeconds = 0;
-let endTime = 0;
-let audio = new Audio();
-const BASE_SOUND_URL = 'https://search3958.github.io/tools/timer/';
-
-function loadSound() {
-  const selectedSound = localStorage.getItem('timer_sound') || 'Phobos.ogg';
-  soundSelect.value = selectedSound;
-  audio.src = BASE_SOUND_URL + selectedSound;
-  audio.loop = true;
-}
-
-function saveSoundPreference() {
-  const selectedSound = soundSelect.value;
-  localStorage.setItem('timer_sound', selectedSound);
-  audio.src = BASE_SOUND_URL + selectedSound;
-}
+let startTime = 0;
+let elapsedMs = 0;
 
 function paintNoise(startDeg) {
   if (!progressCircle) return;
   progressCircle.style.background =
-    `conic-gradient(from ${startDeg}deg,rgba(255,255,255,0.4) 30%,rgba(254,173,0,0.2) 48%,rgba(252,136,0,0.346) 56%,#ff2020 100%),` +
+    `conic-gradient(from ${startDeg}deg,rgba(255,255,255,0.4) 10%,#AAB1B555 20%,#78818C 70%,#0079A8 100%),` +
     `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 310' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`;
 }
 
-function setProgress(remainingSeconds) {
-  if (!progressCircle || initialTotalSeconds <= 0) {
-    paintNoise(0);
-    return;
-  }
-  const elapsed = Math.max(0, initialTotalSeconds - remainingSeconds);
-  const deg = Math.min(360, (elapsed / initialTotalSeconds) * 360);
-  paintNoise(deg);
+function updateDisplay(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  hhDisplay.textContent = String(h).padStart(2, '0');
+  mmDisplay.textContent = String(m).padStart(2, '0');
+  ssDisplay.textContent = String(s).padStart(2, '0');
 }
 
-function formatInput(input, maxVal) {
-  let val = parseInt(input.value, 10);
-  if (Number.isNaN(val) || val < 0) val = 0;
-  if (maxVal && val > maxVal) val = maxVal;
-  input.value = String(val).padStart(2, '0');
-  if (!isRunning) {
-    calculateTotalSeconds();
-    setProgress(totalSeconds);
-  }
-}
-
-function calculateTotalSeconds() {
-  const h = parseInt(hhInput.value, 10) || 0;
-  const m = parseInt(mmInput.value, 10) || 0;
-  const s = parseInt(ssInput.value, 10) || 0;
-  totalSeconds = h * 3600 + m * 60 + s;
-}
-
-function updateDisplay(secondsRemaining) {
-  if (secondsRemaining < 0) secondsRemaining = 0;
-  const h = Math.floor(secondsRemaining / 3600);
-  const m = Math.floor((secondsRemaining % 3600) / 60);
-  const s = secondsRemaining % 60;
-  hhInput.value = String(h).padStart(2, '0');
-  mmInput.value = String(m).padStart(2, '0');
-  ssInput.value = String(s).padStart(2, '0');
-}
-
-function setInputsDisabled(disabled) {
-  hhInput.disabled = disabled;
-  mmInput.disabled = disabled;
-  ssInput.disabled = disabled;
+function runTimerFrame() {
+  elapsedMs = Date.now() - startTime;
+  updateDisplay(elapsedMs);
+  paintNoise((elapsedMs % 60000) / 60000 * 360);
+  rafId = requestAnimationFrame(runTimerFrame);
 }
 
 function startTimer() {
-  calculateTotalSeconds();
-  if (totalSeconds <= 0) return;
-  if (initialTotalSeconds <= 0 || totalSeconds > initialTotalSeconds) {
-    initialTotalSeconds = totalSeconds;
-  }
-  audio.load();
-  endTime = Date.now() + totalSeconds * 1000;
+  startTime = Date.now() - elapsedMs;
   isRunning = true;
-  setInputsDisabled(true);
   playIcon.style.display = 'none';
   pauseIcon.style.display = 'block';
   startPauseBtn.setAttribute('aria-label', '一時停止');
@@ -927,44 +777,20 @@ function startTimer() {
 }
 
 function pauseTimer() {
-  clearInterval(timerInterval);
   cancelAnimationFrame(rafId);
   rafId = null;
   isRunning = false;
-  setInputsDisabled(false);
-  calculateTotalSeconds();
   playIcon.style.display = 'block';
   pauseIcon.style.display = 'none';
   startPauseBtn.setAttribute('aria-label', '開始');
   startPauseText.textContent = '開始';
 }
 
-function runTimerFrame() {
-  const remainingMs = endTime - Date.now();
-  const remainingForDisplay = Math.ceil(remainingMs / 1000);
-  const remainingForProgress = Math.max(0, remainingMs / 1000);
-
-  if (remainingMs <= 0) {
-    updateDisplay(0);
-    setProgress(0);
-    triggerAlarm();
-    return;
-  }
-
-  updateDisplay(remainingForDisplay);
-  setProgress(remainingForProgress);
-  rafId = requestAnimationFrame(runTimerFrame);
-}
-
 function resetTimer() {
   pauseTimer();
-  hhInput.value = '00';
-  mmInput.value = '00';
-  ssInput.value = '00';
-  totalSeconds = 0;
-  initialTotalSeconds = 0;
-  setProgress(0);
-  stopAlarm();
+  elapsedMs = 0;
+  updateDisplay(0);
+  paintNoise(0);
 }
 
 function startPauseTimer() {
@@ -974,28 +800,9 @@ function startPauseTimer() {
     startTimer();
   }
 }
-
-function triggerAlarm() {
-  pauseTimer();
-  hhInput.value = '00';
-  mmInput.value = '00';
-  ssInput.value = '00';
-  alarmOverlay.classList.add('active');
-  audio.play().catch((e) => console.log('Audio play failed:', e));
-}
-
-function stopAlarm() {
-  alarmOverlay.classList.remove('active');
-  audio.pause();
-  audio.currentTime = 0;
-}
-
-loadSound();
-calculateTotalSeconds();
-setProgress(totalSeconds);
 // --- Common Functions (Fullscreen, Modal, Settings) ---
 function toggleFullscreen(){const body = document.body;const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;if(isFullscreen){if(document.exitFullscreen){document.exitFullscreen();}else if(document.mozCancelFullScreen){document.mozCancelFullScreen();}else if(document.webkitExitFullscreen){document.webkitExitFullscreen();}else if(document.msExitFullscreen){document.msExitFullscreen();}}else{if(body.requestFullscreen){body.requestFullscreen();}else if(body.mozRequestFullScreen){body.mozRequestFullScreen();}else if(body.webkitRequestFullscreen){body.webkitRequestFullscreen();}else if(body.msRequestFullscreen){body.msRequestFullscreen();}}}document.addEventListener('fullscreenchange',onFullscreenChange);document.addEventListener('webkitfullscreenchange',onFullscreenChange);document.addEventListener('mozfullscreenchange',onFullscreenChange);document.addEventListener('MSFullscreenChange',onFullscreenChange);function onFullscreenChange(){const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;const root = document.documentElement;const STORAGE_DARK_MODE_KEY = 'stopwatch_dark_mode';document.body.classList.toggle('fullscreen-active',isFullscreen);if(isFullscreen){root.classList.add('dark-mode');}else{const restoredMode = localStorage.getItem(STORAGE_DARK_MODE_KEY)|| 'auto';setDarkMode(restoredMode,false);}}function openModal(id){document.getElementById(id).classList.add('active');}function closeModal(event,id){if(!event || event.target.id === id || event.target.closest('.close-btn')){document.getElementById(id).classList.remove('active');}}const root = document.documentElement;const rootStyle = root.style;const PREFERS_DARK_MEDIA_QUERY = window.matchMedia('(prefers-color-scheme:dark)');const STORAGE_COLOR_KEY = 'stopwatch_color';const STORAGE_FONT_KEY = 'stopwatch_font';const STORAGE_DARK_MODE_KEY = 'stopwatch_dark_mode';const FONT_MONO_CLASS = 'font-mono';const savedColor = localStorage.getItem(STORAGE_COLOR_KEY)|| '#5b2929';const savedFont = localStorage.getItem(STORAGE_FONT_KEY)|| 'sans';const savedDarkMode = localStorage.getItem(STORAGE_DARK_MODE_KEY)|| 'auto';setTheme(savedColor,false);setFont(savedFont,false);setDarkMode(savedDarkMode,false);PREFERS_DARK_MEDIA_QUERY.addEventListener('change',(event)=>{if(localStorage.getItem(STORAGE_DARK_MODE_KEY)=== 'auto'){applyDarkMode(event.matches);}});function setTheme(color,save = true){rootStyle.setProperty('--primary',color);document.querySelector('meta[name="theme-color"]').setAttribute('content',color);document.querySelectorAll('.color-btn').forEach(btn =>{btn.setAttribute('aria-selected','false');if(btn.getAttribute('style').includes(color)){btn.setAttribute('aria-selected','true');}});if(save)localStorage.setItem(STORAGE_COLOR_KEY,color);}function setFont(type,save = true){if(type === 'mono'){root.classList.add(FONT_MONO_CLASS);document.getElementById('font-mono').classList.add('active');document.getElementById('font-sans').classList.remove('active');}else{root.classList.remove(FONT_MONO_CLASS);document.getElementById('font-mono').classList.remove('active');document.getElementById('font-sans').classList.add('active');}if(save)localStorage.setItem(STORAGE_FONT_KEY,type);}function applyDarkMode(isDark){root.classList.toggle('dark-mode',isDark);}function setDarkMode(mode,save = true){let isDark = false;document.getElementById('theme-auto').classList.remove('active');document.getElementById('theme-light').classList.remove('active');document.getElementById('theme-dark').classList.remove('active');if(mode === 'auto'){isDark = PREFERS_DARK_MEDIA_QUERY.matches;document.getElementById('theme-auto').classList.add('active');}else if(mode === 'dark'){isDark = true;document.getElementById('theme-dark').classList.add('active');}else{isDark = false;document.getElementById('theme-light').classList.add('active');}applyDarkMode(isDark);if(save)localStorage.setItem(STORAGE_DARK_MODE_KEY,mode);}
 </script>
-<script src="/frameworks/lang.js" data-xml="/xml/timer.xml"></script>
+<script src="/frameworks/lang.js" data-xml="/xml/stopwatch.xml"></script>
 </body>  <script src="https://search3958.github.io/check.js"></script>
 </html>
