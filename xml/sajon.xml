@@ -22,6 +22,11 @@
         <text key="s_msg_no_history">検索履歴はありません。</text>
         <text key="s_dialog_history">検索履歴</text>
         <text key="s_back">戻る</text>
+        <text key="s_welcome">千里辞書へようこそ</text>
+        <text key="s_welcome_sub">すべての学習者を歓迎します</text>
+        <text key="s_terms">利用規約と個人情報政策</text>
+        <text key="s_about">私について</text>
+        <text key="s_lang">Language</text>
     </lang>
     <lang id="en">
         <text key="s_title">Sajon - Multi Dictionary Search</text>
@@ -45,6 +50,11 @@
         <text key="s_msg_no_history">No search history.</text>
         <text key="s_dialog_history">Search History</text>
         <text key="s_back">Back</text>
+        <text key="s_welcome">Welcome to Senri Dictionary</text>
+        <text key="s_welcome_sub">We welcome all learners</text>
+        <text key="s_terms">Terms &amp; Privacy Policy</text>
+        <text key="s_about">About Me</text>
+        <text key="s_lang">Language</text>
     </lang>
     <lang id="ko">
         <text key="s_title">사전 - 다중 사전 검색 앱</text>
@@ -68,6 +78,11 @@
         <text key="s_msg_no_history">검색 기록이 없습니다.</text>
         <text key="s_dialog_history">검색 기록</text>
         <text key="s_back">뒤로</text>
+        <text key="s_welcome">천리사전에 오신 것을 환영합니다</text>
+        <text key="s_welcome_sub">모든 학습자를 환영합니다</text>
+        <text key="s_terms">이용약관 및 개인정보 처리방침</text>
+        <text key="s_about">소개</text>
+        <text key="s_lang">Language</text>
     </lang>
     <lang id="ko-KP">
         <text key="s_title">사전 - 다중 사전 검색 앱</text>
@@ -84,13 +99,18 @@
         <text key="s_btn_save">저장</text>
         <text key="s_btn_saved">저장됨</text>
         <text key="s_btn_history">검색 기록</text>
-        <text key="s_loading">검색 중...</text>
+        <text key="s_loading">잠간 기다려주십시오...</text>
         <text key="s_msg_default">단어를 입력하고 Enter를 누르거나 검색 버튼을 눌러주세요.</text>
         <text key="s_msg_no_saved">저장된 단어가 없습니다.</text>
-        <text key="s_msg_loading">로딩 중...</text>
+        <text key="s_msg_loading">잠간 기다려주십시오...</text>
         <text key="s_msg_no_history">검색 기록이 없습니다.</text>
         <text key="s_dialog_history">검색 기록</text>
         <text key="s_back">뒤로</text>
+        <text key="s_welcome">천리사전에 오신것을 환영합니다</text>
+        <text key="s_welcome_sub">모든 학습자들을 환영합니다</text>
+        <text key="s_terms">리용약관 및 개인정보처리정책</text>
+        <text key="s_about">소개</text>
+        <text key="s_lang">Language</text>
     </lang>
     <lang id="zh-CN">
         <text key="s_title">辞书 - 多辞典搜索应用</text>
@@ -114,6 +134,11 @@
         <text key="s_msg_no_history">没有搜索历史。</text>
         <text key="s_dialog_history">搜索历史</text>
         <text key="s_back">返回</text>
+        <text key="s_welcome">欢迎来到千里辞典</text>
+        <text key="s_welcome_sub">欢迎所有学习者</text>
+        <text key="s_terms">服务条款和隐私政策</text>
+        <text key="s_about">关于我</text>
+        <text key="s_lang">Language</text>
     </lang>
     <lang id="zh-TW">
         <text key="s_title">辭書 - 多辭典搜尋應用</text>
@@ -137,5 +162,10 @@
         <text key="s_msg_no_history">沒有搜尋歷史。</text>
         <text key="s_dialog_history">搜尋歷史</text>
         <text key="s_back">返回</text>
+        <text key="s_welcome">歡迎來到千里辭典</text>
+        <text key="s_welcome_sub">歡迎所有學習者</text>
+        <text key="s_terms">服務條款和隱私政策</text>
+        <text key="s_about">關於我</text>
+        <text key="s_lang">Language</text>
     </lang>
 </dictionary>
