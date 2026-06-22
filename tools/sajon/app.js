@@ -397,7 +397,8 @@ async function performSearch() {
                 targetUrl = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
                 break;
             case 'en-ja':
-                targetUrl = `https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(word)}`;
+                // Jisho APIからWiktionaryへ変更
+                targetUrl = `https://ja.wiktionary.org/w/api.php?action=query&titles=${encodeURIComponent(word)}&prop=extracts&explaintext&format=json`;
                 break;
             case 'ko':
             case 'ja-ko':
@@ -418,13 +419,17 @@ async function performSearch() {
 
         // レスポンスからHTMLを生成
         let html = "";
-        if (currentDictType === 'ja') {
+        let sourceName = "";
+
+        if (currentDictType === 'ja' || currentDictType === 'en-ja') {
+            sourceName = "Wiktionary";
             const data = JSON.parse(rawData);
             const pageIds = Object.keys(data.query.pages);
             if (pageIds[0] === "-1") throw new Error("見つかりませんでした。");
             const extract = data.query.pages[pageIds[0]].extract;
             html = `<h1 style="margin-top:0;">${word}</h1><div class="wiki-content">${extract.replace(/====\s*(.*?)\s*====/g, '<h4>$1</h4>').replace(/===\s*(.*?)\s*===/g, '<h3>$1</h3>').replace(/==\s*(.*?)\s*==/g, '<h2>$1</h2>').replace(/\n/g, '<br>')}</div>`;
         } else if (currentDictType === 'en') {
+            sourceName = "Free Dictionary API";
             const data = JSON.parse(rawData);
             html = `<h1 style="margin-top:0;">${data[0].word} <span style="font-size:16px; color:#888;">${data[0].phonetic || ''}</span></h1><hr>`;
             data[0].meanings.forEach((m) => {
@@ -432,16 +437,8 @@ async function performSearch() {
                 m.definitions.slice(0, 3).forEach((d) => html += `<li>${d.definition}</li>`);
                 html += "</ul>";
             });
-        } else if (currentDictType === 'en-ja') {
-            const data = JSON.parse(rawData);
-            if (!data.data || data.data.length === 0) throw new Error("見つかりませんでした。");
-            html = `<h1 style="margin-top:0;">${word}</h1><hr>`;
-            data.data.slice(0, 3).forEach((item) => {
-                const jp = item.japanese[0].word || item.japanese[0].reading;
-                const reading = item.japanese[0].reading && item.japanese[0].word ? `<span style="color:#888; font-size:14px;">(${item.japanese[0].reading})</span>` : "";
-                html += `<div style="margin-bottom:16px;"><strong>${jp} ${reading}</strong><br><span style="color:#555;">${item.senses[0].english_definitions.join(", ")}</span></div>`;
-            });
         } else {
+            sourceName = "韓国国立国語院 (KRDICT)";
             const xmlDoc = new DOMParser().parseFromString(rawData, "text/xml");
             const items = xmlDoc.getElementsByTagName("item");
             if (items.length === 0) throw new Error("見つかりませんでした。");
@@ -450,6 +447,14 @@ async function performSearch() {
                 html += `<div style="margin-bottom:16px;"><strong>${items[i].getElementsByTagName("word")[0]?.textContent || ""}</strong><br><span style="color:#555;">${items[i].getElementsByTagName("definition")[0]?.textContent || ""}</span></div>`;
             }
         }
+
+        // --- 全ての回答の先頭に出典、末尾にクレジットを追加 ---
+        const sourceHeader = `<div style="font-size: 14px; color: #555; margin-bottom: 12px; font-weight: normal;">出典: ${sourceName}</div>\n`;
+        const creditFooter = `\n<div style="font-size: 12px; color: #888; margin-top: 24px; padding-top: 12px; border-top: 1px solid #eee;">
+この辞書データは、${sourceName} の内容を利用しています。<br>
+</div>`;
+
+        html = sourceHeader + html + creditFooter;
 
         lastResultHtml = html;
         elements.resultsDiv.innerHTML = cleanHtml(html);
