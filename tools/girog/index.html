@@ -77,6 +77,10 @@ header {
     transition: background-color 0.3s ease;
 }
 
+.main-input.focused {
+    background: color(display-p3 1 0.87 0.14);
+}
+
 .main-input::placeholder {
     color: #888;
 }
@@ -88,12 +92,10 @@ header {
 /* 展開時のクイック入力カード (Frame 71) */
 .expanded-input-card {
     position: absolute;
-    top: 0;
+    top: 100%;
     left: 0;
     width: 100%;
-    background: #ffffff;
     border-radius: 24px;
-    /* アニメーションの追加 */
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
@@ -102,28 +104,13 @@ header {
     flex-direction: column;
     overflow: hidden;
     z-index: 20;
-    /* この要素のみ浮いているため、最低限のドロップシャドウを付与 */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.2);
 }
 
 .expanded-input-card.active {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
-}
-
-.expanded-header {
-    background-color: #fce14a;
-    padding: 16px 24px;
-}
-
-.expanded-header input {
-    width: 100%;
-    border: none;
-    background: transparent;
-    font-size: 16px;
-    font-weight: bold;
-    outline: none;
+    transform: translateY(8px);
 }
 
 .expanded-body {
@@ -139,6 +126,7 @@ header {
     min-height: 60px;
     font-size: 14px;
     line-height: 1.5;
+    background:none;
 }
 
 .expanded-footer {
@@ -166,7 +154,7 @@ header {
 }
 
 .btn-small-icon.check {
-    background: #fce14a;
+    background: color(display-p3 1 0.87 0.14);
     width: 40px;
 }
 
@@ -184,7 +172,7 @@ header {
 }
 
 .btn-sync {
-    background: #fce14a;
+    background: color(display-p3 1 0.87 0.14);
     border: none;
     padding: 0 20px;
     height: 48px;
@@ -262,7 +250,7 @@ header {
 }
 
 .note-yellow {
-    background-color: #fce14a;
+    background-color: color(display-p3 1 0.87 0.14);
 }
 
 .note-white {
@@ -325,7 +313,7 @@ header {
 /* カード上部に「完全に」外出しされたボタン群 (12.16.50の画像に準拠) */
 .modal-actions-top {
     position: absolute;
-    top: -52px;
+    top: -57px;
     left: 0;
     display: flex;
     gap: 8px;
@@ -351,7 +339,7 @@ header {
 }
 
 .modal-btn.check {
-    background: #fce14a;
+    background: color(display-p3 1 0.87 0.14);
     width: 56px;
 }
 
@@ -370,9 +358,9 @@ header {
 }
 
 .modal-header {
-    background-color: #fce14a;
+    background-color: color(display-p3 1 0.87 0.14);
     /* 余計な白背景を排除し、ボタンが被る上部のパディングのみ確保 */
-    padding: 36px 24px 16px 24px; 
+    padding: 24px 24px 16px 24px; 
 }
 
 .modal-header input {
@@ -458,7 +446,7 @@ header {
 }
 
 .trash-actions button.primary {
-    background: #fce14a;
+    background: color(display-p3 1 0.87 0.14);
 }
 
 .trash-list {
@@ -535,7 +523,7 @@ header {
 .snackbar button {
     background: transparent;
     border: none;
-    color: #fce14a;
+    color: color(display-p3 1 0.87 0.14);
     font-weight: bold;
     cursor: pointer;
 }
@@ -553,9 +541,6 @@ header {
             <input type="text" class="main-input" id="mainInput" placeholder="記録を開始...">
             
             <div class="expanded-input-card" id="expandedInputCard">
-                <div class="expanded-header">
-                    <input type="text" id="quickTitle" placeholder="ここにメモを入力します">
-                </div>
                 <div class="expanded-body">
                     <textarea id="quickContent" placeholder="本文はここに入力されます。&#10;改行可能"></textarea>
                     <div class="expanded-footer">
@@ -654,7 +639,6 @@ header {
         const btnToggleSearch = document.getElementById('btnToggleSearch');
         
         // クイック入力
-        const quickTitle = document.getElementById('quickTitle');
         const quickContent = document.getElementById('quickContent');
         const quickSave = document.getElementById('quickSave');
         const quickCancel = document.getElementById('quickCancel');
@@ -700,7 +684,6 @@ header {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
         }
-        quickContent.addEventListener('input', () => autoResizeTextarea(quickContent));
         editContent.addEventListener('input', () => autoResizeTextarea(editContent));
 
         // --- 描画 ---
@@ -780,18 +763,26 @@ header {
                 return;
             }
             
-            // 入力が開始されたら展開
             if (e.target.value.length > 0 && !expandedInputCard.classList.contains('active')) {
                 expandedInputCard.classList.add('active');
-                quickTitle.value = e.target.value;
-                e.target.value = ''; // 背面のメイン入力欄を空に
-                quickTitle.focus();
+                mainInput.classList.add('focused');
+                quickContent.focus();
+            }
+            if (e.target.value.length === 0 && quickContent.value.length === 0) {
+                closeQuickInput();
+            }
+        });
+
+        quickContent.addEventListener('input', () => {
+            autoResizeTextarea(quickContent);
+            if (mainInput.value.length === 0 && quickContent.value.length === 0) {
+                closeQuickInput();
             }
         });
 
         function closeQuickInput() {
             expandedInputCard.classList.remove('active');
-            quickTitle.value = '';
+            mainInput.classList.remove('focused');
             quickContent.value = '';
             quickContent.style.height = 'auto';
             mainInput.value = '';
@@ -801,7 +792,7 @@ header {
         quickCancel.addEventListener('click', closeQuickInput);
 
         quickSave.addEventListener('click', () => {
-            const title = quickTitle.value.trim();
+            const title = mainInput.value.trim();
             const content = quickContent.value.trim();
             if (title || content) {
                 notes.unshift({
