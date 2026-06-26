@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfect Note App</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ================= ユーザー指定のCSSベース ================= */
+        :root {
+            --bg-color: #ffffff;
+            --surface-color: #f2f2f2;
+            --active-bg: #05F380;
+            --active-text: #000000;
+            --text-main: #333333;
+            --text-muted: #888888;
+            --btn-gray: #f4f4f4;
+            --border-color: #e0e0e0;
+            --transition-speed: 0.3s;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --surface-color: #252525;
+                --active-bg: #05F380;
+                --active-text: #000000;
+                --text-main: #e0e0e0;
+                --text-muted: #888888;
+                --btn-gray: #333333;
+                --border-color: #3a3a3a;
+            }
+        }
+        
+        * { box-sizing: border-box; font-family: 'Noto Sans JP', sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100vh; background-color: var(--bg-color); color: var(--text-main); overflow: hidden; }
+
+        /* ================= レイアウト (サイドバー / トップ) ================= */
+        #app { display: flex; height: 100vh; width: 100vw; transition: flex-direction var(--transition-speed) ease; }
+
+        nav { transition: all var(--transition-speed) ease; display: flex; }
+        #toggleBtn {
+            display: flex; align-items: center; justify-content: center;
+            background-color: var(--btn-gray); border: none; cursor: pointer;
+            color: var(--text-main); transition: all var(--transition-speed) ease;
+        }
+        .nav-items { display: flex; transition: all var(--transition-speed) ease; }
+        .nav-item {
+            background: transparent; border: none; border-radius: 99px; font-size: 16px; font-weight: 500;
+            color: var(--text-main); cursor: pointer; transition: background-color 0.2s, color 0.2s; white-space: nowrap;
+        }
+        .nav-item.active { background-color: var(--active-bg); color: var(--active-text); }
+
+        #app.layout-side { flex-direction: row; }
+        #app.layout-side nav { width: 260px; padding: 24px 16px; flex-direction: column; gap: 24px; transition:width 0s ease;}
+        #app.layout-side #toggleBtn { gap: 8px; padding: 12px 20px; border-radius: 24px; width: fit-content; font-size: 15px; font-weight: 500; }
+        #app.layout-side .nav-items { flex-direction: column; gap: 8px; }
+        #app.layout-side .nav-item { text-align: left; padding: 16px 20px; }
+        #app.layout-side main { flex: 1; padding: 24px 32px 0 0; }
+        #app.layout-side .content-box { border-radius: 32px 0 0 0; margin-right: -32px; }
+
+        #app.layout-top { flex-direction: column; }
+        #app.layout-top nav { width: 100%; padding: 24px; flex-direction: row; align-items: center; gap: 24px; }
+        #app.layout-top #toggleBtn { width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; }
+        #app.layout-top #toggleBtn .text { display: none; }
+        #app.layout-top .nav-items { flex-direction: row; gap: 16px; overflow-x: auto; }
+        #app.layout-top .nav-item { text-align: center; padding: 12px 24px; }
+        #app.layout-top main { flex: 1; padding: 0 24px; }
+        #app.layout-top .content-box { border-radius: 32px 32px 0 0; } 
+
+        /* ================= メインエリア & 検索 ================= */
+        main { display: flex; flex-direction: column; transition: padding var(--transition-speed) ease; }
+        .header-controls { margin-bottom: 16px; display: flex; flex-direction: column; gap: 16px; min-height: 56px; justify-content: center;}
+        
+        .search-container { display: flex; align-items: center; width: 100%; gap: 10px; }
+        .search-input {
+            flex: 1; min-width: 0; border: none;
+            background: linear-gradient(to right, var(--btn-gray), transparent);
+            padding: 16px 24px; font-size: 16px; border-radius: 24px; outline: none; color: var(--text-main);
+        }
+
+        .content-box {
+            flex: 1; background-color: var(--surface-color); padding: 32px;
+            overflow-y: auto; transition: border-radius var(--transition-speed) ease;
+        }
+
+        /* ================= インラインメモ作成 (Keep UX) ================= */
+        .create-container {
+            max-width: 600px; margin: 0 auto 32px auto; width: 100%;
+        }
+        .create-box {
+            background: var(--bg-color); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: box-shadow 0.2s;
+        }
+        .create-box:focus-within { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .create-box input, .create-box textarea {
+            width: 100%; border: none; outline: none; background: transparent;
+            color: var(--text-main); font-size: 15px; resize: none;
+        }
+        .create-box input { font-weight: 700; margin-bottom: 8px; display: none; }
+        .create-actions { display: none; justify-content: flex-end; margin-top: 8px; }
+        .action-btn {
+            background: var(--btn-gray); border: none; padding: 8px 16px; border-radius: 24px;
+            color: var(--text-main); font-weight: 500; cursor: pointer; transition: background 0.2s;
+        }
+        .action-btn:hover { background: var(--border-color); }
+        .action-btn.primary { background: var(--active-bg); color: var(--active-text); }
+
+        /* ================= グリッド配置 (Google Keep風) ================= */
+        .notes-grid {
+            column-count: 1; column-gap: 16px; width: 100%; max-width: 1200px; margin: 0 auto;
+        }
+        @media (min-width: 768px) { .notes-grid { column-count: 2; } }
+        @media (min-width: 1024px) { .notes-grid { column-count: 3; } }
+        @media (min-width: 1440px) { .notes-grid { column-count: 4; } }
+
+        .note-card {
+            break-inside: avoid; background: var(--bg-color); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 16px; margin-bottom: 16px; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s; position: relative;
+        }
+        .note-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .note-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+        .note-body { font-size: 14px; color: var(--text-main); white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; }
+        
+        .note-actions {
+            position: absolute; bottom: 8px; right: 8px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s;
+        }
+        .note-card:hover .note-actions { opacity: 1; }
+        .icon-btn {
+            background: var(--surface-color); border: none; border-radius: 50%; width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main);
+        }
+        .icon-btn:hover { background: var(--btn-gray); }
+
+        /* ================= モーダルエディタ (全画面ではない) ================= */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: var(--bg-color); width: 100%; max-width: 600px; border-radius: 16px;
+            display: flex; flex-direction: column; max-height: 85vh;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+            transform: scale(0.95) translateY(10px); transition: transform 0.2s;
+        }
+        .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
+        
+        .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; position: relative; }
+        .modal-title {
+            width: 100%; border: none; outline: none; background: transparent;
+            color: var(--text-main); font-size: 20px; font-weight: 700; margin-bottom: 16px;
+        }
+        .modal-textarea {
+            width: 100%; flex: 1; border: none; outline: none; background: transparent;
+            color: var(--text-main); font-size: 16px; resize: none; line-height: 1.6; min-height: 300px;
+        }
+        .modal-footer {
+            padding: 12px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* ================= AIコンテキストメニュー & ローディング ================= */
+        .context-menu {
+            position: fixed; display: none; background: var(--bg-color);
+            border: 1px solid var(--border-color); border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 2000; overflow: hidden;
+            width: 200px;
+        }
+        .context-menu button {
+            display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px 16px;
+            background: none; border: none; color: var(--text-main); font-size: 14px; cursor: pointer;
+        }
+        .context-menu button:hover { background: var(--surface-color); }
+        .context-menu button .material-symbols-outlined { font-size: 18px; color: var(--text-muted); }
+
+        .ai-loading {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.1); backdrop-filter: blur(2px);
+            display: none; align-items: center; justify-content: center; z-index: 1500; border-radius: 16px;
+        }
+        .spin { animation: spin 1s linear infinite; font-size: 32px; color: var(--active-bg); }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .msg { text-align: center; color: var(--text-muted); margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+<div id="app" class="layout-side">
+    <nav>
+        <button id="toggleBtn">
+            <span class="material-symbols-outlined">menu</span>
+            <span class="text">Menu</span>
+        </button>
+        <div class="nav-items">
+            <button class="nav-item active" id="navNotes">すべてのメモ</button>
+            <button class="nav-item" id="navTrash">ゴミ箱</button>
+        </div>
+    </nav>
+    <main>
+        <div class="header-controls">
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="検索...">
+            </div>
+        </div>
+        
+        <div class="content-box">
+            <div class="create-container" id="createContainer">
+                <div class="create-box">
+                    <input type="text" id="createTitle" placeholder="タイトル">
+                    <textarea id="createBody" placeholder="メモを入力..." rows="1"></textarea>
+                    <div class="create-actions" id="createActions">
+                        <button class="action-btn" id="closeCreateBtn">閉じる</button>
+                        <button class="action-btn primary" id="saveCreateBtn" style="margin-left: 8px;">保存</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notes-grid" id="notesGrid"></div>
+        </div>
+    </main>
+</div>
+
+<div class="modal-overlay" id="editorModal">
+    <div class="modal-content">
+        <div class="modal-body">
+            <div class="ai-loading" id="aiLoading"><span class="material-symbols-outlined spin">refresh</span></div>
+            <input type="hidden" id="editId">
+            <input type="text" id="editTitle" class="modal-title" placeholder="タイトル">
+            <textarea id="editBody" class="modal-textarea" placeholder="メモを入力...(テキストを選択するとAIメニュー・コピーが表示されます)"></textarea>
+        </div>
+        <div class="modal-footer">
+            <div id="modalTrashActions" style="display: none; gap: 8px;">
+                <button class="action-btn" id="restoreBtn">復元</button>
+                <button class="action-btn" id="hardDeleteBtn" style="color: #ba1a1a;">完全に削除</button>
+            </div>
+            <div style="flex: 1;"></div>
+            <button class="action-btn" id="closeModalBtn">閉じる</button>
+        </div>
+    </div>
+</div>
+
+<div class="context-menu" id="contextMenu">
+    <button id="btnCopy"><span class="material-symbols-outlined">content_copy</span>コピー</button>
+    <button id="btnSummarize"><span class="material-symbols-outlined">auto_awesome</span>要約する</button>
+    <button id="btnElaborate"><span class="material-symbols-outlined">auto_awesome</span>具体化する</button>
+</div>
+
+<script>
+    // ================= IndexedDB (過去データを読み込めるよう KeepPerfectDB / notes に復元) =================
+    const DB_NAME = 'KeepPerfectDB';
+    let db;
+    
+    const initDB = () => new Promise((resolve) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = e => {
+            if (!e.target.result.objectStoreNames.contains('notes')) {
+                e.target.result.createObjectStore('notes', { keyPath: 'id', autoIncrement: true });
+            }
+        };
+        req.onsuccess = e => { db = e.target.result; resolve(); };
+    });
+
+    const dbOps = {
+        getAll: () => new Promise(res => {
+            const req = db.transaction('notes', 'readonly').objectStore('notes').getAll();
+            req.onsuccess = () => res(req.result.reverse());
+        }),
+        save: (note) => new Promise(res => {
+            const req = db.transaction('notes', 'readwrite').objectStore('notes').put(note);
+            req.onsuccess = () => res();
+        }),
+        delete: (id) => new Promise(res => {
+            const req = db.transaction('notes', 'readwrite').objectStore('notes').delete(id);
+            req.onsuccess = () => res();
+        })
+    };
+
+    // ================= 状態管理 =================
+    let isTrashMode = false;
+    let searchQuery = '';
+    let currentNote = null;
+
+    const DOM = {
+        app: document.getElementById('app'),
+        toggleBtn: document.getElementById('toggleBtn'),
+        navNotes: document.getElementById('navNotes'),
+        navTrash: document.getElementById('navTrash'),
+        searchInput: document.getElementById('searchInput'),
+        
+        createContainer: document.getElementById('createContainer'),
+        createTitle: document.getElementById('createTitle'),
+        createBody: document.getElementById('createBody'),
+        createActions: document.getElementById('createActions'),
+        closeCreateBtn: document.getElementById('closeCreateBtn'),
+        saveCreateBtn: document.getElementById('saveCreateBtn'),
+        
+        notesGrid: document.getElementById('notesGrid'),
+        
+        editorModal: document.getElementById('editorModal'),
+        editId: document.getElementById('editId'),
+        editTitle: document.getElementById('editTitle'),
+        editBody: document.getElementById('editBody'),
+        closeModalBtn: document.getElementById('closeModalBtn'),
+        modalTrashActions: document.getElementById('modalTrashActions'),
+        restoreBtn: document.getElementById('restoreBtn'),
+        hardDeleteBtn: document.getElementById('hardDeleteBtn'),
+        aiLoading: document.getElementById('aiLoading'),
+        
+        contextMenu: document.getElementById('contextMenu'),
+        btnCopy: document.getElementById('btnCopy'),
+        btnSummarize: document.getElementById('btnSummarize'),
+        btnElaborate: document.getElementById('btnElaborate')
+    };
+
+    // ================= レイアウト & ナビゲーション =================
+    DOM.toggleBtn.onclick = () => {
+        DOM.app.className = DOM.app.classList.contains('layout-side') ? 'layout-top' : 'layout-side';
+    };
+
+    const switchMode = (isTrash) => {
+        isTrashMode = isTrash;
+        DOM.navNotes.classList.toggle('active', !isTrash);
+        DOM.navTrash.classList.toggle('active', isTrash);
+        DOM.createContainer.style.display = isTrash ? 'none' : 'block';
+        renderNotes();
+    };
+    DOM.navNotes.onclick = () => switchMode(false);
+    DOM.navTrash.onclick = () => switchMode(true);
+    DOM.searchInput.oninput = (e) => { searchQuery = e.target.value.toLowerCase(); renderNotes(); };
+
+    // ================= インライン作成ロジック =================
+    const expandCreate = () => {
+        DOM.createTitle.style.display = 'block';
+        DOM.createActions.style.display = 'flex';
+        DOM.createBody.style.height = '100px';
+    };
+    const collapseCreate = () => {
+        DOM.createTitle.style.display = 'none';
+        DOM.createActions.style.display = 'none';
+        DOM.createBody.style.height = 'auto';
+        DOM.createTitle.value = ''; DOM.createBody.value = '';
+    };
+
+    DOM.createBody.addEventListener('focus', expandCreate);
+    DOM.closeCreateBtn.onclick = collapseCreate;
+    
+    DOM.saveCreateBtn.onclick = async () => {
+        const title = DOM.createTitle.value.trim();
+        const content = DOM.createBody.value.trim();
+        if (title || content) {
+            await dbOps.save({ title, content, isTrashed: false, createdAt: Date.now() });
+            renderNotes();
+        }
+        collapseCreate();
+    };
+
+    // ================= 描画 (グリッド) =================
+    const escapeHTML = str => { const div = document.createElement('div'); div.innerText = str; return div.innerHTML; };
+
+    const renderNotes = async () => {
+        const notes = await dbOps.getAll();
+        DOM.notesGrid.innerHTML = '';
+        
+        const filtered = notes.filter(n => {
+            const trashed = !!n.isTrashed;
+            if (trashed !== isTrashMode) return false;
+            if (searchQuery && !(n.title||'').toLowerCase().includes(searchQuery) && !(n.content||'').toLowerCase().includes(searchQuery)) return false;
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            DOM.notesGrid.innerHTML = `<div class="msg">メモがありません</div>`;
+            return;
+        }
+
+        filtered.forEach(note => {
+            const card = document.createElement('div');
+            card.className = 'note-card';
+            card.innerHTML = `
+                ${note.title ? `<div class="note-title">${escapeHTML(note.title)}</div>` : ''}
+                <div class="note-body">${escapeHTML(note.content)}</div>
+                ${!isTrashMode ? `
+                <div class="note-actions">
+                    <button class="icon-btn" onclick="moveToTrash(event, ${note.id})" title="ゴミ箱へ"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                </div>` : ''}
+            `;
+            card.onclick = () => openEditor(note);
+            DOM.notesGrid.appendChild(card);
+        });
+    };
+
+    // ================= モーダルエディタ =================
+    const openEditor = (note) => {
+        currentNote = note;
+        DOM.editId.value = note.id;
+        DOM.editTitle.value = note.title || '';
+        DOM.editBody.value = note.content || '';
+        
+        if (isTrashMode) {
+            DOM.editTitle.readOnly = true; DOM.editBody.readOnly = true;
+            DOM.modalTrashActions.style.display = 'flex';
+        } else {
+            DOM.editTitle.readOnly = false; DOM.editBody.readOnly = false;
+            DOM.modalTrashActions.style.display = 'none';
+        }
+        DOM.editorModal.classList.add('open');
+    };
+
+    const saveAndCloseModal = async () => {
+        if (!isTrashMode) {
+            const title = DOM.editTitle.value.trim();
+            const content = DOM.editBody.value.trim();
+            if (!title && !content) {
+                await dbOps.delete(currentNote.id);
+            } else {
+                currentNote.title = title;
+                currentNote.content = content;
+                await dbOps.save(currentNote);
+            }
+        }
+        DOM.editorModal.classList.remove('open');
+        renderNotes();
+    };
+
+    DOM.closeModalBtn.onclick = saveAndCloseModal;
+    DOM.editorModal.addEventListener('click', (e) => {
+        if (e.target === DOM.editorModal) saveAndCloseModal();
+    });
+
+    // 削除・復元処理
+    window.moveToTrash = async (e, id) => {
+        e.stopPropagation();
+        const notes = await dbOps.getAll(); const n = notes.find(x => x.id === id);
+        if(n) { n.isTrashed = true; await dbOps.save(n); renderNotes(); }
+    };
+    DOM.restoreBtn.onclick = async () => {
+        currentNote.isTrashed = false; await dbOps.save(currentNote);
+        DOM.editorModal.classList.remove('open'); renderNotes();
+    };
+    DOM.hardDeleteBtn.onclick = async () => {
+        await dbOps.delete(currentNote.id);
+        DOM.editorModal.classList.remove('open'); renderNotes();
+    };
+
+    // ================= AI機能 & コンテキストメニュー (指定プロンプトの完全適用) =================
+    let selStart = 0; let selEnd = 0;
+
+    DOM.editBody.addEventListener('mouseup', (e) => {
+        setTimeout(() => {
+            selStart = DOM.editBody.selectionStart;
+            selEnd = DOM.editBody.selectionEnd;
+            if (selStart !== selEnd && !isTrashMode) {
+                DOM.contextMenu.style.display = 'block';
+                DOM.contextMenu.style.left = `${e.clientX + 5}px`;
+                DOM.contextMenu.style.top = `${e.clientY + 5}px`;
+            } else {
+                DOM.contextMenu.style.display = 'none';
+            }
+        }, 10);
+    });
+
+    document.addEventListener('mousedown', (e) => {
+        if (!DOM.contextMenu.contains(e.target)) DOM.contextMenu.style.display = 'none';
+    });
+
+    DOM.btnCopy.onclick = () => {
+        const text = DOM.editBody.value.substring(selStart, selEnd);
+        navigator.clipboard.writeText(text);
+        DOM.contextMenu.style.display = 'none';
+        DOM.editBody.focus();
+    };
+
+    const processAI = async (type) => {
+        DOM.contextMenu.style.display = 'none';
+        const selectedText = DOM.editBody.value.substring(selStart, selEnd);
+        if (!selectedText) return;
+
+        DOM.aiLoading.style.display = 'flex';
+        
+        // 参照テキスト (前後150文字)
+        const fullText = DOM.editBody.value;
+        const surroundingText = fullText.substring(Math.max(0, selStart - 150), Math.min(fullText.length, selEnd + 150));
+
+        // 絶対指定されたプロンプト構造
+        const action = type === 'elaborate' ? '具体化' : '要約';
+        const promptMessage = `${selectedText} この文を${action}してください。(${action}した文だけ出せ。余計な部分含めるな。)参考：${surroundingText}`;
+
+        try {
+            const res = await fetch("https://bhwxeffktrxzfdmpfhpd.supabase.co/functions/v1/noteapp", {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: promptMessage })
+            });
+            if (!res.ok) throw new Error('API Error');
+            const data = await res.json();
+            
+            // 選択部分を的確に上書き
+            DOM.editBody.setRangeText(data.choices[0].message.content, selStart, selEnd, 'select');
+        } catch (e) {
+            alert("AIエラー: " + e.message);
+        } finally {
+            DOM.aiLoading.style.display = 'none';
+            DOM.editBody.focus();
+        }
+    };
+
+    DOM.btnSummarize.onclick = () => processAI('summarize');
+    DOM.btnElaborate.onclick = () => processAI('elaborate');
+
+    // 初期化
+    initDB().then(renderNotes);
+</script>
+</body>
+</html>
