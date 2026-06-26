@@ -167,6 +167,7 @@ header {
 
 .btn-small-icon.check {
     background: #fce14a;
+    width: 40px;
 }
 
 .btn-small-icon svg {
@@ -253,7 +254,8 @@ header {
     align-items: center;
     min-height: 49px;
     transition: transform 0.2s ease;
-}s
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
 
 .note:hover {
     transform: translateY(-2px);
@@ -268,7 +270,6 @@ header {
 }
 
 .note-title {
-    font-weight: bold;
     font-size: 15px;
 }
 
@@ -279,7 +280,6 @@ header {
 
 .note-single-line {
     font-size: 15px;
-    font-weight: bold;
 }
 
 /* =========================================
@@ -352,6 +352,7 @@ header {
 
 .modal-btn.check {
     background: #fce14a;
+    width: 56px;
 }
 
 .modal-btn svg {
@@ -713,7 +714,7 @@ header {
             });
 
             filteredNotes.forEach(note => {
-                const isYellow = note.title.trim() !== '' || note.content.includes('\n');
+                const isYellow = note.title.trim() !== '' && note.content.trim() !== '';
                 
                 const noteEl = document.createElement('div');
                 noteEl.className = `note ${isYellow ? 'note-yellow' : 'note-white'}`;
@@ -721,11 +722,12 @@ header {
 
                 if (isYellow) {
                     noteEl.innerHTML = `
-                        ${note.title ? `<div class="note-title">${escapeHTML(note.title)}</div>` : ''}
+                        <div class="note-title">${escapeHTML(note.title)}</div>
                         <div class="note-content-preview">${escapeHTML(note.content)}</div>
                     `;
                 } else {
-                    noteEl.innerHTML = `<div class="note-single-line">${escapeHTML(note.content)}</div>`;
+                    const text = note.title.trim() || note.content;
+                    noteEl.innerHTML = `<div class="note-single-line">${escapeHTML(text)}</div>`;
                 }
                 notesContainer.appendChild(noteEl);
             });
