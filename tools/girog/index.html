@@ -5,6 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>記録ノート</title>
     <style>
+        :root {
+            --bg-color: #ffffff;
+            --surface-color: #eeeeee;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --note-yellow: color(display-p3 1 0.87 0.14);
+            --note-white: #ffffff;
+            --input-gradient: linear-gradient(90deg, rgba(255,225,72,0.61) 0%, rgba(255,255,255,0.61) 100%);
+            --input-focused: color(display-p3 1 0.87 0.14);
+            --input-search: #f5f5f5;
+            --btn-gray: #e0e0e0;
+            --btn-primary-bg: #000000;
+            --btn-primary-fill: #ffffff;
+            --on-primary: #000000;
+            --text-main: #000000;
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --text-placeholder: #888;
+            --btn-delete-bg: #ffeeee;
+            --btn-delete-color: #e53935;
+            --snackbar-bg: #333333;
+            --snackbar-color: #ffffff;
+            --snackbar-action: color(display-p3 1 0.87 0.14);
+            --overlay-bg: rgba(0, 0, 0, 0.3);
+            --shadow-color: rgba(0, 0, 0, 0.07);
+            --modal-shadow: rgba(0, 0, 0, 0.1);
+            --card-shadow: rgba(0, 0, 0, 0.2);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --surface-color: #252525;
+                --header-bg: #1a1a1a;
+                --card-bg: #2a2a2a;
+                --note-yellow: color(display-p3 1 0.87 0.14);
+                --note-white: #2a2a2a;
+                --input-gradient: linear-gradient(90deg, rgba(255,225,72,0.61) 0%, rgba(40,40,40,0) 100%);
+                --input-focused: color(display-p3 1 0.87 0.14);
+                --input-search: #2a2a2a;
+                --btn-gray: #3a3a3a;
+                --btn-primary-bg: #000000;
+                --btn-primary-fill: #ffffff;
+                --on-primary: #000000;
+                --text-main: #e0e0e0;
+                --text-muted: rgba(255, 255, 255, 0.5);
+                --text-placeholder: #888;
+                --btn-delete-bg: #3a2020;
+                --btn-delete-color: #f87171;
+                --snackbar-bg: #e0e0e0;
+                --snackbar-color: #000000;
+                --snackbar-action: color(display-p3 1 0.87 0.14);
+                --overlay-bg: rgba(0, 0, 0, 0.6);
+                --shadow-color: rgba(0, 0, 0, 0.3);
+                --modal-shadow: rgba(0, 0, 0, 0.4);
+                --card-shadow: rgba(0, 0, 0, 0.4);
+            }
+        }
         /* =========================================
    リセットと基本設定
 ========================================= */
@@ -18,8 +74,8 @@
 body {
     /* 編集画面（input, textarea）以外でのテキスト選択を無効化 */
     user-select: none; 
-    background-color: #ffffff;
-    color: #000000;
+    background-color: var(--bg-color);
+    color: var(--text-main);
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -37,9 +93,9 @@ input, textarea {
 header {
     display: flex;
     align-items: center;
-    padding: 16px 24px;
+    padding: 16px 16px;
     gap: 16px;
-    background: #ffffff;
+    background: var(--header-bg);
     flex-shrink: 0;
 }
 
@@ -50,6 +106,7 @@ header {
     font-size: 20px;
     font-weight: bold;
     white-space: nowrap;
+    color: var(--text-main);
 }
 
 .logo-area img {
@@ -68,25 +125,30 @@ header {
     width: 100%;
     height: 48px;
     border-radius: 24px;
-    background: linear-gradient(90deg, rgba(255,225,72,0.61) 0%, rgba(255,255,255,0.61) 100%);
+    background: var(--input-gradient);
     border: none;
     outline: none;
     padding: 0 24px;
     font-size: 15px;
-    color: #000;
+    color: var(--on-primary);
     transition: background-color 0.3s ease;
 }
 
 .main-input.focused {
-    background: color(display-p3 1 0.87 0.14);
+    background: var(--input-focused);
 }
 
 .main-input::placeholder {
-    color: #888;
+    color: var(--text-placeholder);
+}
+
+.main-input.search-mode::placeholder {
+    color: var(--text-placeholder);
 }
 
 .main-input.search-mode {
-    background: #f5f5f5;
+    background: var(--input-search);
+    color: var(--text-main);
 }
 
 /* 展開時のクイック入力カード (Frame 71) */
@@ -104,7 +166,8 @@ header {
     flex-direction: column;
     overflow: hidden;
     z-index: 20;
-    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 32px var(--card-shadow);
+    background: var(--card-bg);
 }
 
 .expanded-input-card.active {
@@ -115,7 +178,7 @@ header {
 
 .expanded-body {
     padding: 16px 24px;
-    background: #ffffff;
+    background: var(--card-bg);
 }
 
 .expanded-body textarea {
@@ -127,6 +190,11 @@ header {
     font-size: 14px;
     line-height: 1.5;
     background:none;
+    color: var(--on-primary);
+}
+
+.expanded-body textarea::placeholder {
+    color: var(--text-placeholder);
 }
 
 .expanded-footer {
@@ -141,7 +209,7 @@ header {
     height: 32px;
     border-radius: 16px;
     border: none;
-    background: #e0e0e0;
+    background: var(--btn-gray);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -154,14 +222,19 @@ header {
 }
 
 .btn-small-icon.check {
-    background: color(display-p3 1 0.87 0.14);
+    background: var(--input-focused);
     width: 40px;
+    color: var(--on-primary);
 }
 
 .btn-small-icon svg {
     width: 16px;
     height: 16px;
-    fill: #000;
+    fill: var(--text-main);
+}
+
+.btn-small-icon.check svg {
+    fill: var(--on-primary);
 }
 
 /* ヘッダー右側ボタン群 */
@@ -172,7 +245,7 @@ header {
 }
 
 .btn-sync {
-    background: color(display-p3 1 0.87 0.14);
+    background: var(--input-focused);
     border: none;
     padding: 0 20px;
     height: 48px;
@@ -180,6 +253,7 @@ header {
     font-weight: bold;
     font-size: 14px;
     cursor: pointer;
+    color: var(--on-primary);
     transition: transform 0.2s ease;
 }
 
@@ -191,7 +265,7 @@ header {
     width: 48px;
     height: 48px;
     border-radius: 24px;
-    background: #000000;
+    background: var(--btn-primary-bg);
     border: none;
     cursor: pointer;
     display: flex;
@@ -207,14 +281,14 @@ header {
 .btn-icon svg {
     width: 20px;
     height: 20px;
-    fill: #ffffff;
+    fill: var(--btn-primary-fill);
 }
 
 /* =========================================
    メインコンテンツ (Frame 70)
 ========================================= */
 .main-container {
-    background-color: #eeeeee;
+    background-color: var(--surface-color);
     flex-grow: 1;
     margin: 0 16px 16px 16px;
     border-radius: 24px;
@@ -242,7 +316,7 @@ header {
     align-items: center;
     min-height: 49px;
     transition: transform 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .note:hover {
@@ -250,11 +324,23 @@ header {
 }
 
 .note-yellow {
-    background-color: color(display-p3 1 0.87 0.14);
+    background-color: var(--note-yellow);
+    color: var(--on-primary);
+}
+
+.note-yellow .note-title,
+.note-yellow .note-single-line,
+.note-yellow .note-content-preview {
+    color: var(--on-primary);
+}
+
+.note-yellow .note-content-preview {
+    opacity: 0.7;
 }
 
 .note-white {
-    background-color: #ffffff;
+    background-color: var(--note-white);
+    color: var(--text-main);
 }
 
 .note-title {
@@ -263,7 +349,7 @@ header {
 
 .note-content-preview {
     font-size: 12px;
-    color: rgba(0, 0, 0, 0.5);
+    color: var(--text-muted);
 }
 
 .note-single-line {
@@ -280,7 +366,7 @@ header {
     width: 100vw;
     height: 100vh;
     /* 背景ブラーを完全撤廃。フラットな半透明グレーに変更 */
-    background: rgba(0, 0, 0, 0.3); 
+    background: var(--overlay-bg); 
     z-index: 200;
     display: flex;
     align-items: center;
@@ -302,12 +388,14 @@ header {
     max-width: 500px;
     margin: 0 20px;
     /* アニメーションの追加 */
-    transform: scale(0.95);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: scale(0.8);
+    filter:blur(16px);
+    transition: transform 0.3s cubic-bezier(0.38, 0.13, 0, 1),filter 0.3s cubic-bezier(0.38, 0.13, 0, 1);
 }
 
 .modal-overlay.active .modal-content-wrapper {
     transform: scale(1);
+    filter:blur(0px);
 }
 
 /* カード上部に「完全に」外出しされたボタン群 (12.16.50の画像に準拠) */
@@ -324,13 +412,13 @@ header {
     width: 48px;
     height: 48px;
     border-radius: 24px;
-    background: #ffffff;
+    background: var(--card-bg);
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--modal-shadow);
     transition: transform 0.2s ease;
 }
 
@@ -339,18 +427,23 @@ header {
 }
 
 .modal-btn.check {
-    background: color(display-p3 1 0.87 0.14);
+    background: var(--input-focused);
     width: 56px;
+    color: var(--on-primary);
 }
 
 .modal-btn svg {
     width: 20px;
     height: 20px;
-    fill: #000;
+    fill: var(--text-main);
+}
+
+.modal-btn.check svg {
+    fill: var(--on-primary);
 }
 
 .modal-card {
-    background: #ffffff;
+    background: var(--card-bg);
     border-radius: 24px;
     overflow: hidden;
     display: flex;
@@ -358,7 +451,7 @@ header {
 }
 
 .modal-header {
-    background-color: color(display-p3 1 0.87 0.14);
+    background-color: var(--input-focused);
     /* 余計な白背景を排除し、ボタンが被る上部のパディングのみ確保 */
     padding: 24px 24px 16px 24px; 
 }
@@ -370,11 +463,16 @@ header {
     font-size: 18px;
     font-weight: bold;
     outline: none;
+    color: var(--on-primary);
+}
+
+.modal-header input::placeholder {
+    color: var(--text-placeholder);
 }
 
 .modal-body {
     padding: 24px;
-    background: #ffffff;
+    background: var(--card-bg);
 }
 
 .modal-body textarea {
@@ -384,7 +482,14 @@ header {
     resize: none;
     font-size: 14px;
     line-height: 1.6;
-    min-height: 150px;
+    min-height: 100px;
+    max-height: calc(100vh - 300px);
+    background: transparent;
+    color: var(--text-main);
+}
+
+.modal-body textarea::placeholder {
+    color: var(--text-placeholder);
 }
 
 /* =========================================
@@ -396,7 +501,7 @@ header {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: #eeeeee;
+    background: var(--surface-color);
     z-index: 300;
     display: flex;
     flex-direction: column;
@@ -418,7 +523,7 @@ header {
     align-items: center;
     justify-content: space-between;
     padding: 16px 24px;
-    background: #ffffff;
+    background: var(--header-bg);
 }
 
 .trash-title {
@@ -437,7 +542,8 @@ header {
     border: none;
     cursor: pointer;
     font-weight: bold;
-    background: #e0e0e0;
+    background: var(--btn-gray);
+    color: var(--text-main);
     transition: opacity 0.2s ease;
 }
 
@@ -446,7 +552,8 @@ header {
 }
 
 .trash-actions button.primary {
-    background: color(display-p3 1 0.87 0.14);
+    background: var(--input-focused);
+    color: var(--on-primary);
 }
 
 .trash-list {
@@ -462,7 +569,7 @@ header {
 }
 
 .trash-item {
-    background: #ffffff;
+    background: var(--card-bg);
     padding: 16px 24px;
     border-radius: 16px;
     display: flex;
@@ -477,6 +584,7 @@ header {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-right: 16px;
+    color: var(--text-main);
 }
 
 .trash-item-actions {
@@ -493,8 +601,8 @@ header {
     font-size: 12px;
 }
 
-.btn-restore { background: #e0e0e0; color: #000; }
-.btn-delete { background: #ffeeee; color: #e53935; }
+.btn-restore { background: var(--btn-gray); color: var(--text-main); }
+.btn-delete { background: var(--btn-delete-bg); color: var(--btn-delete-color); }
 
 /* =========================================
    スナックバー
@@ -504,8 +612,8 @@ header {
     bottom: -80px;
     left: 50%;
     transform: translateX(-50%);
-    background: #333333;
-    color: #ffffff;
+    background: var(--snackbar-bg);
+    color: var(--snackbar-color);
     padding: 12px 24px;
     border-radius: 12px;
     display: flex;
@@ -523,9 +631,10 @@ header {
 .snackbar button {
     background: transparent;
     border: none;
-    color: color(display-p3 1 0.87 0.14);
+    color: var(--snackbar-action);
     font-weight: bold;
     cursor: pointer;
+    font-size: inherit;
 }
     </style>
 </head>
@@ -721,7 +830,7 @@ header {
             const deletedNotes = notes.filter(n => n.isDeleted);
             
             if(deletedNotes.length === 0){
-                trashList.innerHTML = '<div style="text-align:center; color:#999; margin-top:40px;">ゴミ箱は空です</div>';
+                trashList.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">ゴミ箱は空です</div>`;
                 return;
             }
 
