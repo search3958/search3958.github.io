@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>記録ノート</title>
+    <meta name="description" content="シンプルで美しいメモアプリ。クイック入力、編集、ゴミ箱機能搭載。あなたの記録を直感的に管理できます。">
+    <meta name="keywords" content="メモ, ノート, 記録, アプリ, メモ帳, マンガ, memo, note, records">
+    <meta property="og:title" content="記録ノート">
+    <meta property="og:description" content="シンプルで美しいメモアプリ。クイック入力、編集、ゴミ箱機能搭載。">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="icon.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="記録ノート">
+    <meta name="twitter:description" content="シンプルで美しいメモアプリ。クイック入力、編集、ゴミ箱機能搭載。">
+    <link rel="icon" type="image/png" href="icon.png">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --surface-color: #eeeeee;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --note-yellow: color(display-p3 1 0.87 0.14);
+            --note-white: #ffffff;
+            --input-gradient: linear-gradient(90deg, rgba(255,225,72,0.61) 0%, rgba(255,255,255,0.61) 100%);
+            --input-focused: color(display-p3 1 0.87 0.14);
+            --input-search: #f5f5f5;
+            --btn-gray: #e0e0e0;
+            --btn-primary-bg: #000000;
+            --btn-primary-fill: #ffffff;
+            --on-primary: #000000;
+            --text-main: #000000;
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --text-placeholder: rgba(0, 0, 0, 0.35);
+            --btn-delete-bg: #ffeeee;
+            --btn-delete-color: #e53935;
+            --snackbar-bg: #333333;
+            --snackbar-color: #ffffff;
+            --snackbar-action: color(display-p3 1 0.87 0.14);
+            --overlay-bg: rgba(0, 0, 0, 0.3);
+            --shadow-color: rgba(0, 0, 0, 0.07);
+            --modal-shadow: rgba(0, 0, 0, 0.1);
+            --card-shadow: rgba(0, 0, 0, 0.2);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --surface-color: #252525;
+                --header-bg: #1a1a1a;
+                --card-bg: #2a2a2a;
+                --note-yellow: color(display-p3 1 0.87 0.14);
+                --note-white: #2a2a2a;
+                --input-gradient: linear-gradient(90deg, rgba(255,225,72,0.4) 0%, rgba(40,40,40,0) 100%);
+                --input-focused: color(display-p3 1 0.87 0.14);
+                --input-search: #2a2a2a;
+                --btn-gray: #3a3a3a;
+                --btn-primary-bg: #000000;
+                --btn-primary-fill: #ffffff;
+                --on-primary: #000000;
+                --text-main: #e0e0e0;
+                --text-muted: rgba(255, 255, 255, 0.5);
+                --text-placeholder: rgba(255, 255, 255, 0.35);
+                --btn-delete-bg: #3a2020;
+                --btn-delete-color: #f87171;
+                --snackbar-bg: #e0e0e0;
+                --snackbar-color: #000000;
+                --snackbar-action: color(display-p3 1 0.87 0.14);
+                --overlay-bg: rgba(0, 0, 0, 0.6);
+                --shadow-color: rgba(0, 0, 0, 0.3);
+                --modal-shadow: rgba(0, 0, 0, 0.4);
+                --card-shadow: rgba(0, 0, 0, 0.4);
+            }
+        }
+        /* =========================================
+   リセットと基本設定
+========================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
+}
+
+body {
+    /* 編集画面（input, textarea）以外でのテキスト選択を無効化 */
+    user-select: none; 
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 入力欄のみテキスト選択を許可 */
+input, textarea {
+    user-select: auto;
+}
+
+/* =========================================
+   ヘッダーエリア
+========================================= */
+header {
+    display: flex;
+    align-items: center;
+    padding: 16px 16px;
+    gap: 16px;
+    background: var(--header-bg);
+    flex-shrink: 0;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+    font-weight: bold;
+    white-space: nowrap;
+    color: var(--text-main);
+}
+
+.logo-area img {
+    width: 28px;
+    height: 28px;
+}
+
+/* 入力/検索バー (可変幅で可能な限り埋める) */
+.input-wrapper {
+    flex-grow: 1; /* 固定幅を排除し、余白を埋め尽くす */
+    position: relative;
+    display: flex;
+}
+
+.main-input {
+    width: 100%;
+    height: 48px;
+    border-radius: 24px;
+    background: var(--input-gradient);
+    border: none;
+    outline: none;
+    padding: 0 24px;
+    font-size: 15px;
+    color: var(--on-primary);
+    transition: background-color 0.3s ease;
+}
+
+.main-input.focused {
+    background: var(--input-focused);
+}
+
+.main-input::placeholder {
+    color: var(--text-placeholder);
+}
+
+.main-input.search-mode::placeholder {
+    color: var(--text-placeholder);
+}
+
+.main-input.search-mode {
+    background: var(--input-search);
+    color: var(--text-main);
+}
+
+/* 展開時のクイック入力カード (Frame 71) */
+.expanded-input-card {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border-radius: 24px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 20;
+    box-shadow: 0 4px 32px var(--card-shadow);
+    background: var(--card-bg);
+}
+
+.expanded-input-card.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(8px);
+}
+
+.expanded-body {
+    padding: 16px 24px;
+    background: var(--card-bg);
+}
+
+.expanded-body textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    min-height: 60px;
+    font-size: 14px;
+    line-height: 1.5;
+    background:none;
+    color: var(--on-primary);
+}
+
+.expanded-body textarea::placeholder {
+    color: var(--text-placeholder);
+}
+
+.expanded-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px 8px 4px;
+}
+
+.btn-small-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    border: none;
+    background: var(--btn-gray);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+}
+
+.btn-small-icon:hover {
+    opacity: 0.8;
+}
+
+.btn-small-icon.check {
+    background: var(--input-focused);
+    width: 40px;
+    color: var(--on-primary);
+}
+
+.btn-small-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--text-main);
+}
+
+.btn-small-icon.check svg {
+    fill: var(--on-primary);
+}
+
+/* ヘッダー右側ボタン群 */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-sync {
+    background: var(--input-focused);
+    border: none;
+    padding: 0 20px;
+    height: 48px;
+    border-radius: 24px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--on-primary);
+    transition: transform 0.2s ease;
+}
+
+.btn-sync:active {
+    transform: scale(0.95);
+}
+
+.btn-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    background: var(--btn-primary-bg);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.btn-icon:active {
+    transform: scale(0.95);
+}
+
+.btn-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--btn-primary-fill);
+}
+
+/* =========================================
+   メインコンテンツ (Frame 70)
+========================================= */
+.main-container {
+    background-color: var(--surface-color);
+    flex-grow: 1;
+    margin: 0 16px 16px 16px;
+    border-radius: 24px;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.notes-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.note {
+    padding: 0px 22px;
+    border-radius: 20px;
+        corner-shape: superellipse(1.5);
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 49px;
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    overflow: hidden;
+}
+
+.note:hover {
+    transform: translateY(-2px);
+}
+
+.note-yellow {
+    background-color: var(--note-yellow);
+    color: var(--on-primary);
+}
+
+.note-yellow .note-title,
+.note-yellow .note-single-line,
+.note-yellow .note-content-preview {
+    color: var(--on-primary);
+}
+
+.note-yellow .note-content-preview {
+    opacity: 0.7;
+}
+
+.note-white {
+    background-color: var(--note-white);
+    color: var(--text-main);
+}
+
+.note-title {
+    font-size: 15px;
+}
+
+.note-content-preview {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50vw;
+}
+
+.note-single-line {
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50vw;
+}
+
+/* =========================================
+   編集モーダル (Frame 72)
+========================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* 背景ブラーを完全撤廃。フラットな半透明グレーに変更 */
+    background: var(--overlay-bg); 
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* アニメーションの追加 */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 20px;
+    /* アニメーションの追加 */
+    transform: scale(0.8);
+    filter:blur(16px);
+    transition: transform 0.3s cubic-bezier(0.38, 0.13, 0, 1),filter 0.3s cubic-bezier(0.38, 0.13, 0, 1);
+}
+
+.modal-overlay.active .modal-content-wrapper {
+    transform: scale(1);
+    filter:blur(0px);
+}
+
+/* カード上部に「完全に」外出しされたボタン群 (12.16.50の画像に準拠) */
+.modal-actions-top {
+    position: absolute;
+    top: -57px;
+    left: 0;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.modal-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    background: var(--card-bg);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px var(--modal-shadow);
+    transition: transform 0.2s ease;
+}
+
+.modal-btn:hover {
+    transform: scale(1.05);
+}
+
+.modal-btn.check {
+    background: var(--input-focused);
+    width: 56px;
+    color: var(--on-primary);
+}
+
+.modal-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--text-main);
+}
+
+.modal-btn.check svg {
+    fill: var(--on-primary);
+}
+
+.modal-card {
+    background: var(--card-bg);
+    border-radius: 40px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+        corner-shape: superellipse(1.5);
+            box-shadow: 0 8px 48px #0003;
+}
+
+.modal-header {
+    background-color: var(--input-focused);
+    /* 余計な白背景を排除し、ボタンが被る上部のパディングのみ確保 */
+    padding: 24px 24px 16px 24px; 
+}
+
+.modal-header input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    font-weight: bold;
+    outline: none;
+    color: var(--on-primary);
+}
+
+.modal-header input::placeholder {
+    color: var(--text-placeholder);
+}
+
+.modal-body {
+    padding: 24px;
+    background: var(--card-bg);
+}
+
+.modal-body textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100px;
+    max-height: calc(100vh - 300px);
+    background: transparent;
+    color: var(--text-main);
+}
+
+.modal-body textarea::placeholder {
+    color: var(--text-placeholder);
+}
+
+/* =========================================
+   ゴミ箱ダイアログ
+========================================= */
+.trash-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--surface-color);
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    /* アニメーションの追加 */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.trash-dialog.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.trash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: var(--header-bg);
+}
+
+.trash-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.trash-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.trash-actions button {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background: var(--btn-gray);
+    color: var(--text-main);
+    transition: opacity 0.2s ease;
+}
+
+.trash-actions button:hover {
+    opacity: 0.8;
+}
+
+.trash-actions button.primary {
+    background: var(--input-focused);
+    color: var(--on-primary);
+}
+
+.trash-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.trash-item {
+    background: var(--card-bg);
+    padding: 16px 24px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.trash-item-content {
+    flex: 1;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 16px;
+    color: var(--text-main);
+}
+
+.trash-item-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.trash-item-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.btn-restore { background: var(--btn-gray); color: var(--text-main); }
+.btn-delete { background: var(--btn-delete-bg); color: var(--btn-delete-color); }
+
+/* =========================================
+   スナックバー
+========================================= */
+.snackbar {
+    position: fixed;
+    bottom: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--snackbar-bg);
+    color: var(--snackbar-color);
+    padding: 12px 24px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    font-size: 14px;
+    z-index: 400;
+    transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.snackbar.active {
+    bottom: 40px;
+}
+
+.snackbar button {
+    background: transparent;
+    border: none;
+    color: var(--snackbar-action);
+    font-weight: bold;
+    cursor: pointer;
+    font-size: inherit;
+}
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <img src="icon.png" alt="Icon" onerror="this.style.display='none'"> 
+            <span>記録ノート</span>
+        </div>
+
+        <div class="input-wrapper" id="inputWrapper">
+            <input type="text" class="main-input" id="mainInput" placeholder="記録を開始..." data-tr-placeholder="g_ph_start">
+            
+            <div class="expanded-input-card" id="expandedInputCard">
+                <div class="expanded-body">
+                    <textarea id="quickContent" placeholder="本文はここに入力されます。&#10;改行可能" data-tr-placeholder="g_ph_content"></textarea>
+                    <div class="expanded-footer">
+                        <button class="btn-small-icon" id="quickCancel" title="破棄" data-tr-title="g_btn_discard">
+                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
+                        <button class="btn-small-icon check" id="quickSave" title="保存" data-tr-title="g_btn_save">
+                            <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <button style="display:none" class="btn-sync" onclick="alert(tr('g_sync_alert'))" data-tr-text="g_btn_sync">同期</button>
+            <button class="btn-icon" id="btnOpenTrash" title="ゴミ箱" data-tr-title="g_btn_trash">
+                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+            <button class="btn-icon" id="btnToggleSearch" title="検索" data-tr-title="g_btn_search">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <main class="notes-container" id="notesContainer"></main>
+    </div>
+
+    <div class="modal-overlay" id="editModalOverlay">
+        <div class="modal-content-wrapper" id="editModalWrapper">
+            <div class="modal-actions-top">
+                <button class="modal-btn check" id="modalBtnClose" title="保存して閉じる" data-tr-title="g_btn_close">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                </button>
+                <button class="modal-btn" id="modalBtnDelete" title="ゴミ箱へ移動" data-tr-title="g_btn_delete">
+                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                </button>
+                <button class="modal-btn" id="modalBtnDownload" title="ダウンロード" data-tr-title="g_btn_download">
+                    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                </button>
+                <button style="display:none" class="modal-btn" onclick="alert(tr('g_sync_alert'))" title="同期" data-tr-title="g_btn_sync">
+                    <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                </button>
+            </div>
+            
+            <div class="modal-card">
+                <div class="modal-header">
+                    <input type="text" id="editTitle" placeholder="タイトル" data-tr-placeholder="g_ph_title">
+                </div>
+                <div class="modal-body">
+                    <textarea id="editContent" placeholder="メモの内容" data-tr-placeholder="g_ph_memo"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="trash-dialog" id="trashDialog">
+        <div class="trash-header">
+            <div class="trash-title">ゴミ箱</div>
+            <div class="trash-actions">
+                <button id="btnRestoreAll">全て復元</button>
+                <button id="btnEmptyTrash">全て削除</button>
+                <button class="primary" id="btnCloseTrash">完了</button>
+            </div>
+        </div>
+        <div class="trash-list" id="trashList"></div>
+    </div>
+
+    <div class="snackbar" id="snackbar">
+        <span id="snackbarMessage"></span>
+        <button id="snackbarUndoBtn">元に戻す</button>
+    </div>
+
+    <script>
+        // --- 状態管理 ---
+        let notes = JSON.parse(localStorage.getItem('notes')) || [
+            { id: '1', title: 'お客様を歓迎します！', content: '', isDeleted: false },
+            { id: '2', title: '必ずご確認ください', content: '記録ノートへようこそ。\nお客様を歓迎します。安心してご利用いただくために以下のことをご確認ください。\n\n💡 利用規約および個人情報政策\nhttps://search3958.github.io/policies/\n\n💡 データの責任\n意図しないエラーやその他不具合によりデータが削除されてしまう場合がございます。大切なデータは必ず別の場所でも保管しておいてください。\n\n💡 今後の予定\nアカウントを活用した同期機能の準備中です。完成までしばらくお待ちください。\n\nそれでは楽しんでください！', isDeleted: false }
+        ];
+        
+        let isSearchMode = false;
+        let activeEditId = null;
+        let undoTimeout = null;
+        let undoAction = null; // { type: 'delete'|'hard_delete', note: {} }
+
+        // --- DOM要素 ---
+        const mainInput = document.getElementById('mainInput');
+        const expandedInputCard = document.getElementById('expandedInputCard');
+        const notesContainer = document.getElementById('notesContainer');
+        const btnToggleSearch = document.getElementById('btnToggleSearch');
+        
+        // クイック入力
+        const quickContent = document.getElementById('quickContent');
+        const quickSave = document.getElementById('quickSave');
+        const quickCancel = document.getElementById('quickCancel');
+
+        // 編集モーダル
+        const editModalOverlay = document.getElementById('editModalOverlay');
+        const editModalWrapper = document.getElementById('editModalWrapper');
+        const editTitle = document.getElementById('editTitle');
+        const editContent = document.getElementById('editContent');
+        const modalBtnClose = document.getElementById('modalBtnClose');
+        const modalBtnDelete = document.getElementById('modalBtnDelete');
+        const modalBtnDownload = document.getElementById('modalBtnDownload');
+
+        // ゴミ箱
+        const trashDialog = document.getElementById('trashDialog');
+        const trashList = document.getElementById('trashList');
+        const btnOpenTrash = document.getElementById('btnOpenTrash');
+        const btnCloseTrash = document.getElementById('btnCloseTrash');
+        const btnRestoreAll = document.getElementById('btnRestoreAll');
+        const btnEmptyTrash = document.getElementById('btnEmptyTrash');
+
+        // スナックバー
+        const snackbar = document.getElementById('snackbar');
+        const snackbarMessage = document.getElementById('snackbarMessage');
+        const snackbarUndoBtn = document.getElementById('snackbarUndoBtn');
+
+        // --- 初期化 ---
+        window.onload = () => {
+            renderNotes();
+            mainInput.focus();
+            setTimeout(translateAttrs, 500);
+            setInterval(translateAttrs, 3000);
+        };
+
+        function saveNotes() {
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // --- 自動リサイズ ---
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+        editContent.addEventListener('input', () => autoResizeTextarea(editContent));
+
+        // --- 描画 ---
+        function renderNotes(searchQuery = '') {
+            notesContainer.innerHTML = '';
+            const activeNotes = notes.filter(n => !n.isDeleted);
+            
+            const filteredNotes = activeNotes.filter(n => {
+                if (!searchQuery) return true;
+                return (n.title.includes(searchQuery) || n.content.includes(searchQuery));
+            });
+
+            filteredNotes.forEach(note => {
+                const isYellow = note.title.trim() !== '' && note.content.trim() !== '';
+                
+                const noteEl = document.createElement('div');
+                noteEl.className = `note ${isYellow ? 'note-yellow' : 'note-white'}`;
+                noteEl.onclick = (e) => openEditModal(note, e.currentTarget);
+
+                if (isYellow) {
+                    noteEl.innerHTML = `
+                        <div class="note-title">${escapeHTML(note.title)}</div>
+                        <div class="note-content-preview">${escapeHTML(note.content)}</div>
+                    `;
+                } else {
+                    const text = note.title.trim() || note.content;
+                    noteEl.innerHTML = `<div class="note-single-line">${escapeHTML(text)}</div>`;
+                }
+                notesContainer.appendChild(noteEl);
+            });
+        }
+
+        function renderTrash() {
+            trashList.innerHTML = '';
+            const deletedNotes = notes.filter(n => n.isDeleted);
+            
+            if(deletedNotes.length === 0){
+                trashList.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">${tr('g_trash_empty_msg')}</div>`;
+                return;
+            }
+
+            deletedNotes.forEach(note => {
+                const el = document.createElement('div');
+                el.className = 'trash-item';
+                
+                const preview = note.title ? `${note.title} - ${note.content}` : note.content;
+                
+                el.innerHTML = `
+                    <div class="trash-item-content">${escapeHTML(preview)}</div>
+                    <div class="trash-item-actions">
+                        <button class="btn-restore" onclick="restoreNote('${note.id}')">復元</button>
+                        <button class="btn-delete" onclick="hardDeleteNote('${note.id}')">削除</button>
+                    </div>
+                `;
+                trashList.appendChild(el);
+            });
+        }
+
+        // --- ヘッダー・検索・入力 (入力開始時展開に変更) ---
+        btnToggleSearch.addEventListener('click', () => {
+            isSearchMode = !isSearchMode;
+            if (isSearchMode) {
+                mainInput.classList.add('search-mode');
+                mainInput.placeholder = '検索...';
+                mainInput.focus();
+            } else {
+                mainInput.classList.remove('search-mode');
+                mainInput.placeholder = '記録を開始...';
+                mainInput.value = '';
+                renderNotes();
+            }
+        });
+
+        mainInput.addEventListener('input', (e) => {
+            if (isSearchMode) {
+                renderNotes(e.target.value);
+                return;
+            }
+            
+            if (e.target.value.length > 0 && !expandedInputCard.classList.contains('active')) {
+                expandedInputCard.classList.add('active');
+                mainInput.classList.add('focused');
+                quickContent.focus();
+            }
+            if (e.target.value.length === 0 && quickContent.value.length === 0) {
+                closeQuickInput();
+            }
+        });
+
+        quickContent.addEventListener('input', () => {
+            autoResizeTextarea(quickContent);
+            if (mainInput.value.length === 0 && quickContent.value.length === 0) {
+                closeQuickInput();
+            }
+        });
+
+        function closeQuickInput() {
+            expandedInputCard.classList.remove('active');
+            mainInput.classList.remove('focused');
+            quickContent.value = '';
+            quickContent.style.height = 'auto';
+            mainInput.value = '';
+            mainInput.focus();
+        }
+
+        quickCancel.addEventListener('click', closeQuickInput);
+
+        quickSave.addEventListener('click', () => {
+            const title = mainInput.value.trim();
+            const content = quickContent.value.trim();
+            if (title || content) {
+                notes.unshift({
+                    id: generateId(),
+                    title: title,
+                    content: content,
+                    isDeleted: false
+                });
+                saveNotes();
+                renderNotes();
+            }
+            closeQuickInput();
+        });
+
+        // --- 編集モーダル ---
+        function openEditModal(note, elementRect) {
+            activeEditId = note.id;
+            editTitle.value = note.title;
+            editContent.value = note.content;
+            
+            // 開く時のアニメーション (クリックした要素から展開)
+            const rect = elementRect.getBoundingClientRect();
+            editModalWrapper.style.transformOrigin = `${rect.left + rect.width/2}px ${rect.top + rect.height/2}px`;
+            
+            editModalOverlay.classList.add('active');
+            setTimeout(() => autoResizeTextarea(editContent), 10);
+        }
+
+        function closeEditModal() {
+            if (activeEditId) {
+                const note = notes.find(n => n.id === activeEditId);
+                if (note && !note.isDeleted) {
+                    note.title = editTitle.value;
+                    note.content = editContent.value;
+                    saveNotes();
+                    renderNotes();
+                }
+            }
+            editModalOverlay.classList.remove('active');
+            activeEditId = null;
+        }
+
+        modalBtnClose.addEventListener('click', closeEditModal);
+        
+        editModalOverlay.addEventListener('click', (e) => {
+            if (e.target === editModalOverlay) closeEditModal();
+        });
+
+        modalBtnDelete.addEventListener('click', () => {
+            if (activeEditId) {
+                const note = notes.find(n => n.id === activeEditId);
+                note.isDeleted = true;
+                saveNotes();
+                renderNotes();
+                showSnackbar(tr('g_snackbar_trash'), 'delete', JSON.parse(JSON.stringify(note)));
+                closeEditModal();
+            }
+        });
+
+        modalBtnDownload.addEventListener('click', () => {
+            const title = editTitle.value || 'memo';
+            const content = editContent.value;
+            const blob = new Blob([`${title}\n\n${content}`], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${title}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // --- ゴミ箱 ---
+        btnOpenTrash.addEventListener('click', () => {
+            renderTrash();
+            trashDialog.classList.add('active');
+        });
+
+        btnCloseTrash.addEventListener('click', () => {
+            trashDialog.classList.remove('active');
+            renderNotes();
+        });
+
+        window.restoreNote = function(id) {
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                note.isDeleted = false;
+                saveNotes();
+                renderTrash();
+                showSnackbar(tr('g_snackbar_restore'), 'restore', JSON.parse(JSON.stringify(note)));
+            }
+        };
+
+        window.hardDeleteNote = function(id) {
+            const index = notes.findIndex(n => n.id === id);
+            if (index !== -1) {
+                const deletedNote = JSON.parse(JSON.stringify(notes[index]));
+                notes.splice(index, 1);
+                saveNotes();
+                renderTrash();
+                showSnackbar(tr('g_snackbar_hard_delete'), 'hard_delete', deletedNote);
+            }
+        };
+
+        btnRestoreAll.addEventListener('click', () => {
+            if (confirm(tr('g_confirm_restore_all'))) {
+                notes.forEach(n => { if(n.isDeleted) n.isDeleted = false; });
+                saveNotes();
+                renderTrash();
+            }
+        });
+
+        btnEmptyTrash.addEventListener('click', () => {
+            if (confirm(tr('g_confirm_empty_trash'))) {
+                notes = notes.filter(n => !n.isDeleted);
+                saveNotes();
+                renderTrash();
+            }
+        });
+
+        // --- スナックバー (Undo機能) ---
+        function showSnackbar(message, type, noteData) {
+            snackbarMessage.textContent = message;
+            undoAction = { type, note: noteData };
+            
+            snackbar.classList.add('active');
+            
+            if (undoTimeout) clearTimeout(undoTimeout);
+            undoTimeout = setTimeout(() => {
+                snackbar.classList.remove('active');
+                undoAction = null;
+            }, 5000); // 5秒間
+        }
+
+        snackbarUndoBtn.addEventListener('click', () => {
+            if (!undoAction) return;
+
+            if (undoAction.type === 'delete') {
+                const note = notes.find(n => n.id === undoAction.note.id);
+                if (note) note.isDeleted = false;
+                renderNotes();
+            } else if (undoAction.type === 'hard_delete') {
+                notes.unshift(undoAction.note);
+                renderTrash();
+            } else if (undoAction.type === 'restore') {
+                const note = notes.find(n => n.id === undoAction.note.id);
+                if (note) note.isDeleted = true;
+                renderTrash();
+            }
+
+            saveNotes();
+            snackbar.classList.remove('active');
+            undoAction = null;
+            clearTimeout(undoTimeout);
+        });
+
+        // --- ユーティリティ ---
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            ).replace(/\n/g, '');
+        }
+
+        // --- 多言語対応 ---
+        function tr(key) {
+            if (!window.translator || window.translator.currentLang === 'ja' || window.translator.map.size === 0) {
+                const jaMap = {
+                    'g_snackbar_trash': 'ゴミ箱へ移動しました',
+                    'g_snackbar_restore': 'メモを復元しました',
+                    'g_snackbar_hard_delete': 'メモを完全に削除しました',
+                    'g_confirm_restore_all': '全てのメモを復元しますか？',
+                    'g_confirm_empty_trash': 'ゴミ箱を空にしますか？この操作は取り消せません。',
+                    'g_trash_empty_msg': 'ゴミ箱は空です'
+                };
+                return jaMap[key] || key;
+            }
+            const jaText = Object.entries(window.translator.map).find(([k]) => false);
+            for (const [ja, translated] of window.translator.map) {
+                const jaKeys = {
+                    'ゴミ箱へ移動しました': 'g_snackbar_trash',
+                    'メモを復元しました': 'g_snackbar_restore',
+                    'メモを完全に削除しました': 'g_snackbar_hard_delete',
+                    '全てのメモを復元しますか？': 'g_confirm_restore_all',
+                    'ゴミ箱を空にしますか？この操作は取り消せません。': 'g_confirm_empty_trash',
+                    'ゴミ箱は空です': 'g_trash_empty_msg'
+                };
+                if (jaKeys[ja] === key) return translated;
+            }
+            const jaMap = {
+                'g_snackbar_trash': 'ゴミ箱へ移動しました',
+                'g_snackbar_restore': 'メモを復元しました',
+                'g_snackbar_hard_delete': 'メモを完全に削除しました',
+                'g_confirm_restore_all': '全てのメモを復元しますか？',
+                'g_confirm_empty_trash': 'ゴミ箱を空にしますか？この操作は取り消せません。',
+                'g_trash_empty_msg': 'ゴミ箱は空です'
+            };
+            return jaMap[key] || key;
+        }
+
+        function translateAttrs() {
+            if (!window.translator || window.translator.currentLang === 'ja' || window.translator.map.size === 0) return;
+            document.querySelectorAll('[data-tr-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-tr-placeholder');
+                const jaMap = { 'g_ph_start': '記録を開始...', 'g_ph_content': '本文はここに入力されます。\n改行可能', 'g_ph_search': '検索...', 'g_ph_title': 'タイトル', 'g_ph_memo': 'メモの内容' };
+                const jaText = jaMap[key];
+                if (jaText && window.translator.map.has(jaText)) el.placeholder = window.translator.map.get(jaText);
+            });
+            document.querySelectorAll('[data-tr-title]').forEach(el => {
+                const key = el.getAttribute('data-tr-title');
+                const jaMap = { 'g_btn_discard': '破棄', 'g_btn_save': '保存', 'g_btn_trash': 'ゴミ箱', 'g_btn_search': '検索', 'g_btn_close': '保存して閉じる', 'g_btn_delete': 'ゴミ箱へ移動', 'g_btn_download': 'ダウンロード', 'g_btn_sync': '同期' };
+                const jaText = jaMap[key];
+                if (jaText && window.translator.map.has(jaText)) el.title = window.translator.map.get(jaText);
+            });
+        }
+    </script>
+    <script src="/frameworks/lang.js" data-xml="/xml/girog.xml"></script>
+</body>
+</html>

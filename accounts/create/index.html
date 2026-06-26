@@ -9,7 +9,7 @@
   <style>*{
         font-family: "M PLUS 2", sans-serif;
     }
-    body { background:#E9E9E9;font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif; padding:24px; }
+    body { background:#f3f3f3;font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif; padding:24px; }
     form { max-width:600px; margin:0 auto; display:grid; gap:8px; }
     input{ padding:8px; font-size:16px; }
     button{ padding:10px; font-size:16px; }
@@ -51,9 +51,9 @@ h2,h1{
     button{
         border:none;
         padding:24px;
-        color:#fff;
+        color:#000;
   transition:all 0.5s cubic-bezier(.42,.18,0,1);
-  background-image: conic-gradient(from 270deg at 39% 50%, rgba(0, 18, 88, 1) 0deg, rgba(0, 38, 190, 1) 177deg, rgba(0, 95, 255, 1) 265deg, rgba(146, 217, 255, 1) 323deg, rgba(255, 254, 244, 1) 360deg);
+  background:color(display-p3 0.4 1 0.573 / 1);
     mask-image: paint(squircle);
     --squircle-radius: 24px;
     --squircle-smooth: 0.5;
@@ -87,9 +87,7 @@ if ("paintWorklet" in CSS) {
   
 
   <form id="authForm"><h1>
-    <svg width="60" height="60" style="position: relative;top: 16px;" viewBox="0 0 33 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M33 34H27V31.0435H21V34H12V31.0435H3V34H0V0H33V34ZM12 31.0435H15V28.087H12V31.0435ZM18 31.0435H21V28.087H18V31.0435ZM27 31.0435H30V28.087H27V31.0435ZM3 28.087H12V25.1304H6V22.1739H15V19.2174H3V28.087ZM21 28.087H27V25.1304H21V28.087ZM18 25.1304H21V22.1739H18V25.1304ZM27 25.1304H30V22.1739H27V25.1304ZM21 22.1739H27V19.2174H21V22.1739ZM6 17.7391H12V14.7826H6V17.7391ZM21 17.7391H27V14.7826H21V17.7391ZM3 14.7826H6V11.8261H3V14.7826ZM12 14.7826H15V11.8261H12V14.7826ZM27 8.86957H21V11.8261H27V14.7826H30V5.91304H27V8.86957ZM9 11.8261H12V8.86957H9V11.8261ZM3 8.86957H6V5.91304H3V8.86957ZM12 8.86957H15V5.91304H12V8.86957ZM18 8.86957H21V5.91304H18V8.86957ZM6 5.91304H12V2.95652H6V5.91304ZM21 5.91304H27V2.95652H21V5.91304Z" fill="#0026BE"/>
-</svg>
+ <img width="48" height="48" style="position: relative;top: 12px;"  src="https://search3958.github.io/project/logos/3958logo_main.svg">
 アカウント作成</h1>
     <div class="main">
   <div class="loading" id="loading">
@@ -104,11 +102,9 @@ if ("paintWorklet" in CSS) {
     <input id="lastName" type="text" placeholder="姓" required />
     <input id="firstName" type="text" placeholder="名" required /></div>
   <div id="msg"></div>
-    <p>登録すると、<a href="http://search3958.github.io/policies/trems.html" target="_blank">利用規約</a>と<a href="http://search3958.github.io/policies/privacy.html" target="_blank">個人情報政策</a>に同意したものとみなされます。</p>
+    <p>登録すると、<a href="https://search3958.github.io/policies/" target="_blank">利用規約と個人情報政策</a>に同意したものとみなされます。</p>
     <div class="bottombtn flex">
-    <button id="registerBtn" type="button"><svg width="48" height="48" viewBox="0 0 12 22" fill="none" style="position: relative;left: -4px;height: 38px;width: 38px;" xmlns="http://www.w3.org/2000/svg">
-<path d="M1 1L11 11L1 21" stroke="white" stroke-width="1.2"/>
-</svg>登録</button>
+    <button id="registerBtn" type="button">登録</button>
     </div></div>
   </form>
 
