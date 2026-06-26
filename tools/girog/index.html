@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-        <link rel="icon" type="image/png" href="icon.png">
-   
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>記録ノート</title>
+    <meta name="description" content="シンプルで美しいメモアプリ。クイック入力、編集、ゴミ箱機能搭載。あなたの記録を直感的に管理できます。">
+    <meta name="keywords" content="メモ, ノート, 記録, アプリ, メモ帳, マンガ, memo, note, records">
+    <meta property="og:title" content="記録ノート">
+    <meta property="og:description" content="シンプルで美しいメモアプリ。クイック入力、編集、ゴミ箱機能搭載。">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="icon.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="記録ノート">
+    <meta name="twitter:description" content="シンプルで美しいメモアプリ。クイック入力、編集、ゴミ箱機能搭載。">
+    <link rel="icon" type="image/png" href="icon.png">
     <style>
         :root {
             --bg-color: #ffffff;
@@ -661,16 +669,16 @@ header {
         </div>
 
         <div class="input-wrapper" id="inputWrapper">
-            <input type="text" class="main-input" id="mainInput" placeholder="記録を開始...">
+            <input type="text" class="main-input" id="mainInput" placeholder="記録を開始..." data-tr-placeholder="g_ph_start">
             
             <div class="expanded-input-card" id="expandedInputCard">
                 <div class="expanded-body">
-                    <textarea id="quickContent" placeholder="本文はここに入力されます。&#10;改行可能"></textarea>
+                    <textarea id="quickContent" placeholder="本文はここに入力されます。&#10;改行可能" data-tr-placeholder="g_ph_content"></textarea>
                     <div class="expanded-footer">
-                        <button class="btn-small-icon" id="quickCancel" title="破棄">
+                        <button class="btn-small-icon" id="quickCancel" title="破棄" data-tr-title="g_btn_discard">
                             <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                         </button>
-                        <button class="btn-small-icon check" id="quickSave" title="保存">
+                        <button class="btn-small-icon check" id="quickSave" title="保存" data-tr-title="g_btn_save">
                             <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
                         </button>
                     </div>
@@ -679,11 +687,11 @@ header {
         </div>
 
         <div class="header-actions">
-            <button style="display:none" class="btn-sync" onclick="alert('同期機能は準備中です')">同期</button>
-            <button class="btn-icon" id="btnOpenTrash" title="ゴミ箱">
+            <button style="display:none" class="btn-sync" onclick="alert(tr('g_sync_alert'))" data-tr-text="g_btn_sync">同期</button>
+            <button class="btn-icon" id="btnOpenTrash" title="ゴミ箱" data-tr-title="g_btn_trash">
                 <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
             </button>
-            <button class="btn-icon" id="btnToggleSearch" title="検索">
+            <button class="btn-icon" id="btnToggleSearch" title="検索" data-tr-title="g_btn_search">
                 <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
         </div>
@@ -696,26 +704,26 @@ header {
     <div class="modal-overlay" id="editModalOverlay">
         <div class="modal-content-wrapper" id="editModalWrapper">
             <div class="modal-actions-top">
-                <button class="modal-btn check" id="modalBtnClose" title="保存して閉じる">
+                <button class="modal-btn check" id="modalBtnClose" title="保存して閉じる" data-tr-title="g_btn_close">
                     <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
                 </button>
-                <button class="modal-btn" id="modalBtnDelete" title="ゴミ箱へ移動">
+                <button class="modal-btn" id="modalBtnDelete" title="ゴミ箱へ移動" data-tr-title="g_btn_delete">
                     <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                 </button>
-                <button class="modal-btn" id="modalBtnDownload" title="ダウンロード">
+                <button class="modal-btn" id="modalBtnDownload" title="ダウンロード" data-tr-title="g_btn_download">
                     <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                 </button>
-                <button style="display:none" class="modal-btn" onclick="alert('同期機能は準備中です')" title="同期">
+                <button style="display:none" class="modal-btn" onclick="alert(tr('g_sync_alert'))" title="同期" data-tr-title="g_btn_sync">
                     <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                 </button>
             </div>
             
             <div class="modal-card">
                 <div class="modal-header">
-                    <input type="text" id="editTitle" placeholder="タイトル">
+                    <input type="text" id="editTitle" placeholder="タイトル" data-tr-placeholder="g_ph_title">
                 </div>
                 <div class="modal-body">
-                    <textarea id="editContent" placeholder="メモの内容"></textarea>
+                    <textarea id="editContent" placeholder="メモの内容" data-tr-placeholder="g_ph_memo"></textarea>
                 </div>
             </div>
         </div>
@@ -741,13 +749,8 @@ header {
     <script>
         // --- 状態管理 ---
         let notes = JSON.parse(localStorage.getItem('notes')) || [
-            { id: '1', title: 'こんにちは', content: '本文付き', isDeleted: false },
-            { id: '2', title: '', content: 'グリッド形式で並ぶ単純ノート', isDeleted: false },
-            { id: '3', title: '', content: 'flexを使用して自動的に改行されます', isDeleted: false },
-            { id: '4', title: '', content: 'メモの内容', isDeleted: false },
-            { id: '5', title: 'これがタイトルです', content: 'メモの本文を一部表示', isDeleted: false },
-            { id: '6', title: '', content: '黄色は本文付きメモ', isDeleted: false },
-            { id: '7', title: '', content: '白は1行だけのメモ', isDeleted: false }
+            { id: '1', title: 'お客様を歓迎します！', content: '', isDeleted: false },
+            { id: '2', title: '必ずご確認ください', content: '記録ノートへようこそ。\nお客様を歓迎します。安心してご利用いただくために以下のことをご確認ください。\n\n💡 利用規約および個人情報政策\nhttps://search3958.github.io/policies/\n\n💡 データの責任\n意図しないエラーやその他不具合によりデータが削除されてしまう場合がございます。大切なデータは必ず別の場所でも保管しておいてください。\n\n💡 今後の予定\nアカウントを活用した同期機能の準備中です。完成までしばらくお待ちください。\n\nそれでは楽しんでください！', isDeleted: false }
         ];
         
         let isSearchMode = false;
@@ -792,6 +795,8 @@ header {
         window.onload = () => {
             renderNotes();
             mainInput.focus();
+            setTimeout(translateAttrs, 500);
+            setInterval(translateAttrs, 3000);
         };
 
         function saveNotes() {
@@ -844,7 +849,7 @@ header {
             const deletedNotes = notes.filter(n => n.isDeleted);
             
             if(deletedNotes.length === 0){
-                trashList.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">ゴミ箱は空です</div>`;
+                trashList.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">${tr('g_trash_empty_msg')}</div>`;
                 return;
             }
 
@@ -970,7 +975,7 @@ header {
                 note.isDeleted = true;
                 saveNotes();
                 renderNotes();
-                showSnackbar('ゴミ箱へ移動しました', 'delete', JSON.parse(JSON.stringify(note)));
+                showSnackbar(tr('g_snackbar_trash'), 'delete', JSON.parse(JSON.stringify(note)));
                 closeEditModal();
             }
         });
@@ -1004,7 +1009,7 @@ header {
                 note.isDeleted = false;
                 saveNotes();
                 renderTrash();
-                showSnackbar('メモを復元しました', 'restore', JSON.parse(JSON.stringify(note)));
+                showSnackbar(tr('g_snackbar_restore'), 'restore', JSON.parse(JSON.stringify(note)));
             }
         };
 
@@ -1015,12 +1020,12 @@ header {
                 notes.splice(index, 1);
                 saveNotes();
                 renderTrash();
-                showSnackbar('メモを完全に削除しました', 'hard_delete', deletedNote);
+                showSnackbar(tr('g_snackbar_hard_delete'), 'hard_delete', deletedNote);
             }
         };
 
         btnRestoreAll.addEventListener('click', () => {
-            if (confirm('全てのメモを復元しますか？')) {
+            if (confirm(tr('g_confirm_restore_all'))) {
                 notes.forEach(n => { if(n.isDeleted) n.isDeleted = false; });
                 saveNotes();
                 renderTrash();
@@ -1028,7 +1033,7 @@ header {
         });
 
         btnEmptyTrash.addEventListener('click', () => {
-            if (confirm('ゴミ箱を空にしますか？この操作は取り消せません。')) {
+            if (confirm(tr('g_confirm_empty_trash'))) {
                 notes = notes.filter(n => !n.isDeleted);
                 saveNotes();
                 renderTrash();
@@ -1083,6 +1088,59 @@ header {
                 }[tag])
             ).replace(/\n/g, '');
         }
+
+        // --- 多言語対応 ---
+        function tr(key) {
+            if (!window.translator || window.translator.currentLang === 'ja' || window.translator.map.size === 0) {
+                const jaMap = {
+                    'g_snackbar_trash': 'ゴミ箱へ移動しました',
+                    'g_snackbar_restore': 'メモを復元しました',
+                    'g_snackbar_hard_delete': 'メモを完全に削除しました',
+                    'g_confirm_restore_all': '全てのメモを復元しますか？',
+                    'g_confirm_empty_trash': 'ゴミ箱を空にしますか？この操作は取り消せません。',
+                    'g_trash_empty_msg': 'ゴミ箱は空です'
+                };
+                return jaMap[key] || key;
+            }
+            const jaText = Object.entries(window.translator.map).find(([k]) => false);
+            for (const [ja, translated] of window.translator.map) {
+                const jaKeys = {
+                    'ゴミ箱へ移動しました': 'g_snackbar_trash',
+                    'メモを復元しました': 'g_snackbar_restore',
+                    'メモを完全に削除しました': 'g_snackbar_hard_delete',
+                    '全てのメモを復元しますか？': 'g_confirm_restore_all',
+                    'ゴミ箱を空にしますか？この操作は取り消せません。': 'g_confirm_empty_trash',
+                    'ゴミ箱は空です': 'g_trash_empty_msg'
+                };
+                if (jaKeys[ja] === key) return translated;
+            }
+            const jaMap = {
+                'g_snackbar_trash': 'ゴミ箱へ移動しました',
+                'g_snackbar_restore': 'メモを復元しました',
+                'g_snackbar_hard_delete': 'メモを完全に削除しました',
+                'g_confirm_restore_all': '全てのメモを復元しますか？',
+                'g_confirm_empty_trash': 'ゴミ箱を空にしますか？この操作は取り消せません。',
+                'g_trash_empty_msg': 'ゴミ箱は空です'
+            };
+            return jaMap[key] || key;
+        }
+
+        function translateAttrs() {
+            if (!window.translator || window.translator.currentLang === 'ja' || window.translator.map.size === 0) return;
+            document.querySelectorAll('[data-tr-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-tr-placeholder');
+                const jaMap = { 'g_ph_start': '記録を開始...', 'g_ph_content': '本文はここに入力されます。\n改行可能', 'g_ph_search': '検索...', 'g_ph_title': 'タイトル', 'g_ph_memo': 'メモの内容' };
+                const jaText = jaMap[key];
+                if (jaText && window.translator.map.has(jaText)) el.placeholder = window.translator.map.get(jaText);
+            });
+            document.querySelectorAll('[data-tr-title]').forEach(el => {
+                const key = el.getAttribute('data-tr-title');
+                const jaMap = { 'g_btn_discard': '破棄', 'g_btn_save': '保存', 'g_btn_trash': 'ゴミ箱', 'g_btn_search': '検索', 'g_btn_close': '保存して閉じる', 'g_btn_delete': 'ゴミ箱へ移動', 'g_btn_download': 'ダウンロード', 'g_btn_sync': '同期' };
+                const jaText = jaMap[key];
+                if (jaText && window.translator.map.has(jaText)) el.title = window.translator.map.get(jaText);
+            });
+        }
     </script>
+    <script src="/frameworks/lang.js" data-xml="/xml/girog.xml"></script>
 </body>
 </html>

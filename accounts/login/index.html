@@ -23,7 +23,7 @@ if ("paintWorklet" in CSS) {
 body {
   margin: 0;
   font-family: sans-serif;
-  background: #E9E9E9;
+  background: #f3f3f3;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -40,9 +40,8 @@ body {
     padding: 8px;
     position:relative;
 
-    mask-image: paint(squircle);
-    --squircle-radius: 56px;
-    --squircle-smooth: 0.7;
+    corner-shape:superellipse(1.5);
+    border-radius:64px;
 }
 
 /* 左側ログイン文字 */
@@ -57,6 +56,7 @@ body {
     padding-left: 33px;
     padding-top: 33px;
     flex-direction: column;
+    gap:16px;
 }
 
 /* 右側フォーム */
@@ -109,9 +109,8 @@ input {
   border:none;
   background:#eee;
 
-    mask-image: paint(squircle);
-    --squircle-radius: 10px;
-    --squircle-smooth: 0.7;
+    corner-shape:superellipse(1.5);
+    border-radius:24px;
 }
 
 button {
@@ -132,16 +131,13 @@ button {
     position:absolute;
     bottom:24px;
     right:24px;
-  height:60px;
-  width:60px;
+  height:52px;
+  width:52px;
         padding-left: 10px;
         scale:1;
   transition:all 0.5s cubic-bezier(.42,.18,0,1);
-  background-image: conic-gradient(from 270deg at 72% 50%, rgba(0, 18, 88, 1) 0deg, rgba(0, 38, 190, 1) 177deg, rgba(0, 95, 255, 1) 265deg, rgba(146, 217, 255, 1) 323deg, rgba(255, 254, 244, 1) 360deg);
-
-    mask-image: paint(squircle);
-    --squircle-radius: 24px;
-    --squircle-smooth: 0.5;
+  background:color(display-p3 0.4 1 0.573 / 1);
+border-radius:100px;
 }
 #nextBtn:hover,#signInBtn:hover{
         padding-left: 16px;
@@ -157,13 +153,13 @@ button {
 }
 
 p {
-    font-size: 16px;
+    font-size: 14px;
 }
 h1 {
-    font-size: 1em;
+    font-size: 0.8em;
     margin: 0;
-    font-weight: 300;
-    margin-left: -5px;
+    font-weight: 600;
+    margin-left: -3px;
 }
 .loading {
     background: #ffffff7d;
@@ -194,9 +190,7 @@ h1 {
 <div id="lottie"></div>
 </div>
   <div class="login-left">
-            <svg width="60" height="60" viewBox="0 0 33 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M33 34H27V31.0435H21V34H12V31.0435H3V34H0V0H33V34ZM12 31.0435H15V28.087H12V31.0435ZM18 31.0435H21V28.087H18V31.0435ZM27 31.0435H30V28.087H27V31.0435ZM3 28.087H12V25.1304H6V22.1739H15V19.2174H3V28.087ZM21 28.087H27V25.1304H21V28.087ZM18 25.1304H21V22.1739H18V25.1304ZM27 25.1304H30V22.1739H27V25.1304ZM21 22.1739H27V19.2174H21V22.1739ZM6 17.7391H12V14.7826H6V17.7391ZM21 17.7391H27V14.7826H21V17.7391ZM3 14.7826H6V11.8261H3V14.7826ZM12 14.7826H15V11.8261H12V14.7826ZM27 8.86957H21V11.8261H27V14.7826H30V5.91304H27V8.86957ZM9 11.8261H12V8.86957H9V11.8261ZM3 8.86957H6V5.91304H3V8.86957ZM12 8.86957H15V5.91304H12V8.86957ZM18 8.86957H21V5.91304H18V8.86957ZM6 5.91304H12V2.95652H6V5.91304ZM21 5.91304H27V2.95652H21V5.91304Z" fill="#0026BE"/>
-</svg>
+            <img width="48" height="48" src="https://search3958.github.io/project/logos/3958logo_main.svg">
 <h1>ログイン</h1>
 <p id="account-message">
     あなたのSearch3958アカウントを入力してください。<br>
@@ -226,9 +220,7 @@ h1 {
     <div class="step active" id="step1">
       <input id="email" type="email" placeholder="メールアドレス"/>
       <button id="nextBtn">
-<svg width="48" height="48" viewBox="0 0 12 22" fill="none" style="position: relative;left: 5px;top: 1px;height: 38px;width: 38px;" xmlns="http://www.w3.org/2000/svg">
-<path d="M1 1L11 11L1 21" stroke="white" stroke-width="1.2"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#000"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
 </button>
       <div id="error1" class="error"></div>
     </div>
@@ -237,7 +229,7 @@ h1 {
     <div class="step hidden" id="step2">
       <input id="password" type="password" placeholder="パスワード"/>
       <div class="info" style="margin-top:15px;">
-        ログインまたは登録すると、<a href="http://search3958.github.io/policies/trems.html" target="_blank">利用規約</a>と<a href="http://search3958.github.io/policies/privacy.html" target="_blank">個人情報政策</a>に同意したものとみなされます。
+        ログインまたは登録すると、<a href="https://search3958.github.io/policies/" target="_blank">利用規約と個人情報政策</a>に同意したものとみなされます。
       </div>
       <!-- 新規登録ボタンは DOM に残す（見えない） -->
       <button id="signUpBtn">新規登録</button>
@@ -245,9 +237,8 @@ h1 {
       <div id="message" class="info"></div>
       <div id="error2" class="error"></div>
       <button id="signInBtn">
-        <svg width="48" height="48" viewBox="0 0 12 22" fill="none" style="position: relative;left: 5px;top: 1px;height: 38px;width: 38px;" xmlns="http://www.w3.org/2000/svg">
-<path d="M1 1L11 11L1 21" stroke="white" stroke-width="1.2"/>
-</svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#000"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
+</button>
 
       </button>
 
