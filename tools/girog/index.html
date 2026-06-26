@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+        <link rel="icon" type="image/png" href="icon.png">
+   
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>記録ノート</title>
@@ -21,7 +23,7 @@
             --on-primary: #000000;
             --text-main: #000000;
             --text-muted: rgba(0, 0, 0, 0.5);
-            --text-placeholder: #888;
+            --text-placeholder: rgba(0, 0, 0, 0.35);
             --btn-delete-bg: #ffeeee;
             --btn-delete-color: #e53935;
             --snackbar-bg: #333333;
@@ -40,7 +42,7 @@
                 --card-bg: #2a2a2a;
                 --note-yellow: color(display-p3 1 0.87 0.14);
                 --note-white: #2a2a2a;
-                --input-gradient: linear-gradient(90deg, rgba(255,225,72,0.61) 0%, rgba(40,40,40,0) 100%);
+                --input-gradient: linear-gradient(90deg, rgba(255,225,72,0.4) 0%, rgba(40,40,40,0) 100%);
                 --input-focused: color(display-p3 1 0.87 0.14);
                 --input-search: #2a2a2a;
                 --btn-gray: #3a3a3a;
@@ -49,7 +51,7 @@
                 --on-primary: #000000;
                 --text-main: #e0e0e0;
                 --text-muted: rgba(255, 255, 255, 0.5);
-                --text-placeholder: #888;
+                --text-placeholder: rgba(255, 255, 255, 0.35);
                 --btn-delete-bg: #3a2020;
                 --btn-delete-color: #f87171;
                 --snackbar-bg: #e0e0e0;
@@ -307,7 +309,8 @@ header {
 
 .note {
     padding: 0px 22px;
-    border-radius: 16px;
+    border-radius: 20px;
+        corner-shape: superellipse(1.5);
     cursor: pointer;
     text-align: center;
     display: flex;
@@ -317,6 +320,7 @@ header {
     min-height: 49px;
     transition: transform 0.2s ease;
     box-shadow: 0 2px 8px var(--shadow-color);
+    overflow: hidden;
 }
 
 .note:hover {
@@ -350,10 +354,18 @@ header {
 .note-content-preview {
     font-size: 12px;
     color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50vw;
 }
 
 .note-single-line {
     font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50vw;
 }
 
 /* =========================================
@@ -444,10 +456,12 @@ header {
 
 .modal-card {
     background: var(--card-bg);
-    border-radius: 24px;
+    border-radius: 40px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+        corner-shape: superellipse(1.5);
+            box-shadow: 0 8px 48px #0003;
 }
 
 .modal-header {
@@ -665,7 +679,7 @@ header {
         </div>
 
         <div class="header-actions">
-            <button class="btn-sync" onclick="alert('同期機能は準備中です')">同期</button>
+            <button style="display:none" class="btn-sync" onclick="alert('同期機能は準備中です')">同期</button>
             <button class="btn-icon" id="btnOpenTrash" title="ゴミ箱">
                 <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
             </button>
@@ -691,7 +705,7 @@ header {
                 <button class="modal-btn" id="modalBtnDownload" title="ダウンロード">
                     <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                 </button>
-                <button class="modal-btn" onclick="alert('同期機能は準備中です')" title="同期">
+                <button style="display:none" class="modal-btn" onclick="alert('同期機能は準備中です')" title="同期">
                     <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                 </button>
             </div>
