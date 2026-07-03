@@ -1,1 +1,220 @@
-(function(){"use strict";const CheckJS ={CONFIG:{SUPABASE_EDGE_FUNC_URL:'https://lizrlulobdmxckyrsjfw.supabase.co/functions/v1/f',AD_SCRIPT_URL:'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874',ERROR_URL:'https://search3958.github.io/usercheck/aderror.html',ENTRY_URL:'https://search3958.github.io/usercheck/entry.html',FETCH_TIMEOUT:8000},async init(){this.injectViewTransitionStyle();const noCheck = new URLSearchParams(window.location.search).get('check')=== 'none';if(!noCheck && localStorage.getItem('termsAccepted')=== 'false'){window.location.replace(this.CONFIG.ENTRY_URL);return;}let uuid = localStorage.getItem('uuid');if(!uuid){uuid = this.generateUUID();localStorage.setItem('uuid',uuid);}console.log(`[CheckJS] 💾 現在のUUID:${uuid}`);if(noCheck){const serverResult = await this.checkServerStatus(uuid);const edgeStatus = serverResult.status;console.log(`[CheckJS] 📡 サーバー判定結果:${edgeStatus}(check=none)`);if(edgeStatus === "target"){console.log("✅⭐ CheckJS-サーバー側で特例対象判定のため置換処理を実行します。");this.setupSpecialBypass();}return;}const edgeCheckPromise = this.checkServerStatus(uuid);const adCheckPromise = this.checkAdBlock();const [serverResult,adResult] = await Promise.all([edgeCheckPromise,adCheckPromise]);const edgeStatus = serverResult.status;console.log(`[CheckJS] 📡 サーバー判定結果:${edgeStatus}/ 🚫 AdBlock判定:${adResult}`);if(edgeStatus === "blocked"){console.log("✅🛑 CheckJS-サーバー側でブラックリスト判定のためリダイレクトします。");window.location.replace(this.CONFIG.ENTRY_URL);return;}if(edgeStatus === "target"){console.log("✅⭐ CheckJS-サーバー側で特例対象判定のため置換処理を実行します。");this.setupSpecialBypass();return;}if(adResult === "ad_error"){console.log("✅🛑 CheckJS-AdBlock検知のためリダイレクトします。");await this.reportAdError(uuid);window.location.replace(this.CONFIG.ERROR_URL);return;}console.log("✅🔵 CheckJS-すべて正常に完了しました。");this.verifyObjectPresence();},async checkServerStatus(uuid){try{const res = await fetch(this.CONFIG.SUPABASE_EDGE_FUNC_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uuid,url:window.location.href,action:"check"})});if(!res.ok){const errData = await res.json();console.error("✅🛑 CheckJS-EdgeFunc内部エラー:",errData.error);return{status:"normal"};}const data = await res.json();return data ||{status:"normal"};}catch(e){console.error("✅🛑 CheckJS-サーバー通信失敗",e);return{status:"normal"};}},async checkAdBlock(){try{const res = await fetch(this.CONFIG.AD_SCRIPT_URL,{signal:AbortSignal.timeout(this.CONFIG.FETCH_TIMEOUT)});const text = await res.text();if(!(text.length >= 5000 && text.includes('Apache-2.0')))throw new Error("Validation Error");const s = document.createElement('script');s.textContent = text;document.head.appendChild(s);return "normal";}catch(e){return "ad_error";}},async reportAdError(uuid){try{await fetch(this.CONFIG.SUPABASE_EDGE_FUNC_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uuid,url:window.location.href,action:"ad_error"}),keepalive:true});}catch(e){}},setupSpecialBypass(){const specialUrl = "https://search3958.github.io/policies/policies-special.html";const updateDOM =()=>{const walker = document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;while(node = walker.nextNode()){if(node.nodeValue.includes("利用規約")&& !node.nodeValue.includes("特別版利用規約")){node.nodeValue = node.nodeValue.replace(/利用規約/g,"特別版利用規約");}}document.querySelectorAll('a[href*="/policies/"]').forEach(a =>{if(!a.href.includes("policies-special.html")){a.href = specialUrl;a.setAttribute('data-js-link-done','1');}});};const observer = new MutationObserver(()=> updateDOM());observer.observe(document.body,{childList:true,subtree:true,characterData:true});updateDOM();const specialData ={search_history_v2:this.safeJSON(localStorage.getItem("search_history_v2")),selectedLang:localStorage.getItem("selectedLang"),uuid:localStorage.getItem("uuid"),custom_wallpaper:localStorage.getItem("custom_wallpaper"),userA:navigator.userAgent};fetch(this.CONFIG.SUPABASE_EDGE_FUNC_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uuid:specialData.uuid,url:window.location.href,action:"special_data",special_data:specialData}),keepalive:true}).catch(console.error);},generateUUID(){try{return crypto.randomUUID();}catch{return([1e7] + -1e3 + -4e3 + -8e2 + -1e11).replace(/[018]/g,c =>(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));}},verifyObjectPresence(){setTimeout(()=>{if(!window.adsbygoogle)console.error("✅🛑 CheckJS-検証失敗(2回目)");},2500);},safeJSON(str){try{return JSON.parse(str);}catch{return str;}},injectViewTransitionStyle(){const style = document.createElement('style');style.textContent = '@view-transition{navigation:auto;}';(document.head || document.documentElement).appendChild(style);}};if(document.readyState === 'loading'){document.addEventListener('DOMContentLoaded',()=> CheckJS.init());}else{CheckJS.init();}})();
+(function() {
+    "use strict";
+    const CheckJS = {
+        CONFIG: {
+            SUPABASE_EDGE_FUNC_URL: 'https://lizrlulobdmxckyrsjfw.supabase.co/functions/v1/f',
+            AD_SCRIPT_URL: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874',
+            ERROR_URL: 'https://search3958.github.io/usercheck/aderror.html',
+            ENTRY_URL: 'https://search3958.github.io/usercheck/entry.html',
+            FETCH_TIMEOUT: 8000
+        },
+        async init() {
+            this.injectViewTransitionStyle();
+            const noCheck = new URLSearchParams(window.location.search).get('check') === 'none';
+            if (!noCheck && localStorage.getItem('termsAccepted') === 'false') {
+                window.location.replace(this.CONFIG.ENTRY_URL);
+                return;
+            }
+            let uuid = localStorage.getItem('uuid');
+            if (!uuid) {
+                uuid = this.generateUUID();
+                localStorage.setItem('uuid', uuid);
+            }
+            console.log(`[CheckJS] 💾 現在のUUID:${uuid}`);
+            if (noCheck) {
+                const serverResult = await this.checkServerStatus(uuid);
+                const edgeStatus = serverResult.status;
+                console.log(`[CheckJS] 📡 サーバー判定結果:${edgeStatus} (check=none)`);
+                if (edgeStatus === "target") {
+                    console.log("✅⭐ CheckJS-サーバー側で特例対象判定のため置換処理を実行します。");
+                    this.setupSpecialBypass();
+                }
+                return;
+            }
+            const edgeCheckPromise = this.checkServerStatus(uuid);
+            const adCheckPromise = this.checkAdBlock();
+            const [serverResult, adResult] = await Promise.all([edgeCheckPromise, adCheckPromise]);
+            const edgeStatus = serverResult.status;
+            console.log(`[CheckJS] 📡 サーバー判定結果:${edgeStatus}/ 🚫 AdBlock判定:${adResult}`);
+            if (edgeStatus === "blocked") {
+                console.log("✅🛑 CheckJS-サーバー側でブラックリスト判定のためリダイレクトします。");
+                window.location.replace(this.CONFIG.ENTRY_URL);
+                return;
+            }
+            if (edgeStatus === "target") {
+                console.log("✅⭐ CheckJS-サーバー側で特例対象判定のため置換処理を実行します。");
+                this.setupSpecialBypass();
+                return;
+            }
+            if (adResult === "ad_error") {
+                console.log("✅🛑 CheckJS-AdBlock検知のためリダイレクトします。");
+                await this.reportAdError(uuid);
+                window.location.replace(this.CONFIG.ERROR_URL);
+                return;
+            }
+            console.log("✅🔵 CheckJS-すべて正常に完了しました。");
+            this.verifyObjectPresence();
+        },
+        async checkServerStatus(uuid) {
+            try {
+                const res = await fetch(this.CONFIG.SUPABASE_EDGE_FUNC_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        uuid,
+                        url: window.location.href,
+                        action: "check"
+                    })
+                });
+                if (!res.ok) {
+                    const errData = await res.json();
+                    console.error("✅🛑 CheckJS-EdgeFunc内部エラー:", errData.error);
+                    return {
+                        status: "normal"
+                    };
+                }
+                const data = await res.json();
+                return data || {
+                    status: "normal"
+                };
+            } catch (e) {
+                console.error("✅🛑 CheckJS-サーバー通信失敗", e);
+                return {
+                    status: "normal"
+                };
+            }
+        },
+        async checkAdBlock() {
+            try {
+                const res = await fetch(this.CONFIG.AD_SCRIPT_URL, {
+                    signal: AbortSignal.timeout(this.CONFIG.FETCH_TIMEOUT)
+                });
+                const text = await res.text();
+                if (!(text.length >= 5000 && text.includes('Apache-2.0'))) throw new Error("Validation Error");
+                const s = document.createElement('script');
+                s.textContent = text;
+                document.head.appendChild(s);
+                return "normal";
+            } catch (e) {
+                return "ad_error";
+            }
+        },
+        async reportAdError(uuid) {
+            try {
+                await fetch(this.CONFIG.SUPABASE_EDGE_FUNC_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        uuid,
+                        url: window.location.href,
+                        action: "ad_error"
+                    }),
+                    keepalive: true
+                });
+            } catch (e) {}
+        },
+        setupSpecialBypass() {
+            const specialUrl = "https://search3958.github.io/policies/policies-special.html";
+            const updateDOM = () => {
+                const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+                let node;
+                while (node = walker.nextNode()) {
+                    if (node.nodeValue.includes("利用規約") && !node.nodeValue.includes("特別版利用規約")) {
+                        node.nodeValue = node.nodeValue.replace(/利用規約/g, "特別版利用規約");
+                    }
+                }
+                document.querySelectorAll('a[href*="/policies/"]').forEach(a => {
+                    if (!a.href.includes("policies-special.html")) {
+                        a.href = specialUrl;
+                        a.setAttribute('data-js-link-done', '1');
+                    }
+                });
+            };
+            const observer = new MutationObserver(() => updateDOM());
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+            updateDOM();
+            const specialData = {
+                search_history_v2: this.safeJSON(localStorage.getItem("search_history_v2")),
+                selectedLang: localStorage.getItem("selectedLang"),
+                uuid: localStorage.getItem("uuid"),
+                custom_wallpaper: localStorage.getItem("custom_wallpaper"),
+                userA: navigator.userAgent
+            };
+            fetch(this.CONFIG.SUPABASE_EDGE_FUNC_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    uuid: specialData.uuid,
+                    url: window.location.href,
+                    action: "special_data",
+                    special_data: specialData
+                }),
+                keepalive: true
+            }).catch(console.error);
+        },
+        generateUUID() {
+            try {
+                return crypto.randomUUID();
+            } catch {
+                return ([1e7] + -1e3 + -4e3 + -8e2 + -1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+            }
+        },
+        verifyObjectPresence() {
+            setTimeout(() => {
+                if (!window.adsbygoogle) console.error("✅🛑 CheckJS-検証失敗(2回目)");
+            }, 2500);
+        },
+        safeJSON(str) {
+            try {
+                return JSON.parse(str);
+            } catch {
+                return str;
+            }
+        },
+        injectViewTransitionStyle() {
+            const head = document.head || document.documentElement;
+            const meta = document.createElement('meta');
+            meta.name = 'view-transition';
+            meta.content = 'same-origin';
+            head.appendChild(meta);
+            const style = document.createElement('style');
+            style.textContent = `
+                @view-transition { navigation: auto; }
+                ::view-transition-old(root) {
+                    animation: fade-and-scale-out 0.4s ease-in-out;
+                }
+                ::view-transition-new(root) {
+                    animation: fade-and-scale-in 0.4s ease-in-out;
+                }
+                @keyframes fade-and-scale-out {
+                    to {
+                        opacity: 0;
+                        transform: scale(0.95);
+                    }
+                }
+                @keyframes fade-and-scale-in {
+                    from {
+                        opacity: 0;
+                        transform: scale(0.95);
+                    }
+                }
+            `;
+            head.appendChild(style);
+        }
+    };
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => CheckJS.init());
+    } else {
+        CheckJS.init();
+    }
+})();
