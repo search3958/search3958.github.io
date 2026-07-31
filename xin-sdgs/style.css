@@ -266,6 +266,50 @@ section#knowledge.active{
   }
 }
 
+/* SDGs適性診断 */
+.quiz-dialog { position:fixed; inset:0; z-index:20000; display:none; background:rgba(19,48,38,.58); backdrop-filter:blur(8px); }
+.quiz-dialog.active { display:block; animation:quizFadeIn .25s ease both; }
+.quiz-dialog-panel { width:100%; height:100%; display:flex; flex-direction:column; background:#fff; color:#17352b; }
+.quiz-dialog-header { min-height:78px; padding:18px clamp(20px,5vw,64px); display:flex; align-items:center; justify-content:space-between; background:#fff; color:#17352b; }
+.quiz-dialog-header h2 { margin:0; font-size:1.1rem; letter-spacing:-.03em; }
+.quiz-close { width:42px; height:42px; display:grid; place-items:center; border:1px solid #dce8e2; border-radius:50%; color:#17352b; background:#fff; cursor:pointer; transition:.2s; }
+.quiz-close:hover { color:#fff; border-color:#17352b; background:#17352b; transform:rotate(90deg); }
+.quiz-dialog-body { width:min(760px,calc(100% - 40px)); flex:1; overflow-y:auto; margin:0 auto; padding:clamp(26px,5vw,56px) 0 60px; }
+.quiz-progress-row { display:flex; justify-content:space-between; color:#6d7f77; font-size:.84rem; font-weight:700; }
+.quiz-progress { height:7px; margin:10px 0 24px; overflow:hidden; border-radius:99px; background:#dfeae4; }
+.quiz-progress i { display:block; width:10%; height:100%; border-radius:99px; background:#0b8f58; transition:width .25s ease; }
+.quiz-help { margin:0 0 28px; color:#6d7f77; font-size:.9rem; }
+.quiz-question { margin:0 0 16px; padding:26px clamp(18px,4vw,30px) 30px; border:0; border-radius:22px; background:#f6f6f6; }
+.quiz-question h3 { margin:0 0 18px; font-size:1.08rem; line-height:1.6; }
+.quiz-slider-labels { display:flex; justify-content:space-between; margin:38px 0 12px; color:#6d7f77; font-size:.82rem; }
+.quiz-slider { --thumb-color:#05F380; }
+.quiz-slider-value { margin:18px 0 0; color:#0b8f58; text-align:center; font-weight:800; }
+.quiz-dialog-actions { display:flex; justify-content:space-between; gap:12px; margin-top:24px; }
+.quiz-primary,.quiz-secondary { min-height:48px; padding:0 22px; border:0; border-radius:14px; cursor:pointer; font-weight:800; transition:.2s; }
+.quiz-primary { display:flex; align-items:center; gap:8px; color:#fff; background:#0b8f58; } .quiz-primary:hover { background:#087746; transform:translateY(-1px); }
+.quiz-secondary { color:#315447; background:#e4f0e9; } .quiz-secondary:hover { background:#d4e8dd; }
+.quiz-status { min-height:22px; margin:17px 0 0; color:#6d7f77; text-align:center; font-size:.84rem; }
+.quiz-results { margin-top:28px; padding:clamp(22px,4vw,36px); border:1px solid #dce8e2; border-radius:24px; background:#fff; }
+.quiz-result-heading { display:flex; align-items:center; gap:10px; } .quiz-result-heading .material-symbols-outlined { color:#0b8f58; } .quiz-result-heading h3 { margin:0; font-size:1.45rem; }
+#quiz-result-summary { color:#6d7f77; line-height:1.7; } .quiz-result-list { display:grid; gap:12px; }
+.quiz-result-card { display:grid; grid-template-columns:58px 1fr; gap:14px; padding:16px; border-radius:16px; background:#f4faf7; border:1px solid #dce8e2; }
+.quiz-goal { display:grid; place-items:center; align-self:start; aspect-ratio:1; border-radius:14px; color:#fff; background:var(--goal-color,#0b8f58); text-align:center; font-size:.82rem; font-weight:900; }
+.quiz-result-card h4 { margin:1px 0 5px; font-size:1rem; } .quiz-result-card p { margin:0; color:#6d7f77; line-height:1.6; font-size:.88rem; }
+.quiz-result-card ul { margin:8px 0 0; padding-left:1.2em; color:#315447; line-height:1.55; font-size:.84rem; }
+.quiz-json { margin-top:18px; color:#6d7f77; font-size:.8rem; } .quiz-json pre { max-height:240px; overflow:auto; padding:12px; color:#dff9e9; background:#163329; border-radius:12px; white-space:pre-wrap; }
+.quiz-restart { margin-top:18px; width:100%; }
+.discover-start { display:flex; flex-direction:column; align-items:center; gap:16px; }
+.discover-results { width:100%; height:100%; margin:0; overflow-y:auto; border-radius:0; }
+section#discover.discover-with-results.active { width:calc(100vw - 8rem); height:calc(100vh - 2em); align-items:stretch; justify-content:flex-start; }
+.quiz-loading { position:fixed; inset:0; z-index:21000; display:none; place-items:center; align-content:center; gap:18px; color:#17352b; background:rgba(255,255,255,.94); }
+.quiz-loading.active { display:grid; }
+.quiz-loading p { margin:0; font-size:1rem; font-weight:700; }
+.quiz-loading-spinner { width:42px; height:42px; border:4px solid #dce8e2; border-top-color:#17352b; border-radius:50%; animation:quizSpin .8s linear infinite; }
+.quiz-close:disabled { opacity:.4; cursor:wait; transform:none; }
+@keyframes quizFadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes quizSpin { to { transform:rotate(360deg); } }
+@media (max-width:800px) { .quiz-dialog-header { min-height:72px; padding:15px 20px; } .quiz-close { width:40px; height:40px; } .quiz-dialog-body { width:calc(100% - 24px); } .quiz-question { padding:23px 18px 28px; } section#discover.discover-with-results.active { width:100%; height:calc(100vh - 67px - 1rem); } }
+
 /* ==========================================================================
    SDG Details Full-Screen Dialog Styles
    ========================================================================== */

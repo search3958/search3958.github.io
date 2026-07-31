@@ -17,6 +17,7 @@
   </nav>
   <main class="content">
     <section id="discover" class="panel active">
+      <div id="discover-start" class="discover-start">
       <span class="material-symbols-outlined panel-title-icon" style="font-size: 28px; color: #1a1a1a;">lightbulb</span>
       <h2>自分なりの解決方法を発見</h2>
       <p>10の質問に回答して自分に適した解決方法を探しましょう</p>
@@ -40,11 +41,18 @@
         slider.style.setProperty('--thumb-color', '#A9A9A9');
       </script>
 
-      <button class="answer-m3btn">
+      <button id="start-diagnosis" class="answer-m3btn" type="button">
         <span class="material-symbols-outlined" style="font-size: 40px; display: block; margin-bottom: 4px;">east</span>
         開始
       </button>
-
+      </div>
+      <section id="quiz-results" class="quiz-results discover-results" hidden>
+        <div class="quiz-result-heading"><span class="material-symbols-outlined">auto_awesome</span><h3>あなたへの提案</h3></div>
+        <p id="quiz-result-summary"></p>
+        <div id="quiz-result-list" class="quiz-result-list"></div>
+        <details class="quiz-json"><summary>保存されたJSONを見る</summary><pre id="quiz-json-output"></pre></details>
+        <button id="quiz-restart" class="quiz-secondary quiz-restart" type="button">もう一度診断する</button>
+      </section>
     </section>
 
     <section id="knowledge" class="panel">
@@ -80,6 +88,29 @@
       </form>
     </section>
   </main>
+</div>
+
+<!-- SDGs適性診断 全画面ダイアログ -->
+<div id="quiz-dialog" class="quiz-dialog" aria-hidden="true">
+  <div id="quiz-loading" class="quiz-loading" aria-hidden="true">
+    <div class="quiz-loading-spinner"></div>
+    <p>結果を生成しています…</p>
+  </div>
+  <div class="quiz-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="quiz-dialog-title">
+    <header class="quiz-dialog-header">
+      <h2 id="quiz-dialog-title">質問に回答</h2>
+      <button id="quiz-close" class="quiz-close" type="button" aria-label="診断を閉じる">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </header>
+    <div class="quiz-dialog-body">
+      <div id="quiz-question-area"></div>
+      <div class="quiz-dialog-actions">
+        <button id="quiz-next" class="quiz-primary" type="button">結果を見る <span class="material-symbols-outlined">auto_awesome</span></button>
+      </div>
+      <p id="quiz-status" class="quiz-status" aria-live="polite"></p>
+    </div>
+  </div>
 </div>
 
 <!-- 全画面ダイアログ -->
@@ -464,6 +495,228 @@ window.addEventListener('keydown', e => {
     closeDialog();
   }
 });
+</script>
+
+<script>
+(() => {
+  const FUNCTION_URL = "https://bhwxeffktrxzfdmpfhpd.supabase.co/functions/v1/sdgs-ai";
+  const SUPABASE_ANON_KEY = "sb_publishable_kMkq2dbwW3QR5AuNwNUzNw_DFiF1w5L";
+  const DB_NAME = "sdgs-diagnosis-db";
+  const STORE_NAME = "results";
+  const questions = [
+    "勉強や新しい知識を身につけることが得意だ",
+    "汚職や不当な搾取・不正を許せない",
+    "外で体を動かしたり、自然の中で活動するのが好きだ",
+    "物事を始めても、三日坊主になりやすい",
+    "必要以上に商品を買いすぎてしまうことがある",
+    "ごみは必ずごみ箱に捨てている",
+    "掃除や整理整頓をすると達成感がある",
+    "社会全体の利益より、自分の利益を優先しがちだ",
+    "困っている人や団体に積極的に募金したい",
+    "他人と協力して何かに取り組むことが好きだ"
+  ];
+  const scaleLabels = ["そう思う", "ややそう思う", "どちらでもない", "ややそう思わない", "そう思わない"];
+  const goalColors = { 1:'#E5243B', 4:'#C5192D', 11:'#FD9D24', 12:'#BF8B2E', 13:'#3F7E44', 15:'#56C02B', 16:'#00689D', 17:'#19486A' };
+  const goalNames = { 1:'貧困をなくそう', 4:'質の高い教育をみんなに', 11:'住み続けられるまちづくりを', 12:'つくる責任 つかう責任', 13:'気候変動に具体的な対策を', 15:'陸の豊かさも守ろう', 16:'平和と公正をすべての人に', 17:'パートナーシップで目標を達成しよう' };
+  let answers = Array(questions.length).fill(3);
+  let lastFocusedElement;
+
+  const dialog = document.getElementById('quiz-dialog');
+  const questionArea = document.getElementById('quiz-question-area');
+  const results = document.getElementById('quiz-results');
+  const discover = document.getElementById('discover');
+  const loading = document.getElementById('quiz-loading');
+  const status = document.getElementById('quiz-status');
+
+  async function openQuiz() {
+    lastFocusedElement = document.activeElement;
+    answers = await loadDraft();
+    results.hidden = true;
+    questionArea.hidden = false;
+    document.querySelector('.quiz-dialog-actions').hidden = false;
+    status.textContent = '';
+    dialog.classList.add('active');
+    dialog.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    renderQuestions();
+  }
+
+  async function closeQuiz() {
+    try { await saveDraft(); } catch (error) { console.warn('IndexedDBへの終了時保存に失敗しました', error); }
+    dialog.classList.remove('active');
+    dialog.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastFocusedElement) lastFocusedElement.focus();
+  }
+
+  function renderQuestions() {
+    questionArea.innerHTML = questions.map((question, index) => `<section class="quiz-question"><h3>${index + 1}. ${escapeHtml(question)}</h3><div class="quiz-slider-labels"><span>そう思う</span><span>そう思わない</span></div><input class="quiz-slider answer-card-slider" type="range" min="1" max="5" step="1" value="${answers[index]}" data-question-index="${index}" aria-label="${escapeHtml(question)}"><p class="quiz-slider-value">${scaleLabels[answers[index] - 1]}</p></section>`).join('');
+    questionArea.querySelectorAll('.quiz-slider').forEach(slider => {
+      updateSlider(slider);
+      slider.addEventListener('input', () => {
+        answers[Number(slider.dataset.questionIndex)] = Number(slider.value);
+        updateSlider(slider);
+        saveDraft().catch(error => console.warn('IndexedDBへの途中保存に失敗しました', error));
+      });
+    });
+  }
+
+  function updateSlider(slider) {
+    const value = Number(slider.value);
+    slider.style.setProperty('--thumb-color', value === 3 ? '#A9A9A9' : value > 3 ? '#8C00FF' : '#05F380');
+    slider.nextElementSibling.textContent = scaleLabels[value - 1];
+  }
+
+  function buildPrompt() {
+    return `あなたはSDGsの行動提案アドバイザーです。10問の回答（1=そう思う、5=そう思わない）から、その人が日常で達成しやすいSDGsを3〜5個、重要度順に選んでください。必ずJSONだけで返してください。Markdownや説明文は不要です。形式は {"summary":"診断全体の短い説明","recommendations":[{"goal":12,"title":"目標名","reason":"回答と結びついた理由","actions":["今日からできる行動1","行動2"]}]} としてください。goalは1〜17の整数です。質問と回答: ${questions.map((question, i) => `${i + 1}. ${question} = ${answers[i]}/5`).join(' / ')}`;
+  }
+
+  function parseJson(text) {
+    const source = String(text).replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
+    const start = source.indexOf('{');
+    const end = source.lastIndexOf('}');
+    return JSON.parse(start >= 0 ? source.slice(start, end + 1) : source);
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>\"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '\"':'&quot;' }[character]));
+  }
+
+  function openDatabase() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, 1);
+      request.onupgradeneeded = () => request.result.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async function loadDraft() {
+    try {
+      const db = await openDatabase();
+      const draft = await new Promise((resolve, reject) => {
+        const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get('current-draft');
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      db.close();
+      return draft && Array.isArray(draft.answers) ? draft.answers.map(value => Math.min(5, Math.max(1, Number(value) || 3))).slice(0, questions.length).concat(Array(questions.length).fill(3)).slice(0, questions.length) : Array(questions.length).fill(3);
+    } catch (error) {
+      console.warn('IndexedDBからの途中回答復元に失敗しました', error);
+      return Array(questions.length).fill(3);
+    }
+  }
+
+  async function saveDraft() {
+    const db = await openDatabase();
+    await new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      transaction.objectStore(STORE_NAME).put({ id:'current-draft', updatedAt:new Date().toISOString(), answers:[...answers], status:'in-progress' });
+      transaction.oncomplete = resolve;
+      transaction.onerror = () => reject(transaction.error);
+    });
+    db.close();
+  }
+
+  async function saveResult(result, source) {
+    const db = await openDatabase();
+    await new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      transaction.objectStore(STORE_NAME).put({ id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`, createdAt: new Date().toISOString(), answers: [...answers], result, source });
+      transaction.oncomplete = resolve;
+      transaction.onerror = () => reject(transaction.error);
+    });
+    db.close();
+  }
+
+  async function loadLatestResult() {
+    try {
+      const db = await openDatabase();
+      const records = await new Promise((resolve, reject) => {
+        const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      db.close();
+      return records.filter(record => record.id !== 'current-draft' && record.result).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0] || null;
+    } catch (error) {
+      console.warn('IndexedDBからの結果読み込みに失敗しました', error);
+      return null;
+    }
+  }
+
+  function fallbackResult() {
+    const agree = answers.map(value => 6 - value);
+    const ranking = [[12, agree[4] + agree[5] + agree[6]], [16, agree[1] + (6 - agree[7])], [4, agree[0]], [17, agree[9]], [13, agree[2] + agree[4] + agree[5]], [15, agree[2] + agree[5] + agree[6]], [1, agree[8]], [11, agree[2] + agree[4] + agree[6]]].sort((a, b) => b[1] - a[1]).slice(0, 4);
+    return { summary:'あなたの特性や価値観を活かし、日常の中で始めやすい目標を選びました。', recommendations:ranking.map(([goal]) => ({ goal, title:goalNames[goal] || `SDGs目標 ${goal}`, reason:'あなたの回答の傾向から、身近な習慣や関心を活かしやすい目標です。', actions:['身近な行動をひとつ、今週から始める','家族や友人と取り組みを共有する'] })) };
+  }
+
+  function renderResults(result) {
+    const safeResult = result && Array.isArray(result.recommendations) ? result : fallbackResult();
+    document.getElementById('quiz-result-summary').textContent = safeResult.summary || 'あなたに合ったSDGsを選びました。';
+    document.getElementById('quiz-result-list').innerHTML = safeResult.recommendations.map(item => { const goal = Number(item.goal); const title = item.title || goalNames[goal] || `SDGs目標 ${goal}`; const actions = Array.isArray(item.actions) ? item.actions : []; return `<article class="quiz-result-card"><div class="quiz-goal" style="--goal-color:${goalColors[goal] || '#0b8f58'}">GOAL<br>${String(goal).padStart(2, '0')}</div><div><h4>${escapeHtml(title)}</h4><p>${escapeHtml(item.reason || 'あなたの特性を活かしやすい目標です。')}</p>${actions.length ? `<ul>${actions.map(action => `<li>${escapeHtml(action)}</li>`).join('')}</ul>` : ''}</div></article>`; }).join('');
+    document.getElementById('quiz-json-output').textContent = JSON.stringify(safeResult, null, 2);
+    results.hidden = false;
+    const startScreen = document.getElementById('discover-start');
+    if (startScreen) startScreen.remove();
+    discover.classList.add('discover-with-results');
+    questionArea.hidden = true;
+    document.querySelector('.quiz-dialog-actions').hidden = true;
+    results.scrollIntoView({ behavior:'smooth', block:'start' });
+    return safeResult;
+  }
+
+  async function finishQuiz() {
+    const next = document.getElementById('quiz-next');
+    next.disabled = true;
+    loading.classList.add('active');
+    loading.setAttribute('aria-hidden', 'false');
+    document.getElementById('quiz-close').disabled = true;
+    await saveDraft().catch(error => console.warn('IndexedDBへの回答保存に失敗しました', error));
+    status.textContent = '回答をAIが分析しています…';
+    let result;
+    let source = 'ai';
+    try {
+      const response = await fetch(FUNCTION_URL, { method:'POST', headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }, body:JSON.stringify({ prompt:buildPrompt() }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'AIからの応答に失敗しました');
+      result = parseJson(data.reply || data.result || data);
+      status.textContent = '診断結果を保存しました。';
+    } catch (error) {
+      console.warn(error);
+      source = 'local-fallback';
+      result = fallbackResult();
+      status.textContent = 'AIに接続できなかったため、簡易診断結果を保存しました。';
+    }
+    const safeResult = result && Array.isArray(result.recommendations) ? result : fallbackResult();
+    try {
+      await saveResult(safeResult, source);
+      status.textContent = '結果を保存しました。';
+    } catch (error) {
+      console.warn('IndexedDBへの保存に失敗しました', error);
+      status.textContent = '結果を保存できなかったため、表示を中止しました。';
+      loading.classList.remove('active');
+      loading.setAttribute('aria-hidden', 'true');
+      document.getElementById('quiz-close').disabled = false;
+      next.disabled = false;
+      return;
+    }
+    renderResults(safeResult);
+    loading.classList.remove('active');
+    loading.setAttribute('aria-hidden', 'true');
+    document.getElementById('quiz-close').disabled = false;
+    next.disabled = false;
+    closeQuiz();
+  }
+
+  document.getElementById('start-diagnosis').addEventListener('click', openQuiz);
+  document.getElementById('quiz-close').addEventListener('click', closeQuiz);
+  document.getElementById('quiz-next').addEventListener('click', finishQuiz);
+  document.getElementById('quiz-restart').addEventListener('click', openQuiz);
+  dialog.addEventListener('click', event => { if (event.target === dialog) closeQuiz(); });
+  window.addEventListener('keydown', event => { if (event.key === 'Escape' && dialog.classList.contains('active')) closeQuiz(); });
+  loadLatestResult().then(record => { if (record) renderResults(record.result); });
+})();
 </script>
 
 </body>
