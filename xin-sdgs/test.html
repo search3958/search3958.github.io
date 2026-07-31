@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SDGs適性診断 | SDGs AI</title>
+  <style>
+    :root { --green:#0b8f58; --dark:#17352b; --muted:#6d7f77; --line:#dce8e2; --soft:#f4faf7; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--dark); background:#eef7f2; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif; }
+    .page { width:min(960px,calc(100% - 32px)); margin:auto; padding:42px 0 64px; }
+    header { margin-bottom:28px; } .eyebrow { color:var(--green); font-size:.78rem; font-weight:800; letter-spacing:.14em; }
+    h1 { margin:8px 0 10px; font-size:clamp(1.8rem,5vw,3rem); letter-spacing:-.04em; } header p { margin:0; color:var(--muted); line-height:1.8; }
+    .quiz,.results { background:#fff; border:1px solid var(--line); border-radius:24px; box-shadow:0 16px 50px #17644312; }
+    .quiz { padding:clamp(20px,4vw,36px); } .progress-row { display:flex; justify-content:space-between; color:var(--muted); font-size:.84rem; margin-bottom:9px; }
+    .progress { height:7px; overflow:hidden; border-radius:99px; background:#e8f1ec; margin-bottom:27px; } .progress i { display:block; height:100%; width:0; background:var(--green); transition:width .25s; }
+    .question { border:0; border-top:1px solid var(--line); padding:23px 0 0; margin:0; } .question+.question { margin-top:25px; }
+    .question legend { width:100%; padding:0 0 15px; font-weight:800; font-size:1.04rem; line-height:1.6; }
+    .question-number { display:inline-grid; place-items:center; width:29px; height:29px; margin-right:8px; color:#fff; background:var(--green); border-radius:50%; font-size:.8rem; vertical-align:middle; }
+    .options { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; } .options label { position:relative; cursor:pointer; text-align:center; }
+    .options input { position:absolute; opacity:0; } .options span { display:grid; place-items:center; min-height:54px; padding:7px 4px; border:1px solid var(--line); border-radius:12px; color:var(--muted); font-size:.77rem; line-height:1.3; transition:.2s; }
+    .options input:checked+span { color:var(--green); border-color:var(--green); background:#e7f8ef; box-shadow:inset 0 0 0 2px var(--green); font-weight:700; } .options input:focus-visible+span { outline:3px solid #9de4be; outline-offset:2px; }
+    .submit { width:100%; border:0; border-radius:14px; padding:16px; margin-top:30px; color:#fff; background:var(--green); cursor:pointer; font-size:1rem; font-weight:800; transition:.2s; } .submit:hover { background:#087746; transform:translateY(-1px); } .submit:disabled { opacity:.65; cursor:wait; transform:none; }
+    .status { min-height:24px; margin:18px 0 0; color:var(--muted); text-align:center; font-size:.86rem; }
+    .results { display:none; padding:clamp(20px,4vw,36px); margin-top:24px; } .results.visible { display:block; } .results h2 { margin:0 0 8px; font-size:1.6rem; } .results-intro { margin:0 0 22px; color:var(--muted); line-height:1.7; }
+    .result-list { display:grid; gap:13px; } .result-card { display:grid; grid-template-columns:62px 1fr; gap:16px; padding:18px; border:1px solid var(--line); border-radius:17px; background:var(--soft); }
+    .goal-number { display:grid; place-items:center; align-self:start; aspect-ratio:1; border-radius:15px; color:#fff; background:var(--goal-color,var(--green)); font-size:1.05rem; font-weight:900; text-align:center; }
+    .result-card h3 { margin:0 0 5px; font-size:1.06rem; } .result-card p { margin:4px 0; line-height:1.65; font-size:.9rem; } .result-card .reason { color:var(--muted); }
+    .actions { margin:11px 0 0; padding-left:1.2em; color:#38564a; line-height:1.7; font-size:.87rem; } .json-details { margin-top:22px; } .json-details summary { cursor:pointer; color:var(--muted); font-size:.82rem; }
+    pre { max-height:250px; overflow:auto; padding:14px; border-radius:12px; color:#dff9e9; background:#163329; font-size:.75rem; white-space:pre-wrap; }
+    @media (max-width:560px) { .page { width:calc(100% - 20px); padding-top:25px; } .options span { min-height:65px; font-size:.68rem; } .result-card { grid-template-columns:50px 1fr; gap:12px; padding:14px; } }
+  </style>
+</head>
+<body>
+<main class="page">
+  <header><div class="eyebrow">SDGs × AI</div><h1>あなたが達成しやすいSDGs</h1><p>10の質問に答えると、あなたの特性を活かしやすい目標を複数提案します。正解・不正解はありません。</p></header>
+  <form id="quizForm" class="quiz">
+    <div class="progress-row"><span>回答の進み具合</span><span id="progressText">0 / 10</span></div><div class="progress"><i id="progressBar"></i></div>
+    <div id="questions"></div><button class="submit" id="submitBtn" type="submit">AIに診断してもらう</button><p class="status" id="status" aria-live="polite"></p>
+  </form>
+  <section id="results" class="results" aria-live="polite"><h2>診断結果</h2><p class="results-intro" id="resultSummary"></p><div id="resultList" class="result-list"></div><details class="json-details"><summary>AIが返したJSONを見る</summary><pre id="jsonOutput"></pre></details></section>
+</main>
+<script>
+const FUNCTION_URL="https://bhwxeffktrxzfdmpfhpd.supabase.co/functions/v1/sdgs-ai";
+const SUPABASE_ANON_KEY="sb_publishable_kMkq2dbwW3QR5AuNwNUzNw_DFiF1w5L";
+const questions=["勉強や新しい知識を身につけることが得意だ","汚職や不当な搾取・不正を許せない","外で体を動かしたり、自然の中で活動するのが好きだ","物事を始めても、三日坊主になりやすい","必要以上に商品を買いすぎてしまうことがある","ごみは必ずごみ箱に捨てている","掃除や整理整頓をすると達成感がある","社会全体の利益より、自分の利益を優先しがちだ","困っている人や団体に積極的に募金したい","他人と協力して何かに取り組むことが好きだ"];
+const scale=["まったく違う","やや違う","どちらでもない","やや当てはまる","とても当てはまる"];
+const goalMeta={4:["質の高い教育をみんなに","#c5192d"],11:["住み続けられるまちづくりを","#fd9d24"],12:["つくる責任 つかう責任","#bf8b2e"],13:["気候変動に具体的な対策を","#3f7e44"],15:["陸の豊かさも守ろう","#56c02b"],16:["平和と公正をすべての人に","#00689d"],17:["パートナーシップで目標を達成しよう","#19486a"],1:["貧困をなくそう","#e5243b"]};
+const questionsEl=document.getElementById("questions");
+questions.forEach((q,i)=>{const f=document.createElement("fieldset");f.className="question";f.innerHTML=`<legend><span class="question-number">${i+1}</span>${q}</legend><div class="options">${scale.map((label,v)=>`<label><input required type="radio" name="q${i+1}" value="${v+1}"><span>${label}</span></label>`).join("")}</div>`;questionsEl.appendChild(f);});
+document.querySelectorAll("input[type=radio]").forEach(input=>input.addEventListener("change",updateProgress));
+function updateProgress(){const n=new Set([...document.querySelectorAll("input:checked")].map(x=>x.name)).size;document.getElementById("progressText").textContent=`${n} / 10`;document.getElementById("progressBar").style.width=`${n*10}%`;}
+function buildPrompt(a){return `あなたはSDGsの行動提案アドバイザーです。次の10問への回答（1=まったく違う、5=とても当てはまる）から、その人が日常で達成しやすいSDGsを3〜5個選んでください。回答の根拠にない目標は無理に含めないでください。必ず次のJSON形式だけで返してください。Markdownや説明文は不要です。{"summary":"診断全体の短い説明","recommendations":[{"goal":12,"title":"目標名","reason":"回答と結びついた理由","actions":["今日からできる行動1","行動2"]}]}. goalは1〜17の整数、recommendationsは重要度順です。質問と回答: ${questions.map((q,i)=>`${i+1}. ${q} = ${a[i]}/5`).join(" / ")}`;}
+function parseJson(text){const s=String(text).replace(/^\`\`\`(?:json)?\\s*/i,"").replace(/\\s*\`\`\`$/,"").trim(),a=s.indexOf("{"),b=s.lastIndexOf("}");return JSON.parse(a>=0?s.slice(a,b+1):s);}
+function localFallback(a){const scores=[[12,a[4]+a[5]+a[6]],[16,a[1]+(6-a[7])],[4,a[0]],[17,a[9]],[13,a[2]+a[4]+a[5]],[15,a[2]+a[5]+a[6]],[1,a[8]],[11,a[2]+a[4]+a[6]]].sort((x,y)=>y[1]-x[1]).slice(0,4);return{summary:"あなたの得意なことや価値観を、無理なく続けやすい行動につなげる目標を選びました。",recommendations:scores.map(([goal])=>({goal,title:goalMeta[goal][0],reason:"回答の傾向から、日常の習慣や関心を活かしやすいSDGsです。",actions:["身近な行動をひとつ、今週から始める","家族や友人と取り組みを共有する"]}))};}
+function esc(v){return String(v).replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));}
+function renderResults(r){const x=r&&Array.isArray(r.recommendations)?r:localFallback([3,3,3,3,3,3,3,3,3,3]);document.getElementById("resultSummary").textContent=x.summary||"あなたに合ったSDGsを選びました。";document.getElementById("resultList").innerHTML=x.recommendations.map(item=>{const g=Number(item.goal),m=goalMeta[g]||[`SDGs目標 ${g}`,"#0b8f58"],actions=Array.isArray(item.actions)?item.actions:[];return`<article class="result-card"><div class="goal-number" style="--goal-color:${m[1]}">GOAL<br>${String(g).padStart(2,"0")}</div><div><h3>${esc(item.title||m[0])}</h3><p class="reason">${esc(item.reason||"あなたの特性を活かしやすい目標です。")}</p>${actions.length?`<ul class="actions">${actions.map(a=>`<li>${esc(a)}</li>`).join("")}</ul>`:""}</div></article>`}).join("");document.getElementById("jsonOutput").textContent=JSON.stringify(x,null,2);document.getElementById("results").classList.add("visible");document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"});}
+document.getElementById("quizForm").addEventListener("submit",async e=>{e.preventDefault();const a=questions.map((_,i)=>Number(document.querySelector(`input[name=q${i+1}]:checked`).value)),btn=document.getElementById("submitBtn"),status=document.getElementById("status");btn.disabled=true;status.textContent="回答を分析しています…";try{const res=await fetch(FUNCTION_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${SUPABASE_ANON_KEY}`},body:JSON.stringify({prompt:buildPrompt(a)})}),data=await res.json();if(!res.ok)throw Error(data.error||"AIからの応答に失敗しました");renderResults(parseJson(data.reply||data.result||data));status.textContent="AIによる診断が完了しました。";}catch(err){console.warn(err);renderResults(localFallback(a));status.textContent="AIに接続できなかったため、回答から簡易診断を表示しました。";}finally{btn.disabled=false;}});
+</script>
+</body>
+</html>

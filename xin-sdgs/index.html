@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDGs Demo</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+
+<div class="container">
+  <nav class="sidebar">
+    <button class="active" data-target="discover">発見</button>
+    <button data-target="knowledge">知識</button>
+    <button data-target="post">投稿</button>
+  </nav>
+  <main class="content">
+    <section id="discover" class="panel active">
+      <span class="material-symbols-outlined panel-title-icon" style="font-size: 28px; color: #1a1a1a;">lightbulb</span>
+      <h2>自分なりの解決方法を発見</h2>
+      <p>10の質問に回答して自分に適した解決方法を探しましょう</p>
+
+      <div class="answer-card">
+        <div class="answer-card-header">
+          <span class="answer-card-title">回答方法</span>
+          <span class="answer-card-desc">←そう思う そう思わない→</span>
+        </div>
+        <input type="range" class="answer-card-slider" min="0" max="4" step="1" value="2">
+      </div>
+      <script>
+        const slider = document.querySelector('.answer-card-slider');
+        slider.addEventListener('input', () => {
+          const v = parseInt(slider.value);
+          let color = '#05F380';
+          if (v === 2) color = '#A9A9A9';
+          else if (v > 2) color = '#8C00FF';
+          slider.style.setProperty('--thumb-color', color);
+        });
+        slider.style.setProperty('--thumb-color', '#A9A9A9');
+      </script>
+
+      <button class="answer-m3btn">
+        <span class="material-symbols-outlined" style="font-size: 40px; display: block; margin-bottom: 4px;">east</span>
+        開始
+      </button>
+
+    </section>
+
+    <section id="knowledge" class="panel">
+      <div class="knowledge-card" style="width:250px">
+        <span class="material-symbols-outlined panel-title-icon" style="font-size: 28px; color: #1a1a1a;">lightbulb</span>
+        <h2>詳しく理解</h2>
+        <p>質問しながら詳しい知識を身につけることができます</p>
+      </div>
+      <div class="knowledge-list" style="background:#E5243B">1. 貧困をなくそう</div>
+      <div class="knowledge-list" style="background:#DDA63A">2. 飢餓をゼロに</div>
+      <div class="knowledge-list" style="background:#4C9F38">3. すべての人に健康と福祉を</div>
+      <div class="knowledge-list" style="background:#C5192D">4. 質の高い教育をすべてに</div>
+      <div class="knowledge-list" style="background:#FF3A21">5. ジェンダー平等を実現しよう</div>
+      <div class="knowledge-list" style="background:#26BDE2">6. 安全な水とトイレを世界中に</div>
+      <div class="knowledge-list" style="background:#FCC30B">7. エネルギーをみんなに そしてクリーンに</div>
+      <div class="knowledge-list" style="background:#A21942">8. 働きがいも経済成長も</div>
+      <div class="knowledge-list" style="background:#FD6925">9. 産業と技術革新の基盤をつくろう</div>
+      <div class="knowledge-list" style="background:#DD1367">10. 人や国の不平等をなくそう</div>
+      <div class="knowledge-list" style="background:#FD9D24">11. 住まいとまちを洗浄しよう</div>
+      <div class="knowledge-list" style="background:#BF8B2E">12. 責任ある消費と生産を</div>
+      <div class="knowledge-list" style="background:#3F7E44">13. 気候変動に具体的な対策を</div>
+      <div class="knowledge-list" style="background:#0A97D9">14. 海の豊かさを守ろう</div>
+      <div class="knowledge-list" style="background:#56C02B">15. 陸の豊かさも守ろう</div>
+      <div class="knowledge-list" style="background:#00689D">16. 平和と正義をすべての人に</div>
+      <div class="knowledge-list" style="background:#19486A">17. パートナーシップで目標を達成しよう</div>
+    </section>
+    <section id="post" class="panel">
+      <h2>投稿</h2>
+      <form>
+        <input type="text" placeholder="タイトル">
+        <textarea placeholder="内容"></textarea>
+        <button type="button">投稿する</button>
+      </form>
+    </section>
+  </main>
+</div>
+
+<!-- 全画面ダイアログ -->
+<div id="sdg-dialog" class="dialog-overlay">
+  <div class="dialog-content">
+    <button id="sdg-dialog-close" class="dialog-close" aria-label="閉じる">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <div class="dialog-header">
+      <div class="dialog-badge" id="dialog-badge">Goal 01</div>
+      <h2 class="dialog-title" id="dialog-title">1. 貧困をなくそう</h2>
+    </div>
+    <div class="dialog-body">
+      <div class="dialog-body-container">
+        <div class="dialog-card">
+          <h3>
+            <span class="material-symbols-outlined">info</span>
+            概要
+          </h3>
+          <p id="dialog-overview">あらゆる場所のあらゆる形態の貧困を終わらせる。</p>
+        </div>
+        <div class="dialog-card">
+          <h3>
+            <span class="material-symbols-outlined">public</span>
+            世界的な具体的な活動内容
+          </h3>
+          <ul id="dialog-activities">
+          </ul>
+        </div>
+        <div class="dialog-card">
+          <h3>
+            <span class="material-symbols-outlined">track_changes</span>
+            目指す効果
+          </h3>
+          <ul id="dialog-effects">
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelector('.sidebar').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(e.target.dataset.target).classList.add('active');
+});
+
+// SDG Details Data
+const sdgDetails = {
+  1: {
+    badge: "Goal 01",
+    title: "1. 貧困をなくそう",
+    overview: "あらゆる場所のあらゆる形態の貧困を終わらせる。世界には、1日1.90ドル未満で暮らす極度の貧困状態にある人々が数億人存在し、教育、保健、水・衛生などの基本的人権やサービスへのアクセスが制限されています。",
+    activities: [
+      "最低限の生活を保障する社会保護制度の構築と拡充",
+      "貧困層や脆弱層の強靭性（レジリエンス）の向上と気候変動・災害への備え",
+      "土地、財産、金融サービス（マイクロファイナンスなど）への平等なアクセスの確保",
+      "国際協力を通じた途上国への支援と開発方針の策定"
+    ],
+    effects: [
+      "極度の貧困（1日1.90ドル未満で暮らす人々）の撲滅",
+      "各国の基準におけるあらゆる次元の貧困人口の半減",
+      "社会保障制度の普及による脆弱層の保護と生活安定",
+      "災害発生時の経済的・社会的被害の最小化"
+    ]
+  },
+  2: {
+    badge: "Goal 02",
+    title: "2. 飢餓をゼロに",
+    overview: "飢餓を終わらせ、食料安全保障及び栄養改善を達成し、持続可能な農業を促進する。",
+    activities: [
+      "小規模食料生産者（特に女性や先住民、小規模農家）の生産性と所得の向上",
+      "持続可能な食料生産システムの確保と、気候変動や災害に強い農法の導入",
+      "種子、栽培植物、飼育・家畜化された動物などの遺伝的多様性の維持"
+    ],
+    effects: [
+      "すべての人が一年中、安全かつ栄養のある食料を十分に得られる社会の実現",
+      "5歳未満の子供の発育阻害や消耗症など、あらゆる形態の栄養不良の解消",
+      "持続可能で強靭な農業による食料の安定的供給と生態系の維持"
+    ]
+  },
+  3: {
+    badge: "Goal 03",
+    title: "3. すべての人に健康と福祉を",
+    overview: "あらゆる年齢のすべての人々の健康的な生活を確保し、福祉を促進する。",
+    activities: [
+      "新生児、5歳未満児、および妊産婦の死亡率の削減",
+      "エイズ、結核、マラリアなどの感染症の終息と、その他の伝染性疾患への対策",
+      "薬物乱用やアルコールの有害な摂取の防止と治療の強化",
+      "ユニバーサル・ヘルス・カバレッジ（UHC）の達成（すべての人が基礎的医療を受けられる状態）"
+    ],
+    effects: [
+      "予防可能な新生児・乳幼児・妊産婦の死亡の根絶",
+      "主要な感染症の流行終息と非感染性疾患（NCD）による早期死亡の削減",
+      "安価で効果的な必須医薬品やワクチンへの安全なアクセス提供"
+    ]
+  },
+  4: {
+    badge: "Goal 04",
+    title: "4. 質の高い教育をすべてに",
+    overview: "すべての人々への包摂的かつ公正な質の高い教育を提供し、生涯学習の機会を促進する。",
+    activities: [
+      "すべての子どもが無償で公正かつ質の高い初等・中等教育を修了できるようにする",
+      "手頃な価格で質の高い技術教育・職業教育・高等教育への平等なアクセスを確保",
+      "ジェンダー格差をなくし、障害者や先住民などの脆弱層に対する教育機会を確保",
+      "学習に適した安全で非暴力的な教育環境・施設の整備"
+    ],
+    effects: [
+      "すべての人々の読み書き能力及び基本的計算能力の習得",
+      "雇用、働きがいのある仕事、起業に必要なスキルを持つ若者・成人の割合の増加",
+      "持続可能な開発のための教育（ESD）の普及"
+    ]
+  },
+  5: {
+    badge: "Goal 05",
+    title: "5. ジェンダー平等を実現しよう",
+    overview: "ジェンダー平等を達成し、すべての女性及び女児のエンパワーメントを行う。",
+    activities: [
+      "すべての女性と女児に対するあらゆる形態の差別の撤廃",
+      "人身売買、性的搾取、児童婚、女性器切除などの有害な慣行の根絶",
+      "無償のケアや家事労働の評価、および家庭・公共空間での責任共有の促進",
+      "政治、経済、公共の意思決定における女性の平等な参画と指導的機会の確保"
+    ],
+    effects: [
+      "社会・経済・政治的決定におけるジェンダーギャップの解消",
+      "女性の所有権、金融サービス、技術へのアクセス強化による経済的エンパワーメント",
+      "性と言うことに関する健康と権利（セクシュアル・リプロダクティブ・ヘルス／ライツ）の保証"
+    ]
+  },
+  6: {
+    badge: "Goal 06",
+    title: "6. 安全な水とトイレを世界中に",
+    overview: "すべての人々の水と衛生の利用可能性と持続可能な管理を確保する。",
+    activities: [
+      "すべての人への安全で安価な飲料水のアクセスの達成",
+      "適切な衛生施設（トイレなど）へのアクセス達成と、屋外排泄の根絶",
+      "水質の改善、汚染の減少、未処理排水の割合半減、安全な再利用の促進",
+      "あらゆるレベルでの統合的水資源管理（IWRM）の実施"
+    ],
+    effects: [
+      "水に起因する疾患の減少と公衆衛生の大幅な向上",
+      "水ストレス（水不足）に直面する人々の劇的な削減",
+      "湿地、森林、河川、湖沼などの水関連生態系の保護と回復"
+    ]
+  },
+  7: {
+    badge: "Goal 07",
+    title: "7. エネルギーをみんなに そしてクリーンに",
+    overview: "すべての人々の、安価かつ信頼できる持続可能で近代的なエネルギーへのアクセスを確保する。",
+    activities: [
+      "安価で信頼できる現代的エネルギーサービスへのユニバーサルアクセスの確保",
+      "世界のエネルギーミックスにおける再生可能エネルギー（太陽光、風力など）の割合の大幅な拡大",
+      "世界全体でのエネルギー効率の改善率の倍増",
+      "クリーンエネルギーの研究・技術やインフラへの投資と開発促進"
+    ],
+    effects: [
+      "未電化地域（特に開発途上国の農村部）の解消による生活水準の向上",
+      "化石燃料依存からの脱却と、温室効果ガス排出の大幅な削減",
+      "持続可能な産業発展を支える安定的なエネルギー基盤の構築"
+    ]
+  },
+  8: {
+    badge: "Goal 08",
+    title: "8. 働きがいも経済成長も",
+    overview: "包摂的かつ持続可能な経済成長及びすべての人々の完全かつ生産的な雇用と働きがいのある人間らしい仕事（ディーセント・ワーク）を促進する。",
+    activities: [
+      "多様化、技術向上、イノベーションを通じた高水準の経済生産性の達成",
+      "創造性や起業を支援する政策の促進、および中小零細企業の設立・成長支援",
+      "2030年までに、若者や障害者を含むすべての女性と男性の完全かつ生産的な雇用と同一労働同一賃金の達成",
+      "強制労働、現代の奴隷制、人身売買の根絶、および児童労働の撲滅"
+    ],
+    effects: [
+      "持続可能な経済成長の維持と雇用の安定化",
+      "労働権利の保護と、すべての労働者の安全・安心な労働環境の促進",
+      "働きがいのある仕事（ディーセント・ワーク）を通じた貧困からの脱却"
+    ]
+  },
+  9: {
+    badge: "Goal 09",
+    title: "9. 産業と技術革新の基盤をつくろう",
+    overview: "強靭なインフラ構築、包摂的かつ持続可能な産業化の促進及び技術革新の推進を図る。",
+    activities: [
+      "安価で公平なアクセスに重点を置いた、地域および国境を越える質の高い強靭なインフラの整備",
+      "環境に配慮した技術や産業プロセスの導入による、インフラや産業の持続可能性の向上",
+      "開発途上国における科学研究の強化、産業セクターの技術能力向上、イノベーションの促進"
+    ],
+    effects: [
+      "情報通信技術（ICT）の普及と、安価なインターネットアクセス環境の提供",
+      "産業の効率化、資源の有効活用による持続可能な経済基盤の確立",
+      "イノベーションの活性化による新たな産業や雇用の創出"
+    ]
+  },
+  10: {
+    badge: "Goal 10",
+    title: "10. 人や国の不平等をなくそう",
+    overview: "各国内及び各国間の不平等を是正する。",
+    activities: [
+      "各国の所得下位40%の人々の所得成長率を、国平均を上回るペースで持続的に達成する",
+      "性別、年齢、障害、人種、民族、出自、宗教、経済的地位に関わらず、すべての人のエンパワーメントと社会的・経済的・政治的包摂を促進する",
+      "差別的な法律、方針、慣行の撤廃、および適切な立法・方針・行動の促進"
+    ],
+    effects: [
+      "国内の所得格差および富の不平等の縮小",
+      "開発途上国の国際経済・金融意思決定機関への参画・発言力の強化",
+      "安全で規則的かつ責任ある移民や人々の移動の管理とサポート"
+    ]
+  },
+  11: {
+    badge: "Goal 11",
+    title: "11. 住まいとまちを洗浄しよう",
+    overview: "包摂的で安全かつ強靭で持続可能な都市及び人間居住を実現する。",
+    activities: [
+      "すべての人への安全・安価な住宅と基本サービスの提供、およびスラムの改善",
+      "道路安全性向上や公共交通機関の拡大による、すべての人のための持続可能な輸送システムの提供",
+      "大気の質や廃棄物管理への配慮を通じた、都市の1人あたり環境負荷（フットプリント）の低減",
+      "世界の文化遺産および自然遺産の保護・保全の努力の強化"
+    ],
+    effects: [
+      "自然災害による死者や被災者数、および直接的経済損失の大幅な削減",
+      "緑地や公共スペースへのユニバーサルアクセスの確保",
+      "都市と地方との良好なつながりを支援する開発計画の促進"
+    ]
+  },
+  12: {
+    badge: "Goal 12",
+    title: "12. 責任ある消費と生産を",
+    overview: "持続可能な生産消費形態を確保する。",
+    activities: [
+      "天然資源の持続可能な管理と効率的利用の達成",
+      "小売・消費レベルにおける世界全体の1人あたり食料廃棄の半減、および生産・流通段階の食料損失の削減",
+      "廃棄物の発生予防、削減、再生利用（リサイクル）、および再利用による廃棄物量の大幅な削減",
+      "人々の持続可能な開発や自然と調和したライフスタイルに関する情報・意識の向上"
+    ],
+    effects: [
+      "化学物質や廃棄物の適切な管理による人々の健康や環境への悪影響の最小化",
+      "企業の持続可能な取り組みの導入と、持続可能性に関する報告の促進",
+      "持続可能な消費・生産の定着による地球資源の保全"
+    ]
+  },
+  13: {
+    badge: "Goal 13",
+    title: "13. 気候変動に具体的な対策を",
+    overview: "気候変動及びその影響を軽減するための緊急対策を講じる。",
+    activities: [
+      "すべての国々における、気候関連災害や自然災害に対する強靭性（レジリエンス）と適応力の強化",
+      "気候変動対策を国家の方針、戦略、計画に組み込む",
+      "気候変動の緩和、適応、影響軽減、および早期警戒に関する教育・啓発・制度能力の向上"
+    ],
+    effects: [
+      "地球温暖化を抑制するための温室効果ガス排出量の削減（パリ協定の推進）",
+      "気候変動による経済被害、人命損失、および生態系破壊の最小化",
+      "気候変動対策への国際的な資金調達・技術開発の進展"
+    ]
+  },
+  14: {
+    badge: "Goal 14",
+    title: "14. 海の豊かさを守ろう",
+    overview: "持続可能な開発のために海洋及び海洋資源を保全し、持続可能な形で利用する。",
+    activities: [
+      "海洋ごみや富栄養化を含む、あらゆる海洋汚染（特に陸上活動によるもの）の防止と大幅な削減",
+      "水産資源を急速に回復させるための過剰漁獲、違法・無報告・無規制（IUU）漁業、および破壊的な漁法の根絶",
+      "海洋および沿岸生態系の持続可能な管理・保護・回復"
+    ],
+    effects: [
+      "海洋プラスチックごみ問題の改善と水質の浄化",
+      "水産資源の持続可能な利用による海洋生態系の健全性維持",
+      "海洋酸性化の影響の最小化および対処の強化"
+    ]
+  },
+  15: {
+    badge: "Goal 15",
+    title: "15. 陸の豊かさも守ろう",
+    overview: "陸域生態系の保護・回復・持続可能な利用の促進、森林の持続可能な管理、砂漠化への対処、土地劣化の阻止・回復、生物多様性の損失阻止を図る。",
+    activities: [
+      "森林、湿地、山地、乾燥地などの陸域生態系と内陸淡水生態系の保全と回復",
+      "あらゆる種類の森林の持続可能な管理の実施、および森林減少の阻止、再植林の促進",
+      "砂漠化への対処、劣化した土地や土壌の回復",
+      "絶滅危惧種の保護、および生物多様性の損失阻止のための緊急対策の実施"
+    ],
+    effects: [
+      "陸上の動植物種とその生息地の保全",
+      "生態系の健全な維持を通じた気候変動への適応や防災力の向上",
+      "持続可能な土地利用による農業生産性の維持と生活基盤の保護"
+    ]
+  },
+  16: {
+    badge: "Goal 16",
+    title: "16. 平和と正義をすべての人に",
+    overview: "持続可能な開発のための平和で包摂的な社会を促進し、すべての人々に司法へのアクセスを提供し、あらゆるレベルにおいて効果的で説明責任のある包摂的な制度を構築する。",
+    activities: [
+      "あらゆる場所におけるすべての形態の暴力およびそれによる死亡率の大幅な削減",
+      "子どもに対する虐待、搾取、人身売買、すべての形態の暴力・拷問の撲滅",
+      "国内および国際的なレベルでの法の支配を促進し、すべての人に司法への平等なアクセスを提供する",
+      "汚職や贈収賄の大幅な削減、およびあらゆるレベルにおける説明責任のある透明性の高い制度の開発"
+    ],
+    effects: [
+      "紛争のない、誰もが安全・安心に暮らせる平和な社会の実現",
+      "人権侵害の根絶と司法制度への信頼回復",
+      "すべての人の出生登録を含む、法的アイデンティティの確保による社会的権利の保証"
+    ]
+  },
+  17: {
+    badge: "Goal 17",
+    title: "17. パートナーシップで目標を達成しよう",
+    overview: "持続可能な開発のための実施手段を強化し、グローバル・パートナーシップを活性化する。",
+    activities: [
+      "開発途上国に対する資金動員の支援や、政府開発援助（ODA）のコミットメント履行",
+      "環境に配慮した技術の開発、移転、普及の促進",
+      "公平でオープンな多角的貿易体制の推進",
+      "SDGs達成に向けた、政府、民間、市民社会による多様なパートナーシップの推進・奨励"
+    ],
+    effects: [
+      "国や組織、個人間の協力関係（マルチステークホルダー・パートナーシップ）の強化による課題解決の加速",
+      "開発途上国の自立的な開発基盤と統計データの整備・分析能力の向上",
+      "2030アジェンダのすべての目標に対する安定的かつ持続的な達成プロセスの確立"
+    ]
+  }
+};
+
+// Event listener for opening details
+document.getElementById('knowledge').addEventListener('click', e => {
+  const card = e.target.closest('.knowledge-list');
+  if (!card) return;
+  
+  const id = parseInt(card.textContent);
+  const details = sdgDetails[id];
+  if (!details) return;
+  
+  const dialog = document.getElementById('sdg-dialog');
+  const badge = document.getElementById('dialog-badge');
+  const title = document.getElementById('dialog-title');
+  const overview = document.getElementById('dialog-overview');
+  const activities = document.getElementById('dialog-activities');
+  const effects = document.getElementById('dialog-effects');
+  
+  const color = card.style.backgroundColor || card.style.background;
+  dialog.style.setProperty('--goal-color', color);
+  
+  badge.textContent = details.badge;
+  title.textContent = details.title;
+  overview.textContent = details.overview;
+  
+  // Build activities list
+  activities.innerHTML = '';
+  details.activities.forEach(act => {
+    const li = document.createElement('li');
+    li.textContent = act;
+    activities.appendChild(li);
+  });
+  
+  // Build effects list
+  effects.innerHTML = '';
+  details.effects.forEach(eff => {
+    const li = document.createElement('li');
+    li.textContent = eff;
+    effects.appendChild(li);
+  });
+  
+  // Open dialog with smooth animation
+  dialog.classList.add('active');
+});
+
+// Close dialog
+const closeDialog = () => {
+  document.getElementById('sdg-dialog').classList.remove('active');
+};
+
+document.getElementById('sdg-dialog-close').addEventListener('click', closeDialog);
+
+document.getElementById('sdg-dialog').addEventListener('click', e => {
+  if (e.target === e.currentTarget) {
+    closeDialog();
+  }
+});
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeDialog();
+  }
+});
+</script>
+
+</body>
+</html>
