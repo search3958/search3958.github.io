@@ -47,11 +47,18 @@
       </button>
       </div>
       <section id="quiz-results" class="quiz-results discover-results" hidden>
-        <div class="quiz-result-heading"><span class="material-symbols-outlined">auto_awesome</span><h3>あなたへの提案</h3></div>
-        <p id="quiz-result-summary"></p>
-        <div id="quiz-result-list" class="quiz-result-list"></div>
+        <div class="quiz-result-board">
+          <div class="quiz-result-count" aria-live="polite">
+            <div class="quiz-result-ring" aria-hidden="true"></div>
+            <p><strong id="quiz-result-total">0</strong><span>個人目標</span></p>
+          </div>
+          <div id="quiz-result-list" class="quiz-result-list"></div>
+          <button id="quiz-restart" class="quiz-secondary quiz-restart" type="button">
+            <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+            <span>もう一度開始</span>
+          </button>
+        </div>
         <details class="quiz-json"><summary>保存されたJSONを見る</summary><pre id="quiz-json-output"></pre></details>
-        <button id="quiz-restart" class="quiz-secondary quiz-restart" type="button">もう一度診断する</button>
       </section>
     </section>
 
@@ -516,8 +523,8 @@ window.addEventListener('keydown', e => {
     "他人と協力して何かに取り組むことが好きだ"
   ];
   const scaleLabels = ["そう思う", "ややそう思う", "どちらでもない", "ややそう思わない", "そう思わない"];
-  const goalColors = { 1:'#E5243B', 4:'#C5192D', 11:'#FD9D24', 12:'#BF8B2E', 13:'#3F7E44', 15:'#56C02B', 16:'#00689D', 17:'#19486A' };
-  const goalNames = { 1:'貧困をなくそう', 4:'質の高い教育をみんなに', 11:'住み続けられるまちづくりを', 12:'つくる責任 つかう責任', 13:'気候変動に具体的な対策を', 15:'陸の豊かさも守ろう', 16:'平和と公正をすべての人に', 17:'パートナーシップで目標を達成しよう' };
+  const goalColors = { 1:'#E5243B', 2:'#DDA63A', 3:'#4C9F38', 4:'#C5192D', 5:'#FF3A21', 6:'#26BDE2', 7:'#FCC30B', 8:'#A21942', 9:'#FD6925', 10:'#DD1367', 11:'#FD9D24', 12:'#BF8B2E', 13:'#3F7E44', 14:'#0A97D9', 15:'#56C02B', 16:'#00689D', 17:'#19486A' };
+  const goalNames = { 1:'貧困をなくそう', 2:'飢餓をゼロに', 3:'すべての人に健康と福祉を', 4:'質の高い教育をみんなに', 5:'ジェンダー平等を実現しよう', 6:'安全な水とトイレを世界中に', 7:'エネルギーをみんなに そしてクリーンに', 8:'働きがいも経済成長も', 9:'産業と技術革新の基盤をつくろう', 10:'人や国の不平等をなくそう', 11:'住み続けられるまちづくりを', 12:'つくる責任 つかう責任', 13:'気候変動に具体的な対策を', 14:'海の豊かさを守ろう', 15:'陸の豊かさも守ろう', 16:'平和と公正をすべての人に', 17:'パートナーシップで目標を達成しよう' };
   let answers = Array(questions.length).fill(3);
   let lastFocusedElement;
 
@@ -531,7 +538,6 @@ window.addEventListener('keydown', e => {
   async function openQuiz() {
     lastFocusedElement = document.activeElement;
     answers = await loadDraft();
-    results.hidden = true;
     questionArea.hidden = false;
     document.querySelector('.quiz-dialog-actions').hidden = false;
     status.textContent = '';
@@ -652,9 +658,12 @@ window.addEventListener('keydown', e => {
   }
 
   function renderResults(result) {
-    const safeResult = result && Array.isArray(result.recommendations) ? result : fallbackResult();
-    document.getElementById('quiz-result-summary').textContent = safeResult.summary || 'あなたに合ったSDGsを選びました。';
-    document.getElementById('quiz-result-list').innerHTML = safeResult.recommendations.map(item => { const goal = Number(item.goal); const title = item.title || goalNames[goal] || `SDGs目標 ${goal}`; const actions = Array.isArray(item.actions) ? item.actions : []; return `<article class="quiz-result-card"><div class="quiz-goal" style="--goal-color:${goalColors[goal] || '#0b8f58'}">GOAL<br>${String(goal).padStart(2, '0')}</div><div><h4>${escapeHtml(title)}</h4><p>${escapeHtml(item.reason || 'あなたの特性を活かしやすい目標です。')}</p>${actions.length ? `<ul>${actions.map(action => `<li>${escapeHtml(action)}</li>`).join('')}</ul>` : ''}</div></article>`; }).join('');
+    const safeResult = result && Array.isArray(result.recommendations) && result.recommendations.length ? result : fallbackResult();
+    document.getElementById('quiz-result-total').textContent = safeResult.recommendations.length;
+    const resultColors = safeResult.recommendations.map(item => goalColors[Number(item.goal)] || '#0b8f58');
+    const gradientColors = resultColors.length > 1 ? [...resultColors, resultColors[0]] : resultColors;
+    document.querySelector('.quiz-result-ring').style.background = resultColors.length > 1 ? `conic-gradient(${gradientColors.join(',')})` : resultColors[0];
+    document.getElementById('quiz-result-list').innerHTML = safeResult.recommendations.map(item => { const goal = Number(item.goal); const title = item.title || goalNames[goal] || `SDGs目標 ${goal}`; const actions = Array.isArray(item.actions) ? item.actions : []; const description = actions[0] || item.reason || '身近な行動から、この目標への取り組みを始めましょう。'; return `<article class="quiz-result-card" style="--goal-color:${goalColors[goal] || '#0b8f58'}"><h4><span>${goal}</span> ${escapeHtml(title)}</h4><p>${escapeHtml(description)}</p></article>`; }).join('');
     document.getElementById('quiz-json-output').textContent = JSON.stringify(safeResult, null, 2);
     results.hidden = false;
     const startScreen = document.getElementById('discover-start');
