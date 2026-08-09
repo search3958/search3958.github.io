@@ -532,6 +532,7 @@ window.addEventListener('keydown', e => {
   const questionArea = document.getElementById('quiz-question-area');
   const results = document.getElementById('quiz-results');
   const discover = document.getElementById('discover');
+  const startScreen = document.getElementById('discover-start');
   const loading = document.getElementById('quiz-loading');
   const status = document.getElementById('quiz-status');
 
@@ -665,9 +666,9 @@ window.addEventListener('keydown', e => {
     document.querySelector('.quiz-result-ring').style.background = resultColors.length > 1 ? `conic-gradient(${gradientColors.join(',')})` : resultColors[0];
     document.getElementById('quiz-result-list').innerHTML = safeResult.recommendations.map(item => { const goal = Number(item.goal); const title = item.title || goalNames[goal] || `SDGs目標 ${goal}`; const actions = Array.isArray(item.actions) ? item.actions : []; const description = actions[0] || item.reason || '身近な行動から、この目標への取り組みを始めましょう。'; return `<article class="quiz-result-card" style="--goal-color:${goalColors[goal] || '#0b8f58'}"><h4><span>${goal}</span> ${escapeHtml(title)}</h4><p>${escapeHtml(description)}</p></article>`; }).join('');
     document.getElementById('quiz-json-output').textContent = JSON.stringify(safeResult, null, 2);
+    // 開始画面と結果画面は常に排他的に表示する。
+    if (startScreen) startScreen.hidden = true;
     results.hidden = false;
-    const startScreen = document.getElementById('discover-start');
-    if (startScreen) startScreen.remove();
     discover.classList.add('discover-with-results');
     questionArea.hidden = true;
     document.querySelector('.quiz-dialog-actions').hidden = true;
@@ -721,7 +722,12 @@ window.addEventListener('keydown', e => {
   document.getElementById('start-diagnosis').addEventListener('click', openQuiz);
   document.getElementById('quiz-close').addEventListener('click', closeQuiz);
   document.getElementById('quiz-next').addEventListener('click', finishQuiz);
-  document.getElementById('quiz-restart').addEventListener('click', openQuiz);
+  document.getElementById('quiz-restart').addEventListener('click', () => {
+    results.hidden = true;
+    if (startScreen) startScreen.hidden = false;
+    discover.classList.remove('discover-with-results');
+    openQuiz();
+  });
   dialog.addEventListener('click', event => { if (event.target === dialog) closeQuiz(); });
   window.addEventListener('keydown', event => { if (event.key === 'Escape' && dialog.classList.contains('active')) closeQuiz(); });
   loadLatestResult().then(record => { if (record) renderResults(record.result); });
