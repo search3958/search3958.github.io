@@ -557,7 +557,7 @@ window.addEventListener('keydown', e => {
   }
 
   function renderQuestions() {
-    questionArea.innerHTML = questions.map((question, index) => `<section class="quiz-question"><h3>${index + 1}. ${escapeHtml(question)}</h3><div class="quiz-slider-labels"><span>そう思う</span><span>そう思わない</span></div><input class="quiz-slider answer-card-slider" type="range" min="1" max="5" step="1" value="${answers[index]}" data-question-index="${index}" aria-label="${escapeHtml(question)}"><p class="quiz-slider-value">${scaleLabels[answers[index] - 1]}</p></section>`).join('');
+    questionArea.innerHTML = questions.map((question, index) => `<section class="quiz-question"><h3>${index + 1}. ${escapeHtml(question)}</h3><p class="quiz-slider-value">${scaleLabels[answers[index] - 1]}</p><div class="quiz-slider-labels"><span>そう思う</span><span>そう思わない</span></div><input class="quiz-slider answer-card-slider" type="range" min="1" max="5" step="1" value="${answers[index]}" data-question-index="${index}" aria-label="${escapeHtml(question)}"></section>`).join('');
     questionArea.querySelectorAll('.quiz-slider').forEach(slider => {
       updateSlider(slider);
       slider.addEventListener('input', () => {
@@ -570,12 +570,13 @@ window.addEventListener('keydown', e => {
 
   function updateSlider(slider) {
     const value = Number(slider.value);
-    slider.style.setProperty('--thumb-color', value === 3 ? '#A9A9A9' : value > 3 ? '#8C00FF' : '#05F380');
-    slider.nextElementSibling.textContent = scaleLabels[value - 1];
+    const color = value === 3 ? '#A9A9A9' : value > 3 ? '#8C00FF' : '#05F380';
+    slider.style.setProperty('--thumb-color', color);
+    slider.closest('.quiz-question').querySelector('.quiz-slider-value').textContent = scaleLabels[value - 1];
   }
 
   function buildPrompt() {
-    return `あなたはSDGsの行動提案アドバイザーです。10問の回答（1=そう思う、5=そう思わない）から、その人が日常で達成しやすいSDGsを3〜5個、重要度順に選んでください。必ずJSONだけで返してください。Markdownや説明文は不要です。形式は {"summary":"診断全体の短い説明","recommendations":[{"goal":12,"title":"目標名","reason":"回答と結びついた理由","actions":["今日からできる行動1","行動2"]}]} としてください。goalは1〜17の整数です。質問と回答: ${questions.map((question, i) => `${i + 1}. ${question} = ${answers[i]}/5`).join(' / ')}`;
+    return `あなたはSDGsの行動提案アドバイザーです。10問の回答（1=そう思う、5=そう思わない）から、その人が日常で達成しやすいSDGsを3〜7個、重要度順に選んでください。必ずJSONだけで返してください。Markdownや説明文は不要です。形式は {"summary":"診断全体の短い説明","recommendations":[{"goal":12,"title":"目標名","reason":"回答と結びついた理由","actions":["今日からできる行動1","行動2"]}]} としてください。goalは1〜17の整数です。質問と回答: ${questions.map((question, i) => `${i + 1}. ${question} = ${answers[i]}/5`).join(' / ')}`;
   }
 
   function parseJson(text) {
