@@ -29,7 +29,7 @@
         <text key="s_lang">Language</text>
     </lang>
     <lang id="en">
-        <text key="s_title">CheonRi - Multi Dictionary Search</text>
+        <text key="s_title">SentaroRi - Multi Dictionary Search</text>
         <text key="s_toggle">Move menu</text>
         <text key="s_nav_ja">Japanese</text>
         <text key="s_nav_en">English</text>
@@ -50,7 +50,7 @@
         <text key="s_msg_no_history">No search history.</text>
         <text key="s_dialog_history">Search History</text>
         <text key="s_back">Back</text>
-        <text key="s_welcome">Welcome to CheonRi Dictionary</text>
+        <text key="s_welcome">Welcome to SentaroRi Dictionary</text>
         <text key="s_welcome_sub">We welcome all learners</text>
         <text key="s_terms">Terms &amp; Privacy Policy</text>
         <text key="s_about">About Me</text>

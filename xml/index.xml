@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dictionary>
     <lang id="ja">
-        <text key="i1">私はCheon</text>
+        <text key="i1">私はSentaro</text>
         <text key="i2_1">常に便利さを</text>
         <text key="i2_2">追求し続けます</text>
         <text key="i3">Newtab v6</text>
@@ -50,7 +50,7 @@
         <text key="nav_github">GitHub</text>
     </lang>
     <lang id="en">
-        <text key="i1">I'm Cheon</text>
+        <text key="i1">I'm Sentaro</text>
         <text key="i2_1">Constantly pursuing</text>
         <text key="i2_2">convenience</text>
         <text key="i3">Newtab v6</text>
@@ -88,9 +88,9 @@
         <text key="i25">Terms &amp; Privacy Policy</text>
         <text key="i26">Language</text>
         <text key="i27">GitHub</text>
-        <text key="i28">CheonRi Dictionary</text>
+        <text key="i28">SentaroRi Dictionary</text>
         <text key="i29">Like a Pegasus</text>
-        <text key="i30">To a CheonRis Ahead</text>
+        <text key="i30">To a SentaroRis Ahead</text>
         <text key="nav_home">Home</text>
         <text key="nav_newtab">NewTab</text>
         <text key="nav_red">Primary Goals</text>
@@ -99,7 +99,7 @@
         <text key="nav_github">GitHub</text>
     </lang>
     <lang id="zh-CN">
-        <text key="i1">我是Cheon</text>
+        <text key="i1">我是Sentaro</text>
         <text key="i2_1">不断追求</text>
         <text key="i2_2">便利性</text>
         <text key="i3">Newtab v6</text>
@@ -148,7 +148,7 @@
         <text key="nav_github">GitHub</text>
     </lang>
     <lang id="zh-TW">
-        <text key="i1">我是Cheon</text>
+        <text key="i1">我是Sentaro</text>
         <text key="i2_1">不斷追求</text>
         <text key="i2_2">便利性</text>
         <text key="i3">Newtab v6</text>
@@ -197,7 +197,7 @@
         <text key="nav_github">GitHub</text>
     </lang>
     <lang id="ko">
-        <text key="i1">제가 Cheon</text>
+        <text key="i1">제가 Sentaro</text>
         <text key="i2_1">끊임없이 편의성을</text>
         <text key="i2_2">추구합니다</text>
         <text key="i3">Newtab v6</text>
@@ -246,7 +246,7 @@
         <text key="nav_github">GitHub</text>
     </lang>
     <lang id="ko-KP">
-        <text key="i1">내라 Cheon</text>
+        <text key="i1">내라 Sentaro</text>
         <text key="i2_1">끊임없이 편리성을</text>
         <text key="i2_2">추구합니다</text>
         <text key="i3">Newtab v6</text>
