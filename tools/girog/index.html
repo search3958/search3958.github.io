@@ -1,1157 +1,1540 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>記録ノート</title>
-    <meta name="description" content="シンプルで美しいメモアプリ。クイック入力、編集、ゴミ箱機能搭載。あなたの記録を直感的に管理できます。">
-    <meta name="keywords" content="メモ, ノート, 記録, アプリ, メモ帳, マンガ, memo, note, records">
-    <meta property="og:title" content="記録ノート">
-    <meta property="og:description" content="シンプルで美しいメモアプリ。クイック入力、編集、ゴミ箱機能搭載。">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="icon.png">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="記録ノート">
-    <meta name="twitter:description" content="シンプルで美しいメモアプリ。クイック入力、編集、ゴミ箱機能搭載。">
-    <link rel="icon" type="image/png" href="icon.png">
-    <style>
-        :root {
-            --bg-color: #ffffff;
-            --surface-color: #eeeeee;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
-            --note-yellow: color(display-p3 1 0.87 0.14);
-            --note-white: #ffffff;
-            --input-gradient: linear-gradient(90deg, rgba(255,225,72,0.61) 0%, rgba(255,255,255,0.61) 100%);
-            --input-focused: color(display-p3 1 0.87 0.14);
-            --input-search: #f5f5f5;
-            --btn-gray: #e0e0e0;
-            --btn-primary-bg: #000000;
-            --btn-primary-fill: #ffffff;
-            --on-primary: #000000;
-            --text-main: #000000;
-            --text-muted: rgba(0, 0, 0, 0.5);
-            --text-placeholder: rgba(0, 0, 0, 0.35);
-            --btn-delete-bg: #ffeeee;
-            --btn-delete-color: #e53935;
-            --snackbar-bg: #333333;
-            --snackbar-color: #ffffff;
-            --snackbar-action: color(display-p3 1 0.87 0.14);
-            --overlay-bg: rgba(0, 0, 0, 0.3);
-            --shadow-color: rgba(0, 0, 0, 0.07);
-            --modal-shadow: rgba(0, 0, 0, 0.1);
-            --card-shadow: rgba(0, 0, 0, 0.2);
-        }
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #1a1a1a;
-                --surface-color: #252525;
-                --header-bg: #1a1a1a;
-                --card-bg: #2a2a2a;
-                --note-yellow: color(display-p3 1 0.87 0.14);
-                --note-white: #2a2a2a;
-                --input-gradient: linear-gradient(90deg, rgba(255,225,72,0.4) 0%, rgba(40,40,40,0) 100%);
-                --input-focused: color(display-p3 1 0.87 0.14);
-                --input-search: #2a2a2a;
-                --btn-gray: #3a3a3a;
-                --btn-primary-bg: #000000;
-                --btn-primary-fill: #ffffff;
-                --on-primary: #000000;
-                --text-main: #e0e0e0;
-                --text-muted: rgba(255, 255, 255, 0.5);
-                --text-placeholder: rgba(255, 255, 255, 0.35);
-                --btn-delete-bg: #3a2020;
-                --btn-delete-color: #f87171;
-                --snackbar-bg: #e0e0e0;
-                --snackbar-color: #000000;
-                --snackbar-action: color(display-p3 1 0.87 0.14);
-                --overlay-bg: rgba(0, 0, 0, 0.6);
-                --shadow-color: rgba(0, 0, 0, 0.3);
-                --modal-shadow: rgba(0, 0, 0, 0.4);
-                --card-shadow: rgba(0, 0, 0, 0.4);
-            }
-        }
-        /* =========================================
-   リセットと基本設定
-========================================= */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>記録メモ</title>
+<meta name="description" content="記録をカード形式で整理できるシンプルな記録メモ管理画面。">
+<link rel="icon" type="image/png" href="icon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
+     crossorigin="anonymous"></script>
+
+<style>
+:root {
+    --artifact-bg: #fafafa;
+    --artifact-surface: #ffffff;
+    --artifact-border: #dfdfdf;
+    --artifact-border-strong: #cfcfcf;
+    --artifact-text: #111111;
+    --artifact-muted: #858585;
+    --artifact-soft: #f3f3f3;
+    --artifact-shadow: 0 10px 30px rgba(0,0,0,.045);
+    --artifact-shadow-hover: 0 16px 44px rgba(0,0,0,.085);
+    --artifact-radius: 48px;
+    --artifact-yellow: #ffe55b;
+    --artifact-max: 1360px;
+    --artifact-editor-max: 980px;
+    --artifact-transition: 180ms cubic-bezier(.2,.8,.2,1);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --artifact-bg: #111111;
+        --artifact-surface: #171717;
+        --artifact-border: #2b2b2b;
+        --artifact-border-strong: #3a3a3a;
+        --artifact-text: #f5f5f5;
+        --artifact-muted: #9a9a9a;
+        --artifact-soft: #202020;
+        --artifact-shadow: 0 10px 30px rgba(0,0,0,.22);
+        --artifact-shadow-hover: 0 16px 44px rgba(0,0,0,.34);
+        --artifact-yellow: #ffe45b;
+    }
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
 }
 
 body {
-    /* 編集画面（input, textarea）以外でのテキスト選択を無効化 */
-    user-select: none; 
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+    background: var(--artifact-bg);
+    color: var(--artifact-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans JP", sans-serif;
+    -webkit-font-smoothing: antialiased;
     overflow: hidden;
 }
 
-/* 入力欄のみテキスト選択を許可 */
-input, textarea {
-    user-select: auto;
+button,
+input,
+textarea {
+    font: inherit;
 }
 
-/* =========================================
-   ヘッダーエリア
-========================================= */
-header {
+button {
+    color: inherit;
+}
+
+button,
+.artifact-card,
+.artifact-logo,
+.artifact-search {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================
+   一覧画面
+========================= */
+.artifact-app {
+    width: 100%;
+    height: 100%;
+}
+
+.artifact-list-view {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.artifact-shell {
+    width: min(var(--artifact-max), calc(100% - 64px));
+    margin: 0 auto;
+    padding: 58px 0 64px;
+}
+
+.artifact-topbar {
     display: flex;
     align-items: center;
-    padding: 16px 16px;
+    justify-content: space-between;
+    gap: 28px;
+    margin-bottom: 72px;
+}
+
+.artifact-brand {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.artifact-logo {
+    display: none;
+}
+
+.artifact-heading {
+    font-size: clamp(34px, 3.2vw, 48px);
+    line-height: 1;
+    font-weight: 650;
+    letter-spacing: -0.045em;
+}
+
+.artifact-actions {
+    display: flex;
+    align-items: center;
     gap: 16px;
-    background: var(--header-bg);
-    flex-shrink: 0;
+    flex: 0 0 auto;
 }
 
-.logo-area {
+.artifact-search {
+    width: 54px;
+    height: 54px;
+    border: 1px solid var(--artifact-border);
+    background: var(--artifact-surface);
+    border-radius: 17px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: transform var(--artifact-transition), border-color var(--artifact-transition);
+}
+
+.artifact-search:hover {
+    border-color: var(--artifact-border-strong);
+    transform: translateY(-1px);
+}
+
+.artifact-search:active {
+    transform: scale(.97);
+}
+
+.artifact-search svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.artifact-search-field {
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
+    border: 1px solid var(--artifact-border);
+    background: var(--artifact-surface);
+    color: var(--artifact-text);
+    border-radius: 17px;
+    height: 54px;
+    padding: 0;
+    outline: none;
+    transition: width var(--artifact-transition), opacity var(--artifact-transition), padding var(--artifact-transition);
+}
+
+.artifact-search-field::placeholder {
+    color: var(--artifact-muted);
+}
+
+.artifact-actions.search-open .artifact-search-field {
+    width: 270px;
+    opacity: 1;
+    pointer-events: auto;
+    padding: 0 18px;
+}
+
+.artifact-actions.search-open .artifact-search {
+    display: none;
+}
+
+.artifact-add {
+    min-height: 54px;
+    padding: 0 24px;
+    border: 0;
+    border-radius: 17px;
+    background: #111;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 560;
+    cursor: pointer;
+    letter-spacing: -0.02em;
+    transition: transform var(--artifact-transition), opacity var(--artifact-transition);
+}
+
+.artifact-add:hover {
+    transform: translateY(-1px);
+    opacity: .94;
+}
+
+.artifact-add:active {
+    transform: scale(.98);
+}
+
+.artifact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 40px;
+}
+
+.artifact-card {
+    min-width: 0;
+    overflow: hidden;
+    position:relative;
+    border: 1px solid var(--artifact-border);
+    background: var(--artifact-surface);
+    border-radius: var(--artifact-radius);
+    corner-shape: superellipse(1.5);
+    cursor: pointer;
+    box-shadow: var(--artifact-shadow);
+    transition: transform var(--artifact-transition), box-shadow var(--artifact-transition), border-color var(--artifact-transition);
+}
+
+.artifact-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--artifact-shadow-hover);
+    border-color: var(--artifact-border-strong);
+}
+
+.artifact-card:active {
+    transform: translateY(-1px) scale(.995);
+}
+
+.artifact-preview {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--artifact-border);
+    background: #fff;
+}
+
+.artifact-load-more {
+    grid-column: 1 / -1;
+    padding: 16px 24px;
+    border: 1px solid var(--artifact-border);
+    background: var(--artifact-surface);
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--artifact-text);
+    transition: transform var(--artifact-transition), border-color var(--artifact-transition);
+}
+
+.artifact-load-more:hover {
+    border-color: var(--artifact-border-strong);
+    transform: translateY(-1px);
+}
+
+.artifact-load-more:active {
+    transform: scale(.98);
+}
+
+@media (prefers-color-scheme: dark) {
+    .artifact-preview {
+        background: #191919;
+    }
+}
+
+.artifact-preview-inner {
+    width: 100%;
+    height: 100%;
+    padding: 28px 26px;
+    overflow: hidden;
+}
+
+.artifact-preview-title {
+    display:none;
+}
+
+.artifact-preview-code,
+.artifact-preview-text {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 16px;
+    line-height: 1.35;
+    overflow: hidden;
+}
+
+.artifact-preview-text {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans JP", sans-serif;
+    font-size: 16px;
+}
+
+.artifact-preview-code {
+    font-size: 15px;
+}
+
+.artifact-preview-empty {
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: #8f8f8f;
+}
+
+.artifact-preview-empty svg {
+    width: 44px;
+    height: 44px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+}
+
+.artifact-meta {
+    min-height: 132px;
+    padding: 24px;
+    padding-top:50px;
+    position:absolute;
+    bottom:0;
+    left:0;
+    width: 100%;
+    background-image: linear-gradient(359deg, var(--artifact-surface), var(--artifact-surface), transparent);
+}
+
+.artifact-title {
+    font-size: 23px;
+    line-height: 1.28;
+    font-weight: 570;
+    letter-spacing: -0.025em;
+    word-break: break-word;
+}
+
+.artifact-date {
+    margin-top: 22px;
+    font-size: 17px;
+    color: var(--artifact-muted);
+}
+
+.artifact-empty {
+    grid-column: 1 / -1;
+    padding: 100px 20px;
+    text-align: center;
+    color: var(--artifact-muted);
+    font-size: 18px;
+}
+
+/* =========================
+   全画面編集画面
+========================= */
+.artifact-editor-view {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    background: var(--artifact-bg);
+}
+
+.artifact-editor-view.active {
+    display: block;
+}
+
+.artifact-editor-bar {
+    width: 100%;
+    height: 80px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 20px;
-    font-weight: bold;
-    white-space: nowrap;
-    color: var(--text-main);
+    justify-content: space-between;
+    gap: 18px;
+    padding: 12px 28px;
+    border-bottom: 1px solid var(--artifact-border);
+    background: color-mix(in srgb, var(--artifact-bg) 94%, transparent);
 }
 
-.logo-area img {
-    width: 28px;
-    height: 28px;
-}
-
-/* 入力/検索バー (可変幅で可能な限り埋める) */
-.input-wrapper {
-    flex-grow: 1; /* 固定幅を排除し、余白を埋め尽くす */
-    position: relative;
+.artifact-editor-left,
+.artifact-editor-right {
     display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.main-input {
-    width: 100%;
+.artifact-editor-icon {
+    width: 48px;
     height: 48px;
-    border-radius: 24px;
-    background: var(--input-gradient);
-    border: none;
-    outline: none;
-    padding: 0 24px;
-    font-size: 15px;
-    color: var(--on-primary);
-    transition: background-color 0.3s ease;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 15px;
+    background: transparent;
+    cursor: pointer;
+    transition: background var(--artifact-transition), transform var(--artifact-transition);
 }
 
-.main-input.focused {
-    background: var(--input-focused);
+.artifact-editor-icon:hover {
+    background: var(--artifact-soft);
 }
 
-.main-input::placeholder {
-    color: var(--text-placeholder);
+.artifact-editor-icon:active {
+    transform: scale(.96);
 }
 
-.main-input.search-mode::placeholder {
-    color: var(--text-placeholder);
+.artifact-editor-icon svg {
+    width: 23px;
+    height: 23px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
-.main-input.search-mode {
-    background: var(--input-search);
-    color: var(--text-main);
+.artifact-editor-save,
+.artifact-editor-delete,
+.artifact-editor-download {
+    min-height: 48px;
+    padding: 0 19px;
+    border: 0;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: transform var(--artifact-transition), opacity var(--artifact-transition);
 }
 
-/* 展開時のクイック入力カード (Frame 71) */
-.expanded-input-card {
-    position: absolute;
-    top: 100%;
-    left: 0;
+.artifact-editor-save {
+    background: #111;
+    color: #fff;
+    font-weight: 600;
+}
+
+.artifact-editor-delete {
+    background: #f0dfdf;
+    color: #a43333;
+}
+
+.artifact-editor-download {
+    background: var(--artifact-soft);
+    color: var(--artifact-text);
+}
+
+.artifact-editor-save:hover,
+.artifact-editor-delete:hover,
+.artifact-editor-download:hover {
+    transform: translateY(-1px);
+}
+
+.artifact-editor-scroll {
+    height: calc(100% - 80px);
+    overflow: auto;
+}
+
+.artifact-editor-content {
+    width: min(var(--artifact-editor-max), calc(100% - 64px));
+    min-height: 100%;
+    margin: 0 auto;
+    padding: 82px 0 120px;
+}
+
+.artifact-editor-title {
     width: 100%;
-    border-radius: 24px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    z-index: 20;
-    box-shadow: 0 4px 32px var(--card-shadow);
-    background: var(--card-bg);
-}
-
-.expanded-input-card.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(8px);
-}
-
-.expanded-body {
-    padding: 16px 24px;
-    background: var(--card-bg);
-}
-
-.expanded-body textarea {
-    width: 100%;
-    border: none;
-    outline: none;
+    border: 0;
+    outline: 0;
     resize: none;
-    min-height: 60px;
+    background: transparent;
+    color: var(--artifact-text);
+    font-size: clamp(38px, 5vw, 64px);
+    line-height: 1.08;
+    font-weight: 650;
+    letter-spacing: -0.04em;
+    margin-bottom: 42px;
+}
+
+.artifact-editor-title::placeholder,
+.artifact-editor-body::placeholder {
+    color: var(--artifact-muted);
+}
+
+.artifact-editor-body {
+    width: 100%;
+    min-height: 62vh;
+    border: 0;
+    outline: 0;
+    resize: none;
+    background: transparent;
+    color: var(--artifact-text);
+    font-size: 20px;
+    line-height: 1.9;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans JP", sans-serif;
+}
+
+.artifact-editor-status {
+    margin-top: 18px;
+    color: var(--artifact-muted);
     font-size: 14px;
-    line-height: 1.5;
-    background:none;
-    color: var(--on-primary);
 }
 
-.expanded-body textarea::placeholder {
-    color: var(--text-placeholder);
+/* =========================
+   ゴミ箱画面
+========================= */
+.artifact-trash-view {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: none;
+    background: var(--artifact-bg);
 }
 
-.expanded-footer {
+.artifact-trash-view.active {
+    display: block;
+}
+
+.artifact-trash-scroll {
+    height: 100%;
+    overflow: auto;
+}
+
+.artifact-trash-shell {
+    width: min(900px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 38px 0 64px;
+}
+
+.artifact-trash-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 4px 8px 4px;
+    gap: 20px;
+    margin-bottom: 32px;
 }
 
-.btn-small-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 16px;
-    border: none;
-    background: var(--btn-gray);
+.artifact-trash-title {
+    font-size: 34px;
+    font-weight: 650;
+}
+
+.artifact-trash-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.artifact-trash-actions button {
+    min-height: 46px;
+    padding: 0 18px;
+    border: 1px solid var(--artifact-border);
+    background: var(--artifact-surface);
+    border-radius: 14px;
     cursor: pointer;
+}
+
+.artifact-trash-list {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.2s ease;
-}
-
-.btn-small-icon:hover {
-    opacity: 0.8;
-}
-
-.btn-small-icon.check {
-    background: var(--input-focused);
-    width: 40px;
-    color: var(--on-primary);
-}
-
-.btn-small-icon svg {
-    width: 16px;
-    height: 16px;
-    fill: var(--text-main);
-}
-
-.btn-small-icon.check svg {
-    fill: var(--on-primary);
-}
-
-/* ヘッダー右側ボタン群 */
-.header-actions {
-    display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 12px;
 }
 
-.btn-sync {
-    background: var(--input-focused);
-    border: none;
-    padding: 0 20px;
-    height: 48px;
-    border-radius: 24px;
-    font-weight: bold;
+.artifact-trash-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid var(--artifact-border);
+    background: var(--artifact-surface);
+    border-radius: 16px;
+}
+
+.artifact-trash-item-text {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.artifact-trash-item-title {
+    font-weight: 600;
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.artifact-trash-item-body {
+    margin-top: 4px;
     font-size: 14px;
-    cursor: pointer;
-    color: var(--on-primary);
-    transition: transform 0.2s ease;
-}
-
-.btn-sync:active {
-    transform: scale(0.95);
-}
-
-.btn-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 24px;
-    background: var(--btn-primary-bg);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s ease;
-}
-
-.btn-icon:active {
-    transform: scale(0.95);
-}
-
-.btn-icon svg {
-    width: 20px;
-    height: 20px;
-    fill: var(--btn-primary-fill);
-}
-
-/* =========================================
-   メインコンテンツ (Frame 70)
-========================================= */
-.main-container {
-    background-color: var(--surface-color);
-    flex-grow: 1;
-    margin: 0 16px 16px 16px;
-    border-radius: 24px;
-    padding: 40px;
-    overflow-y: auto;
-}
-
-.notes-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
-    margin: 0 auto;
-}
-
-.note {
-    padding: 0px 22px;
-    border-radius: 20px;
-        corner-shape: superellipse(1.5);
-    cursor: pointer;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 49px;
-    transition: transform 0.2s ease;
-    box-shadow: 0 2px 8px var(--shadow-color);
-    overflow: hidden;
-}
-
-.note:hover {
-    transform: translateY(-2px);
-}
-
-.note-yellow {
-    background-color: var(--note-yellow);
-    color: var(--on-primary);
-}
-
-.note-yellow .note-title,
-.note-yellow .note-single-line,
-.note-yellow .note-content-preview {
-    color: var(--on-primary);
-}
-
-.note-yellow .note-content-preview {
-    opacity: 0.7;
-}
-
-.note-white {
-    background-color: var(--note-white);
-    color: var(--text-main);
-}
-
-.note-title {
-    font-size: 15px;
-}
-
-.note-content-preview {
-    font-size: 12px;
-    color: var(--text-muted);
+    color: var(--artifact-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 35vw;
 }
 
-.note-single-line {
-    font-size: 15px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 35vw;
-}
-
-/* =========================================
-   編集モーダル (Frame 72)
-========================================= */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    /* 背景ブラーを完全撤廃。フラットな半透明グレーに変更 */
-    background: var(--overlay-bg); 
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* アニメーションの追加 */
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease;
-}
-
-.modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal-content-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 500px;
-    margin: 0 20px;
-    /* アニメーションの追加 */
-    transform: scale(0.8);
-    filter:blur(16px);
-    transition: transform 0.3s cubic-bezier(0.38, 0.13, 0, 1),filter 0.3s cubic-bezier(0.38, 0.13, 0, 1);
-}
-
-.modal-overlay.active .modal-content-wrapper {
-    transform: scale(1);
-    filter:blur(0px);
-}
-
-/* カード上部に「完全に」外出しされたボタン群 (12.16.50の画像に準拠) */
-.modal-actions-top {
-    position: absolute;
-    top: -57px;
-    left: 0;
+.artifact-trash-item-actions {
     display: flex;
     gap: 8px;
-    z-index: 10;
+    flex: 0 0 auto;
 }
 
-.modal-btn {
-    width: 48px;
-    height: 48px;
-    border-radius: 24px;
-    background: var(--card-bg);
-    border: none;
+.artifact-trash-item-actions button {
+    border: 0;
+    border-radius: 10px;
+    padding: 9px 13px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px var(--modal-shadow);
-    transition: transform 0.2s ease;
 }
 
-.modal-btn:hover {
-    transform: scale(1.05);
-}
-
-.modal-btn.check {
-    background: var(--input-focused);
-    width: 56px;
-    color: var(--on-primary);
-}
-
-.modal-btn svg {
-    width: 20px;
-    height: 20px;
-    fill: var(--text-main);
-}
-
-.modal-btn.check svg {
-    fill: var(--on-primary);
-}
-
-.modal-card {
-    background: var(--card-bg);
-    border-radius: 40px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-        corner-shape: superellipse(1.5);
-            box-shadow: 0 8px 48px #0003;
-}
-
-.modal-header {
-    background-color: var(--input-focused);
-    /* 余計な白背景を排除し、ボタンが被る上部のパディングのみ確保 */
-    padding: 24px 24px 16px 24px; 
-}
-
-.modal-header input {
-    width: 100%;
-    border: none;
-    background: transparent;
-    font-size: 18px;
-    font-weight: bold;
-    outline: none;
-    color: var(--on-primary);
-}
-
-.modal-header input::placeholder {
-    color: var(--text-placeholder);
-}
-
-.modal-body {
-    padding: 24px;
-    background: var(--card-bg);
-}
-
-.modal-body textarea {
-    width: 100%;
-    border: none;
-    outline: none;
-    resize: none;
-    font-size: 14px;
-    line-height: 1.6;
-    min-height: 100px;
-    max-height: calc(100vh - 300px);
-    background: transparent;
-    color: var(--text-main);
-}
-
-.modal-body textarea::placeholder {
-    color: var(--text-placeholder);
-}
-
-/* =========================================
-   ゴミ箱ダイアログ
-========================================= */
-.trash-dialog {
+/* =========================
+   スナックバー
+========================= */
+.artifact-snackbar {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: var(--surface-color);
+    left: 50%;
+    bottom: 24px;
     z-index: 300;
     display: flex;
-    flex-direction: column;
-    /* アニメーションの追加 */
+    align-items: center;
+    gap: 18px;
+    min-width: 240px;
+    max-width: calc(100% - 32px);
+    padding: 13px 17px;
+    border-radius: 13px;
+    background: #202020;
+    color: #fff;
+    box-shadow: 0 16px 50px rgba(0,0,0,.25);
+    transform: translate(-50%, calc(100% + 40px));
     opacity: 0;
-    visibility: hidden;
-    transform: translateY(20px);
-    transition: all 0.3s ease;
+    pointer-events: none;
+    transition: transform 220ms ease, opacity 220ms ease;
 }
 
-.trash-dialog.active {
+.artifact-snackbar.active {
+    transform: translate(-50%, 0);
     opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+    pointer-events: auto;
 }
 
-.trash-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 24px;
-    background: var(--header-bg);
-}
-
-.trash-title {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.trash-actions {
-    display: flex;
-    gap: 12px;
-}
-
-.trash-actions button {
-    padding: 10px 20px;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    background: var(--btn-gray);
-    color: var(--text-main);
-    transition: opacity 0.2s ease;
-}
-
-.trash-actions button:hover {
-    opacity: 0.8;
-}
-
-.trash-actions button.primary {
-    background: var(--input-focused);
-    color: var(--on-primary);
-}
-
-.trash-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-width: 800px;
-    margin: 0 auto;
-    width: 100%;
-}
-
-.trash-item {
-    background: var(--card-bg);
-    padding: 16px 24px;
-    border-radius: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.trash-item-content {
-    flex: 1;
-    font-size: 14px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-right: 16px;
-    color: var(--text-main);
-}
-
-.trash-item-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.trash-item-actions button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 12px;
-}
-
-.btn-restore { background: var(--btn-gray); color: var(--text-main); }
-.btn-delete { background: var(--btn-delete-bg); color: var(--btn-delete-color); }
-
-/* =========================================
-   スナックバー
-========================================= */
-.snackbar {
-    position: fixed;
-    bottom: -80px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--snackbar-bg);
-    color: var(--snackbar-color);
-    padding: 12px 24px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    font-size: 14px;
-    z-index: 400;
-    transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.snackbar.active {
-    bottom: 40px;
-}
-
-.snackbar button {
+.artifact-snackbar button {
+    border: 0;
     background: transparent;
-    border: none;
-    color: var(--snackbar-action);
-    font-weight: bold;
+    color: var(--artifact-yellow);
+    font-weight: 650;
     cursor: pointer;
-    font-size: inherit;
 }
-    </style>
+
+@media (max-width: 1050px) {
+    .artifact-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .artifact-shell {
+        width: calc(100% - 28px);
+        padding-top: 28px;
+    }
+
+    .artifact-topbar {
+        align-items: flex-start;
+        margin-bottom: 40px;
+    }
+
+    .artifact-heading {
+        font-size: 34px;
+    }
+
+    .artifact-actions {
+        gap: 8px;
+    }
+
+    .artifact-add {
+        min-height: 48px;
+        padding: 0 15px;
+        font-size: 15px;
+    }
+
+    .artifact-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .artifact-preview {
+        height: 235px;
+    }
+
+    .artifact-title {
+        font-size: 21px;
+    }
+
+    .artifact-meta {
+        min-height: 116px;
+    }
+
+    .artifact-editor-bar {
+        height: 68px;
+        padding: 10px 14px;
+    }
+
+    .artifact-editor-scroll {
+        height: calc(100% - 68px);
+    }
+
+    .artifact-editor-right {
+        gap: 5px;
+    }
+
+    .artifact-editor-save,
+    .artifact-editor-delete,
+    .artifact-editor-download {
+        min-height: 44px;
+        padding: 0 12px;
+        font-size: 13px;
+    }
+
+    .artifact-editor-content {
+        width: calc(100% - 36px);
+        padding-top: 44px;
+    }
+
+    .artifact-editor-title {
+        font-size: 38px;
+        margin-bottom: 30px;
+    }
+
+    .artifact-editor-body {
+        font-size: 18px;
+        line-height: 1.8;
+    }
+
+    .artifact-trash-shell {
+        width: calc(100% - 28px);
+        padding-top: 24px;
+    }
+
+    .artifact-trash-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 500px) {
+    .artifact-search-field {
+        display: none;
+    }
+
+    .artifact-actions.search-open .artifact-search-field {
+        display: block;
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        width: auto;
+    }
+
+    .artifact-actions.search-open {
+        position: static;
+    }
+
+    .artifact-editor-delete,
+    .artifact-editor-download {
+        width: 44px;
+        padding: 0;
+        font-size: 0;
+    }
+
+    .artifact-editor-delete::before {
+        content: "削除";
+        font-size: 13px;
+    }
+
+    .artifact-editor-download::before {
+        content: "保存";
+        font-size: 13px;
+    }
+}
+</style>
 </head>
+
 <body>
+<div class="artifact-app">
 
-    <header>
-        <div class="logo-area">
-            <img src="icon.png" alt="Icon" onerror="this.style.display='none'"> 
-            <span>記録ノート</span>
+    <section class="artifact-list-view" id="artifactListView">
+        <div class="artifact-shell">
+            <header class="artifact-topbar">
+                <div class="artifact-brand">
+                    <h1 class="artifact-heading">記録メモ</h1>
+                </div>
+
+                <div class="artifact-actions" id="artifactActions">
+                    <input
+                        class="artifact-search-field"
+                        id="artifactSearchInput"
+                        type="search"
+                        placeholder="検索..."
+                        autocomplete="off"
+                        aria-label="記録メモを検索">
+                    <button class="artifact-search" id="artifactSearchButton" type="button" title="検索" aria-label="検索">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="10.8" cy="10.8" r="6.8"></circle>
+                            <path d="M16 16l5 5"></path>
+                        </svg>
+                    </button>
+                    <button class="artifact-search" id="artifactTrashOpenButton" type="button" title="ゴミ箱" aria-label="ゴミ箱">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 6h18"></path>
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                            <path d="M10 11v6"></path>
+                            <path d="M14 11v6"></path>
+                        </svg>
+                    </button>
+                    <button class="artifact-add" id="artifactAddButton" type="button">新規記録メモ</button>
+                </div>
+            </header>
+
+            <main class="artifact-grid" id="artifactGrid" aria-live="polite"></main>
         </div>
+    </section>
 
-        <div class="input-wrapper" id="inputWrapper">
-            <input type="text" class="main-input" id="mainInput" placeholder="記録を開始..." data-tr-placeholder="g_ph_start">
-            
-            <div class="expanded-input-card" id="expandedInputCard">
-                <div class="expanded-body">
-                    <textarea id="quickContent" placeholder="本文はここに入力されます。&#10;改行可能" data-tr-placeholder="g_ph_content"></textarea>
-                    <div class="expanded-footer">
-                        <button class="btn-small-icon" id="quickCancel" title="破棄" data-tr-title="g_btn_discard">
-                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                        </button>
-                        <button class="btn-small-icon check" id="quickSave" title="保存" data-tr-title="g_btn_save">
-                            <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
-                        </button>
+    <section class="artifact-editor-view" id="artifactEditorView" aria-hidden="true">
+        <header class="artifact-editor-bar">
+            <div class="artifact-editor-left">
+                <button class="artifact-editor-icon" id="artifactEditorBackButton" type="button" title="一覧へ戻る" aria-label="一覧へ戻る">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="artifact-editor-right">
+                <button class="artifact-editor-download" id="artifactEditorDownloadButton" type="button">ダウンロード</button>
+                <button class="artifact-editor-delete" id="artifactEditorDeleteButton" type="button">ゴミ箱へ</button>
+                <button class="artifact-editor-save" id="artifactEditorSaveButton" type="button">保存</button>
+            </div>
+        </header>
+
+        <div class="artifact-editor-scroll">
+            <div class="artifact-editor-content">
+                <textarea
+                    class="artifact-editor-title"
+                    id="artifactEditorTitle"
+                    rows="1"
+                    placeholder="タイトル"></textarea>
+
+                <textarea
+                    class="artifact-editor-body"
+                    id="artifactEditorBody"
+                    placeholder="メモの内容を入力..."></textarea>
+
+                <div class="artifact-editor-status" id="artifactEditorStatus"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="artifact-trash-view" id="artifactTrashView" aria-hidden="true">
+        <div class="artifact-trash-scroll">
+            <div class="artifact-trash-shell">
+                <header class="artifact-trash-top">
+                    <h2 class="artifact-trash-title">ゴミ箱</h2>
+                    <div class="artifact-trash-actions">
+                        <button id="artifactRestoreAllButton" type="button">全て復元</button>
+                        <button id="artifactEmptyTrashButton" type="button">全て削除</button>
+                        <button id="artifactCloseTrashButton" type="button">完了</button>
                     </div>
-                </div>
+                </header>
+                <main class="artifact-trash-list" id="artifactTrashList"></main>
             </div>
         </div>
+    </section>
 
-        <div class="header-actions">
-            <button style="display:none" class="btn-sync" onclick="alert(tr('g_sync_alert'))" data-tr-text="g_btn_sync">同期</button>
-            <button class="btn-icon" id="btnOpenTrash" title="ゴミ箱" data-tr-title="g_btn_trash">
-                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-            </button>
-            <button class="btn-icon" id="btnToggleSearch" title="検索" data-tr-title="g_btn_search">
-                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            </button>
-        </div>
-    </header>
-
-    <div class="main-container">
-        <main class="notes-container" id="notesContainer"></main>
+    <div class="artifact-snackbar" id="artifactSnackbar">
+        <span id="artifactSnackbarMessage"></span>
+        <button id="artifactSnackbarUndoButton" type="button">元に戻す</button>
     </div>
+</div>
 
-    <div class="modal-overlay" id="editModalOverlay">
-        <div class="modal-content-wrapper" id="editModalWrapper">
-            <div class="modal-actions-top">
-                <button class="modal-btn check" id="modalBtnClose" title="保存して閉じる" data-tr-title="g_btn_close">
-                    <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
-                </button>
-                <button class="modal-btn" id="modalBtnDelete" title="ゴミ箱へ移動" data-tr-title="g_btn_delete">
-                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                </button>
-                <button class="modal-btn" id="modalBtnDownload" title="ダウンロード" data-tr-title="g_btn_download">
-                    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                </button>
-                <button style="display:none" class="modal-btn" onclick="alert(tr('g_sync_alert'))" title="同期" data-tr-title="g_btn_sync">
-                    <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
-                </button>
-            </div>
-            
-            <div class="modal-card">
-                <div class="modal-header">
-                    <input type="text" id="editTitle" placeholder="タイトル" data-tr-placeholder="g_ph_title">
-                </div>
-                <div class="modal-body">
-                    <textarea id="editContent" placeholder="メモの内容" data-tr-placeholder="g_ph_memo"></textarea>
-                </div>
-            </div>
-        </div>
-    </div>
+<script>
+(() => {
+    "use strict";
 
-    <div class="trash-dialog" id="trashDialog">
-        <div class="trash-header">
-            <div class="trash-title">ゴミ箱</div>
-            <div class="trash-actions">
-                <button id="btnRestoreAll">全て復元</button>
-                <button id="btnEmptyTrash">全て削除</button>
-                <button class="primary" id="btnCloseTrash">完了</button>
-            </div>
-        </div>
-        <div class="trash-list" id="trashList"></div>
-    </div>
+    const STORAGE_KEY = "notes";
 
-    <div class="snackbar" id="snackbar">
-        <span id="snackbarMessage"></span>
-        <button id="snackbarUndoBtn">元に戻す</button>
-    </div>
+    let notes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
+    { id: '1', title: 'お客様を歓迎します！', content: '', isDeleted: false },
+    { id: '2', title: '必ずご確認ください', content: '記録ノートへようこそ。', isDeleted: false }
+];
+    let activeEditId = null;
+    let undoTimeout = null;
+    let undoAction = null;
 
-    <script>
-        // --- 状態管理 ---
-        let notes = JSON.parse(localStorage.getItem('notes')) || [
-            { id: '1', title: 'お客様を歓迎します！', content: '', isDeleted: false },
-            { id: '2', title: '必ずご確認ください', content: '記録ノートへようこそ。\nお客様を歓迎します。安心してご利用いただくために以下のことをご確認ください。\n\n💡 利用規約および個人情報政策\nhttps://search3958.github.io/policies/\n\n💡 データの責任\n意図しないエラーやその他不具合によりデータが削除されてしまう場合がございます。大切なデータは必ず別の場所でも保管しておいてください。\n\n💡 今後の予定\nアカウントを活用した同期機能の準備中です。完成までしばらくお待ちください。\n\nそれでは楽しんでください！', isDeleted: false }
-        ];
-        
-        let isSearchMode = false;
-        let activeEditId = null;
-        let undoTimeout = null;
-        let undoAction = null; // { type: 'delete'|'hard_delete', note: {} }
+    const getElement = (id) => {
+        const element = document.getElementById(id);
+        if (!element) {
+            console.error(`[Artifact] DOM要素が見つかりません: #${id}`);
+        }
+        return element;
+    };
 
-        // --- DOM要素 ---
-        const mainInput = document.getElementById('mainInput');
-        const expandedInputCard = document.getElementById('expandedInputCard');
-        const notesContainer = document.getElementById('notesContainer');
-        const btnToggleSearch = document.getElementById('btnToggleSearch');
-        
-        // クイック入力
-        const quickContent = document.getElementById('quickContent');
-        const quickSave = document.getElementById('quickSave');
-        const quickCancel = document.getElementById('quickCancel');
+    const artifactGrid = getElement("artifactGrid");
+    const artifactActions = getElement("artifactActions");
+    const artifactSearchButton = getElement("artifactSearchButton");
+    const artifactSearchInput = getElement("artifactSearchInput");
+    const artifactAddButton = getElement("artifactAddButton");
 
-        // 編集モーダル
-        const editModalOverlay = document.getElementById('editModalOverlay');
-        const editModalWrapper = document.getElementById('editModalWrapper');
-        const editTitle = document.getElementById('editTitle');
-        const editContent = document.getElementById('editContent');
-        const modalBtnClose = document.getElementById('modalBtnClose');
-        const modalBtnDelete = document.getElementById('modalBtnDelete');
-        const modalBtnDownload = document.getElementById('modalBtnDownload');
+    const artifactListView = getElement("artifactListView");
+    const artifactEditorView = getElement("artifactEditorView");
+    const artifactEditorBackButton = getElement("artifactEditorBackButton");
+    const artifactEditorTitle = getElement("artifactEditorTitle");
+    const artifactEditorBody = getElement("artifactEditorBody");
+    const artifactEditorStatus = getElement("artifactEditorStatus");
+    const artifactEditorSaveButton = getElement("artifactEditorSaveButton");
+    const artifactEditorDeleteButton = getElement("artifactEditorDeleteButton");
+    const artifactEditorDownloadButton = getElement("artifactEditorDownloadButton");
 
-        // ゴミ箱
-        const trashDialog = document.getElementById('trashDialog');
-        const trashList = document.getElementById('trashList');
-        const btnOpenTrash = document.getElementById('btnOpenTrash');
-        const btnCloseTrash = document.getElementById('btnCloseTrash');
-        const btnRestoreAll = document.getElementById('btnRestoreAll');
-        const btnEmptyTrash = document.getElementById('btnEmptyTrash');
+    const artifactTrashOpenButton = getElement("artifactTrashOpenButton");
+    const artifactTrashList = getElement("artifactTrashList");
+    const artifactRestoreAllButton = getElement("artifactRestoreAllButton");
+    const artifactEmptyTrashButton = getElement("artifactEmptyTrashButton");
+    const artifactCloseTrashButton = getElement("artifactCloseTrashButton");
 
-        // スナックバー
-        const snackbar = document.getElementById('snackbar');
-        const snackbarMessage = document.getElementById('snackbarMessage');
-        const snackbarUndoBtn = document.getElementById('snackbarUndoBtn');
+    const artifactSnackbar = getElement("artifactSnackbar");
+    const artifactSnackbarMessage = getElement("artifactSnackbarMessage");
+    const artifactSnackbarUndoButton = getElement("artifactSnackbarUndoButton");
 
-        // --- 初期化 ---
-        window.onload = () => {
-            renderNotes();
-            mainInput.focus();
-            setTimeout(translateAttrs, 500);
-            setInterval(translateAttrs, 3000);
+    function saveNotes() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+            console.info("[Artifact] メモを保存しました。");
+        } catch (error) {
+            console.error("[Artifact] localStorageへの保存に失敗しました。", error);
+        }
+    }
+
+    function generateId() {
+        return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>'"]/g, (tag) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "'": "&#39;",
+            '"': "&quot;"
+        }[tag]));
+    }
+
+    function formatDate(note) {
+        const timestamp = Number(note.updatedAt || note.createdAt);
+        if (!Number.isFinite(timestamp)) {
+            return "編集済み";
+        }
+
+        const date = new Date(timestamp);
+        const now = new Date();
+
+        if (date.toDateString() === now.toDateString()) {
+            return "今日編集済み";
+        }
+
+        const diff = Math.floor((Date.now() - timestamp) / 86400000);
+        if (diff === 1) return "昨日編集済み";
+        if (diff >= 2 && diff < 30) return `${diff}日前に編集済み`;
+
+        return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")} 編集済み`;
+    }
+
+    function autoResize(textarea) {
+        if (!textarea) {
+            console.error("[Artifact] autoResize対象がnullです。");
+            return;
+        }
+        textarea.style.height = "auto";
+        textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+
+    function openEditor(note) {
+        if (!note || !artifactEditorView || !artifactEditorTitle || !artifactEditorBody) {
+            console.error("[Artifact] 編集画面を開けません。noteまたはDOMが不足しています。");
+            return;
+        }
+
+        activeEditId = note.id;
+        artifactEditorTitle.value = note.title || "";
+        artifactEditorBody.value = note.content || "";
+        artifactEditorStatus.textContent = note.id ? formatDate(note) : "新規記録メモ";
+
+        artifactListView?.scrollTo({ top: 0 });
+        artifactTrashView?.classList.remove("active");
+        artifactEditorView.classList.add("active");
+        artifactEditorView.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+
+        requestAnimationFrame(() => {
+            autoResize(artifactEditorTitle);
+            artifactEditorBody.style.height = "auto";
+            artifactEditorBody.style.height = `${Math.max(artifactEditorBody.scrollHeight, window.innerHeight * 0.56)}px`;
+            artifactEditorTitle.focus();
+            console.info(`[Artifact] 編集画面を開きました: ${note.id}`);
+        });
+    }
+
+    function openNewEditor() {
+        const newNote = {
+            id: generateId(),
+            title: "",
+            content: "",
+            isDeleted: false,
+            createdAt: Date.now(),
+            updatedAt: Date.now()
         };
 
-        function saveNotes() {
-            localStorage.setItem('notes', JSON.stringify(notes));
+        notes.unshift(newNote);
+        saveNotes();
+        openEditor(newNote);
+        console.info("[Artifact] 新規記録メモの編集画面を開きました。");
+    }
+
+    function saveActiveEditor() {
+        if (!activeEditId) {
+            console.error("[Artifact] activeEditIdが設定されていないため保存できません。");
+            return false;
         }
 
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        const note = notes.find((item) => item.id === activeEditId);
+
+        if (!note) {
+            console.error(`[Artifact] 編集中の記録メモが見つかりません: ${activeEditId}`);
+            return false;
         }
 
-        // --- 自動リサイズ ---
-        function autoResizeTextarea(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-        }
-        editContent.addEventListener('input', () => autoResizeTextarea(editContent));
+        const title = artifactEditorTitle?.value.trim() ?? "";
+        const content = artifactEditorBody?.value.trim() ?? "";
 
-        // --- 描画 ---
-        function renderNotes(searchQuery = '') {
-            notesContainer.innerHTML = '';
-            const activeNotes = notes.filter(n => !n.isDeleted);
-            
-            const filteredNotes = activeNotes.filter(n => {
-                if (!searchQuery) return true;
-                return (n.title.includes(searchQuery) || n.content.includes(searchQuery));
-            });
+        note.title = title || "無題の記録メモ";
+        note.content = content;
+        note.updatedAt = Date.now();
+        note.isDeleted = false;
 
-            filteredNotes.forEach(note => {
-                const isYellow = note.title.trim() !== '' && note.content.trim() !== '';
-                
-                const noteEl = document.createElement('div');
-                noteEl.className = `note ${isYellow ? 'note-yellow' : 'note-white'}`;
-                noteEl.onclick = (e) => openEditModal(note, e.currentTarget);
-
-                if (isYellow) {
-                    noteEl.innerHTML = `
-                        <div class="note-title">${escapeHTML(note.title)}</div>
-                        <div class="note-content-preview">${escapeHTML(note.content)}</div>
-                    `;
-                } else {
-                    const text = note.title.trim() || note.content;
-                    noteEl.innerHTML = `<div class="note-single-line">${escapeHTML(text)}</div>`;
-                }
-                notesContainer.appendChild(noteEl);
-            });
+        saveNotes();
+        if (artifactEditorStatus) {
+            artifactEditorStatus.textContent = "保存しました";
         }
 
-        function renderTrash() {
-            trashList.innerHTML = '';
-            const deletedNotes = notes.filter(n => n.isDeleted);
-            
-            if(deletedNotes.length === 0){
-                trashList.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">${tr('g_trash_empty_msg')}</div>`;
+        renderNotes(artifactSearchInput?.value || "");
+        console.info(`[Artifact] 記録メモを保存しました: ${note.id}`);
+        return true;
+    }
+
+    function closeEditor({ save = true } = {}) {
+        if (save && activeEditId) {
+            const saved = saveActiveEditor();
+            if (!saved) {
+                console.error("[Artifact] 編集画面を閉じる前の保存に失敗しました。");
                 return;
             }
+        }
 
-            deletedNotes.forEach(note => {
-                const el = document.createElement('div');
-                el.className = 'trash-item';
-                
-                const preview = note.title ? `${note.title} - ${note.content}` : note.content;
-                
-                el.innerHTML = `
-                    <div class="trash-item-content">${escapeHTML(preview)}</div>
-                    <div class="trash-item-actions">
-                        <button class="btn-restore" onclick="restoreNote('${note.id}')">復元</button>
-                        <button class="btn-delete" onclick="hardDeleteNote('${note.id}')">削除</button>
+        artifactEditorView?.classList.remove("active");
+        artifactEditorView?.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        activeEditId = null;
+
+        renderNotes(artifactSearchInput?.value || "");
+        console.info("[Artifact] 編集画面を閉じました。");
+    }
+
+    let renderedCount = 0;
+    let filteredCache = [];
+
+    function renderNotes(query = "") {
+        if (!artifactGrid) {
+            console.error("[Artifact] #artifactGrid が存在しないため一覧を描画できません。");
+            return;
+        }
+
+        const normalizedQuery = String(query || "").trim().toLowerCase();
+        const activeNotes = notes.filter((note) => !note.isDeleted);
+
+        filteredCache = activeNotes.filter((note) => {
+            if (!normalizedQuery) return true;
+            return `${note.title || ""}\n${note.content || ""}`.toLowerCase().includes(normalizedQuery);
+        });
+
+        artifactGrid.innerHTML = "";
+        renderedCount = 0;
+
+        if (filteredCache.length === 0) {
+            artifactGrid.innerHTML = `
+                <div class="artifact-empty">
+                    ${normalizedQuery ? "一致する記録メモがありません。" : "まだ記録メモがありません。"}
+                </div>
+            `;
+            console.info("[Artifact] 一覧は空です。");
+            return;
+        }
+
+        const initialBatch = filteredCache.slice(0, 20);
+        const fragment = document.createDocumentFragment();
+
+        initialBatch.forEach((note) => {
+            const card = createNoteCard(note);
+            fragment.appendChild(card);
+        });
+
+        renderedCount = initialBatch.length;
+        artifactGrid.appendChild(fragment);
+
+        if (renderedCount < filteredCache.length) {
+            const loadMoreBtn = document.createElement("button");
+            loadMoreBtn.className = "artifact-load-more";
+            loadMoreBtn.type = "button";
+            loadMoreBtn.textContent = `もっと見る (${filteredCache.length - renderedCount}件)`;
+            loadMoreBtn.addEventListener("click", loadMoreNotes);
+            artifactGrid.appendChild(loadMoreBtn);
+        }
+
+        console.info(`[Artifact] 一覧を描画しました: ${renderedCount}/${filteredCache.length}件`);
+    }
+
+    function loadMoreNotes() {
+        const btn = artifactGrid.querySelector(".artifact-load-more");
+        if (btn) btn.remove();
+
+        const nextBatch = filteredCache.slice(renderedCount, renderedCount + 20);
+        const fragment = document.createDocumentFragment();
+
+        nextBatch.forEach((note) => {
+            const card = createNoteCard(note);
+            fragment.appendChild(card);
+        });
+
+        renderedCount += nextBatch.length;
+        artifactGrid.appendChild(fragment);
+
+        if (renderedCount < filteredCache.length) {
+            const loadMoreBtn = document.createElement("button");
+            loadMoreBtn.className = "artifact-load-more";
+            loadMoreBtn.type = "button";
+            loadMoreBtn.textContent = `もっと見る (${filteredCache.length - renderedCount}件)`;
+            loadMoreBtn.addEventListener("click", loadMoreNotes);
+            artifactGrid.appendChild(loadMoreBtn);
+        }
+
+        console.info(`[Artifact] 追加読込: ${renderedCount}/${filteredCache.length}件`);
+    }
+
+    function createNoteCard(note) {
+        const card = document.createElement("article");
+        card.className = "artifact-card";
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", `${note.title || "無題の記録メモ"}を開く`);
+
+        const title = note.title || "無題の記録メモ";
+        const content = note.content || "";
+
+        let previewHTML = "";
+
+        if (content) {
+            const looksLikeCode =
+                /(^|\n)\s*(import |export |const |let |function |class |struct |@main|#include|\/\/)/.test(content);
+
+            previewHTML = `
+                <div class="artifact-preview-inner">
+                    <div class="artifact-preview-title">${escapeHTML(title)}</div>
+                    <div class="${looksLikeCode ? "artifact-preview-code" : "artifact-preview-text"}">
+                        ${escapeHTML(content.slice(0, 500))}
                     </div>
-                `;
-                trashList.appendChild(el);
-            });
+                </div>
+            `;
+        } else if (title) {
+            previewHTML = `
+                <div class="artifact-preview-inner">
+                    <div class="artifact-preview-title">${escapeHTML(title)}</div>
+                </div>
+            `;
+        } else {
+            previewHTML = `
+                <div class="artifact-preview-empty" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                        <circle cx="24" cy="24" r="10"></circle>
+                        <path d="M14 31c6-10 14-10 20 0"></path>
+                        <path d="M14 17c6 10 14 10 20 0"></path>
+                    </svg>
+                </div>
+            `;
         }
 
-        // --- ヘッダー・検索・入力 (入力開始時展開に変更) ---
-        btnToggleSearch.addEventListener('click', () => {
-            isSearchMode = !isSearchMode;
-            if (isSearchMode) {
-                mainInput.classList.add('search-mode');
-                mainInput.placeholder = '検索...';
-                mainInput.focus();
-            } else {
-                mainInput.classList.remove('search-mode');
-                mainInput.placeholder = '記録を開始...';
-                mainInput.value = '';
-                renderNotes();
+        card.innerHTML = `
+            <div class="artifact-preview">${previewHTML}</div>
+            <div class="artifact-meta">
+                <div class="artifact-title">${escapeHTML(title)}</div>
+                <div class="artifact-date">${escapeHTML(formatDate(note))}</div>
+            </div>
+        `;
+
+        const openHandler = () => openEditor(note);
+        card.addEventListener("click", openHandler);
+        card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openHandler();
             }
         });
 
-        mainInput.addEventListener('input', (e) => {
-            if (isSearchMode) {
-                renderNotes(e.target.value);
+        return card;
+    }
+
+    function renderTrash() {
+        if (!artifactTrashList) {
+            console.error("[Artifact] #artifactTrashList が存在しません。");
+            return;
+        }
+
+        const deletedNotes = notes.filter((note) => note.isDeleted);
+        artifactTrashList.innerHTML = "";
+
+        if (deletedNotes.length === 0) {
+            artifactTrashList.innerHTML = `<div class="artifact-empty">ゴミ箱は空です。</div>`;
+            console.info("[Artifact] ゴミ箱は空です。");
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        deletedNotes.forEach((note) => {
+            const item = document.createElement("article");
+            item.className = "artifact-trash-item";
+
+            const title = note.title || "無題の記録メモ";
+            const body = note.content || "";
+
+            item.innerHTML = `
+                <div class="artifact-trash-item-text">
+                    <div class="artifact-trash-item-title">${escapeHTML(title)}</div>
+                    <div class="artifact-trash-item-body">${escapeHTML(body)}</div>
+                </div>
+                <div class="artifact-trash-item-actions">
+                    <button type="button" data-action="restore">復元</button>
+                    <button type="button" data-action="delete">完全削除</button>
+                </div>
+            `;
+
+            const restoreButton = item.querySelector('[data-action="restore"]');
+            const deleteButton = item.querySelector('[data-action="delete"]');
+
+            if (!restoreButton || !deleteButton) {
+                console.error(`[Artifact] ゴミ箱操作ボタンを生成できませんでした: ${note.id}`);
                 return;
             }
-            
-            if (e.target.value.length > 0 && !expandedInputCard.classList.contains('active')) {
-                expandedInputCard.classList.add('active');
-                mainInput.classList.add('focused');
-                quickContent.focus();
-            }
-            if (e.target.value.length === 0 && quickContent.value.length === 0) {
-                closeQuickInput();
-            }
-        });
 
-        quickContent.addEventListener('input', () => {
-            autoResizeTextarea(quickContent);
-            if (mainInput.value.length === 0 && quickContent.value.length === 0) {
-                closeQuickInput();
-            }
-        });
-
-        function closeQuickInput() {
-            expandedInputCard.classList.remove('active');
-            mainInput.classList.remove('focused');
-            quickContent.value = '';
-            quickContent.style.height = 'auto';
-            mainInput.value = '';
-            mainInput.focus();
-        }
-
-        quickCancel.addEventListener('click', closeQuickInput);
-
-        quickSave.addEventListener('click', () => {
-            const title = mainInput.value.trim();
-            const content = quickContent.value.trim();
-            if (title || content) {
-                notes.unshift({
-                    id: generateId(),
-                    title: title,
-                    content: content,
-                    isDeleted: false
+            restoreButton.addEventListener("click", () => {
+                note.isDeleted = false;
+                note.updatedAt = Date.now();
+                saveNotes();
+                renderTrash();
+                renderNotes(artifactSearchInput?.value || "");
+                showSnackbar("記録メモを復元しました。", {
+                    type: "restore",
+                    note
                 });
+                console.info(`[Artifact] 復元しました: ${note.id}`);
+            });
+
+            deleteButton.addEventListener("click", () => {
+                notes = notes.filter((item) => item.id !== note.id);
                 saveNotes();
-                renderNotes();
-            }
-            closeQuickInput();
+                renderTrash();
+                showSnackbar("記録メモを完全に削除しました。");
+                console.info(`[Artifact] 完全削除しました: ${note.id}`);
+            });
+
+            fragment.appendChild(item);
         });
 
-        // --- 編集モーダル ---
-        function openEditModal(note, elementRect) {
-            activeEditId = note.id;
-            editTitle.value = note.title;
-            editContent.value = note.content;
-            
-            // 開く時のアニメーション (クリックした要素から展開)
-            const rect = elementRect.getBoundingClientRect();
-            editModalWrapper.style.transformOrigin = `${rect.left + rect.width/2}px ${rect.top + rect.height/2}px`;
-            
-            editModalOverlay.classList.add('active');
-            setTimeout(() => autoResizeTextarea(editContent), 10);
+        artifactTrashList.appendChild(fragment);
+        console.info(`[Artifact] ゴミ箱を描画しました: ${deletedNotes.length}件`);
+    }
+
+    function openTrash() {
+        renderTrash();
+        artifactTrashView?.classList.add("active");
+        artifactTrashView?.setAttribute("aria-hidden", "false");
+        console.info("[Artifact] ゴミ箱を開きました。");
+    }
+
+    function closeTrash() {
+        artifactTrashView?.classList.remove("active");
+        artifactTrashView?.setAttribute("aria-hidden", "true");
+        console.info("[Artifact] ゴミ箱を閉じました。");
+    }
+
+    function showSnackbar(message, action = null) {
+        if (!artifactSnackbar || !artifactSnackbarMessage) {
+            console.error("[Artifact] スナックバーのDOMが不足しています。");
+            return;
         }
 
-        function closeEditModal() {
-            if (activeEditId) {
-                const note = notes.find(n => n.id === activeEditId);
-                if (note && !note.isDeleted) {
-                    note.title = editTitle.value;
-                    note.content = editContent.value;
-                    saveNotes();
-                    renderNotes();
-                }
-            }
-            editModalOverlay.classList.remove('active');
-            activeEditId = null;
+        artifactSnackbarMessage.textContent = message;
+        undoAction = action;
+        artifactSnackbar.classList.add("active");
+
+        if (undoTimeout) {
+            clearTimeout(undoTimeout);
         }
 
-        modalBtnClose.addEventListener('click', closeEditModal);
-        
-        editModalOverlay.addEventListener('click', (e) => {
-            if (e.target === editModalOverlay) closeEditModal();
+        undoTimeout = setTimeout(() => {
+            artifactSnackbar.classList.remove("active");
+            undoAction = null;
+            console.info("[Artifact] スナックバーを閉じました。");
+        }, 5000);
+
+        console.info(`[Artifact] スナックバー表示: ${message}`);
+    }
+
+    function deleteActiveEditor() {
+        if (!activeEditId) {
+            console.error("[Artifact] activeEditIdがないため削除できません。");
+            return;
+        }
+
+        const note = notes.find((item) => item.id === activeEditId);
+        if (!note) {
+            console.error(`[Artifact] 削除対象が見つかりません: ${activeEditId}`);
+            return;
+        }
+
+        const snapshot = JSON.parse(JSON.stringify(note));
+        note.isDeleted = true;
+        note.updatedAt = Date.now();
+
+        saveNotes();
+        renderNotes(artifactSearchInput?.value || "");
+        closeEditor({ save: false });
+
+        showSnackbar("ゴミ箱へ移動しました。", {
+            type: "restore-deleted",
+            note: snapshot
         });
 
-        modalBtnDelete.addEventListener('click', () => {
-            if (activeEditId) {
-                const note = notes.find(n => n.id === activeEditId);
-                note.isDeleted = true;
-                saveNotes();
-                renderNotes();
-                showSnackbar(tr('g_snackbar_trash'), 'delete', JSON.parse(JSON.stringify(note)));
-                closeEditModal();
+        console.info(`[Artifact] ゴミ箱へ移動しました: ${note.id}`);
+    }
+
+    function downloadActiveEditor() {
+        if (!artifactEditorTitle || !artifactEditorBody) {
+            console.error("[Artifact] ダウンロード対象の入力欄がありません。");
+            return;
+        }
+
+        const title = artifactEditorTitle.value.trim() || "artifact";
+        const content = artifactEditorBody.value || "";
+        const blob = new Blob([`${title}\n\n${content}`], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = `${title.replace(/[\\/:*?"<>|]/g, "_")}.txt`;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+
+        console.info(`[Artifact] ダウンロードしました: ${title}`);
+    }
+
+    artifactAddButton?.addEventListener("click", openNewEditor);
+
+    artifactTrashOpenButton?.addEventListener("click", openTrash);
+
+    artifactSearchButton?.addEventListener("click", () => {
+        if (!artifactActions) {
+            console.error("[Artifact] 検索UIの親要素がありません。");
+            return;
+        }
+
+        artifactActions.classList.add("search-open");
+        artifactSearchInput?.focus();
+        console.info("[Artifact] 検索欄を開きました。");
+    });
+
+    artifactSearchInput?.addEventListener("input", (event) => {
+        renderNotes(event.target.value);
+    });
+
+    artifactSearchInput?.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            event.currentTarget.value = "";
+            artifactActions?.classList.remove("search-open");
+            renderNotes("");
+            console.info("[Artifact] 検索を終了しました。");
+        }
+    });
+
+    artifactEditorBackButton?.addEventListener("click", () => closeEditor({ save: true }));
+    artifactEditorSaveButton?.addEventListener("click", () => {
+        if (saveActiveEditor()) {
+            closeEditor({ save: false });
+        }
+    });
+
+    artifactEditorDeleteButton?.addEventListener("click", deleteActiveEditor);
+    artifactEditorDownloadButton?.addEventListener("click", downloadActiveEditor);
+
+    artifactEditorTitle?.addEventListener("input", () => autoResize(artifactEditorTitle));
+    artifactEditorBody?.addEventListener("input", () => {
+        artifactEditorBody.style.height = "auto";
+        artifactEditorBody.style.height = `${Math.max(artifactEditorBody.scrollHeight, window.innerHeight * 0.56)}px`;
+    });
+
+    artifactCloseTrashButton?.addEventListener("click", closeTrash);
+
+    artifactRestoreAllButton?.addEventListener("click", () => {
+        const deleted = notes.filter((note) => note.isDeleted);
+        if (deleted.length === 0) {
+            console.info("[Artifact] 復元対象はありません。");
+            return;
+        }
+
+        notes.forEach((note) => {
+            if (note.isDeleted) {
+                note.isDeleted = false;
+                note.updatedAt = Date.now();
             }
         });
 
-        modalBtnDownload.addEventListener('click', () => {
-            const title = editTitle.value || 'memo';
-            const content = editContent.value;
-            const blob = new Blob([`${title}\n\n${content}`], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${title}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
-        });
+        saveNotes();
+        renderTrash();
+        renderNotes(artifactSearchInput?.value || "");
+        console.info(`[Artifact] ${deleted.length}件を一括復元しました。`);
+    });
 
-        // --- ゴミ箱 ---
-        btnOpenTrash.addEventListener('click', () => {
-            renderTrash();
-            trashDialog.classList.add('active');
-        });
+    artifactEmptyTrashButton?.addEventListener("click", () => {
+        const deletedCount = notes.filter((note) => note.isDeleted).length;
+        if (deletedCount === 0) {
+            console.info("[Artifact] ゴミ箱はすでに空です。");
+            return;
+        }
 
-        btnCloseTrash.addEventListener('click', () => {
-            trashDialog.classList.remove('active');
-            renderNotes();
-        });
+        if (!window.confirm("ゴミ箱内の記録メモを完全に削除しますか？この操作は取り消せません。")) {
+            console.info("[Artifact] ゴミ箱の完全削除をキャンセルしました。");
+            return;
+        }
 
-        window.restoreNote = function(id) {
-            const note = notes.find(n => n.id === id);
+        notes = notes.filter((note) => !note.isDeleted);
+        saveNotes();
+        renderTrash();
+        renderNotes(artifactSearchInput?.value || "");
+        console.info(`[Artifact] ゴミ箱を空にしました: ${deletedCount}件`);
+    });
+
+    artifactSnackbarUndoButton?.addEventListener("click", () => {
+        if (!undoAction) {
+            console.warn("[Artifact] 元に戻す対象がありません。");
+            return;
+        }
+
+        if (undoAction.type === "restore-deleted") {
+            const note = notes.find((item) => item.id === undoAction.note.id);
             if (note) {
                 note.isDeleted = false;
+                note.updatedAt = Date.now();
                 saveNotes();
-                renderTrash();
-                showSnackbar(tr('g_snackbar_restore'), 'restore', JSON.parse(JSON.stringify(note)));
-            }
-        };
-
-        window.hardDeleteNote = function(id) {
-            const index = notes.findIndex(n => n.id === id);
-            if (index !== -1) {
-                const deletedNote = JSON.parse(JSON.stringify(notes[index]));
-                notes.splice(index, 1);
+                renderNotes(artifactSearchInput?.value || "");
+                console.info(`[Artifact] 削除を取り消しました: ${note.id}`);
+            } else {
+                notes.push(undoAction.note);
                 saveNotes();
-                renderTrash();
-                showSnackbar(tr('g_snackbar_hard_delete'), 'hard_delete', deletedNote);
+                renderNotes(artifactSearchInput?.value || "");
+                console.info("[Artifact] 削除取り消し用スナップショットを復元しました。");
             }
-        };
-
-        btnRestoreAll.addEventListener('click', () => {
-            if (confirm(tr('g_confirm_restore_all'))) {
-                notes.forEach(n => { if(n.isDeleted) n.isDeleted = false; });
+        } else if (undoAction.type === "restore") {
+            const note = notes.find((item) => item.id === undoAction.note.id);
+            if (note) {
+                note.isDeleted = true;
                 saveNotes();
+                renderNotes(artifactSearchInput?.value || "");
                 renderTrash();
+                console.info(`[Artifact] 復元を取り消しました: ${note.id}`);
             }
-        });
-
-        btnEmptyTrash.addEventListener('click', () => {
-            if (confirm(tr('g_confirm_empty_trash'))) {
-                notes = notes.filter(n => !n.isDeleted);
-                saveNotes();
-                renderTrash();
-            }
-        });
-
-        // --- スナックバー (Undo機能) ---
-        function showSnackbar(message, type, noteData) {
-            snackbarMessage.textContent = message;
-            undoAction = { type, note: noteData };
-            
-            snackbar.classList.add('active');
-            
-            if (undoTimeout) clearTimeout(undoTimeout);
-            undoTimeout = setTimeout(() => {
-                snackbar.classList.remove('active');
-                undoAction = null;
-            }, 5000); // 5秒間
         }
 
-        snackbarUndoBtn.addEventListener('click', () => {
-            if (!undoAction) return;
+        artifactSnackbar?.classList.remove("active");
+        undoAction = null;
 
-            if (undoAction.type === 'delete') {
-                const note = notes.find(n => n.id === undoAction.note.id);
-                if (note) note.isDeleted = false;
-                renderNotes();
-            } else if (undoAction.type === 'hard_delete') {
-                notes.unshift(undoAction.note);
-                renderTrash();
-            } else if (undoAction.type === 'restore') {
-                const note = notes.find(n => n.id === undoAction.note.id);
-                if (note) note.isDeleted = true;
-                renderTrash();
-            }
-
-            saveNotes();
-            snackbar.classList.remove('active');
-            undoAction = null;
+        if (undoTimeout) {
             clearTimeout(undoTimeout);
-        });
+            undoTimeout = null;
+        }
+    });
 
-        // --- ユーティリティ ---
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    "'": '&#39;',
-                    '"': '&quot;'
-                }[tag])
-            ).replace(/\n/g, '');
+    document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+
+        if (artifactEditorView?.classList.contains("active")) {
+            closeEditor({ save: true });
+            return;
         }
 
-        // --- 多言語対応 ---
-        function tr(key) {
-            if (!window.translator || window.translator.currentLang === 'ja' || window.translator.map.size === 0) {
-                const jaMap = {
-                    'g_snackbar_trash': 'ゴミ箱へ移動しました',
-                    'g_snackbar_restore': 'メモを復元しました',
-                    'g_snackbar_hard_delete': 'メモを完全に削除しました',
-                    'g_confirm_restore_all': '全てのメモを復元しますか？',
-                    'g_confirm_empty_trash': 'ゴミ箱を空にしますか？この操作は取り消せません。',
-                    'g_trash_empty_msg': 'ゴミ箱は空です'
-                };
-                return jaMap[key] || key;
+        if (artifactTrashView?.classList.contains("active")) {
+            closeTrash();
+        }
+    });
+
+    window.addEventListener("resize", () => {
+        if (artifactEditorView?.classList.contains("active")) {
+            autoResize(artifactEditorTitle);
+            if (artifactEditorBody) {
+                artifactEditorBody.style.height = "auto";
+                artifactEditorBody.style.height = `${Math.max(artifactEditorBody.scrollHeight, window.innerHeight * 0.56)}px`;
             }
-            const jaText = Object.entries(window.translator.map).find(([k]) => false);
-            for (const [ja, translated] of window.translator.map) {
-                const jaKeys = {
-                    'ゴミ箱へ移動しました': 'g_snackbar_trash',
-                    'メモを復元しました': 'g_snackbar_restore',
-                    'メモを完全に削除しました': 'g_snackbar_hard_delete',
-                    '全てのメモを復元しますか？': 'g_confirm_restore_all',
-                    'ゴミ箱を空にしますか？この操作は取り消せません。': 'g_confirm_empty_trash',
-                    'ゴミ箱は空です': 'g_trash_empty_msg'
-                };
-                if (jaKeys[ja] === key) return translated;
-            }
-            const jaMap = {
-                'g_snackbar_trash': 'ゴミ箱へ移動しました',
-                'g_snackbar_restore': 'メモを復元しました',
-                'g_snackbar_hard_delete': 'メモを完全に削除しました',
-                'g_confirm_restore_all': '全てのメモを復元しますか？',
-                'g_confirm_empty_trash': 'ゴミ箱を空にしますか？この操作は取り消せません。',
-                'g_trash_empty_msg': 'ゴミ箱は空です'
-            };
-            return jaMap[key] || key;
         }
+    });
 
-        function translateAttrs() {
-            if (!window.translator || window.translator.currentLang === 'ja' || window.translator.map.size === 0) return;
-            document.querySelectorAll('[data-tr-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-tr-placeholder');
-                const jaMap = { 'g_ph_start': '記録を開始...', 'g_ph_content': '本文はここに入力されます。\n改行可能', 'g_ph_search': '検索...', 'g_ph_title': 'タイトル', 'g_ph_memo': 'メモの内容' };
-                const jaText = jaMap[key];
-                if (jaText && window.translator.map.has(jaText)) el.placeholder = window.translator.map.get(jaText);
-            });
-            document.querySelectorAll('[data-tr-title]').forEach(el => {
-                const key = el.getAttribute('data-tr-title');
-                const jaMap = { 'g_btn_discard': '破棄', 'g_btn_save': '保存', 'g_btn_trash': 'ゴミ箱', 'g_btn_search': '検索', 'g_btn_close': '保存して閉じる', 'g_btn_delete': 'ゴミ箱へ移動', 'g_btn_download': 'ダウンロード', 'g_btn_sync': '同期' };
-                const jaText = jaMap[key];
-                if (jaText && window.translator.map.has(jaText)) el.title = window.translator.map.get(jaText);
-            });
-        }
-    </script>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7N56NHPY3C"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    // 旧UIからの連携用。外部側にゴミ箱ボタンを追加したい場合に利用可能。
+    window.ArtifactUI = {
+        renderNotes,
+        renderTrash,
+        openTrash,
+        openEditor,
+        saveNotes
+    };
 
-  gtag('config', 'G-7N56NHPY3C');
+    // 元データの既存形式に createdAt / updatedAt が無い場合だけ補完。
+    notes = notes.map((note) => ({
+        id: note.id || generateId(),
+        title: typeof note.title === "string" ? note.title : "",
+        content: typeof note.content === "string" ? note.content : "",
+        isDeleted: Boolean(note.isDeleted),
+        createdAt: Number(note.createdAt) || Date.now(),
+        updatedAt: Number(note.updatedAt) || Number(note.createdAt) || Date.now()
+    }));
+
+    saveNotes();
+    renderNotes();
+
+    console.info("[Artifact] 記録メモUI版を初期化しました。");
+})();
 </script>
-    <script src="/frameworks/lang.js" data-xml="/xml/girog.xml"></script>
-    <script src="check.js?check=none"></script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
-     crossorigin="anonymous"></script>
 </body>
 </html>
