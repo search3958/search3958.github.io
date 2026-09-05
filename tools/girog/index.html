@@ -833,7 +833,7 @@ button,
             </div>
         </header>
 
-        <div class="artifact-editor-scroll">
+        <div class="artifact-editor-scroll" id="artifactEditorScroll">
             <div class="artifact-editor-content">
                 <textarea
                     class="artifact-editor-title"
@@ -906,6 +906,7 @@ button,
     const artifactEditorBackButton = getElement("artifactEditorBackButton");
     const artifactEditorTitle = getElement("artifactEditorTitle");
     const artifactEditorBody = getElement("artifactEditorBody");
+    const artifactEditorScroll = getElement("artifactEditorScroll");
     const artifactEditorStatus = getElement("artifactEditorStatus");
     const artifactEditorSaveButton = getElement("artifactEditorSaveButton");
     const artifactEditorDeleteButton = getElement("artifactEditorDeleteButton");
@@ -965,12 +966,30 @@ button,
     }
 
     function autoResize(textarea) {
-        if (!textarea) {
+        if (!textarea || !artifactEditorScroll) {
             console.error("[Artifact] autoResize対象がnullです。");
             return;
         }
+        const scrollTop = artifactEditorScroll.scrollTop;
         textarea.style.height = "auto";
         textarea.style.height = `${textarea.scrollHeight}px`;
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                artifactEditorScroll.scrollTop = scrollTop;
+            });
+        });
+    }
+
+    function setBodyHeight() {
+        if (!artifactEditorBody || !artifactEditorScroll) return;
+        const scrollTop = artifactEditorScroll.scrollTop;
+        artifactEditorBody.style.height = "auto";
+        artifactEditorBody.style.height = `${Math.max(artifactEditorBody.scrollHeight, window.innerHeight * 0.56)}px`;
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                artifactEditorScroll.scrollTop = scrollTop;
+            });
+        });
     }
 
     function openEditor(note) {
@@ -992,8 +1011,7 @@ button,
 
         requestAnimationFrame(() => {
             autoResize(artifactEditorTitle);
-            artifactEditorBody.style.height = "auto";
-            artifactEditorBody.style.height = `${Math.max(artifactEditorBody.scrollHeight, window.innerHeight * 0.56)}px`;
+            setBodyHeight();
             artifactEditorTitle.focus();
             console.info(`[Artifact] 編集画面を開きました: ${note.id}`);
         });
@@ -1403,8 +1421,7 @@ button,
 
     artifactEditorTitle?.addEventListener("input", () => autoResize(artifactEditorTitle));
     artifactEditorBody?.addEventListener("input", () => {
-        artifactEditorBody.style.height = "auto";
-        artifactEditorBody.style.height = `${Math.max(artifactEditorBody.scrollHeight, window.innerHeight * 0.56)}px`;
+        setBodyHeight();
     });
 
     artifactCloseTrashButton?.addEventListener("click", closeTrash);
@@ -1505,8 +1522,7 @@ button,
         if (artifactEditorView?.classList.contains("active")) {
             autoResize(artifactEditorTitle);
             if (artifactEditorBody) {
-                artifactEditorBody.style.height = "auto";
-                artifactEditorBody.style.height = `${Math.max(artifactEditorBody.scrollHeight, window.innerHeight * 0.56)}px`;
+                setBodyHeight();
             }
         }
     });
