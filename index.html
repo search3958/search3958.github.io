@@ -99,22 +99,19 @@
 }
 .small{
     font-size:16px;
-    opacity:0.7;
     transition: 1.5s all cubic-bezier(1,0,.18,1);
     padding-top:0px;
-    font-weight:400;
+    font-weight:bold;
     font-variation-settings:
     "slnt" 0,
-    "wdth" 100,
+    "wdth" 120,
     "GRAD" 0,
-    "ROND" 0;
+    "ROND" 30;
 
 }
 .small.before{
     font-size:48px;
-    opacity:1;
     padding-top:48px;
-    font-weight:bold;
     font-variation-settings:
     "slnt" 0,
     "wdth" 160,
@@ -158,7 +155,8 @@
     box-shadow:0px 4px 16px #0002;
 }
 .app-image{
-    width:70vw;
+    width:65vw;
+    max-width:700px
 }
 .xin-reveal{
     opacity:0;
@@ -203,8 +201,9 @@
       padding:24px;
     }
     .primary-btn{
-      padding:8px 16px;
-      border-radius:100px;
+      padding:10px 22px;
+      border-radius:99px;
+      corner-shape: superellipse(1.4);
       font-weight:bold;
       border:none;
     }
@@ -316,9 +315,10 @@
 
     }
     .link{
-      border-radius:16px;
-      corner-shape:squircle;
+      border-radius:8px;
+      corner-shape:superellipse(1.4);
       border:#0003 1px solid;
+      height:48px;
     }
 </style>
 <body>
@@ -375,16 +375,16 @@
     </div>
 
     <div class="xincard" style="
-    background-image: linear-gradient(180deg, rgba(255, 255, 255, 1), #acffdb);
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 1), #acd0ff);
 ">
-        <img class="app-icon xin-reveal" style="--xin-delay:0s;" src="/imgs/260621-cheonri.png">
+        <img class="app-icon xin-reveal" style="--xin-delay:0s;" src="/imgs/260909-yanlang.png">
         <div class="small xin-reveal" style="--xin-delay:0.08s;">
-            千里辞書
+            YanLang Beta
         </div>
-        <span class="app-name xin-reveal" style="--xin-delay:0.16s;">千里馬のように<br>千里先へ</span>
-        <div style="display:flex;gap:8px;"><button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#08F480;color:#000;" onclick="window.location.href='https://play.google.com/store/apps/details?id=com.sentaro.cheonri'">Android App</button>
-        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#08F480;color:#000;" onclick="window.location.href='https://search3958.github.io/tools/sajon/'">Web</button></div>
-        <img class="app-image xin-reveal" style="--xin-delay:0.32s;" src="/imgs/260621-cheonri-image.png">
+        <span class="app-name xin-reveal" style="--xin-delay:0.16s;"> 興味で伸ばす<br>言語学習</span>
+        <div style="display:flex;gap:8px;"><button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#0900FF;color:#fff;" onclick="window.location.href='https://play.google.com/store/apps/details?id=com.sentaro.yanlang'">Android App</button>
+        </div>
+        <img class="app-image xin-reveal" style="--xin-delay:0.32s;" src="/imgs/260909-yanlang-image.png">
 
     </div>
     
@@ -394,14 +394,24 @@
         <div class="small xin-reveal" style="--xin-delay:0.08s;">
             Newtab v6
         </div>
-        <span class="app-name xin-reveal" style="--xin-delay:0.16s;">新しい<br>新しいタブ</span>
+        <span class="app-name xin-reveal" style="--xin-delay:0.16s;">理想的な<br>新しいタブ</span>
         <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#213750;color:#fff;" onclick="window.location.href='https://search3958.github.io/i/newtab/'">今すぐ見る</button>
         <img class="app-image xin-reveal" style="--xin-delay:0.32s;" src="/imgs/260501-newtab-image.png">
 
     </div>
 
+    <div class="xincard" style="background:#fff">
+        <div class="app-name xin-reveal" style="--xin-delay:0.08s; font-size:24px;">
+            相互リンクをご確認ください
+        </div>
+        <div class="xin-reveal" style="--xin-delay:0.2s;display:flex;gap:16px;flex-wrap: wrap;justify-content: center;">
+          <a href="https://senox.cc/blog/me/"><img class="link" src="imgs/260909-senox78.webp"></a>
+        </div>
+    </div>
 
-    <div class="xincard" style=" padding:24px 0;color:#FFFBB0;background: conic-gradient(at 50% 100%, rgba(255, 242, 144, 0.35) 0deg, rgba(255, 232, 66, 0.09) 60deg, rgba(255, 235, 87, 0.2) 89deg, rgba(255, 229, 41, 0) 203deg, rgba(255, 245, 175, 0.3) 274deg, rgba(255, 231, 53, 0) 307deg),linear-gradient(77.417deg, #880000 0%, #FF4800 100%);">
+
+    <div class="xincard" style=" padding:24px 0;color:#FFFBB0;background: conic-gradient(at 50% 100%, rgb(255 237 0 / 55%) 0deg, rgb(255 0 0 / 25%) 60deg, rgb(255 203 18 / 26%) 89deg, rgb(255 224 0) 
+203deg, rgb(255 69 0) 274deg, rgb(255 0 0 / 25%) 307deg), linear-gradient(77.417deg, #c40000 0%, #ff0000 100%);">
         
         <span class="app-name xin-reveal" style="--xin-delay:0.16s;font-size:40px;font-family:serif;filter:drop-shadow(0 8px 16px #0008)">第一目標と<br>輝く功績</span>
         
@@ -417,14 +427,14 @@
 
 
     <div class="xincard" style="
-    background-image: linear-gradient(180deg, rgba(255, 255, 255, 1), #daf1da);
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 1), #afffc8);
 ">
         <img class="app-icon xin-reveal" style="--xin-delay:0s;" src="/imgs/260501-baram.png">
         <div class="small xin-reveal" style="--xin-delay:0.08s;">
             Baram Code
         </div>
         <span class="app-name xin-reveal" style="--xin-delay:0.16s;">風のように<br>素早く開発</span>
-        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#0E7A76;color:#fff;" onclick="window.location.href='https://search3958.github.io/baram/'">今すぐ見る</button>
+        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#02f169;color:#000;" onclick="window.location.href='https://search3958.github.io/baram/'">今すぐ見る</button>
         <img class="app-image xin-reveal" style="--xin-delay:0.32s;" src="/imgs/260501-baram-image.png">
 
     </div>
