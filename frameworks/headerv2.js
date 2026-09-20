@@ -43,7 +43,9 @@ items: [
 "プロダクト一覧",
 "ツール",
 "BaramOS",
-"私のGoogle Play"
+"私のGoogle Play",
+"ロゴ",
+"Nidele Series"
 ]
 },
 support: {
@@ -87,7 +89,9 @@ items: [
 "All Products",
 "Tools",
 "BaramOS",
-"My Google Play"
+"My Google Play",
+"Logos",
+"Nidele Series"
 ]
 },
 support: {
@@ -131,7 +135,9 @@ items: [
 "프로덕트 목록",
 "도구",
 "BaramOS",
-"내 Google Play"
+"내 Google Play",
+"로고",
+"니델레 시리즈"
 ]
 },
 support: {
@@ -175,7 +181,9 @@ items: [
 "제품목록",
 "도구",
 "바람조작체계",
-"나의 길 동무 페지 (Google)"
+"나의 길 동무 페지 (Google)",
+"등록상표",
+"니델레 계렬"
 ]
 },
 support: {
@@ -219,7 +227,9 @@ items: [
 "产品列表",
 "工具",
 "BaramOS",
-"我的 Google Play"
+"我的 Google Play",
+"标志",
+"你的乐系列"
 ]
 },
 support: {
@@ -263,7 +273,9 @@ items: [
 "產品列表",
 "工具",
 "BaramOS",
-"我的 Google Play"
+"我的 Google Play",
+"標誌",
+"你的楽系列"
 ]
 },
 support: {
@@ -307,7 +319,9 @@ items: [
 "Все продукты",
 "Инструменты",
 "BaramOS",
-"Мой Google Play"
+"Мой Google Play",
+"Логотипы",
+"Серия Nidele"
 ]
 },
 support: {
@@ -405,6 +419,7 @@ return dictionary;
 }
 
 const headerHTML = `
+
 <header style="z-index:999999!important">
 <a href="https://search3958.github.io/">
 
@@ -448,16 +463,18 @@ const headerHTML = `
 <a
 href="https://search3958.github.io/i/products/"
 data-headerv2-menu="products"
+
 >
-<span data-headerv2-i18n="header.products">プロダクト</span>
-</a>
+
+<span data-headerv2-i18n="header.products">プロダクト</span> </a>
 
 <a
 href="https://search3958.github.io/i/newtab/"
 data-headerv2-menu="newtab"
+
 >
-<span data-headerv2-i18n="header.newtab">Newtab</span>
-</a>
+
+<span data-headerv2-i18n="header.newtab">Newtab</span> </a>
 
 <a href="https://search3958.github.io/i/red/">
 <span data-headerv2-i18n="header.firstGoal">第一目標</span>
@@ -467,13 +484,16 @@ data-headerv2-menu="newtab"
 href="javascript:void(0)"
 data-headerv2-menu="support"
 data-headerv2-no-navigation="true"
+
 >
-<span data-headerv2-i18n="header.support">サポートと情報</span>
-</a>
+
+<span data-headerv2-i18n="header.support">サポートと情報</span> </a>
+
 </header>
 `;
 
 const footerHTML = `
+
 <footer>
 <span><a href="https://search3958.github.io/policies/"><span data-headerv2-i18n="footer.policies">利用規約と個人情報政策</span></a>・<a href="https://search3958.github.io/accounts/lang"><span data-headerv2-i18n="footer.language">言語</span></a>・<a href="https://github.com/search3958/"><span data-headerv2-i18n="footer.github">GitHub</span></a></span>
 <br>
@@ -528,6 +548,14 @@ href:
 {
 href:
 "https://play.google.com/store/apps/dev?id=5714216887541621486"
+},
+{
+href:
+"https://search3958.github.io/project/logos"
+},
+{
+href:
+"https://nidele206.github.io/"
 }
 ]
 },
@@ -1616,6 +1644,7 @@ setTriggerExpanded(
 trigger,
 true
 );
+
 activeTrigger =
 trigger;
 }
