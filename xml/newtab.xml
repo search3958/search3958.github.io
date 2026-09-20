@@ -67,11 +67,6 @@
         <text key="n59">利用規約とプライバシーポリシー</text>
         <text key="n60">言語</text>
         <text key="n61">GitHub</text>
-        <text key="nav_newtab">NewTab</text>
-        <text key="nav_red">第一目標</text>
-        <text key="nav_tools">ツール</text>
-        <text key="nav_products">プロダクト</text>
-        <text key="nav_github">GitHub</text>
     <text key="footer_policy">利用規約と個人情報政策</text></lang>
     <lang id="en">
         <text key="n1">NewTab Series</text>
@@ -140,11 +135,6 @@
         <text key="n59">Terms &amp; Privacy Policy</text>
         <text key="n60">Language</text>
         <text key="n61">GitHub</text>
-        <text key="nav_newtab">NewTab</text>
-        <text key="nav_red">Primary Goals</text>
-        <text key="nav_tools">Tools</text>
-        <text key="nav_products">Products</text>
-        <text key="nav_github">GitHub</text>
     <text key="footer_policy">Terms &amp; Personal Information Policy</text></lang>
     <lang id="zh-CN">
         <text key="n1">NewTab 系列</text>
@@ -213,11 +203,6 @@
         <text key="n59">服务条款和隐私政策</text>
         <text key="n60">语言</text>
         <text key="n61">GitHub</text>
-        <text key="nav_newtab">NewTab</text>
-        <text key="nav_red">首要目标</text>
-        <text key="nav_tools">工具</text>
-        <text key="nav_products">产品</text>
-        <text key="nav_github">GitHub</text>
     <text key="footer_policy">服务条款和个人信息政策</text></lang>
     <lang id="zh-TW">
         <text key="n1">NewTab 系列</text>
@@ -286,11 +271,6 @@
         <text key="n59">服務條款和隱私政策</text>
         <text key="n60">語言</text>
         <text key="n61">GitHub</text>
-        <text key="nav_newtab">NewTab</text>
-        <text key="nav_red">首要目標</text>
-        <text key="nav_tools">工具</text>
-        <text key="nav_products">產品</text>
-        <text key="nav_github">GitHub</text>
     <text key="footer_policy">服務條款和個人資訊政策</text></lang>
     <lang id="ko">
         <text key="n1">NewTab 시리즈</text>
@@ -359,11 +339,6 @@
         <text key="n59">이용약관 및 개인정보 처리방침</text>
         <text key="n60">언어</text>
         <text key="n61">GitHub</text>
-        <text key="nav_newtab">NewTab</text>
-        <text key="nav_red">주요 목표</text>
-        <text key="nav_tools">도구</text>
-        <text key="nav_products">제품</text>
-        <text key="nav_github">GitHub</text>
     <text key="footer_policy">이용약관 및 개인정보 처리방침</text></lang>
     <lang id="ko-KP">
         <text key="n1">NewTab 시리즈</text>
@@ -432,10 +407,5 @@
         <text key="n59">리용약관 및 프라이버시정책</text>
         <text key="n60">언어</text>
         <text key="n61">GitHub</text>
-        <text key="nav_newtab">NewTab</text>
-        <text key="nav_red">주요 목표</text>
-        <text key="nav_tools">도구</text>
-        <text key="nav_products">제품들</text>
-        <text key="nav_github">GitHub</text>
     <text key="footer_policy">리용약관 및 개인정보정책</text></lang>
 </dictionary>
