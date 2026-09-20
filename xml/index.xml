@@ -43,6 +43,15 @@
         <text key="i31">興味で伸ばす</text>
         <text key="i32">言語学習</text>
         <text key="i33">相互リンクをご確認ください</text>
+        <text key="i34">私について</text>
+        <text key="i35">簡潔に言うとインドア派の日本語話者です</text>
+        <text key="i36">年代</text>
+        <text key="i37">高校生</text>
+        <text key="i38">趣味</text>
+        <text key="i39">アプリ開発</text>
+        <text key="i40">第一言語</text>
+        <text key="i41">好きな色</text>
+        <text key="i42">緑</text>
     </lang>
     <lang id="en">
         <text key="i1">I'm Sentaro</text>
@@ -86,6 +95,15 @@
         <text key="i31">Grow through curiosity</text>
         <text key="i32">Language Learning</text>
         <text key="i33">Please check the mutual links</text>
+        <text key="i34">About Me</text>
+        <text key="i35">Briefly, I'm an indoor Japanese speaker</text>
+        <text key="i36">Age</text>
+        <text key="i37">High school student</text>
+        <text key="i38">Hobby</text>
+        <text key="i39">App development</text>
+        <text key="i40">First language</text>
+        <text key="i41">Favorite color</text>
+        <text key="i42">Green</text>
     </lang>
     <lang id="zh-CN">
         <text key="i1">我是Sentaro</text>
@@ -129,6 +147,15 @@
         <text key="i31">因兴趣而成长</text>
         <text key="i32">语言学习</text>
         <text key="i33">请确认相互链接</text>
+        <text key="i34">关于我</text>
+        <text key="i35">简而言之我是个室内派的日语使用者</text>
+        <text key="i36">年代</text>
+        <text key="i37">高中生</text>
+        <text key="i38">趣味</text>
+        <text key="i39">应用开发</text>
+        <text key="i40">第一语言</text>
+        <text key="i41">喜欢的颜色</text>
+        <text key="i42">绿</text>
     </lang>
     <lang id="zh-TW">
         <text key="i1">我是Sentaro</text>
@@ -172,6 +199,15 @@
         <text key="i31">因興趣而成長</text>
         <text key="i32">語言學習</text>
         <text key="i33">請確認相互連結</text>
+        <text key="i34">關於我</text>
+        <text key="i35">簡而言之我個室內派的日語使用者</text>
+        <text key="i36">年代</text>
+        <text key="i37">高中生</text>
+        <text key="i38">興趣</text>
+        <text key="i39">應用開發</text>
+        <text key="i40">第一語言</text>
+        <text key="i41">喜歡的顏色</text>
+        <text key="i42">綠</text>
     </lang>
     <lang id="ko">
         <text key="i1">저는 Sentaro입니다</text>
@@ -215,6 +251,15 @@
         <text key="i31">관심으로 성장</text>
         <text key="i32">언어 학습</text>
         <text key="i33">상호 링크를 확인해 주세요</text>
+        <text key="i34">나에 대해</text>
+        <text key="i35">간단히 말해 실내파 일본어 화자입니다</text>
+        <text key="i36">나이</text>
+        <text key="i37">고등학생</text>
+        <text key="i38">취미</text>
+        <text key="i39">앱 개발</text>
+        <text key="i40">제1언어</text>
+        <text key="i41">좋아하는 색</text>
+        <text key="i42">초록</text>
     </lang>
     <lang id="ko-KP">
         <text key="i1">나는 Sentaro입니다</text>
@@ -258,5 +303,14 @@
         <text key="i31">관심으로 성장</text>
         <text key="i32">언어 학습</text>
         <text key="i33">상호 링크를 확인하십시오</text>
+        <text key="i34">나에 대해</text>
+        <text key="i35">간단히 말해 실내파 일본어 화자입니다</text>
+        <text key="i36">나이</text>
+        <text key="i37">고등학생</text>
+        <text key="i38">취미</text>
+        <text key="i39">앱 개발</text>
+        <text key="i40">제1언어</text>
+        <text key="i41">좋아하는 색</text>
+        <text key="i42">초록</text>
     </lang>
 </dictionary>

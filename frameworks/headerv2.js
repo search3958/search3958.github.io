@@ -25,7 +25,8 @@ support: "サポートと情報"
 footer: {
 policies: "利用規約と個人情報政策",
 language: "言語",
-github: "GitHub"
+github: "GitHub",
+notice: "信頼されるサービスを目指しておりますが、高校生ゆえ不手際があるかもしれません\nその際はお問い合わせフォームよりご指摘いただけますと幸いです"
 },
 menus: {
 newtab: {
@@ -68,7 +69,8 @@ support: "Support & Info"
 footer: {
 policies: "Terms & Privacy Policy",
 language: "Language",
-github: "GitHub"
+github: "GitHub",
+notice: "We aim to provide a service you can trust, but as a high school student, I may make mistakes or oversights.\nIf you notice any issues, I would appreciate it if you could let me know through the contact form."
 },
 menus: {
 newtab: {
@@ -111,7 +113,8 @@ support: "지원 및 정보"
 footer: {
 policies: "이용약관 및 개인정보 정책",
 language: "언어",
-github: "GitHub"
+github: "GitHub",
+notice: "신뢰받는 서비스를 만들기 위해 노력하고 있지만, 고등학생인 만큼 미흡한 점이 있을 수 있습니다.\n그러한 경우 문의 양식을 통해 지적해 주시면 감사하겠습니다."
 },
 menus: {
 newtab: {
@@ -154,7 +157,8 @@ support: "지원과 정보"
 footer: {
 policies: "리용약관과 개인정보정책",
 language: "언어",
-github: "봉사자용 원시 프로그람"
+github: "봉사자용 원시 프로그람",
+notice: "신뢰받는 봉사를 지향하지만 고등학생이기에 미흡한 점이 있을수 있습니다.\n그러한 경우 문의양식을 통해 지적해주시면 고맙겠습니다."
 },
 menus: {
 newtab: {
@@ -197,7 +201,8 @@ support: "支持与信息"
 footer: {
 policies: "使用条款和隐私政策",
 language: "语言",
-github: "GitHub"
+github: "GitHub",
+notice: "我们致力于成为值得信赖的服务，但由于我还是一名高中生，可能会有做得不够周全的地方。\n如有不周之处，敬请通过联系表单指出，非常感谢。"
 },
 menus: {
 newtab: {
@@ -240,7 +245,8 @@ support: "支援與資訊"
 footer: {
 policies: "使用條款與隱私權政策",
 language: "語言",
-github: "GitHub"
+github: "GitHub",
+notice: "我們致力於成為值得信賴的服務，但由於我還是一名高中生，可能會有做得不夠周全的地方。\n如有不周之處，敬請透過聯絡表單指正，十分感謝。"
 },
 menus: {
 newtab: {
@@ -283,7 +289,8 @@ support: "Поддержка и информация"
 footer: {
 policies: "Условия использования и политика конфиденциальности",
 language: "Язык",
-github: "GitHub"
+github: "GitHub",
+notice: "Мы стремимся предоставлять сервис, которому можно доверять, но, поскольку я ещё учусь в старшей школе, я могу допустить недочёты.\nЕсли вы заметите что-либо подобное, буду благодарен, если сообщите об этом через форму обратной связи."
 },
 menus: {
 newtab: {
@@ -471,7 +478,15 @@ const footerHTML = `
 <span><a href="https://search3958.github.io/policies/"><span data-headerv2-i18n="footer.policies">利用規約と個人情報政策</span></a>・<a href="https://search3958.github.io/accounts/lang"><span data-headerv2-i18n="footer.language">言語</span></a>・<a href="https://github.com/search3958/"><span data-headerv2-i18n="footer.github">GitHub</span></a></span>
 <br>
 
-<img width="40" height="40" src="https://search3958.github.io/project/logos/3958logo_main.svg">
+<img width="40" height="60" src="https://search3958.github.io/project/logos/3958logo_main.svg">
+
+<div
+class="headerv2-footer-note"
+data-headerv2-i18n="footer.notice"
+>
+信頼されるサービスを目指しておりますが、高校生ゆえ不手際があるかもしれません
+その際はお問い合わせフォームよりご指摘いただけますと幸いです
+</div>
 
 </footer>
 `;
@@ -599,8 +614,19 @@ text-decoration: none;
 color:#000;
 padding: 20px 12px;
 }
+
 header > a > svg {
 padding-top: 4px;
+}
+
+footer .headerv2-footer-note {
+margin-top: 8px;
+font-size: 14px;
+line-height: 1.6;
+font-weight: 400;
+color: rgba(0, 0, 0, 0.55);
+text-align: center;
+white-space: pre-line;
 }
 
 #${BACKDROP_ID} {
@@ -1088,20 +1114,20 @@ console.error(
 for (const node of headerNodes) {
 if (!node) {
 console.error(
-  `[${NS}] invalid header translation node.`
+`[${NS}] invalid header translation node.`
 );
 continue;
 }
 
 const key =
 node.getAttribute(
-  "data-headerv2-i18n"
+"data-headerv2-i18n"
 );
 
 if (!key) {
 console.error(
-  `[${NS}] header translation key missing.`,
-  node
+`[${NS}] header translation key missing.`,
+node
 );
 continue;
 }
@@ -1114,7 +1140,7 @@ dictionary[group]?.[item];
 
 if (typeof value !== "string") {
 console.error(
-  `[${NS}] header translation value not found: ${key}`
+`[${NS}] header translation value not found: ${key}`
 );
 continue;
 }
@@ -1143,20 +1169,20 @@ console.error(
 for (const node of footerNodes) {
 if (!node) {
 console.error(
-  `[${NS}] invalid footer translation node.`
+`[${NS}] invalid footer translation node.`
 );
 continue;
 }
 
 const key =
 node.getAttribute(
-  "data-headerv2-i18n"
+"data-headerv2-i18n"
 );
 
 if (!key) {
 console.error(
-  `[${NS}] footer translation key missing.`,
-  node
+`[${NS}] footer translation key missing.`,
+node
 );
 continue;
 }
@@ -1169,7 +1195,7 @@ dictionary[group]?.[item];
 
 if (typeof value !== "string") {
 console.error(
-  `[${NS}] footer translation value not found: ${key}`
+`[${NS}] footer translation value not found: ${key}`
 );
 continue;
 }
@@ -1634,52 +1660,52 @@ switchTimer =
 window.setTimeout(
 () => {
 switchTimer =
-  null;
+null;
 
 if (
-  !renderMenu(
-    menuParts.content,
-    type
-  )
+!renderMenu(
+menuParts.content,
+type
+)
 ) {
-  menuParts.content.classList.remove(
-    "is-fading"
-  );
-  return;
+menuParts.content.classList.remove(
+"is-fading"
+);
+return;
 }
 
 activeType =
-  type;
+type;
 
 resetTriggerStates();
 
 if (trigger) {
-  setTriggerExpanded(
-    trigger,
-    true
-  );
+setTriggerExpanded(
+trigger,
+true
+);
 
-  activeTrigger =
-    trigger;
+activeTrigger =
+trigger;
 }
 
 const nextHeight =
-  getMenuHeight();
+getMenuHeight();
 
 setMenuHeight(
-  nextHeight
+nextHeight
 );
 
 requestAnimationFrame(
-  () => {
-    menuParts.content.classList.remove(
-      "is-fading"
-    );
-  }
+() => {
+menuParts.content.classList.remove(
+"is-fading"
+);
+}
 );
 
 console.info(
-  `[${NS}] menu switched: ${type}`
+`[${NS}] menu switched: ${type}`
 );
 },
 180
@@ -1727,11 +1753,11 @@ window.setTimeout(
 if (
 isClosing &&
 !menuParts.menu.classList.contains(
-  "is-open"
+"is-open"
 )
 ) {
 menuParts.menu.style.height =
-  "0px";
+"0px";
 }
 },
 420
@@ -1749,19 +1775,19 @@ closeTimer =
 window.setTimeout(
 () => {
 closeTimer =
-  null;
+null;
 
 const currentHeaderItem =
-  getHoveredHeaderItem();
+getHoveredHeaderItem();
 
 const menuHovered =
-  menuParts.menu.matches(":hover");
+menuParts.menu.matches(":hover");
 
 if (
-  !currentHeaderItem &&
-  !menuHovered
+!currentHeaderItem &&
+!menuHovered
 ) {
-  closeMenu();
+closeMenu();
 }
 },
 80
@@ -1786,22 +1812,7 @@ hoveredHeaderItem;
 hoveredHeaderItem =
 item;
 
-/*
-* スクロールでメニューが畳まれた後も、
-* ヘッダー内に留まっている間は現在のホバー状態を維持する。
-* ヘッダーから完全に離れた場合は headerElement の
-* pointerleave で scrollCollapsed を解除しているため、
-* 再度同じ項目へ入った時も通常どおりメニューを表示する。
-*/
 if (scrollCollapsed) {
-/*
-* スクロールで畳まれた状態でも、
-* ヘッダーから一度完全に離れて再度この項目へ入った場合は
-* 通常のホバー動作としてメニューを再表示する。
-*
-* scrollCollapsed の解除は headerElement の
-* pointerleave で行うため、ここでは特別扱いせず通常処理へ進む。
-*/
 console.info(
 `[${NS}] re-entered header item after scroll collapse; normal hover behavior restored.`
 );
@@ -1818,11 +1829,6 @@ item.getAttribute(
 "data-headerv2-menu"
 );
 
-/*
-* メニュー対象ではないヘッダー項目
-* （ロゴ、第一目標など）にホバーした場合は
-* 必ずメニューを閉じる。
-*/
 if (!type) {
 closeMenu();
 
@@ -1846,10 +1852,6 @@ closeMenu();
 return;
 }
 
-/*
-* 同じ要素に対する通常の pointerenter では
-* 何度も不要な切り替えを行わない。
-*/
 if (
 previousHoveredItem === item &&
 activeType === type
@@ -1951,13 +1953,6 @@ event.preventDefault();
 }
 }
 
-/*
-* header全体の:hoverは使わない。
-*
-* ヘッダー直下の空白部分だけを明示的に検出する。
-* target が headerElement 自身なら、どの子要素にも
-* ホバーされていないのでメニューを閉じる。
-*/
 headerElement.addEventListener(
 "pointerleave",
 () => {
@@ -2102,11 +2097,6 @@ updateHeaderPosition(
 headerElement
 );
 
-/*
-* スクロールした瞬間に必ずメニューを畳む。
-* その時点で実際にホバーされている
-* 「ヘッダー直下の1要素」だけを記録する。
-*/
 const currentHoveredItem =
 getHoveredHeaderItem();
 
