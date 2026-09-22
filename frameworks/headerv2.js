@@ -495,8 +495,8 @@ href="https://search3958.github.io/"
 </span>
 
 <span class="headerv2-logo-back" aria-hidden="true">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M19 12H5M5 12L11 6M5 12L11 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<svg width="27" height="27" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19 12H5M5 12L11 6M5 12L11 18" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 </span>
 </a>
@@ -1005,7 +1005,7 @@ transform: rotate(-45deg);
 
 #${MENU_ID} .headerv2-menu-inner {
 width:
-calc(100% - 28px);
+calc(100% - 40px);
 
 padding:
 25px 0 30px;
