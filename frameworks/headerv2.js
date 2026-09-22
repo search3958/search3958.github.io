@@ -13,6 +13,7 @@ return;
 const STYLE_ID = "headerv2-style";
 const MENU_ID = "headerv2-menu";
 const BACKDROP_ID = "headerv2-backdrop";
+const MOBILE_BREAKPOINT = 680;
 
 const I18N = {
 ja: {
@@ -20,7 +21,11 @@ header: {
 products: "プロダクト",
 newtab: "Newtab",
 firstGoal: "第一目標",
-support: "サポートと情報"
+support: "サポートと情報",
+menu: "メニュー",
+close: "閉じる",
+back: "戻る",
+home: "ホーム"
 },
 footer: {
 policies: "利用規約と個人情報政策",
@@ -66,7 +71,11 @@ header: {
 products: "Products",
 newtab: "Newtab",
 firstGoal: "First Goal",
-support: "Support & Info"
+support: "Support & Info",
+menu: "Menu",
+close: "Close",
+back: "Back",
+home: "Home"
 },
 footer: {
 policies: "Terms & Privacy Policy",
@@ -112,7 +121,11 @@ header: {
 products: "프로덕트",
 newtab: "Newtab",
 firstGoal: "첫 목표",
-support: "지원 및 정보"
+support: "지원 및 정보",
+menu: "메뉴",
+close: "닫기",
+back: "뒤로",
+home: "홈"
 },
 footer: {
 policies: "이용약관 및 개인정보 정책",
@@ -158,7 +171,11 @@ header: {
 products: "제품",
 newtab: "앞길7",
 firstGoal: "우리 정젝사상",
-support: "지원과 정보"
+support: "지원과 정보",
+menu: "메뉴",
+close: "닫기",
+back: "뒤로",
+home: "홈"
 },
 footer: {
 policies: "리용약관과 개인정보정책",
@@ -204,7 +221,11 @@ header: {
 products: "产品",
 newtab: "Newtab",
 firstGoal: "第一目标",
-support: "支持与信息"
+support: "支持与信息",
+menu: "菜单",
+close: "关闭",
+back: "返回",
+home: "主页"
 },
 footer: {
 policies: "使用条款和隐私政策",
@@ -250,7 +271,11 @@ header: {
 products: "產品",
 newtab: "Newtab",
 firstGoal: "第一目標",
-support: "支援與資訊"
+support: "支援與資訊",
+menu: "選單",
+close: "關閉",
+back: "返回",
+home: "首頁"
 },
 footer: {
 policies: "使用條款與隱私權政策",
@@ -282,7 +307,7 @@ support: {
 title: "支援與資訊",
 items: [
 "支援",
-"我的 GitHub",
+"聯絡我",
 "聯絡我",
 "使用條款與隱私權政策",
 "語言"
@@ -296,7 +321,11 @@ header: {
 products: "Продукты",
 newtab: "Newtab",
 firstGoal: "Первая цель",
-support: "Поддержка и информация"
+support: "Поддержка и информация",
+menu: "Меню",
+close: "Закрыть",
+back: "Назад",
+home: "Главная"
 },
 footer: {
 policies: "Условия использования и политика конфиденциальности",
@@ -421,7 +450,12 @@ return dictionary;
 const headerHTML = `
 
 <header style="z-index:999999!important">
-<a href="https://search3958.github.io/">
+<a
+class="headerv2-logo"
+data-headerv2-logo="true"
+href="https://search3958.github.io/"
+>
+<span class="headerv2-logo-image" aria-hidden="true">
 
 <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M7 7H19V19L7 14V7Z" fill="url(#paint0_linear_57_48)"/>
@@ -458,23 +492,28 @@ const headerHTML = `
 </defs>
 </svg>
 
+</span>
+
+<span class="headerv2-logo-back" aria-hidden="true">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19 12H5M5 12L11 6M5 12L11 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</span>
 </a>
 
 <a
 href="https://search3958.github.io/i/products/"
 data-headerv2-menu="products"
-
 >
-
-<span data-headerv2-i18n="header.products">プロダクト</span> </a>
+<span data-headerv2-i18n="header.products">プロダクト</span>
+</a>
 
 <a
 href="https://search3958.github.io/i/newtab/"
 data-headerv2-menu="newtab"
-
 >
-
-<span data-headerv2-i18n="header.newtab">Newtab</span> </a>
+<span data-headerv2-i18n="header.newtab">Newtab</span>
+</a>
 
 <a href="https://search3958.github.io/i/red/">
 <span data-headerv2-i18n="header.firstGoal">第一目標</span>
@@ -484,11 +523,19 @@ data-headerv2-menu="newtab"
 href="javascript:void(0)"
 data-headerv2-menu="support"
 data-headerv2-no-navigation="true"
-
 >
+<span data-headerv2-i18n="header.support">サポートと情報</span>
+</a>
 
-<span data-headerv2-i18n="header.support">サポートと情報</span> </a>
-
+<button
+class="headerv2-menu-button"
+type="button"
+aria-expanded="false"
+aria-label="メニュー"
+>
+<span class="headerv2-menu-button-line"></span>
+<span class="headerv2-menu-button-line"></span>
+</button>
 </header>
 `;
 
@@ -645,6 +692,25 @@ padding: 20px 12px;
 
 header > a > svg {
 padding-top: 4px;
+}
+
+.headerv2-logo-image > svg {
+padding-top: 4px;
+}
+
+.headerv2-logo-image,
+.headerv2-logo-back {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+}
+
+.headerv2-logo-back {
+display: none;
+}
+
+.headerv2-menu-button {
+display: none;
 }
 
 footer .headerv2-footer-note {
@@ -847,6 +913,96 @@ font-weight:
 }
 
 @media (max-width: 680px) {
+header {
+justify-content: space-between;
+box-sizing: border-box;
+padding: 0 12px;
+}
+
+header > a:not(.headerv2-logo) {
+display: none;
+}
+
+header > .headerv2-logo {
+width: 44px;
+height: 52px;
+padding: 0;
+box-sizing: border-box;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+flex: 0 0 44px;
+}
+
+header > .headerv2-logo > svg {
+padding-top: 0;
+}
+
+.headerv2-logo-image > svg {
+padding-top: 0;
+}
+
+.headerv2-logo-image {
+display: inline-flex;
+}
+
+.headerv2-logo-back {
+display: none;
+}
+
+.headerv2-logo.is-back .headerv2-logo-image {
+display: none;
+}
+
+.headerv2-logo.is-back .headerv2-logo-back {
+display: inline-flex;
+}
+
+.headerv2-menu-button {
+position: relative;
+display: inline-flex;
+width: 44px;
+height: 44px;
+padding: 0;
+margin: 0;
+border: 0;
+background: transparent;
+color: #000;
+appearance: none;
+-webkit-appearance: none;
+align-items: center;
+justify-content: center;
+flex: 0 0 44px;
+cursor: pointer;
+}
+
+.headerv2-menu-button-line {
+position: absolute;
+left: 12px;
+width: 20px;
+height: 1.5px;
+background: currentColor;
+border-radius: 999px;
+transform-origin: center;
+transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 120ms ease;
+}
+
+.headerv2-menu-button-line:first-child {
+transform: translateY(-3px);
+}
+
+.headerv2-menu-button-line:last-child {
+transform: translateY(3px);
+}
+
+.headerv2-menu-button.is-open .headerv2-menu-button-line:first-child {
+transform: rotate(45deg);
+}
+
+.headerv2-menu-button.is-open .headerv2-menu-button-line:last-child {
+transform: rotate(-45deg);
+}
+
 #${MENU_ID} .headerv2-menu-inner {
 width:
 calc(100% - 28px);
@@ -868,7 +1024,8 @@ padding:
 #${MENU_ID},
 #${MENU_ID} .headerv2-menu-content,
 #${MENU_ID} .headerv2-menu-list li,
-#${BACKDROP_ID} {
+#${BACKDROP_ID},
+.headerv2-menu-button-line {
 transition-duration:
 1ms !important;
 }
@@ -1294,6 +1451,10 @@ console.error(
 return false;
 }
 
+contentElement.classList.remove(
+"headerv2-mobile-root"
+);
+
 contentElement.replaceChildren();
 
 const title =
@@ -1400,6 +1561,20 @@ console.info(
 return true;
 }
 
+function isMobileViewport() {
+const viewportWidth =
+window.innerWidth;
+
+if (!Number.isFinite(viewportWidth)) {
+console.error(
+`[${NS}] window.innerWidth is invalid: ${viewportWidth}`
+);
+return false;
+}
+
+return viewportWidth <= MOBILE_BREAKPOINT;
+}
+
 function setupNavigation(
 headerElement,
 menuParts
@@ -1423,12 +1598,36 @@ console.error(
 return;
 }
 
+const mobileMenuButton =
+headerElement.querySelector(
+".headerv2-menu-button"
+);
+
+if (!mobileMenuButton) {
+console.error(
+`[${NS}] mobile menu button not found.`
+);
+return;
+}
+
+const logoLink =
+headerElement.querySelector(
+".headerv2-logo"
+);
+
+if (!logoLink) {
+console.error(
+`[${NS}] logo link not found.`
+);
+return;
+}
+
 const headerItems =
 Array.from(
 headerElement.children
 ).filter(
 (element) =>
-element instanceof HTMLElement
+ element instanceof HTMLElement
 );
 
 if (headerItems.length === 0) {
@@ -1438,10 +1637,23 @@ console.error(
 return;
 }
 
+const desktopNavItems =
+headerItems.filter(
+(element) =>
+ element instanceof HTMLAnchorElement &&
+ element !== logoLink
+);
+
+if (desktopNavItems.length !== 4) {
+console.error(
+`[${NS}] expected exactly 4 desktop navigation items, found ${desktopNavItems.length}.`
+);
+}
+
 const triggers =
 headerItems.filter(
 (element) =>
-element.hasAttribute(
+ element.hasAttribute(
 "data-headerv2-menu"
 )
 );
@@ -1476,12 +1688,17 @@ null;
 let isClosing =
 false;
 
+let mobileMenuLevel =
+"root";
+
+let lastIsMobile =
+ isMobileViewport();
+
 function clearCloseTimer() {
 if (closeTimer !== null) {
 window.clearTimeout(
 closeTimer
 );
-
 closeTimer =
 null;
 }
@@ -1492,7 +1709,6 @@ if (switchTimer !== null) {
 window.clearTimeout(
 switchTimer
 );
-
 switchTimer =
 null;
 }
@@ -1589,7 +1805,249 @@ menuParts.menu.style.height =
 `calc(${height}px + 64px)`;
 }
 
+function setMobileHeaderState(
+menuOpen,
+submenuOpen
+) {
+if (!mobileMenuButton) {
+console.error(
+`[${NS}] mobile menu button not found while updating state.`
+);
+return;
+}
+
+if (!logoLink) {
+console.error(
+`[${NS}] logo link not found while updating state.`
+);
+return;
+}
+
+const dictionary =
+getI18n();
+
+const menuLabel =
+typeof dictionary.header.menu === "string"
+? dictionary.header.menu
+: "Menu";
+
+const closeLabel =
+typeof dictionary.header.close === "string"
+? dictionary.header.close
+: "Close";
+
+const backLabel =
+typeof dictionary.header.back === "string"
+? dictionary.header.back
+: "Back";
+
+const homeLabel =
+typeof dictionary.header.home === "string"
+? dictionary.header.home
+: "Home";
+
+mobileMenuButton.classList.toggle(
+"is-open",
+Boolean(menuOpen)
+);
+
+mobileMenuButton.setAttribute(
+"aria-expanded",
+String(Boolean(menuOpen))
+);
+
+mobileMenuButton.setAttribute(
+"aria-label",
+menuOpen ? closeLabel : menuLabel
+);
+
+logoLink.classList.toggle(
+"is-back",
+Boolean(submenuOpen)
+);
+
+logoLink.setAttribute(
+"aria-label",
+submenuOpen ? backLabel : homeLabel
+);
+
+console.info(
+`[${NS}] mobile controls updated: open=${Boolean(menuOpen)}, submenu=${Boolean(submenuOpen)}`
+);
+}
+
+function renderMobileRootMenu() {
+if (!menuParts.content) {
+console.error(
+`[${NS}] menu content element not found while rendering mobile root.`
+);
+return false;
+}
+
+if (desktopNavItems.length === 0) {
+console.error(
+`[${NS}] desktop navigation items are unavailable for mobile root menu.`
+);
+return false;
+}
+
+menuParts.content.classList.add(
+"headerv2-mobile-root"
+);
+
+menuParts.content.replaceChildren();
+
+const list =
+document.createElement("ul");
+
+if (!list) {
+console.error(
+`[${NS}] failed to create mobile root list.`
+);
+return false;
+}
+
+list.className =
+"headerv2-menu-list";
+
+for (
+let index = 0;
+index < desktopNavItems.length;
+index += 1
+) {
+const desktopItem =
+desktopNavItems[index];
+
+if (!desktopItem) {
+console.error(
+`[${NS}] invalid desktop navigation item at index ${index}.`
+);
+continue;
+}
+
+const labelNode =
+desktopItem.querySelector(
+"[data-headerv2-i18n]"
+);
+
+if (!labelNode) {
+console.error(
+`[${NS}] mobile root label node not found at index ${index}.`,
+desktopItem
+);
+continue;
+}
+
+const label =
+labelNode.textContent?.trim();
+
+if (!label) {
+console.error(
+`[${NS}] mobile root label is empty at index ${index}.`
+);
+continue;
+}
+
+const li =
+document.createElement("li");
+
+if (!li) {
+console.error(
+`[${NS}] failed to create mobile root list item.`
+);
+continue;
+}
+
+const link =
+document.createElement("a");
+
+if (!link) {
+console.error(
+`[${NS}] failed to create mobile root link.`
+);
+continue;
+}
+
+link.className =
+"headerv2-menu-link";
+
+const type =
+desktopItem.getAttribute(
+"data-headerv2-menu"
+);
+
+if (type) {
+if (!menuData[type]) {
+console.error(
+`[${NS}] mobile root menu type is invalid: ${type}`
+);
+continue;
+}
+
+link.href =
+"#headerv2-mobile-submenu";
+
+link.addEventListener(
+"click",
+(event) => {
+if (!event) {
+console.error(
+`[${NS}] mobile submenu click event missing.`
+);
+return;
+}
+
+event.preventDefault();
+openMobileSubmenu(type);
+},
+{
+passive: false
+}
+);
+} else {
+const href =
+desktopItem.getAttribute("href");
+
+if (!href) {
+console.error(
+`[${NS}] direct mobile root item has no href: ${label}`
+);
+continue;
+}
+
+link.href =
+href;
+}
+
+link.textContent =
+label;
+
+li.style.setProperty(
+"--headerv2-item-index",
+String(index)
+);
+
+li.appendChild(link);
+list.appendChild(li);
+}
+
+menuParts.content.appendChild(list);
+
+console.info(
+`[${NS}] rendered mobile root menu with ${list.children.length} items (${getSelectedLang()}).`
+);
+
+return true;
+}
+
 function openMenu(type, trigger = null) {
+if (isMobileViewport()) {
+console.info(
+`[${NS}] desktop hover menu suppressed on mobile viewport: ${type}`
+);
+return;
+}
+
 if (!menuData[type]) {
 console.error(
 `[${NS}] unknown menu type: ${type}`
@@ -1601,6 +2059,11 @@ clearCloseTimer();
 
 isClosing =
 false;
+
+setMobileHeaderState(
+false,
+false
+);
 
 updateHeaderPosition(
 headerElement
@@ -1741,6 +2204,255 @@ console.info(
 );
 }
 
+function openMobileMenu() {
+if (!isMobileViewport()) {
+console.error(
+`[${NS}] openMobileMenu called outside mobile viewport.`
+);
+return;
+}
+
+clearCloseTimer();
+clearSwitchTimer();
+
+isClosing =
+false;
+
+updateHeaderPosition(
+headerElement
+);
+
+if (!renderMobileRootMenu()) {
+console.error(
+`[${NS}] mobile root menu rendering failed.`
+);
+return;
+}
+
+activeType =
+null;
+activeTrigger =
+null;
+mobileMenuLevel =
+"root";
+
+resetTriggerStates();
+
+menuParts.menu.classList.add(
+"is-open"
+);
+
+menuParts.backdrop.classList.add(
+"is-open"
+);
+
+setMenuHeight(
+getMenuHeight()
+);
+
+setMobileHeaderState(
+true,
+false
+);
+
+console.info(
+`[${NS}] mobile root menu opened.`
+);
+}
+
+function openMobileSubmenu(type) {
+if (!isMobileViewport()) {
+console.error(
+`[${NS}] openMobileSubmenu called outside mobile viewport: ${type}`
+);
+return;
+}
+
+if (!menuData[type]) {
+console.error(
+`[${NS}] unknown mobile submenu type: ${type}`
+);
+return;
+}
+
+clearCloseTimer();
+
+isClosing =
+false;
+
+if (
+!menuParts.menu.classList.contains(
+"is-open"
+)
+) {
+openMobileMenu();
+}
+
+if (activeType === type && mobileMenuLevel === "submenu") {
+console.info(
+`[${NS}] same mobile submenu remains open: ${type}`
+);
+return;
+}
+
+clearSwitchTimer();
+
+menuParts.content.classList.add(
+"is-fading"
+);
+
+const previousHeight =
+getMenuHeight();
+
+setMenuHeight(
+previousHeight
+);
+
+switchTimer =
+window.setTimeout(
+() => {
+switchTimer =
+null;
+
+if (
+!renderMenu(
+menuParts.content,
+type
+)
+) {
+menuParts.content.classList.remove(
+"is-fading"
+);
+return;
+}
+
+activeType =
+type;
+activeTrigger =
+null;
+mobileMenuLevel =
+"submenu";
+
+resetTriggerStates();
+
+const nextHeight =
+getMenuHeight();
+
+setMenuHeight(
+nextHeight
+);
+
+setMobileHeaderState(
+true,
+true
+);
+
+requestAnimationFrame(
+() => {
+menuParts.content.classList.remove(
+"is-fading"
+);
+}
+);
+
+console.info(
+`[${NS}] mobile submenu opened: ${type}`
+);
+},
+180
+);
+}
+
+function backToMobileRoot() {
+if (!isMobileViewport()) {
+console.error(
+`[${NS}] backToMobileRoot called outside mobile viewport.`
+);
+return;
+}
+
+if (
+!menuParts.menu.classList.contains(
+"is-open"
+)
+) {
+console.error(
+`[${NS}] cannot go back to mobile root because menu is closed.`
+);
+return;
+}
+
+if (mobileMenuLevel !== "submenu") {
+console.info(
+`[${NS}] mobile menu is already at root level.`
+);
+return;
+}
+
+clearCloseTimer();
+clearSwitchTimer();
+
+menuParts.content.classList.add(
+"is-fading"
+);
+
+const previousHeight =
+getMenuHeight();
+
+setMenuHeight(
+previousHeight
+);
+
+switchTimer =
+window.setTimeout(
+() => {
+switchTimer =
+null;
+
+if (!renderMobileRootMenu()) {
+menuParts.content.classList.remove(
+"is-fading"
+);
+return;
+}
+
+activeType =
+null;
+activeTrigger =
+null;
+mobileMenuLevel =
+"root";
+
+resetTriggerStates();
+
+const nextHeight =
+getMenuHeight();
+
+setMenuHeight(
+nextHeight
+);
+
+setMobileHeaderState(
+true,
+false
+);
+
+requestAnimationFrame(
+() => {
+menuParts.content.classList.remove(
+"is-fading"
+);
+}
+);
+
+console.info(
+`[${NS}] mobile menu returned to root.`
+);
+},
+180
+);
+}
+
 function closeMenu() {
 clearCloseTimer();
 clearSwitchTimer();
@@ -1752,6 +2464,12 @@ activeType === null &&
 )
 ) {
 resetTriggerStates();
+mobileMenuLevel =
+"root";
+setMobileHeaderState(
+false,
+false
+);
 return;
 }
 
@@ -1760,6 +2478,10 @@ true;
 
 activeType =
 null;
+activeTrigger =
+null;
+mobileMenuLevel =
+"root";
 
 resetTriggerStates();
 
@@ -1775,6 +2497,11 @@ setMenuHeight(0);
 
 menuParts.content.classList.remove(
 "is-fading"
+);
+
+setMobileHeaderState(
+false,
+false
 );
 
 window.setTimeout(
@@ -1798,6 +2525,10 @@ console.info(
 }
 
 function scheduleClose() {
+if (isMobileViewport()) {
+return;
+}
+
 clearCloseTimer();
 
 closeTimer =
@@ -1826,6 +2557,10 @@ closeMenu();
 function handleHeaderItemEnter(
 item
 ) {
+if (isMobileViewport()) {
+return;
+}
+
 if (!item) {
 console.error(
 `[${NS}] header item missing on pointerenter.`
@@ -1900,6 +2635,10 @@ item
 function handleHeaderItemLeave(
 item
 ) {
+if (isMobileViewport()) {
+return;
+}
+
 if (!item) {
 console.error(
 `[${NS}] header item missing on pointerleave.`
@@ -1976,15 +2715,87 @@ item.getAttribute(
 item.addEventListener(
 "click",
 (event) => {
+if (!event) {
+console.error(
+`[${NS}] header no-navigation click event missing.`
+);
+return;
+}
+
 event.preventDefault();
 }
 );
 }
 }
 
+mobileMenuButton.addEventListener(
+"click",
+(event) => {
+if (!event) {
+console.error(
+`[${NS}] mobile menu button click event missing.`
+);
+return;
+}
+
+if (!isMobileViewport()) {
+console.info(
+`[${NS}] mobile menu button click ignored on desktop viewport.`
+);
+return;
+}
+
+event.preventDefault();
+
+if (
+menuParts.menu.classList.contains(
+"is-open"
+)
+) {
+closeMenu();
+return;
+}
+
+openMobileMenu();
+},
+{
+passive: false
+}
+);
+
+logoLink.addEventListener(
+"click",
+(event) => {
+if (!event) {
+console.error(
+`[${NS}] logo click event missing.`
+);
+return;
+}
+
+if (
+!isMobileViewport() ||
+mobileMenuLevel !== "submenu" ||
+!menuParts.menu.classList.contains("is-open")
+) {
+return;
+}
+
+event.preventDefault();
+backToMobileRoot();
+},
+{
+passive: false
+}
+);
+
 headerElement.addEventListener(
 "pointerleave",
 () => {
+if (isMobileViewport()) {
+return;
+}
+
 hoveredHeaderItem =
 null;
 
@@ -2015,6 +2826,10 @@ console.error(
 return;
 }
 
+if (isMobileViewport()) {
+return;
+}
+
 if (
 event.target === headerElement
 ) {
@@ -2036,6 +2851,10 @@ passive: true
 menuParts.menu.addEventListener(
 "pointerenter",
 () => {
+if (isMobileViewport()) {
+return;
+}
+
 clearCloseTimer();
 
 console.info(
@@ -2050,6 +2869,10 @@ passive: true
 menuParts.menu.addEventListener(
 "pointerleave",
 () => {
+if (isMobileViewport()) {
+return;
+}
+
 scheduleClose();
 },
 {
@@ -2060,6 +2883,10 @@ passive: true
 menuParts.backdrop.addEventListener(
 "pointerenter",
 () => {
+if (isMobileViewport()) {
+return;
+}
+
 scheduleClose();
 },
 {
@@ -2086,7 +2913,7 @@ return;
 
 if (
 event.key !== "Escape" ||
-activeType === null
+!menuParts.menu.classList.contains("is-open")
 ) {
 return;
 }
@@ -2106,8 +2933,24 @@ updateHeaderPosition(
 headerElement
 );
 
+const mobileNow =
+isMobileViewport();
+
+if (mobileNow !== lastIsMobile) {
+console.info(
+`[${NS}] viewport mode changed: ${lastIsMobile ? "mobile" : "desktop"} -> ${mobileNow ? "mobile" : "desktop"}`
+);
+
+lastIsMobile =
+mobileNow;
+
+closeMenu();
+}
+
 if (
-activeType !== null
+menuParts.menu.classList.contains(
+"is-open"
+)
 ) {
 setMenuHeight(
 getMenuHeight()
@@ -2125,6 +2968,20 @@ window.addEventListener(
 updateHeaderPosition(
 headerElement
 );
+
+if (isMobileViewport()) {
+if (
+menuParts.menu.classList.contains(
+"is-open"
+)
+) {
+closeMenu();
+console.info(
+`[${NS}] mobile menu closed after scroll.`
+);
+}
+return;
+}
 
 const currentHoveredItem =
 getHoveredHeaderItem();
@@ -2157,8 +3014,13 @@ updateHeaderPosition(
 headerElement
 );
 
+setMobileHeaderState(
+false,
+false
+);
+
 console.info(
-`[${NS}] navigation initialized with independent header-item hover tracking.`
+`[${NS}] navigation initialized with independent desktop hover and Apple-style mobile menu behavior.`
 );
 }
 
