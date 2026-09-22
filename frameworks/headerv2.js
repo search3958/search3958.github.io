@@ -19,7 +19,7 @@ const I18N = {
 ja: {
 header: {
 products: "プロダクト",
-newtab: "Newtab",
+saetab: "SaeTab 7",
 firstGoal: "第一目標",
 support: "サポートと情報",
 menu: "メニュー",
@@ -34,10 +34,10 @@ github: "GitHub",
 notice: "信頼されるサービスを目指しておりますが、高校生ゆえ不手際があるかもしれません\nその際はお問い合わせフォームよりご指摘いただけますと幸いです"
 },
 menus: {
-newtab: {
-title: "Newtab",
+saetab: {
+title: "SaeTab 7",
 items: [
-"Newtabについて知る",
+"SaeTab 7について知る",
 "設定方法",
 "今すぐ試す"
 ]
@@ -69,7 +69,7 @@ items: [
 en: {
 header: {
 products: "Products",
-newtab: "Newtab",
+saetab: "SaeTab 7",
 firstGoal: "First Goal",
 support: "Support & Info",
 menu: "Menu",
@@ -84,10 +84,10 @@ github: "GitHub",
 notice: "We aim to provide a service you can trust, but as a high school student, I may make mistakes or oversights.\nIf you notice any issues, I would appreciate it if you could let me know through the contact form."
 },
 menus: {
-newtab: {
-title: "Newtab",
+saetab: {
+title: "SaeTab 7",
 items: [
-"About Newtab",
+"About SaeTab 7",
 "Setup Guide",
 "Try It Now"
 ]
@@ -119,7 +119,7 @@ items: [
 ko: {
 header: {
 products: "프로덕트",
-newtab: "Newtab",
+saetab: "SaeTab 7",
 firstGoal: "첫 목표",
 support: "지원 및 정보",
 menu: "메뉴",
@@ -134,10 +134,10 @@ github: "GitHub",
 notice: "신뢰받는 서비스를 만들기 위해 노력하고 있지만, 고등학생인 만큼 미흡한 점이 있을 수 있습니다.\n그러한 경우 문의 양식을 통해 지적해 주시면 감사하겠습니다."
 },
 menus: {
-newtab: {
-title: "Newtab",
+saetab: {
+title: "SaeTab 7",
 items: [
-"Newtab 알아보기",
+"SaeTab 7 알아보기",
 "설정 방법",
 "지금 사용해 보기"
 ]
@@ -169,7 +169,7 @@ items: [
 "ko-kp": {
 header: {
 products: "제품",
-newtab: "앞길7",
+saetab: "앞길7",
 firstGoal: "우리 정젝사상",
 support: "지원과 정보",
 menu: "메뉴",
@@ -184,7 +184,7 @@ github: "봉사자용 원시 프로그람",
 notice: "신뢰받는 봉사를 지향하지만 고등학생이기에 미흡한 점이 있을수 있습니다.\n그러한 경우 문의양식을 통해 지적해주시면 고맙겠습니다."
 },
 menus: {
-newtab: {
+saetab: {
 title: "앞길",
 items: [
 "앞길7에 대하여",
@@ -219,7 +219,7 @@ items: [
 zh: {
 header: {
 products: "产品",
-newtab: "Newtab",
+saetab: "SaeTab 7",
 firstGoal: "第一目标",
 support: "支持与信息",
 menu: "菜单",
@@ -234,10 +234,10 @@ github: "GitHub",
 notice: "我们致力于成为值得信赖的服务，但由于我还是一名高中生，可能会有做得不够周全的地方。\n如有不周之处，敬请通过联系表单指出，非常感谢。"
 },
 menus: {
-newtab: {
-title: "Newtab",
+saetab: {
+title: "SaeTab 7",
 items: [
-"了解 Newtab",
+"了解 SaeTab 7",
 "设置方法",
 "立即试用"
 ]
@@ -269,7 +269,7 @@ items: [
 "zh-tw": {
 header: {
 products: "產品",
-newtab: "Newtab",
+saetab: "SaeTab 7",
 firstGoal: "第一目標",
 support: "支援與資訊",
 menu: "選單",
@@ -284,10 +284,10 @@ github: "GitHub",
 notice: "我們致力於成為值得信賴的服務，但由於我還是一名高中生，可能會有做得不夠周全的地方。\n如有不周之處，敬請透過聯絡表單指正，十分感謝。"
 },
 menus: {
-newtab: {
-title: "Newtab",
+saetab: {
+title: "SaeTab 7",
 items: [
-"了解 Newtab",
+"了解 SaeTab 7",
 "設定方法",
 "立即試用"
 ]
@@ -319,7 +319,7 @@ items: [
 ru: {
 header: {
 products: "Продукты",
-newtab: "Newtab",
+saetab: "SaeTab 7",
 firstGoal: "Первая цель",
 support: "Поддержка и информация",
 menu: "Меню",
@@ -334,10 +334,10 @@ github: "GitHub",
 notice: "Мы стремимся предоставлять сервис, которому можно доверять, но, поскольку я ещё учусь в старшей школе, я могу допустить недочёты.\nЕсли вы заметите что-либо подобное, буду благодарен, если сообщите об этом через форму обратной связи."
 },
 menus: {
-newtab: {
-title: "Newtab",
+saetab: {
+title: "SaeTab 7",
 items: [
-"О Newtab",
+"О SaeTab 7",
 "Как настроить",
 "Попробовать сейчас"
 ]
@@ -509,10 +509,10 @@ data-headerv2-menu="products"
 </a>
 
 <a
-href="https://search3958.github.io/i/newtab/"
-data-headerv2-menu="newtab"
+href="https://search3958.github.io/i/saetab/"
+data-headerv2-menu="saetab"
 >
-<span data-headerv2-i18n="header.newtab">Newtab</span>
+<span data-headerv2-i18n="header.saetab">SaeTab 7</span>
 </a>
 
 <a href="https://search3958.github.io/i/red/">
@@ -559,20 +559,20 @@ data-headerv2-i18n="footer.notice"
 `;
 
 const menuData = {
-newtab: {
-titleKey: "newtab",
+saetab: {
+titleKey: "saetab",
 items: [
 {
 href:
-"https://search3958.github.io/i/newtab/"
+"https://search3958.github.io/i/saetab/"
 },
 {
 href:
-"https://search3958.github.io/support/docs/ja/newtab_setup.html"
+"https://search3958.github.io/support/docs/ja/saetab_setup.html"
 },
 {
 href:
-"https://search3958.github.io/newtab/?value=head-try"
+"https://search3958.github.io/saetab/?value=head-try"
 }
 ]
 },
