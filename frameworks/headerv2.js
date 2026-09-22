@@ -568,11 +568,11 @@ href:
 },
 {
 href:
-"https://search3958.github.io/support/docs/ja/saetab_setup.html"
+"https://search3958.github.io/support/docs/ja/newtab_setup.html"
 },
 {
 href:
-"https://search3958.github.io/saetab/?value=head-try"
+"https://search3958.github.io/newtab/?value=head-try"
 }
 ]
 },
