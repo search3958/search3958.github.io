@@ -1,3 +1,4 @@
+// You are permitted to freely modify this file.
 (function() {
     "use strict";
 
@@ -66,7 +67,7 @@
     const RedCheckOSS = {
         CONFIG: {
             SUPABASE_EDGE_FUNC_URL:
-                "https://lizrlulobdmxckyrsjfw.supabase.co/functions/v1/f",
+                "YOUR_FUNC_URL",
             ENTRY_URL:
                 "https://search3958.github.io/usercheck/entry.html",
             ABOUT_URL:
@@ -76,7 +77,7 @@
             TERMS_NOTICE_SHOWN_KEY:
                 "RedCheckOSS_terms_notice_shown",
             HEAVY_SCRIPT_NAME:
-                "https://search3958.github.io/frameworks/check-oss-uuid.js"//check-oss-uuid.jsを解析,クローンしてはなりません。ライセンスで強く保護されています。
+                "https://search3958.github.io/frameworks/check-oss-uuid.js"//You must not analyze or clone check-oss-uuid.js; it is strictly protected by its license.
         },
 
         STATE: {
