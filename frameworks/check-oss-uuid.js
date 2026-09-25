@@ -1,0 +1,181 @@
+(function() {
+    "use strict";
+
+    const LOG_PREFIX = "[RedCheckOSS]";
+
+    const Heavy = {
+        _core: null,
+
+        _ensureCore(core) {
+            if (!core || !core.CONFIG || !core.STATE) {
+                console.error(
+                    `${LOG_PREFIX} ❌ Heavy core reference is invalid`
+                );
+                return false;
+            }
+
+            this._core = core;
+            return true;
+        },
+
+        generateUUID() {
+            try {
+                if (
+                    !window.crypto ||
+                    typeof window.crypto.randomUUID !== "function"
+                ) {
+                    throw new Error("crypto.randomUUID unavailable");
+                }
+
+                return window.crypto.randomUUID();
+            } catch (error) {
+                if (
+                    !window.crypto ||
+                    typeof window.crypto.getRandomValues !== "function"
+                ) {
+                    console.error(
+                        `${LOG_PREFIX} ❌ UUID generation API unavailable`
+                    );
+                    throw error;
+                }
+
+                const fallbackUUID =
+                    ([1e7] +
+                        -1e3 +
+                        -4e3 +
+                        -8e2 +
+                        -1e11).replace(
+                        /[018]/g,
+                        c =>
+                            (
+                                c ^
+                                (
+                                    crypto.getRandomValues(
+                                        new Uint8Array(1)
+                                    )[0] &
+                                    (15 >> (c / 4))
+                                )
+                            ).toString(16)
+                        );
+
+                return fallbackUUID;
+            }
+        },
+
+
+        async checkServerStatus(uuid) {
+            if (!uuid) {
+                console.error(
+                    `${LOG_PREFIX} ❌ SERVER CHECK:UUID is missing`
+                );
+
+                return {
+                    status: "normal"
+                };
+            }
+
+            if (!this._core) {
+                console.error(
+                    `${LOG_PREFIX} ❌ SERVER CHECK:core is unavailable`
+                );
+
+                return {
+                    status: "normal"
+                };
+            }
+
+            try {
+                const response =
+                    await fetch(
+                        this._core.CONFIG.SUPABASE_EDGE_FUNC_URL,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+                            body: JSON.stringify({
+                                uuid,
+                                url: window.location.href,
+                                action: "check"
+                            })
+                        }
+                    );
+
+                if (!response) {
+                    console.error(
+                        `${LOG_PREFIX} ❌ EDGE FUNC EMPTY RESPONSE OBJECT`
+                    );
+
+                    return {
+                        status: "normal"
+                    };
+                }
+
+                if (!response.ok) {
+                    let errorData = {};
+
+                    try {
+                        errorData =
+                            await response.json();
+                    } catch (jsonError) {
+                        console.error(
+                            `${LOG_PREFIX} 🟥 EDGE FUNC JSON ERROR:`,
+                            jsonError
+                        );
+                    }
+
+                    console.error(
+                        `${LOG_PREFIX} 🟥 EDGE FUNC ERROR:`,
+                        errorData.error ||
+                            `HTTP ${response.status}`
+                    );
+
+                    return {
+                        status: "normal"
+                    };
+                }
+
+                const data =
+                    await response.json();
+
+                if (!data) {
+                    console.error(
+                        `${LOG_PREFIX} ❌ EDGE FUNC EMPTY RESPONSE`
+                    );
+
+                    return {
+                        status: "normal"
+                    };
+                }
+
+                console.log(
+                    `${LOG_PREFIX} ✅ EDGE FUNC`
+                );
+
+                return data;
+            } catch (error) {
+                console.error(
+                    `${LOG_PREFIX} 🟥 EDGE FUNC ERROR:`,
+                    error
+                );
+
+                return {
+                    status: "normal"
+                };
+            }
+        },
+    };
+
+    if (window.RedCheckOSSHeavy) {
+        console.warn(
+            `${LOG_PREFIX} ⚠️ Existing heavy module detected; replacing it`
+        );
+    }
+
+    window.RedCheckOSSHeavy = Heavy;
+
+    console.log(
+        `${LOG_PREFIX} ✅ HEAVY MODULE REGISTERED`
+    );
+})();
