@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>0F8 Account</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <main class="account-page">
+    <header class="account-header">
+      
+    <img height="48px" width="32px" src="https://search3958.github.io/project/logos/3958logo_main.svg">
+      <h1 class="account-title">0F8 Account</h1>
+      <p class="account-subtitle">ログインまたは新しいアカウントを作成します。</p>
+    </header>
+
+    <section class="account-card">
+      <div class="account-tabs" role="tablist" aria-label="アカウント操作">
+        <button class="account-tab" type="button" role="tab" aria-selected="true" data-mode="login">ログイン</button>
+        <button class="account-tab" type="button" role="tab" aria-selected="false" data-mode="register">新規作成</button>
+      </div>
+
+      <form id="login-form" class="account-form" novalidate>
+        <div class="account-field">
+          <label for="login-id">ID</label>
+          <input id="login-id" name="id" maxlength="20" autocomplete="username" required>
+        </div>
+        <div class="account-field">
+          <label for="login-password">パスワード</label>
+          <input id="login-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="current-password" required>
+        </div>
+        <button class="account-button" type="submit">ログイン</button>
+        <p id="login-status" class="account-status" aria-live="polite"></p>
+      </form>
+
+      <form id="register-form" class="account-form account-hidden" novalidate>
+        <div class="account-field">
+          <label for="register-id">ID</label>
+          <input id="register-id" name="id" maxlength="20" autocomplete="username" required>
+        </div>
+        <div class="account-field">
+          <label for="register-name">名前</label>
+          <input id="register-name" name="name" maxlength="80" autocomplete="name">
+        </div>
+        <div class="account-field">
+          <label for="register-password">パスワード</label>
+          <input id="register-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required>
+        </div>
+        <button class="account-button" type="submit">アカウントを作成</button>
+        <p id="register-status" class="account-status" aria-live="polite"></p>
+      </form>
+
+      <p class="account-note">認証情報はアカウントサービスへ送信され、元のサービスへ認証結果を安全に返します。<br>
+      ログインまたは新規登録した時点で<a href="https://search3958.github.io/policies/">利用規約 および 個人情報政策</a>へ同意したものと認識します。</p>
+    </section>
+  </main>
+
+  <script src="account-login.js"></script>
+  <script src="https://search3958.github.io/check.js"></script>
+</body>
+</html>

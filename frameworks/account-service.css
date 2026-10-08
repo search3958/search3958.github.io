@@ -1,0 +1,281 @@
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color-scheme: light dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+a{ color:#000;text-decoration: none;
+}
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  padding-top:64px;
+}
+footer {
+    padding: 48px 0px;
+    padding-top: 15px;
+    text-align: center;
+    font-size: 20px;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.account-page {
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  padding: 20px 24px 56px;
+}
+
+.account-hidden {
+  display: none !important;
+}
+
+.account-header {
+  padding: 4px 0 24px;
+}
+
+.account-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  gap: 16px;
+}
+
+.account-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.account-page-heading {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.account-page-heading h1,
+.account-page-heading p,
+.dashboard-group-heading h2,
+.dashboard-group-heading p,
+.usage-domain-heading h3,
+.dialog-content p {
+  margin: 0;
+}
+
+.account-login-section {
+  max-width: 760px;
+  margin: 12vh auto 0;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+}
+
+.account-status {
+  min-height: 1.5em;
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+}
+
+.dashboard-section {
+  display: grid;
+  gap: 28px;
+}
+
+.dashboard-hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 0 4px;
+}
+
+.dashboard-avatar-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 auto;
+}
+p {
+    margin: 0px;
+}
+.dashboard-avatar,
+.dashboard-avatar-fallback {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+
+.dashboard-avatar {
+  display: block;
+  object-fit: cover;    position: absolute;
+    top: 0;
+}
+
+.dashboard-avatar-fallback {
+  display: grid;
+  place-items: center;
+}
+
+.dashboard-hero-copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.dashboard-greeting,
+.dashboard-name,
+.account-note {
+  margin: 0;
+}
+
+.account-note {
+  overflow-wrap: anywhere;
+}
+
+.dashboard-group {
+  display: grid;
+  gap: 14px;
+}
+
+.dashboard-group-heading {
+  display: grid;
+  gap: 4px;
+  padding-inline: 4px;
+}
+
+.dashboard-list {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 24px;
+  padding:0px;
+}
+
+.dashboard-list md-list-item {
+  min-height: 72px;
+}
+
+.dashboard-list md-list-item [slot="supporting-text"] {
+  overflow-wrap: anywhere;
+}
+
+.dashboard-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.usage-progress-area {
+  display: grid;
+  gap: 10px;
+  padding: 4px;
+}
+
+.usage-progress-heading,
+.usage-domain-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.usage-domain-area {
+  display: grid;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.dashboard-domain-list md-list-item {
+  min-height: 76px;
+}
+
+.dashboard-domain-list md-list-item [slot="end"] {
+  margin-inline-start: 12px;
+}
+
+.dialog-headline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dialog-content {
+  width: min(100%, 720px);
+  margin: 0 auto;
+  display: grid;
+  align-content: start;
+  gap: 22px;
+}
+
+.dialog-content md-outlined-text-field {
+  width: 100%;
+}
+
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.fullscreen-dialog {
+  width: 100vw;
+  height: 100dvh;
+  max-width: 100vw;
+  max-height: 100dvh;
+  margin: 0;
+  --md-dialog-container-shape: 0px;
+}
+
+@media (max-width: 720px) {
+  .account-page {
+    padding: 12px 16px 40px;
+  }
+
+  .dashboard-hero {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    gap: 16px;
+  }
+
+  .dashboard-avatar-wrap,
+  .dashboard-avatar,
+  .dashboard-avatar-fallback {
+    width: 80px;
+    height: 80px;
+  }
+
+  .dashboard-item-actions {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 4px 0 8px;
+  }
+
+  .dashboard-list md-list-item {
+    min-height: auto;
+    padding-block: 12px;
+  }
+
+  .usage-domain-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dialog-actions {
+    width: 100%;
+  }
+}
