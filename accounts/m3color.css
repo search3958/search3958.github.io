@@ -1,0 +1,130 @@
+/*
+ * Shared Color Theme
+ * Based on the WebP Converter template palette.
+ * Color definitions only: no layout, spacing, typography, or components.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Raw palette from the template */
+  --theme-white: #ffffff;
+  --theme-black: #000000;
+
+  --theme-text: #202124;
+  --theme-text-secondary: #5f6368;
+  --theme-text-tertiary: #80868b;
+  --theme-text-disabled: #9aa0a6;
+
+  --theme-primary: #1a73e8;
+  --theme-primary-hover: #1669d8;
+  --theme-primary-pressed: #1557b0;
+  --theme-primary-soft: #f8fbff;
+
+  --theme-border: #dadce0;
+  --theme-border-subtle: #e3e5e7;
+  --theme-border-divider: #eceff1;
+  --theme-border-hover: #c7c7c7;
+
+  --theme-surface: #f8f8f9;
+  --theme-surface-page: #ffffff;
+  --theme-surface-muted: #f8fbff;
+
+  /* Status palette */
+  --theme-success: #188038;
+  --theme-error: #d93025;
+
+  /* Material Web / Material 3 system color roles */
+  --md-sys-color-primary: var(--theme-primary);
+  --md-sys-color-on-primary: var(--theme-white);
+  --md-sys-color-primary-container: var(--theme-primary-soft);
+  --md-sys-color-on-primary-container: var(--theme-primary);
+
+  --md-sys-color-secondary: var(--theme-text-secondary);
+  --md-sys-color-on-secondary: var(--theme-white);
+  --md-sys-color-secondary-container: #f1f3f4;
+  --md-sys-color-on-secondary-container: var(--theme-text);
+
+  --md-sys-color-tertiary: var(--theme-text-tertiary);
+  --md-sys-color-on-tertiary: var(--theme-white);
+  --md-sys-color-tertiary-container: #f1f3f4;
+  --md-sys-color-on-tertiary-container: var(--theme-text);
+
+  --md-sys-color-error: var(--theme-error);
+  --md-sys-color-on-error: var(--theme-white);
+  --md-sys-color-error-container: #fce8e6;
+  --md-sys-color-on-error-container: var(--theme-error);
+
+  --md-sys-color-background: var(--theme-surface-page);
+  --md-sys-color-on-background: var(--theme-text);
+  --md-sys-color-surface: var(--theme-surface);
+  --md-sys-color-on-surface: var(--theme-text);
+  --md-sys-color-surface-variant: #f1f3f4;
+  --md-sys-color-on-surface-variant: var(--theme-text-secondary);
+  --md-sys-color-outline: var(--theme-border);
+  --md-sys-color-outline-variant: var(--theme-border-subtle);
+
+  --md-sys-color-shadow: var(--theme-black);
+  --md-sys-color-scrim: var(--theme-black);
+  --md-sys-color-inverse-surface: #3c4043;
+  --md-sys-color-inverse-on-surface: var(--theme-white);
+  --md-sys-color-inverse-primary: #8ab4f8;
+
+  /* Material 3 fixed roles */
+  --md-sys-color-primary-fixed: #e8f0fe;
+  --md-sys-color-on-primary-fixed: #0d47a1;
+  --md-sys-color-primary-fixed-dim: #d2e3fc;
+  --md-sys-color-on-primary-fixed-variant: var(--theme-primary);
+
+  --md-sys-color-secondary-fixed: #f1f3f4;
+  --md-sys-color-on-secondary-fixed: var(--theme-text);
+  --md-sys-color-secondary-fixed-dim: #e3e5e7;
+  --md-sys-color-on-secondary-fixed-variant: var(--theme-text-secondary);
+
+  --md-sys-color-tertiary-fixed: #f1f3f4;
+  --md-sys-color-on-tertiary-fixed: var(--theme-text);
+  --md-sys-color-tertiary-fixed-dim: #e3e5e7;
+  --md-sys-color-on-tertiary-fixed-variant: var(--theme-text-tertiary);
+
+  --md-sys-color-surface-dim: #eceff1;
+  --md-sys-color-surface-bright: var(--theme-white);
+  --md-sys-color-surface-container-lowest: var(--theme-white);
+  --md-sys-color-surface-container-low: #f8f9fa;
+  --md-sys-color-surface-container: #f1f3f4;
+  --md-sys-color-surface-container-high: #e8eaed;
+  --md-sys-color-surface-container-highest: #e3e5e7;
+
+  /* Shared semantic aliases */
+  --color-bg: var(--md-sys-color-surface);
+  --color-surface: var(--theme-surface);
+  --color-surface-muted: var(--theme-surface-muted);
+  --color-text: var(--theme-text);
+  --color-text-secondary: var(--theme-text-secondary);
+  --color-text-tertiary: var(--theme-text-tertiary);
+  --color-text-disabled: var(--theme-text-disabled);
+  --color-primary: var(--theme-primary);
+  --color-primary-hover: var(--theme-primary-hover);
+  --color-primary-pressed: var(--theme-primary-pressed);
+  --color-primary-soft: var(--theme-primary-soft);
+  --color-border: var(--theme-border);
+  --color-border-subtle: var(--theme-border-subtle);
+  --color-border-divider: var(--theme-border-divider);
+  --color-border-hover: var(--theme-border-hover);
+  --color-success: var(--theme-success);
+  --color-error: var(--theme-error);
+
+  /* Common interaction colors */
+  --state-hover: rgb(26 115 232 / 0.06);
+  --state-focus: rgb(26 115 232 / 0.12);
+  --state-pressed: rgb(26 115 232 / 0.16);
+  --state-disabled: rgb(32 33 36 / 0.38);
+
+  
+--md-list-container-color:var(--theme-white);
+}
+
+/* Optional body-level defaults. Remove this block when the theme is used as a variables-only file. */
+:where(html, body) {
+  color: var(--color-text);
+  background: var(--color-bg);
+}

@@ -56,11 +56,12 @@ items: [
 support: {
 title: "サポートと情報",
 items: [
-"サポート",
-"私のGitHub",
-"問い合わせ",
-"利用規約および個人情報政策",
-"Language"
+        "サポート",
+        "私のGitHub",
+        "問い合わせ",
+        "アカウント",
+        "利用規約および個人情報政策",
+        "Language"
 ]
 }
 }
@@ -106,11 +107,12 @@ items: [
 support: {
 title: "Support & Info",
 items: [
-"Support",
-"My GitHub",
-"Contact",
-"Terms & Privacy Policy",
-"Language"
+        "Support",
+        "My GitHub",
+        "Contact",
+        "Accounts",
+        "Terms & Privacy Policy",
+        "Language"
 ]
 }
 }
@@ -150,17 +152,18 @@ items: [
 "BaramOS",
 "내 Google Play",
 "로고",
-"니델레 시리즈"
+"니들레 시리즈"
 ]
 },
 support: {
 title: "지원 및 정보",
 items: [
-"지원",
-"봉사자용 원시 프로그람",
-"문의",
-"이용약관 및 개인정보 정책",
-"언어"
+        "지원",
+        "봉사자용 원시 프로그람",
+        "문의",
+        "계정",
+        "이용약관 및 개인정보 정책",
+        "언어"
 ]
 }
 }
@@ -200,17 +203,18 @@ items: [
 "바람조작체계",
 "나의 길 동무 페지 (Google)",
 "등록상표",
-"니델레 계렬"
+"니들레 계렬"
 ]
 },
 support: {
 title: "지원과 정보",
 items: [
-"지원",
-"내 GitHub",
-"문의",
-"리용약관 및 개인정보정책",
-"언어"
+        "지원",
+        "내 GitHub",
+        "문의",
+        "계정",
+        "리용약관 및 개인정보정책",
+        "언어"
 ]
 }
 }
@@ -256,11 +260,12 @@ items: [
 support: {
 title: "支持与信息",
 items: [
-"支持",
-"我的 GitHub",
-"联系我",
-"使用条款和隐私政策",
-"语言"
+        "支持",
+        "我的 GitHub",
+        "联系我",
+        "账户",
+        "使用条款和隐私政策",
+        "语言"
 ]
 }
 }
@@ -306,11 +311,12 @@ items: [
 support: {
 title: "支援與資訊",
 items: [
-"支援",
-"聯絡我",
-"聯絡我",
-"使用條款與隱私權政策",
-"語言"
+        "支援",
+        "聯絡我",
+        "聯絡我",
+        "帳號",
+        "使用條款與隱私權政策",
+        "語言"
 ]
 }
 }
@@ -356,11 +362,12 @@ items: [
 support: {
 title: "Поддержка и информация",
 items: [
-"Поддержка",
-"Мой GitHub",
-"Связаться",
-"Условия и политика конфиденциальности",
-"Язык"
+        "Поддержка",
+        "Мой GitHub",
+        "Связаться",
+        "Аккаунты",
+        "Условия и политика конфиденциальности",
+        "Язык"
 ]
 }
 }
@@ -618,14 +625,18 @@ href:
 href:
 "https://github.com/search3958/"
 },
-{
-href:
-"https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform"
-},
-{
-href:
-"https://search3958.github.io/policies/"
-},
+    {
+      href:
+      "https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform"
+    },
+    {
+      href:
+      "https://search3958.github.io/accounts/index.html"
+    },
+    {
+      href:
+      "https://search3958.github.io/policies/"
+    },
 {
 href:
 "https://search3958.github.io/accounts/lang"
