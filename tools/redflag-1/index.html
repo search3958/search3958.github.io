@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>電子署名ツール（ECDSA P-256）</title>
+<style>
+:root{--bg:#f6f7f9;--card:#ffffff;--text:#1d1f23;--muted:#6b7280;--line:#d9dde3;--accent:#2563eb;--accent-text:#ffffff;--ok:#15803d;--ng:#b91c1c;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15171b;--card:#1e2127;--text:#e8eaee;--muted:#9aa3b2;--line:#343a44;--accent:#60a5fa;--accent-text:#0b1220;--ok:#4ade80;--ng:#f87171}}
+:root[data-theme="dark"]{--bg:#15171b;--card:#1e2127;--text:#e8eaee;--muted:#9aa3b2;--line:#343a44;--accent:#60a5fa;--accent-text:#0b1220;--ok:#4ade80;--ng:#f87171}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;padding:env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px)}
+main{max-width:860px;margin:0 auto;padding:20px 0 40px}
+h1{font-size:1.4rem;margin:8px 0 4px}
+.lead{color:var(--muted);margin:0 0 20px;font-size:.92rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+h2{font-size:1.05rem;margin:0 0 12px}
+label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 6px}
+textarea{width:100%;min-height:120px;resize:vertical;font:13px/1.5 var(--mono);color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;max-width:100%}
+textarea.short{min-height:70px}
+textarea.msg{font-family:var(--sans);font-size:14px;min-height:140px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+button{font:inherit;font-size:.88rem;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:600}
+button:disabled{opacity:.5;cursor:not-allowed}
+.status{margin-top:12px;font-size:.92rem;min-height:1.4em;white-space:pre-wrap;word-break:break-word}
+.status.ok{color:var(--ok);font-weight:600}
+.status.ng{color:var(--ng);font-weight:600}
+.hint{color:var(--muted);font-size:.82rem;margin:6px 0 0}
+.row{display:grid;grid-template-columns:1fr;gap:4px}
+@media (min-width:700px){.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
+</style>
+</head>
+<body>
+<main>
+  <h1>電子署名ツール</h1>
+  <p class="lead">ECDSA（P-256 / SHA-256）による署名の生成と検証を行います。鍵・メッセージ・署名はすべてブラウザ内でのみ処理され、外部には送信されません。</p>
+
+  <section class="card">
+    <h2>1. 鍵ペア</h2>
+    <div class="btns">
+      <button class="primary" id="btnGen">ランダムに鍵ペアを生成</button>
+      <button id="btnDerive">秘密鍵から公開鍵を導出</button>
+    </div>
+
+    <label for="priv">秘密鍵（PKCS#8 PEM）</label>
+    <textarea id="priv" class="short" spellcheck="false" placeholder="-----BEGIN PRIVATE KEY----- ..."></textarea>
+    <div class="btns">
+      <button data-dl="priv" data-name="private_key.txt">秘密鍵をダウンロード</button>
+      <button data-up="priv" data-accept=".txt,.pem,text/plain">秘密鍵をアップロード</button>
+    </div>
+    <p class="hint">秘密鍵は他人に渡さず、安全な場所に保管してください。</p>
+
+    <label for="pub">公開鍵（SPKI PEM）</label>
+    <textarea id="pub" class="short" spellcheck="false" placeholder="-----BEGIN PUBLIC KEY----- ..."></textarea>
+    <div class="btns">
+      <button data-dl="pub" data-name="public_key.txt">公開鍵（PEM）をダウンロード</button>
+      <button data-up="pub" data-accept=".txt,.pem,text/plain">公開鍵をアップロード</button>
+    </div>
+    <div class="status" id="keyStatus"></div>
+  </section>
+
+  <section class="card">
+    <h2>2. メッセージに署名</h2>
+    <label for="msg">メッセージ（複数行可）</label>
+    <textarea id="msg" class="msg" placeholder="署名したい文章を入力してください。&#10;複数行にも対応しています。"></textarea>
+    <div class="btns">
+      <button data-up="msg" data-accept=".txt,text/plain">メッセージをアップロード</button>
+      <button data-dl="msg" data-name="message.txt">メッセージをダウンロード</button>
+    </div>
+
+    <div class="btns">
+      <button class="primary" id="btnSign">署名を生成</button>
+    </div>
+
+    <label for="sig">署名（Base64）</label>
+    <textarea id="sig" class="short" spellcheck="false" placeholder="ここに署名が表示されます"></textarea>
+    <div class="btns">
+      <button data-dl="sig" data-name="signature.txt">署名をダウンロード</button>
+      <button data-up="sig" data-accept=".txt,text/plain">署名をアップロード</button>
+      <button id="btnCopySig">検証欄にコピー</button>
+    </div>
+    <div class="status" id="signStatus"></div>
+
+    <label for="record">署名記録（署名日時・ハッシュ・署名・公開鍵。秘密鍵は含みません）</label>
+    <textarea id="record" class="short" spellcheck="false" placeholder="署名を生成すると、ここに記録が表示されます"></textarea>
+    <div class="btns">
+      <button data-dl="record" data-name="signature_record.txt">署名記録をダウンロード</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>3. 署名を検証</h2>
+    <div class="grid2">
+      <div>
+        <label for="vpub">公開鍵</label>
+        <textarea id="vpub" class="short" spellcheck="false" placeholder="-----BEGIN PUBLIC KEY----- ..."></textarea>
+        <div class="btns"><button data-up="vpub" data-accept=".txt,.pem,text/plain">公開鍵をアップロード</button></div>
+      </div>
+      <div>
+        <label for="vsig">署名（Base64）</label>
+        <textarea id="vsig" class="short" spellcheck="false" placeholder="署名を貼り付けるかアップロードしてください"></textarea>
+        <div class="btns"><button data-up="vsig" data-accept=".txt,text/plain">署名をアップロード</button></div>
+      </div>
+    </div>
+
+    <label for="vmsg">検証するメッセージ（複数行可）</label>
+    <textarea id="vmsg" class="msg" placeholder="署名対象のメッセージを入力してください"></textarea>
+    <div class="btns">
+      <button data-up="vmsg" data-accept=".txt,text/plain">メッセージをアップロード</button>
+      <button class="primary" id="btnVerify">検証</button>
+    </div>
+    <div class="status" id="verifyStatus"></div>
+  </section>
+
+  <p class="hint">注意: 改行コードはCRLFとLFを同一視します。メッセージの末尾の空白や改行が変わると検証は失敗します。</p>
+</main>
+
+<input type="file" id="fileInput" hidden>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const ALG = { name: "ECDSA", namedCurve: "P-256" };
+  const SIGN_ALG = { name: "ECDSA", hash: "SHA-256" };
+  const enc = new TextEncoder();
+  const subtle = crypto.subtle;
+
+  // ---------- encoding helpers ----------
+  const b64 = buf => {
+    const u = new Uint8Array(buf);
+    let s = "";
+    for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000));
+    return btoa(s);
+  };
+  const unb64 = s => Uint8Array.from(atob(s.replace(/\s+/g, "")), c => c.charCodeAt(0));
+  const toPem = (label, buf) => `-----BEGIN ${label}-----\n${b64(buf).match(/.{1,64}/g).join("\n")}\n-----END ${label}-----\n`;
+  const fromPem = pem => unb64(pem.replace(/-----[^-]+-----/g, ""));
+  const normalize = t => t.replace(/\r\n?/g, "\n");
+
+  // ---------- status ----------
+  function show(el, msg, ok) {
+    el.textContent = msg;
+    el.className = "status" + (ok === true ? " ok" : ok === false ? " ng" : "");
+  }
+  const errMsg = e => (e && e.message) ? e.message : String(e);
+
+  // ---------- keys ----------
+  const importPriv = pem => subtle.importKey("pkcs8", fromPem(pem), ALG, true, ["sign"]);
+  const importPub = pem => subtle.importKey("spki", fromPem(pem), ALG, true, ["verify"]);
+
+  async function generate() {
+    const kp = await subtle.generateKey(ALG, true, ["sign", "verify"]);
+    $("priv").value = toPem("PRIVATE KEY", await subtle.exportKey("pkcs8", kp.privateKey));
+    $("pub").value = toPem("PUBLIC KEY", await subtle.exportKey("spki", kp.publicKey));
+    show($("keyStatus"), "新しい鍵ペアを生成しました。秘密鍵を安全に保管してください。", true);
+  }
+
+  async function derive() {
+    const priv = await importPriv($("priv").value.trim());
+    const jwk = await subtle.exportKey("jwk", priv);
+    const pubJwk = { kty: jwk.kty, crv: jwk.crv, x: jwk.x, y: jwk.y, ext: true, key_ops: ["verify"] };
+    const pub = await subtle.importKey("jwk", pubJwk, ALG, true, ["verify"]);
+    $("pub").value = toPem("PUBLIC KEY", await subtle.exportKey("spki", pub));
+    show($("keyStatus"), "秘密鍵から公開鍵を導出しました。", true);
+  }
+
+  async function publicPemFromPrivate(privKey) {
+    const jwk = await subtle.exportKey("jwk", privKey);
+    const pub = await subtle.importKey(
+      "jwk", { kty: jwk.kty, crv: jwk.crv, x: jwk.x, y: jwk.y, ext: true, key_ops: ["verify"] },
+      ALG, true, ["verify"]
+    );
+    return toPem("PUBLIC KEY", await subtle.exportKey("spki", pub));
+  }
+
+  function buildRecord({ signedAt, sigB64, hash, pubPem }) {
+    return [
+      "SIGNATURE RECORD",
+      "Algorithm: ECDSA P-256 / SHA-256",
+      `Signed-At (UTC): ${signedAt.toISOString()}`,
+      `Signed-At (Local): ${signedAt.toString()}`,
+      `Message-SHA256 (Base64): ${hash}`,
+      "",
+      "-----BEGIN SIGNATURE-----",
+      sigB64.match(/.{1,64}/g).join("\n"),
+      "-----END SIGNATURE-----",
+      "",
+      pubPem.trim()
+    ].join("\n") + "\n";
+  }
+
+  // ---------- sign / verify ----------
+  async function sign() {
+    const msg = $("msg").value;
+    if (!msg) return show($("signStatus"), "メッセージが空です。", false);
+    try {
+      const signedAt = new Date();
+      const key = await importPriv($("priv").value.trim());
+      const data = enc.encode(normalize(msg));
+      const sigB64 = b64(await subtle.sign(SIGN_ALG, key, data));
+      const hash = b64(await subtle.digest("SHA-256", data));
+      const pubPem = await publicPemFromPrivate(key);
+      $("sig").value = sigB64;
+      $("record").value = buildRecord({ signedAt, sigB64, hash, pubPem });
+      show($("signStatus"), `署名を生成しました（${signedAt.toLocaleString()}）。`, true);
+    } catch (e) {
+      show($("signStatus"), "署名に失敗しました: " + errMsg(e), false);
+    }
+  }
+
+  async function verify() {
+    try {
+      const pub = await importPub($("vpub").value.trim());
+      const ok = await subtle.verify(
+        SIGN_ALG, pub,
+        unb64($("vsig").value.trim()),
+        enc.encode(normalize($("vmsg").value))
+      );
+      show($("verifyStatus"),
+        ok ? "✔ 検証成功: 署名は有効です（メッセージ改ざんなし、この公開鍵の署名）。"
+           : "✘ 検証失敗: 署名が無効か、メッセージ・公開鍵が一致しません。",
+        ok);
+    } catch (e) {
+      show($("verifyStatus"), "検証できませんでした（入力形式を確認してください）: " + errMsg(e), false);
+    }
+  }
+
+  // ---------- file upload / download ----------
+  function pickFile(accept, onText) {
+    const input = $("fileInput");
+    input.value = "";
+    input.accept = accept;
+    input.onchange = async () => {
+      const f = input.files[0];
+      if (f) onText(await f.text(), f.name);
+    };
+    input.click();
+  }
+
+  let downloads = null;
+  let dlReady = false;
+  async function initDownloads() {
+    if (dlReady) return;
+    dlReady = true;
+    try { downloads = window.claude ? await window.claude.use("downloads") : null; } catch (_) { downloads = null; }
+  }
+
+  async function saveFile(filename, text, statusEl) {
+    await initDownloads();
+    if (!downloads) return show(statusEl, "この表示環境ではダウンロード機能が利用できません（テキストを手動でコピーしてください）。", false);
+    try {
+      await downloads.save({ filename, data: text });
+      show(statusEl, `${filename} を保存しました。`, true);
+    } catch (e) {
+      const code = e && e.code;
+      const msg = code === "declined" ? "ダウンロードがキャンセルされました。"
+                : code === "rate_limited" ? "保存ダイアログが開いています。完了後に再度お試しください。"
+                : `ダウンロードできませんでした（${code || e && e.message || "不明"}）。`;
+      show(statusEl, msg, code === "declined" ? undefined : false);
+    }
+  }
+
+  const statusFor = id => {
+    if (["priv", "pub"].includes(id)) return $("keyStatus");
+    if (["msg", "sig", "record"].includes(id)) return $("signStatus");
+    return $("verifyStatus");
+  };
+
+  // ---------- wiring ----------
+  $("btnGen").onclick = () => generate().catch(e => show($("keyStatus"), "鍵生成に失敗: " + errMsg(e), false));
+  $("btnDerive").onclick = () => derive().catch(e => show($("keyStatus"), "公開鍵の導出に失敗: " + errMsg(e), false));
+  $("btnSign").onclick = sign;
+  $("btnVerify").onclick = verify;
+  $("btnCopySig").onclick = () => {
+    $("vsig").value = $("sig").value;
+    $("vmsg").value = $("msg").value;
+    $("vpub").value = $("pub").value;
+    show($("verifyStatus"), "署名・メッセージ・公開鍵を検証欄にコピーしました。", undefined);
+  };
+
+  document.querySelectorAll("[data-up]").forEach(btn => {
+    btn.onclick = () => {
+      const target = btn.dataset.up;
+      pickFile(btn.dataset.accept || "", (text, name) => {
+        $(target).value = text.trim();
+        show(statusFor(target), `${name} を読み込みました。`, true);
+      });
+    };
+  });
+
+  document.querySelectorAll("[data-dl]").forEach(btn => {
+    btn.onclick = () => {
+      const src = $(btn.dataset.dl).value;
+      if (!src) return show(statusFor(btn.dataset.dl), "保存する内容がありません。", false);
+      saveFile(btn.dataset.name, src, statusFor(btn.dataset.dl));
+    };
+  });
+})();
+</script>
+</body>
+</html>
