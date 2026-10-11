@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>タイマー</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+  :root {
+    --glass-shadow-dark: inset 1px 0px 0.5px 0px rgba(0,0,0,0.45), inset -1px 0px 0.5px 0px rgba(0,0,0,0.45), inset 0px 1px 0.5px 0px rgba(255,255,255,0.45), inset 0px -1px 0.5px 0px rgba(255,255,255,0.45), 0px 4px 27px 0px rgba(0,0,0,0.1);
+    --glass-shadow-light: inset 0px 1px 0.5px 0px rgba(255,255,255,0.45), inset 0px -1px 0.5px 0px rgba(255,255,255,0.45), inset 1px 0px 0.5px 0px rgba(0,0,0,0.45), inset -1px 0px 0.5px 0px rgba(0,0,0,0.45), 0px 4px 27px 0px rgba(0,0,0,0.06);
+    --font: "Hiragino Sans", "Noto Sans JP", "Helvetica Neue", system-ui, sans-serif;
+    --k: clamp(44px, min(9vw, 12vh), 64px);
+  }
+
+  /* ダーク（既定） */
+  body {
+    --fg: #fff;
+    --fg-sub: rgba(255,255,255,0.72);
+    --key-bg: rgba(255,255,255,0.12);
+    --sw-off: #CACACA77;
+    --glass: var(--glass-shadow-dark);
+    --start-bg: #fff;
+    --start-fg: #000;
+    --overlay: rgba(0,0,0,0.35);
+  }
+  /* ライト */
+  body.light {
+    --fg: #000;
+    --fg-sub: rgba(0,0,0,0.62);
+    --key-bg: rgba(255,255,255,0.45);
+    --sw-off: #78787877;
+    --glass: var(--glass-shadow-light);
+    --start-bg: #000;
+    --start-fg: #fff;
+    --overlay: rgba(255,255,255,0.45);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    color: var(--fg);
+    font-family: var(--font);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* ---------- 開始画面（HTML） ---------- */
+  #setup {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--wallpaper);
+  }
+  #setup::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--overlay);
+  }
+  .setup-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: clamp(24px, 6vw, 64px);
+    width: min(92vw, 760px);
+    padding: 24px;
+  }
+  .left {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 3vh, 24px);
+    flex: none;
+  }
+  .display {
+    font-size: clamp(36px, 8vh, 56px);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--fg);
+  }
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, var(--k));
+    gap: clamp(8px, 1.6vh, 14px);
+  }
+  .key {
+    width: var(--k);
+    height: var(--k);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--key-bg);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    box-shadow: var(--glass);
+    color: var(--fg);
+    font: 400 calc(var(--k) * 0.4) / 1 var(--font);
+    cursor: pointer;
+    transition: transform 0.08s ease;
+  }
+  .key:active { transform: scale(0.94); }
+  .key:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+  .key[data-d="0"] { grid-column: 2; }
+
+  .right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(14px, 3.2vh, 24px);
+  }
+  .opt {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: clamp(15px, 2.3vh, 20px);
+    color: var(--fg);
+    cursor: pointer;
+  }
+  .opt input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .switch {
+    position: relative;
+    flex: none;
+    width: 52px;
+    height: 32px;
+    border-radius: 16px;
+    background: var(--sw-off);
+    transition: background 0.2s ease;
+  }
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    transition: transform 0.2s ease;
+  }
+  .opt input:checked + .switch { background: #1EDD4E; }
+  .opt input:checked + .switch::after { transform: translateX(20px); }
+  .opt input:focus-visible + .switch { outline: 2px solid var(--fg); outline-offset: 3px; }
+
+  .note {
+    margin: 0;
+    font-size: clamp(11px, 1.7vh, 13px);
+    line-height: 1.6;
+    color: var(--fg-sub);
+  }
+  .start-btn {
+    align-self: flex-end;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 14px 28px 14px 20px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--start-bg);
+    color: var(--start-fg);
+    font: 600 clamp(18px, 3vh, 24px) / 1 var(--font);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    cursor: pointer;
+  }
+  .start-btn .material-icons { font-size: 1.2em; }
+  .start-btn:disabled { opacity: 0.35; cursor: default; }
+  .start-btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+
+  /* ---------- 再生画面（canvas） ---------- */
+  #stage {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+</style>
+</head>
+<body>
+
+<div id="setup">
+  <div class="setup-inner">
+    <div class="left">
+      <div id="display" class="display">00:00:00</div>
+      <div class="keypad">
+        <button class="key" data-d="1" aria-label="1">1</button>
+        <button class="key" data-d="2" aria-label="2">2</button>
+        <button class="key" data-d="3" aria-label="3">3</button>
+        <button class="key" data-d="4" aria-label="4">4</button>
+        <button class="key" data-d="5" aria-label="5">5</button>
+        <button class="key" data-d="6" aria-label="6">6</button>
+        <button class="key" data-d="7" aria-label="7">7</button>
+        <button class="key" data-d="8" aria-label="8">8</button>
+        <button class="key" data-d="9" aria-label="9">9</button>
+        <button class="key" data-d="0" aria-label="0">0</button>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="options">
+        <label class="opt">
+          <span>ライトテーマ</span>
+          <input type="checkbox" id="optLight">
+          <span class="switch"></span>
+        </label>
+        <label class="opt">
+          <span>日付とバッテリー残量を表示</span>
+          <input type="checkbox" id="optInfo" checked>
+          <span class="switch"></span>
+        </label>
+        <label class="opt">
+          <span>フルスクリーン</span>
+          <input type="checkbox" id="optFull" checked>
+          <span class="switch"></span>
+        </label>
+      </div>
+
+      <p class="note">設定画面に戻るには一時停止してから右下に表示されるホームボタンをタップします。</p>
+
+      <button id="startBtn" class="start-btn" disabled>
+        <span class="material-icons" aria-hidden="true">play_arrow</span>
+        <span>開始</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<canvas id="stage" hidden></canvas>
+
+<script>
+(() => {
+  /* ===== 設定 ===== */
+  // 角度は canvas 基準（0 = 右、時計回り正）。stops は中心から時計回りに並ぶ 0〜1。
+  const WALLPAPER = {
+    dark:  { start: -22.7, stops: [[0, '#000000'], [0.5, '#003893'], [0.95, '#75FFF8'], [1, '#75FFF8']] },
+    light: { start: -61.8, stops: [[0, '#FFFFFF'], [0.3, '#FFFFFF'], [0.6, '#8DF9FF'], [0.85, '#0077FF'], [1, '#0077FF']] }
+  };
+  const FONT = '"Hiragino Sans", "Noto Sans JP", system-ui, sans-serif';
+  const WEEK = ['日', '月', '火', '水', '木', '金', '土'];
+  // Material Icons の codepoint（canvas はリガチャ不可のため直接描画）
+  const ICON = { play: '\ue037', pause: '\ue034', home: '\ue88a', batFull: '\ue1a4', batStd: '\ue1a5', batAlert: '\ue19c' };
+  const TAU = Math.PI * 2;
+
+  /* ===== 要素 ===== */
+  const $ = id => document.getElementById(id);
+  const setupEl = $('setup');
+  const stage = $('stage');
+  const ctx = stage.getContext('2d');
+  const displayEl = $('display');
+  const startBtn = $('startBtn');
+  const optLight = $('optLight');
+  const optInfo = $('optInfo');
+  const optFull = $('optFull');
+
+  /* ===== 状態 ===== */
+  let digits = '000000';           // HHMMSS
+  const state = {
+    theme: 'dark',
+    running: false,
+    accum: 0,        // 一時停止までの経過ms
+    segStart: 0,     // 直近の再開時刻
+    total: 0,        // 総時間ms
+    rafId: 0,
+    battery: null
+  };
+  let W = 0, H = 0, DPR = 1, U = 1;
+  let cacheKey = '', wallLayer = null, glassLayer = null, glassSize = 0, glassR = 0;
+  let wakeLock = null;
+
+  /* ===== テーマ ===== */
+  const cssWallpaper = th => {
+    const { start, stops } = WALLPAPER[th];
+    const list = stops.map(([t, c]) => `${c} ${(t * 100).toFixed(1)}%`).join(', ');
+    return `conic-gradient(from ${start + 90}deg at 50% 50%, ${list})`; // CSS は上基準なので +90
+  };
+  function applyTheme() {
+    state.theme = optLight.checked ? 'light' : 'dark';
+    document.body.classList.toggle('light', state.theme === 'light');
+    document.body.style.setProperty('--wallpaper', cssWallpaper(state.theme));
+  }
+
+  /* ===== 開始画面：入力 ===== */
+  const parseDigits = s => (+s.slice(0, 2)) * 3600 + (+s.slice(2, 4)) * 60 + (+s.slice(4, 6));
+  const fmtDigits = s => s.replace(/(\d{2})(\d{2})(\d{2})/, '$1:$2:$3');
+  function updateSetup() {
+    displayEl.textContent = fmtDigits(digits);
+    startBtn.disabled = parseDigits(digits) === 0;
+  }
+  const pushDigit = d => { digits = digits.slice(1) + d; updateSetup(); };
+  const popDigit = () => { digits = '0' + digits.slice(0, 5); updateSetup(); };
+
+  /* ===== フルスクリーン / スリープ抑止 ===== */
+  function enterFullscreen() {
+    const el = document.documentElement;
+    const fn = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!fn) return;
+    try { const p = fn.call(el); if (p && p.catch) p.catch(() => {}); } catch (e) {}
+  }
+  function exitFullscreen() {
+    const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    const fn = document.exitFullscreen || document.webkitExitFullscreen;
+    if (!fsEl || !fn) return;
+    try { const p = fn.call(document); if (p && p.catch) p.catch(() => {}); } catch (e) {}
+  }
+  async function acquireWake() {
+    try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+  }
+  function releaseWake() {
+    if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+  }
+
+  /* ===== 画面遷移 ===== */
+  function startTimer() {
+    const total = parseDigits(digits) * 1000;
+    if (!total) return;
+    state.total = total;
+    state.accum = 0;
+    state.segStart = performance.now();
+    state.running = true;
+
+    setupEl.hidden = true;
+    stage.hidden = false;
+    if (optFull.checked) enterFullscreen();
+    acquireWake();
+    resize();
+    cancelAnimationFrame(state.rafId);
+    loop();
+  }
+  function backToSetup() {
+    cancelAnimationFrame(state.rafId);
+    state.running = false;
+    stage.hidden = true;
+    setupEl.hidden = false;
+    exitFullscreen();
+    releaseWake();
+  }
+  function togglePlay() {
+    const now = performance.now();
+    if (state.running) {
+      state.accum += now - state.segStart;
+      state.running = false;
+    } else {
+      state.segStart = now;
+      state.running = true;
+    }
+  }
+
+  /* ===== サイズ・キャッシュ ===== */
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    stage.width = Math.round(W * DPR);
+    stage.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    U = Math.min(W / 716, H / 414); // 画像（716×414）基準の倍率
+    cacheKey = '';
+  }
+
+  // オフスクリーン描画用レイヤー（デバイスピクセル解像度）
+  function makeLayer(w, h, draw) {
+    const c = document.createElement('canvas');
+    c.width = Math.ceil(w * DPR);
+    c.height = Math.ceil(h * DPR);
+    const g = c.getContext('2d');
+    g.setTransform(DPR, 0, 0, DPR, 0, 0);
+    draw(g);
+    return c;
+  }
+
+  // CSS の inset box-shadow を canvas で再現（円を clip し、ずらした穴の外側だけを塗る）
+  function insetShadow(g, x, y, r, dx, dy, blur, color) {
+    g.save();
+    g.beginPath();
+    g.arc(x, y, r, 0, TAU);
+    g.clip();
+    g.beginPath();
+    g.rect(x - r * 2, y - r * 2, r * 4, r * 4);
+    g.moveTo(x + dx + r, y + dy);
+    g.arc(x + dx, y + dy, r, 0, TAU, true);
+    g.fillStyle = color;
+    g.shadowColor = color;
+    g.shadowBlur = blur;
+    g.shadowOffsetX = 0;
+    g.shadowOffsetY = 0;
+    g.fill('evenodd');
+    g.restore();
+  }
+
+  // ガラスボタン（box-shadow の再現）
+  function drawGlass(g, x, y, r, dark) {
+    // 外側の影 0 4px 27px
+    g.save();
+    g.shadowColor = dark ? 'rgba(0,0,0,0.10)' : 'rgba(0,0,0,0.06)';
+    g.shadowBlur = 27 * U;
+    g.shadowOffsetY = 4 * U;
+    g.fillStyle = dark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.8)';
+    g.beginPath();
+    g.arc(x, y, r, 0, TAU);
+    g.fill();
+    g.restore();
+
+    // 内側の影（上下の白、左右の黒）
+    insetShadow(g, x, y, r,  1 * U, 0, 0.5 * U, 'rgba(0,0,0,0.45)');
+    insetShadow(g, x, y, r, -1 * U, 0, 0.5 * U, 'rgba(0,0,0,0.45)');
+    insetShadow(g, x, y, r, 0,  1 * U, 0.5 * U, 'rgba(255,255,255,0.45)');
+    insetShadow(g, x, y, r, 0, -1 * U, 0.5 * U, 'rgba(255,255,255,0.45)');
+  }
+
+  // 壁紙とガラスボタンを事前描画（毎フレームの負荷を軽くする）
+  function buildCache() {
+    const key = [W, H, DPR, U, state.theme].join('|');
+    if (key === cacheKey) return;
+    cacheKey = key;
+
+    const { start, stops } = WALLPAPER[state.theme];
+    wallLayer = makeLayer(W, H, g => {
+      if (g.createConicGradient) {
+        const grd = g.createConicGradient(start * Math.PI / 180, W / 2, H / 2);
+        stops.forEach(([t, c]) => grd.addColorStop(t, c));
+        g.fillStyle = grd;
+      } else {
+        g.fillStyle = stops[stops.length - 1][1]; // 非対応ブラウザの簡易フォールバック
+      }
+      g.fillRect(0, 0, W, H);
+    });
+
+    glassR = 16 * U;
+    glassSize = 2 * (glassR + 44 * U);
+    const dark = state.theme === 'dark';
+    glassLayer = makeLayer(glassSize, glassSize, g => drawGlass(g, glassSize / 2, glassSize / 2, glassR, dark));
+  }
+
+  /* ===== 描画 ===== */
+  const pad2 = n => String(n).padStart(2, '0');
+
+  function drawGlassAt(x, y) {
+    ctx.drawImage(glassLayer, x - glassSize / 2, y - glassSize / 2, glassSize, glassSize);
+  }
+
+  function draw(now) {
+    buildCache();
+    const dark = state.theme === 'dark';
+    const fg = dark ? '#fff' : '#000';
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(wallLayer, 0, 0, W, H);
+
+    // 一時停止中のオーバーレイ（ダーク＝黒、ライト＝白）
+    if (!state.running) {
+      ctx.fillStyle = dark ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)';
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // 上部：日付・時刻・バッテリー
+    if (optInfo.checked) {
+      const d = new Date();
+      ctx.fillStyle = dark ? 'rgba(255,255,255,0.72)' : 'rgba(0,0,0,0.7)';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      ctx.font = `500 ${15 * U}px ${FONT}`;
+      ctx.fillText(`${d.getHours()}:${pad2(d.getMinutes())} ${d.getMonth() + 1}月 ${d.getDate()}日 (${WEEK[d.getDay()]})`, 26 * U, 30 * U);
+
+      const bat = state.battery;
+      const lv = bat ? bat.level : 1;
+      const icon = lv < 0.2 ? ICON.batAlert : (lv < 0.9 ? ICON.batStd : ICON.batFull);
+      const iconX = W - 26 * U;
+      ctx.font = `${20 * U}px "Material Icons"`;
+      ctx.textAlign = 'right';
+      ctx.fillText(icon, iconX, 30 * U);
+      if (bat) {
+        ctx.font = `500 ${14 * U}px ${FONT}`;
+        ctx.fillText(`${Math.round(lv * 100)}%`, iconX - 24 * U, 30 * U);
+      }
+    }
+
+    // 下部：左ボタン（再生／一時停止）＋ 進捗
+    const cy = H - 36 * U;
+    const lx = 40 * U;
+    const rx = W - 36 * U;
+
+    drawGlassAt(lx, cy);
+    ctx.fillStyle = fg;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `${20 * U}px "Material Icons"`;
+    ctx.fillText(state.running ? ICON.pause : ICON.play, lx, cy);
+
+    const elapsed = state.accum + (state.running ? now - state.segStart : 0);
+    const pct = Math.floor(elapsed / state.total * 100);
+    const label = state.running
+      ? (pct < 100 ? `${pct}% 完了` : `${pct}%`)
+      : `タップして再開 ${pct}%`;
+    ctx.fillStyle = fg;
+    ctx.textAlign = 'left';
+    ctx.font = `600 ${18 * U}px ${FONT}`;
+    ctx.fillText(label, lx + 39 * U, cy);
+
+    // 右下：ホーム（一時停止中のみ）
+    if (!state.running) {
+      drawGlassAt(rx, cy);
+      ctx.fillStyle = fg;
+      ctx.textAlign = 'center';
+      ctx.font = `${20 * U}px "Material Icons"`;
+      ctx.fillText(ICON.home, rx, cy);
+    }
+  }
+
+  function loop() {
+    draw(performance.now());
+    state.rafId = requestAnimationFrame(loop);
+  }
+
+  /* ===== 入力 ===== */
+  document.querySelectorAll('.key').forEach(btn =>
+    btn.addEventListener('click', () => pushDigit(btn.dataset.d))
+  );
+  startBtn.addEventListener('click', startTimer);
+  optLight.addEventListener('change', applyTheme);
+
+  // 再生画面：タップで開始／一時停止。一時停止中の右下ホームで設定へ戻る
+  stage.addEventListener('pointerdown', e => {
+    if (!state.running) {
+      const rx = W - 36 * U, cy = H - 36 * U;
+      if (Math.hypot(e.clientX - rx, e.clientY - cy) <= 20 * U) {
+        backToSetup();
+        return;
+      }
+    }
+    togglePlay();
+  });
+
+  window.addEventListener('resize', () => { if (!stage.hidden) resize(); });
+
+  // キーボード（PC用）：数字入力、Backspace、Enter、Space
+  document.addEventListener('keydown', e => {
+    if (!setupEl.hidden) {
+      if (/^[0-9]$/.test(e.key)) pushDigit(e.key);
+      else if (e.key === 'Backspace') popDigit();
+      else if (e.key === 'Enter' && !startBtn.disabled) startTimer();
+    } else if (e.key === ' ') {
+      e.preventDefault();
+      togglePlay();
+    }
+  });
+
+  /* ===== 初期化 ===== */
+  applyTheme();
+  updateSetup();
+  if (navigator.getBattery) {
+    navigator.getBattery().then(b => { state.battery = b; }).catch(() => {});
+  }
+  if (document.fonts) {
+    document.fonts.load('20px "Material Icons"').catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>
