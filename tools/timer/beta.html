@@ -5,25 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>タイマー</title>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 <style>
   :root {
-    --glass-shadow-dark: inset 1px 0px 0.5px 0px rgba(0,0,0,0.45), inset -1px 0px 0.5px 0px rgba(0,0,0,0.45), inset 0px 1px 0.5px 0px rgba(255,255,255,0.45), inset 0px -1px 0.5px 0px rgba(255,255,255,0.45), 0px 4px 27px 0px rgba(0,0,0,0.1);
-    --glass-shadow-light: inset 0px 1px 0.5px 0px rgba(255,255,255,0.45), inset 0px -1px 0.5px 0px rgba(255,255,255,0.45), inset 1px 0px 0.5px 0px rgba(0,0,0,0.45), inset -1px 0px 0.5px 0px rgba(0,0,0,0.45), 0px 4px 27px 0px rgba(0,0,0,0.06);
-    --font: "Hiragino Sans", "Noto Sans JP", "Helvetica Neue", system-ui, sans-serif;
+    --font: "Inter", "Noto Sans JP", system-ui, sans-serif;
     --k: clamp(44px, min(9vw, 12vh), 64px);
+    --shadow-dark: inset 1px 0px 0.5px 0px rgba(0,0,0,0.45), inset -1px 0px 0.5px 0px rgba(0,0,0,0.45), inset 0px 1px 0.5px 0px rgba(255,255,255,0.45), inset 0px -1px 0.5px 0px rgba(255,255,255,0.45), 0px 4px 27px 0px rgba(0,0,0,0.1);
+    --shadow-light: inset 0px 1px 0.5px 0px rgba(255,255,255,0.45), inset 0px -1px 0.5px 0px rgba(255,255,255,0.45), inset 1px 0px 0.5px 0px rgba(0,0,0,0.45), inset -1px 0px 0.5px 0px rgba(0,0,0,0.45), 0px 4px 27px 0px rgba(0,0,0,0.06);
   }
 
   /* ダーク（既定） */
   body {
     --fg: #fff;
     --fg-sub: rgba(255,255,255,0.72);
-    --key-bg: rgba(255,255,255,0.12);
+    --key-bg: #00000044;
     --sw-off: #CACACA77;
-    --glass: var(--glass-shadow-dark);
     --start-bg: #fff;
     --start-fg: #000;
-    --overlay: rgba(0,0,0,0.35);
   }
   /* ライト */
   body.light {
@@ -31,21 +32,17 @@
     --fg-sub: rgba(0,0,0,0.62);
     --key-bg: rgba(255,255,255,0.45);
     --sw-off: #78787877;
-    --glass: var(--glass-shadow-light);
     --start-bg: #000;
     --start-fg: #fff;
-    --overlay: rgba(255,255,255,0.45);
   }
 
   *, *::before, *::after { box-sizing: border-box; }
-  [hidden] { display: none !important; }
 
   html, body {
     margin: 0;
     height: 100%;
     overflow: hidden;
     background: #000;
-    color: var(--fg);
     font-family: var(--font);
     -webkit-tap-highlight-color: transparent;
     user-select: none;
@@ -56,24 +53,41 @@
   #setup {
     position: fixed;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--wallpaper);
+    overflow: hidden;
+    transition: opacity 0.3s ease;
   }
-  #setup::before {
+  #setup.off { opacity: 0; pointer-events: none; }
+
+  /* 背景：ぼかした壁紙を2枚重ねてテーマ切替時にクロスフェード */
+  .bg {
+    position: absolute;
+    inset: -80px;
+    filter: blur(40px);
+    transition: opacity 0.3s ease;
+  }
+  .bg::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: var(--overlay);
   }
+  .bg-dark { background: var(--wp-dark); }
+  .bg-dark::after { background: rgba(0,0,0,0.35); }
+  .bg-light { background: var(--wp-light); opacity: 0; }
+  .bg-light::after { background: rgba(255,255,255,0.45); }
+  body.light .bg-dark { opacity: 0; }
+  body.light .bg-light { opacity: 1; }
+
   .setup-inner {
     position: relative;
     z-index: 1;
     display: flex;
     gap: clamp(24px, 6vw, 64px);
     width: min(92vw, 760px);
+    height: 100%;
+    max-height: 100%;
     padding: 24px;
+    margin: auto;
+    align-items: center;
   }
   .left {
     display: flex;
@@ -85,9 +99,10 @@
     font-size: clamp(36px, 8vh, 56px);
     font-weight: 300;
     line-height: 1;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     font-variant-numeric: tabular-nums;
     color: var(--fg);
+    transition: color 0.3s ease;
   }
   .keypad {
     display: grid;
@@ -95,6 +110,7 @@
     gap: clamp(8px, 1.6vh, 14px);
   }
   .key {
+    position: relative;
     width: var(--k);
     height: var(--k);
     padding: 0;
@@ -102,15 +118,27 @@
     border-radius: 50%;
     display: grid;
     place-items: center;
-    background: var(--key-bg);
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
-    box-shadow: var(--glass);
+    background-color: var(--key-bg);
     color: var(--fg);
     font: 400 calc(var(--k) * 0.4) / 1 var(--font);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
     cursor: pointer;
-    transition: transform 0.08s ease;
+    transition: transform 0.08s ease, background-color 0.3s ease, color 0.3s ease;
   }
+  .key span { position: relative; }
+  .key::before, .key::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .key::before { box-shadow: var(--shadow-dark); opacity: 1; }
+  .key::after  { box-shadow: var(--shadow-light); opacity: 0; }
+  body.light .key::before { opacity: 0; }
+  body.light .key::after  { opacity: 1; }
   .key:active { transform: scale(0.94); }
   .key:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
   .key[data-d="0"] { grid-column: 2; }
@@ -119,6 +147,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    align-self: stretch;
     flex: 1;
     min-width: 0;
   }
@@ -133,38 +162,40 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    font-size: clamp(15px, 2.3vh, 20px);
     color: var(--fg);
+    transition: color 0.3s ease;
     cursor: pointer;
   }
+  .opt-label { font-size: clamp(15px, 2.3vh, 20px); font-weight: 400; }
   .opt input {
     position: absolute;
     opacity: 0;
     pointer-events: none;
   }
+  /* 横に少し長いスイッチ */
   .switch {
     position: relative;
     flex: none;
-    width: 52px;
-    height: 32px;
-    border-radius: 16px;
-    background: var(--sw-off);
-    transition: background 0.2s ease;
-  }
+    width: 71px;
+    height: 29px;
+    border-radius: 17px;
+    background-color: var(--sw-off);
+    transition: background-color 0.3s ease;
+}
   .switch::after {
     content: "";
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    width: 38px;
+    height: 23px;
+    border-radius: 99px;
     background: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    transition: transform 0.2s ease;
-  }
-  .opt input:checked + .switch { background: #1EDD4E; }
-  .opt input:checked + .switch::after { transform: translateX(20px); }
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    transition: transform 0.25s ease;
+}
+  .opt input:checked + .switch { background-color: #1EDD4E; }
+  .opt input:checked + .switch::after { transform: translateX(26px); }
   .opt input:focus-visible + .switch { outline: 2px solid var(--fg); outline-offset: 3px; }
 
   .note {
@@ -172,22 +203,24 @@
     font-size: clamp(11px, 1.7vh, 13px);
     line-height: 1.6;
     color: var(--fg-sub);
+    transition: color 0.3s ease;
   }
   .start-btn {
     align-self: flex-end;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 14px 28px 14px 20px;
+    gap: 2px;
+    padding: 14px 28px 14px 18px;
     border: 0;
     border-radius: 999px;
-    background: var(--start-bg);
+    background-color: var(--start-bg);
     color: var(--start-fg);
     font: 600 clamp(18px, 3vh, 24px) / 1 var(--font);
     box-shadow: 0 4px 20px rgba(0,0,0,0.12);
     cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, opacity 0.2s ease;
   }
-  .start-btn .material-icons { font-size: 1.2em; }
+  .start-btn .material-icons-round { font-size: 1.2em; }
   .start-btn:disabled { opacity: 0.35; cursor: default; }
   .start-btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
 
@@ -198,78 +231,127 @@
     width: 100%;
     height: 100%;
     display: block;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
     cursor: pointer;
     touch-action: manipulation;
   }
+  #stage.on { opacity: 1; pointer-events: auto; }
 </style>
 </head>
 <body>
 
 <div id="setup">
+  <div class="bg bg-dark"></div>
+  <div class="bg bg-light"></div>
+
   <div class="setup-inner">
     <div class="left">
       <div id="display" class="display">00:00:00</div>
       <div class="keypad">
-        <button class="key" data-d="1" aria-label="1">1</button>
-        <button class="key" data-d="2" aria-label="2">2</button>
-        <button class="key" data-d="3" aria-label="3">3</button>
-        <button class="key" data-d="4" aria-label="4">4</button>
-        <button class="key" data-d="5" aria-label="5">5</button>
-        <button class="key" data-d="6" aria-label="6">6</button>
-        <button class="key" data-d="7" aria-label="7">7</button>
-        <button class="key" data-d="8" aria-label="8">8</button>
-        <button class="key" data-d="9" aria-label="9">9</button>
-        <button class="key" data-d="0" aria-label="0">0</button>
+        <button class="key" data-d="1" aria-label="1"><span>1</span></button>
+        <button class="key" data-d="2" aria-label="2"><span>2</span></button>
+        <button class="key" data-d="3" aria-label="3"><span>3</span></button>
+        <button class="key" data-d="4" aria-label="4"><span>4</span></button>
+        <button class="key" data-d="5" aria-label="5"><span>5</span></button>
+        <button class="key" data-d="6" aria-label="6"><span>6</span></button>
+        <button class="key" data-d="7" aria-label="7"><span>7</span></button>
+        <button class="key" data-d="8" aria-label="8"><span>8</span></button>
+        <button class="key" data-d="9" aria-label="9"><span>9</span></button>
+        <button class="key" data-d="0" aria-label="0"><span>0</span></button>
       </div>
     </div>
 
     <div class="right">
       <div class="options">
         <label class="opt">
-          <span>ライトテーマ</span>
+          <span class="opt-label">ライトテーマ</span>
           <input type="checkbox" id="optLight">
-          <span class="switch"></span>
+          <i class="switch"></i>
         </label>
         <label class="opt">
-          <span>日付とバッテリー残量を表示</span>
+          <span class="opt-label">日付とバッテリー残量を表示</span>
           <input type="checkbox" id="optInfo" checked>
-          <span class="switch"></span>
+          <i class="switch"></i>
         </label>
         <label class="opt">
-          <span>フルスクリーン</span>
+          <span class="opt-label">フルスクリーン</span>
           <input type="checkbox" id="optFull" checked>
-          <span class="switch"></span>
+          <i class="switch"></i>
         </label>
       </div>
 
-      <p class="note">設定画面に戻るには一時停止してから右下に表示されるホームボタンをタップします。</p>
+      <p class="note">設定画面に戻るには一時停止してから<br>右下に表示されるホームボタンをタップします。</p>
 
       <button id="startBtn" class="start-btn" disabled>
-        <span class="material-icons" aria-hidden="true">play_arrow</span>
+        <span class="material-icons-round" aria-hidden="true">play_arrow</span>
         <span>開始</span>
       </button>
     </div>
   </div>
 </div>
 
-<canvas id="stage" hidden></canvas>
+<canvas id="stage"></canvas>
 
 <script>
 (() => {
   /* ===== 設定 ===== */
   // 角度は canvas 基準（0 = 右、時計回り正）。stops は中心から時計回りに並ぶ 0〜1。
   const WALLPAPER = {
-    dark:  { start: -22.7, stops: [[0, '#000000'], [0.5, '#003893'], [0.95, '#75FFF8'], [1, '#75FFF8']] },
-    light: { start: -61.8, stops: [[0, '#FFFFFF'], [0.3, '#FFFFFF'], [0.6, '#8DF9FF'], [0.85, '#0077FF'], [1, '#0077FF']] }
+    dark:  { start: 0, stops: [[0, '#000000'], [0.5, '#003893'], [0.95, '#75FFF8'], [1, '#75FFF8']] },
+    light: { start: 0, stops: [[0, '#FFFFFF'], [0.3, '#FFFFFF'], [0.6, '#8DF9FF'], [0.85, '#0077FF'], [1, '#0077FF']] }
   };
-  const FONT = '"Hiragino Sans", "Noto Sans JP", system-ui, sans-serif';
+  const CANVAS_FONT = '"Inter", "Noto Sans JP", sans-serif';
+  const ICON_FONT = '"Material Icons Round"';
   const WEEK = ['日', '月', '火', '水', '木', '金', '土'];
   // Material Icons の codepoint（canvas はリガチャ不可のため直接描画）
   const ICON = { play: '\ue037', pause: '\ue034', home: '\ue88a', batFull: '\ue1a4', batStd: '\ue1a5', batAlert: '\ue19c' };
   const TAU = Math.PI * 2;
+  const PI = Math.PI;
+
+  /* ===== ユーティリティ ===== */
+  const $ = id => document.getElementById(id);
+  const pad2 = n => String(n).padStart(2, '0');
+  // easeInOutCubic
+  const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+  // 数値のイージング（go で目標を変えた瞬間の現在値から滑らかに遷移）
+  class Tween {
+    constructor(v) { this.a = v; this.b = v; this.t0 = 0; this.dur = 0; }
+    value(now) {
+      if (!this.dur) return this.b;
+      const t = Math.min(1, Math.max(0, (now - this.t0) / this.dur));
+      return this.a + (this.b - this.a) * ease(t);
+    }
+    go(target, now, dur) {
+      this.a = this.value(now);
+      this.b = target;
+      this.t0 = now;
+      this.dur = dur;
+    }
+  }
+
+  // 文字・アイコンのクロスフェード（旧と新を同時にフェード。フェードアウト→インではない）
+  class Crossfade {
+    constructor() { this.prev = null; this.cur = null; this.t0 = 0; this.dur = 0; }
+    set(v, now, dur) {
+      if (v === this.cur) return;
+      if (this.cur !== null) this.prev = this.cur;
+      this.cur = v;
+      this.t0 = now;
+      this.dur = this.prev === null ? 0 : dur; // 初回は即時表示
+    }
+    draw(now, fn) {
+      const t = this.dur ? Math.min(1, (now - this.t0) / this.dur) : 1;
+      const e = ease(t);
+      if (this.prev !== null && t < 1) fn(this.prev, 1 - e);
+      fn(this.cur, e);
+      if (t >= 1) this.prev = null;
+    }
+  }
 
   /* ===== 要素 ===== */
-  const $ = id => document.getElementById(id);
   const setupEl = $('setup');
   const stage = $('stage');
   const ctx = stage.getContext('2d');
@@ -280,30 +362,37 @@
   const optFull = $('optFull');
 
   /* ===== 状態 ===== */
-  let digits = '000000';           // HHMMSS
+  let digits = '000000'; // HHMMSS
   const state = {
+    phase: 'setup',   // 'setup' | 'playing'
     theme: 'dark',
     running: false,
-    accum: 0,        // 一時停止までの経過ms
-    segStart: 0,     // 直近の再開時刻
-    total: 0,        // 総時間ms
-    rafId: 0,
+    accum: 0,         // 一時停止までの経過ms
+    segStart: 0,      // 直近の再開時刻
+    total: 0,         // 総時間ms
+    looping: false,
+    fadeEnd: 0,       // 設定へ戻るフェードの終了時刻
     battery: null
   };
   let W = 0, H = 0, DPR = 1, U = 1;
-  let cacheKey = '', wallLayer = null, glassLayer = null, glassSize = 0, glassR = 0;
+  let glassKey = '', glassLayer = null, glassSize = 0, glassR = 0;
   let wakeLock = null;
 
-  /* ===== テーマ ===== */
+  let pauseT = new Tween(0);
+  let labelFade = new Crossfade();
+  let iconFade = new Crossfade();
+  const batIconFade = new Crossfade();
+  const batTween = new Tween(0);
+
+  /* ===== テーマ（設定画面の背景・色はCSSのtransitionで切替） ===== */
   const cssWallpaper = th => {
     const { start, stops } = WALLPAPER[th];
     const list = stops.map(([t, c]) => `${c} ${(t * 100).toFixed(1)}%`).join(', ');
-    return `conic-gradient(from ${start + 90}deg at 50% 50%, ${list})`; // CSS は上基準なので +90
+    return `conic-gradient(from ${start}deg at 50% 50%, ${list})`;
   };
   function applyTheme() {
     state.theme = optLight.checked ? 'light' : 'dark';
     document.body.classList.toggle('light', state.theme === 'light');
-    document.body.style.setProperty('--wallpaper', cssWallpaper(state.theme));
   }
 
   /* ===== 開始画面：入力 ===== */
@@ -336,43 +425,54 @@
     if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
   }
 
-  /* ===== 画面遷移 ===== */
+  /* ===== 画面遷移・再生制御 ===== */
   function startTimer() {
     const total = parseDigits(digits) * 1000;
     if (!total) return;
+    const now = performance.now();
     state.total = total;
     state.accum = 0;
-    state.segStart = performance.now();
+    state.segStart = now;
     state.running = true;
+    state.phase = 'playing';
+    pauseT = new Tween(0);
+    labelFade = new Crossfade();
+    iconFade = new Crossfade();
 
-    setupEl.hidden = true;
-    stage.hidden = false;
+    setupEl.classList.add('off');   // 設定はフェードアウト
+    stage.classList.add('on');       // 再生画面は同時にフェードイン
     if (optFull.checked) enterFullscreen();
     acquireWake();
     resize();
-    cancelAnimationFrame(state.rafId);
-    loop();
+    ensureLoop();
   }
+
   function backToSetup() {
-    cancelAnimationFrame(state.rafId);
+    const now = performance.now();
     state.running = false;
-    stage.hidden = true;
-    setupEl.hidden = false;
+    state.phase = 'setup';
+    state.fadeEnd = now + 700;
+    setupEl.classList.remove('off');
+    stage.classList.remove('on');
     exitFullscreen();
     releaseWake();
+    ensureLoop();
   }
+
   function togglePlay() {
     const now = performance.now();
     if (state.running) {
       state.accum += now - state.segStart;
       state.running = false;
+      pauseT.go(1, now, 450);
     } else {
       state.segStart = now;
       state.running = true;
+      pauseT.go(0, now, 450);
     }
   }
 
-  /* ===== サイズ・キャッシュ ===== */
+  /* ===== サイズ・レイヤー ===== */
   function resize() {
     DPR = Math.min(window.devicePixelRatio || 1, 2);
     W = window.innerWidth;
@@ -381,7 +481,7 @@
     stage.height = Math.round(H * DPR);
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     U = Math.min(W / 716, H / 414); // 画像（716×414）基準の倍率
-    cacheKey = '';
+    glassKey = '';
   }
 
   // オフスクリーン描画用レイヤー（デバイスピクセル解像度）
@@ -395,7 +495,7 @@
     return c;
   }
 
-  // CSS の inset box-shadow を canvas で再現（円を clip し、ずらした穴の外側だけを塗る）
+  // CSS の inset box-shadow を再現（円を clip し、ずらした穴の外側だけを塗る）
   function insetShadow(g, x, y, r, dx, dy, blur, color) {
     g.save();
     g.beginPath();
@@ -416,7 +516,6 @@
 
   // ガラスボタン（box-shadow の再現）
   function drawGlass(g, x, y, r, dark) {
-    // 外側の影 0 4px 27px
     g.save();
     g.shadowColor = dark ? 'rgba(0,0,0,0.10)' : 'rgba(0,0,0,0.06)';
     g.shadowBlur = 27 * U;
@@ -427,115 +526,150 @@
     g.fill();
     g.restore();
 
-    // 内側の影（上下の白、左右の黒）
     insetShadow(g, x, y, r,  1 * U, 0, 0.5 * U, 'rgba(0,0,0,0.45)');
     insetShadow(g, x, y, r, -1 * U, 0, 0.5 * U, 'rgba(0,0,0,0.45)');
     insetShadow(g, x, y, r, 0,  1 * U, 0.5 * U, 'rgba(255,255,255,0.45)');
     insetShadow(g, x, y, r, 0, -1 * U, 0.5 * U, 'rgba(255,255,255,0.45)');
   }
 
-  // 壁紙とガラスボタンを事前描画（毎フレームの負荷を軽くする）
-  function buildCache() {
-    const key = [W, H, DPR, U, state.theme].join('|');
-    if (key === cacheKey) return;
-    cacheKey = key;
-
-    const { start, stops } = WALLPAPER[state.theme];
-    wallLayer = makeLayer(W, H, g => {
-      if (g.createConicGradient) {
-        const grd = g.createConicGradient(start * Math.PI / 180, W / 2, H / 2);
-        stops.forEach(([t, c]) => grd.addColorStop(t, c));
-        g.fillStyle = grd;
-      } else {
-        g.fillStyle = stops[stops.length - 1][1]; // 非対応ブラウザの簡易フォールバック
-      }
-      g.fillRect(0, 0, W, H);
-    });
-
+  function buildGlass() {
+    const key = `${U}|${DPR}|${state.theme}`;
+    if (key === glassKey) return;
+    glassKey = key;
     glassR = 16 * U;
     glassSize = 2 * (glassR + 44 * U);
     const dark = state.theme === 'dark';
     glassLayer = makeLayer(glassSize, glassSize, g => drawGlass(g, glassSize / 2, glassSize / 2, glassR, dark));
   }
 
-  /* ===== 描画 ===== */
-  const pad2 = n => String(n).padStart(2, '0');
-
-  function drawGlassAt(x, y) {
+  function drawGlassAt(x, y, alpha) {
+    ctx.globalAlpha = alpha;
     ctx.drawImage(glassLayer, x - glassSize / 2, y - glassSize / 2, glassSize, glassSize);
   }
 
+  /* ===== 描画 ===== */
   function draw(now) {
-    buildCache();
+    buildGlass();
+
     const dark = state.theme === 'dark';
-    const fg = dark ? '#fff' : '#000';
+    const rgb = dark ? '255,255,255' : '0,0,0';
+    const elapsed = state.accum + (state.running ? now - state.segStart : 0);
+    const progress = state.total ? elapsed / state.total : 0;
+    const pct = Math.floor(progress * 100);
+    const pv = pauseT.value(now);
+    const cy = H - 36 * U;
+    const lx = 40 * U;
+    const rx = W - 36 * U;
 
+    ctx.globalAlpha = 1;
     ctx.clearRect(0, 0, W, H);
-    ctx.drawImage(wallLayer, 0, 0, W, H);
 
-    // 一時停止中のオーバーレイ（ダーク＝黒、ライト＝白）
-    if (!state.running) {
-      ctx.fillStyle = dark ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)';
+    // 壁紙：進捗（%）に合わせて1周回転
+    const { start, stops } = WALLPAPER[state.theme];
+    if (ctx.createConicGradient) {
+      const grd = ctx.createConicGradient((start + progress * 360) * PI / 180, W / 2, H / 2);
+      stops.forEach(([t, c]) => grd.addColorStop(t, c));
+      ctx.fillStyle = grd;
+    } else {
+      ctx.fillStyle = stops[stops.length - 1][1];
+    }
+    ctx.fillRect(0, 0, W, H);
+
+    // 一時停止時のオーバーレイ（ダーク＝黒、ライト＝白）
+    if (pv > 0) {
+      ctx.fillStyle = dark ? `rgba(0,0,0,${0.6 * pv})` : `rgba(255,255,255,${0.6 * pv})`;
       ctx.fillRect(0, 0, W, H);
     }
 
     // 上部：日付・時刻・バッテリー
     if (optInfo.checked) {
       const d = new Date();
-      ctx.fillStyle = dark ? 'rgba(255,255,255,0.72)' : 'rgba(0,0,0,0.7)';
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'left';
-      ctx.font = `500 ${15 * U}px ${FONT}`;
+      ctx.font = `500 ${15 * U}px ${CANVAS_FONT}`;
+      ctx.fillStyle = `rgba(${rgb},0.72)`;
       ctx.fillText(`${d.getHours()}:${pad2(d.getMinutes())} ${d.getMonth() + 1}月 ${d.getDate()}日 (${WEEK[d.getDay()]})`, 26 * U, 30 * U);
 
       const bat = state.battery;
       const lv = bat ? bat.level : 1;
-      const icon = lv < 0.2 ? ICON.batAlert : (lv < 0.9 ? ICON.batStd : ICON.batFull);
+      const batIcon = lv > 0.9 ? ICON.batFull : (lv > 0.2 ? ICON.batStd : ICON.batAlert);
       const iconX = W - 26 * U;
-      ctx.font = `${20 * U}px "Material Icons"`;
+
+      batIconFade.set(batIcon, now, 350);
+      ctx.font = `${20 * U}px ${ICON_FONT}`;
       ctx.textAlign = 'right';
-      ctx.fillText(icon, iconX, 30 * U);
-      if (bat) {
-        ctx.font = `500 ${14 * U}px ${FONT}`;
+      batIconFade.draw(now, (g, a) => {
+        ctx.globalAlpha = a;
+        ctx.fillStyle = `rgba(${rgb},0.72)`;
+        ctx.fillText(g, iconX, 30 * U);
+      });
+
+      // 残量％は30%以下のときだけ表示（フェードで出し入れ）
+      const showBat = !!bat && lv <= 0.3;
+      const tgt = showBat ? 1 : 0;
+      if (batTween.b !== tgt) batTween.go(tgt, now, 400);
+      const bv = batTween.value(now);
+      if (bv > 0) {
+        ctx.globalAlpha = bv * 0.72;
+        ctx.font = `500 ${14 * U}px ${CANVAS_FONT}`;
+        ctx.fillStyle = `rgba(${rgb},1)`;
         ctx.fillText(`${Math.round(lv * 100)}%`, iconX - 24 * U, 30 * U);
       }
+      ctx.globalAlpha = 1;
     }
 
-    // 下部：左ボタン（再生／一時停止）＋ 進捗
-    const cy = H - 36 * U;
-    const lx = 40 * U;
-    const rx = W - 36 * U;
-
-    drawGlassAt(lx, cy);
-    ctx.fillStyle = fg;
+    // 下部左：再生／一時停止ボタン（アイコンもクロスフェード）
+    drawGlassAt(lx, cy, 1);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = `${20 * U}px "Material Icons"`;
-    ctx.fillText(state.running ? ICON.pause : ICON.play, lx, cy);
+    ctx.font = `${20 * U}px ${ICON_FONT}`;
+    iconFade.set(state.running ? ICON.pause : ICON.play, now, 350);
+    iconFade.draw(now, (g, a) => {
+      ctx.globalAlpha = a;
+      ctx.fillStyle = `rgb(${rgb})`;
+      ctx.fillText(g, lx, cy);
+    });
 
-    const elapsed = state.accum + (state.running ? now - state.segStart : 0);
-    const pct = Math.floor(elapsed / state.total * 100);
+    // 進捗テキスト（値・状態が変わるとき同時クロスフェード）
     const label = state.running
       ? (pct < 100 ? `${pct}% 完了` : `${pct}%`)
       : `タップして再開 ${pct}%`;
-    ctx.fillStyle = fg;
+    labelFade.set(label, now, 350);
     ctx.textAlign = 'left';
-    ctx.font = `600 ${18 * U}px ${FONT}`;
-    ctx.fillText(label, lx + 39 * U, cy);
+    ctx.font = `600 ${18 * U}px ${CANVAS_FONT}`;
+    labelFade.draw(now, (txt, a) => {
+      ctx.globalAlpha = a;
+      ctx.fillStyle = `rgb(${rgb})`;
+      ctx.fillText(txt, lx + 39 * U, cy);
+    });
 
-    // 右下：ホーム（一時停止中のみ）
-    if (!state.running) {
-      drawGlassAt(rx, cy);
-      ctx.fillStyle = fg;
+    // 右下：ホーム（一時停止中のみ、フェードで出現）
+    if (pv > 0) {
+      drawGlassAt(rx, cy, pv);
+      ctx.globalAlpha = pv;
       ctx.textAlign = 'center';
-      ctx.font = `${20 * U}px "Material Icons"`;
+      ctx.font = `${20 * U}px ${ICON_FONT}`;
+      ctx.fillStyle = `rgb(${rgb})`;
       ctx.fillText(ICON.home, rx, cy);
     }
+    ctx.globalAlpha = 1;
   }
 
   function loop() {
-    draw(performance.now());
-    state.rafId = requestAnimationFrame(loop);
+    const now = performance.now();
+    // 設定へ戻ったあと、フェードアウトが終わったら描画を止める
+    if (state.phase === 'setup' && now > state.fadeEnd) {
+      state.looping = false;
+      return;
+    }
+    draw(now);
+    requestAnimationFrame(loop);
+  }
+  function ensureLoop() {
+    if (!state.looping) {
+      state.looping = true;
+      requestAnimationFrame(loop);
+    }
   }
 
   /* ===== 入力 ===== */
@@ -547,6 +681,7 @@
 
   // 再生画面：タップで開始／一時停止。一時停止中の右下ホームで設定へ戻る
   stage.addEventListener('pointerdown', e => {
+    if (state.phase !== 'playing') return;
     if (!state.running) {
       const rx = W - 36 * U, cy = H - 36 * U;
       if (Math.hypot(e.clientX - rx, e.clientY - cy) <= 20 * U) {
@@ -557,11 +692,11 @@
     togglePlay();
   });
 
-  window.addEventListener('resize', () => { if (!stage.hidden) resize(); });
+  window.addEventListener('resize', () => { resize(); });
 
-  // キーボード（PC用）：数字入力、Backspace、Enter、Space
+  // キーボード（PC用）
   document.addEventListener('keydown', e => {
-    if (!setupEl.hidden) {
+    if (state.phase === 'setup') {
       if (/^[0-9]$/.test(e.key)) pushDigit(e.key);
       else if (e.key === 'Backspace') popDigit();
       else if (e.key === 'Enter' && !startBtn.disabled) startTimer();
@@ -572,13 +707,19 @@
   });
 
   /* ===== 初期化 ===== */
+  document.documentElement.style.setProperty('--wp-dark', cssWallpaper('dark'));
+  document.documentElement.style.setProperty('--wp-light', cssWallpaper('light'));
   applyTheme();
   updateSetup();
+  resize();
   if (navigator.getBattery) {
     navigator.getBattery().then(b => { state.battery = b; }).catch(() => {});
   }
   if (document.fonts) {
-    document.fonts.load('20px "Material Icons"').catch(() => {});
+    document.fonts.load('300 56px "Inter"').catch(() => {});
+    document.fonts.load('600 18px "Inter"').catch(() => {});
+    document.fonts.load('600 18px "Noto Sans JP"', 'タップして再開完了').catch(() => {});
+    document.fonts.load('20px "Material Icons Round"', ICON.play + ICON.pause + ICON.home + ICON.batFull + ICON.batStd + ICON.batAlert).catch(() => {});
   }
 })();
 </script>
