@@ -1,1 +1,444 @@
-<meta http-equiv="refresh" content="0;url=https://search3958.github.io/tools/timer/">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>简洁计时器 | Simple Timer</title>
+<meta name="description" content="采用液态玻璃设计的美观简洁计时器，支持深色模式，可直接在浏览器中使用。">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#000000">
+<meta name="application-name" content="在线计时器">
+<link rel="icon" href="https://search3958.github.io/project/logos/3958logo_main.svg">
+<meta property="og:url" content="https://search3958.github.io/tools/timer/zh">
+<meta property="og:image" content="https://search3958.github.io/project/logos/3958logo_main.svg">
+<meta name="apple-mobile-web-app-title" content="计时器">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:site_name" content="在线计时器">
+<meta property="og:title" content="免费在线计时器｜简洁倒计时工具">
+<meta property="og:description" content="采用液态玻璃设计的美观简洁计时器，支持深色模式。">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="免费在线计时器｜简洁倒计时工具">
+<meta name="twitter:description" content="采用液态玻璃设计的美观简洁计时器，支持深色模式。">
+<meta name="twitter:image" content="https://search3958.github.io/project/logos/3958logo_main.svg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "简洁计时器",
+  "description": "采用液态玻璃设计的美观简洁计时器，支持深色模式，可直接在浏览器中使用。",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "zh-CN",
+  "featureList": [
+    "倒计时功能",
+    "暂停与继续",
+    "浅色主题",
+    "全屏显示"
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font: "Inter", "Noto Sans SC", system-ui, sans-serif;
+    --k: clamp(44px, min(9vw, 12vh), 64px);
+    --shadow-dark: inset 1px 0px 0.5px 0px rgba(0,0,0,0.45), inset -1px 0px 0.5px 0px rgba(0,0,0,0.45), inset 0px 1px 0.5px 0px rgba(255,255,255,0.45), inset 0px -1px 0.5px 0px rgba(255,255,255,0.45), 0px 4px 27px 0px rgba(0,0,0,0.1);
+    --shadow-light: inset 0px 1px 0.5px 0px rgba(255,255,255,0.45), inset 0px -1px 0.5px 0px rgba(255,255,255,0.45), inset 1px 0px 0.5px 0px rgba(0,0,0,0.45), inset -1px 0px 0.5px 0px rgba(0,0,0,0.45), 0px 4px 27px 0px rgba(0,0,0,0.06);
+  }
+  /* 深色模式（默认） */
+  body {
+    --fg: #fff;
+    --fg-sub: rgba(255,255,255,0.72);
+    --key-bg: #00000044;
+    --sw-off: #CACACA77;
+    --start-bg: #fff;
+    --start-fg: #000;
+  }
+  /* 浅色模式 */
+  body.light {
+    --fg: #000;
+    --fg-sub: rgba(0,0,0,0.3);
+    --key-bg: rgba(255,255,255,0.3);
+    --sw-off: #78787877;
+    --start-bg: #000;
+    --start-fg: #fff;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: var(--font);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  /* ---------- 设置页面 ---------- */
+  #setup {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease;
+  }
+  #setup.off { opacity: 0; pointer-events: none; }
+  /* 背景：两层模糊壁纸，切换主题时淡入淡出 */
+  .bg {
+    position: absolute;
+    inset: -80px;
+    filter: blur(40px);
+    transition: opacity 0.3s ease;
+  }
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .bg-dark { background: var(--wp-dark); }
+  .bg-dark::after { background: rgba(0,0,0,0.35); }
+  .bg-light { background: var(--wp-light); opacity: 0; }
+  .bg-light::after { background: rgba(255,255,255,0.45); }
+  body.light .bg-dark { opacity: 0; }
+  body.light .bg-light { opacity: 1; }
+  .setup-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: clamp(24px, 6vw, 64px);
+    width: min(92vw, 760px);
+    height: 100%;
+    max-height: 100%;
+    padding: 24px;
+    margin: auto;
+    align-items: center;
+  }
+  .left {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 3vh, 24px);
+    flex: none;
+    align-items:center;
+  }
+  .display {
+    font-size: clamp(36px, 8vh, 56px);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
+    color: var(--fg);
+    transition: color 0.3s ease;
+  }
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, var(--k));
+    gap: clamp(8px, 1.6vh, 14px);
+  }
+  .key {
+    position: relative;
+    width: var(--k);
+    height: var(--k);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background-color: var(--key-bg);
+    color: var(--fg);
+    font: 400 calc(var(--k) * 0.4) / 1 var(--font);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    cursor: pointer;
+    transition: transform 0.08s ease, background-color 0.3s ease, color 0.3s ease;
+  }
+  .key span { position: relative; }
+  .key::before, .key::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .key::before { box-shadow: var(--shadow-dark); opacity: 1; }
+  .key::after  { box-shadow: var(--shadow-light); opacity: 0; }
+  body.light .key::before { opacity: 0; }
+  body.light .key::after  { opacity: 1; }
+  .key:active { transform: scale(1.2); }
+  .key:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+  .key[data-d="0"] { grid-column: 2; }
+  .right {
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-self: stretch;
+    flex: 1;
+    min-width: 0;
+    gap:48px;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(14px, 3.2vh, 24px);
+  }
+  .opt {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--fg);
+    transition: color 0.3s ease;
+    cursor: pointer;
+  }
+  .opt-label { font-size: clamp(15px, 2.3vh, 20px); font-weight: 400; }
+  .opt input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* 开关样式 */
+  .switch {
+    position: relative;
+    flex: none;
+    width: 71px;
+    height: 29px;
+    border-radius: 17px;
+    background-color: var(--sw-off);
+    transition: background-color 0.3s ease;
+}
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 38px;
+    height: 23px;
+    border-radius: 99px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    transition: transform 0.25s ease;
+}
+  .opt input:checked + .switch { background-color: #1EDD4E; }
+  .opt input:checked + .switch::after { transform: translateX(26px); }
+  .opt input:focus-visible + .switch { outline: 2px solid var(--fg); outline-offset: 3px; }
+  .note {
+    margin: 0;
+    font-size: clamp(11px, 1.7vh, 13px);
+    line-height: 1.6;
+    color: var(--fg-sub);
+    transition: color 0.3s ease;
+  }
+  .start-btn {
+    align-self: flex-end;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 14px 28px 14px 18px;
+    border: 0;
+    border-radius: 999px;
+    background-color: var(--start-bg);
+    color: var(--start-fg);
+    font: 600 clamp(18px, 3vh, 24px) / 1 var(--font);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, opacity 0.2s ease;
+  }
+  .start-btn .material-icons-round { font-size: 1.2em; }
+  .start-btn:disabled { opacity: 0.35; cursor: default; }
+  .start-btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+  /* ---------- 计时页面（画布） ---------- */
+  #stage {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  #stage.on { opacity: 1; pointer-events: auto; }
+  @media (max-width: 600px) {
+    #setup {
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+    }
+    .bg {
+      position: fixed;
+    }
+    .setup-inner {
+      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
+      width: min(100%, 460px);
+      height: auto;
+      min-height: 100%;
+      max-height: none;
+      gap: clamp(18px, 4vh, 28px);
+      padding: max(20px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+    }
+    .left {
+      width: 100%;
+      flex: none;
+      gap: clamp(12px, 2.5vh, 20px);
+    }
+    .display {
+      font-size: clamp(34px, 8vw, 52px);
+    }
+    .keypad {
+      --k: clamp(44px, min(15vw, 7vh), 64px);
+      justify-content: center;
+      gap: clamp(8px, 2vw, 12px);
+    }
+    .right {
+      width: 100%;
+      flex: none;
+      align-self: auto;
+      gap: 18px;
+    }
+    .options {
+      gap: clamp(12px, 2.4vh, 18px);
+    }
+    .opt {
+      gap: 12px;
+    }
+    .opt-label {
+      min-width: 0;
+      font-size: clamp(14px, 3.6vw, 18px);
+    }
+    .note {
+      white-space: pre-line;
+    }
+  }
+  @media (max-width: 600px) and (max-height: 700px) {
+    .setup-inner {
+      justify-content: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="setup">
+  <div class="visually-hidden seo-copy">
+    <h1>免费在线计时器</h1>
+    <p>输入时间即可开始的简洁倒计时工具，支持暂停与继续、主题切换及全屏显示。</p>
+  </div>
+  <div class="bg bg-dark"></div>
+  <div class="bg bg-light"></div>
+  <div class="setup-inner">
+    <div class="left">
+      <div id="display" class="display">00:00:00</div>
+      <div class="keypad">
+        <button class="key" data-d="1" aria-label="1"><span>1</span></button>
+        <button class="key" data-d="2" aria-label="2"><span>2</span></button>
+        <button class="key" data-d="3" aria-label="3"><span>3</span></button>
+        <button class="key" data-d="4" aria-label="4"><span>4</span></button>
+        <button class="key" data-d="5" aria-label="5"><span>5</span></button>
+        <button class="key" data-d="6" aria-label="6"><span>6</span></button>
+        <button class="key" data-d="7" aria-label="7"><span>7</span></button>
+        <button class="key" data-d="8" aria-label="8"><span>8</span></button>
+        <button class="key" data-d="9" aria-label="9"><span>9</span></button>
+        <button class="key" data-d="0" aria-label="0"><span>0</span></button>
+      </div>
+    </div>
+    <div class="right">
+      <div class="options">
+        <label class="opt">
+          <span class="opt-label" data-i18n="lightTheme">浅色主题</span>
+          <input type="checkbox" id="optLight">
+          <i class="switch"></i>
+        </label>
+        <label class="opt">
+          <span class="opt-label" data-i18n="showDateBattery">显示日期与电量</span>
+          <input type="checkbox" id="optInfo" checked>
+          <i class="switch"></i>
+        </label>
+        <label class="opt">
+          <span class="opt-label" data-i18n="completionNotice">结束时提醒</span>
+          <input type="checkbox" id="optCompletionNotice" checked>
+          <i class="switch"></i>
+        </label>
+        <label class="opt">
+          <span class="opt-label" data-i18n="fullscreen">全屏模式</span>
+          <input type="checkbox" id="optFull" checked>
+          <i class="switch"></i>
+        </label>
+      </div>
+      <p class="note" data-i18n="setupNote">如需返回设置，请先暂停计时<br>再点击右下角的主页按钮。<br><a class="note" href="https://search3958.github.io/">关于作者</a></p>
+      <button id="startBtn" class="start-btn" disabled>
+        <span class="material-icons-round" aria-hidden="true">play_arrow</span>
+        <span data-i18n="startLabel">开始</span>
+      </button>
+    </div>
+  </div>
+</div>
+<canvas id="stage" aria-label="计时器运行中。结束后可选择退出或继续。" data-i18n-aria="stageLabel"></canvas>
+<script id="timer-locale-data">
+  // 统一管理界面文字，新增语言请按相同键名添加
+  const TIMER_LOCALES = Object.freeze({
+    "zh-CN": Object.freeze({
+      pageTitle: "简洁计时器 | Simple Timer",
+      stageLabel: "计时器运行中。结束后可选择退出或继续。",
+      lightTheme: "浅色主题",
+      showDateBattery: "显示日期与电量",
+      completionNotice: "结束时提醒",
+      fullscreen: "全屏模式",
+      startLabel: "开始",
+      exitLabel: "退出",
+      continueLabel: "继续",
+      weekdaysShort: Object.freeze(["周日", "周一", "周二", "周三", "周四", "周五", "周六"]),
+      dateTimeFormat: "{hour}:{minute} {year}年{month}月{day}日 {weekday}",
+      percentFormat: "{percent}%",
+      percentCompleteFormat: "已完成 {percent}%",
+      tapToResumeFormat: "点击继续 — 已完成 {percent}%",
+      fontSample: "点击继续 — 已结束"
+    }),
+    ja: Object.freeze({
+      pageTitle: "シンプルタイマー | Simple Timer",
+      stageLabel: "タイマー再生画面。完了時は終了または続けるを選択できます。",
+      lightTheme: "ライトテーマ",
+      showDateBattery: "日付とバッテリー残量を表示",
+      completionNotice: "完了時に通知",
+      fullscreen: "フルスクリーン",
+      startLabel: "開始",
+      exitLabel: "終了",
+      continueLabel: "続ける",
+      weekdaysShort: Object.freeze(["日", "月", "火", "水", "木", "金", "土"]),
+      dateTimeFormat: "{hour}:{minute} {month}月 {day}日 ({weekday})",
+      percentFormat: "{percent}%",
+      percentCompleteFormat: "{percent}% 完了",
+      tapToResumeFormat: "タップして再開 {percent}%",
+      fontSample: "タップして再開完了"
+    })
+  });
+  const TIMER_LANGUAGE = TIMER_LOCALES[document.documentElement.lang]
+    ? document.documentElement.lang
+    : "zh-CN";
+  const TIMER_TEXT = TIMER_LOCALES[TIMER_LANGUAGE];
+  function timerFormat(template, values = {}) {
+    return template.replace(/\{(\w+)\}/g, (_, key) => String(values[key] ?? ""));
+  }
+</script>
+<script src="script.js"></script>
+</body>
+</html>
