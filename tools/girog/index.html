@@ -77,7 +77,6 @@
   }
   .avatar img { width: 100%; height: 100%; object-fit: cover; }
   .anchor-wrap { position: relative; }
-  .anchor-fixed { position: fixed; width: 1px; height: 1px; pointer-events: none; }
 
   .content { padding: 8px 28px 48px; }
   .grid {
@@ -119,27 +118,41 @@
   .fullview-bar {
     display: flex; align-items: center; justify-content: space-between; gap: 8px;
     height: 72px; padding: 0 16px; border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    flex-shrink: 0;
   }
   .fullview-bar .group { display: flex; align-items: center; gap: 8px; }
-  .fullview-scroll { flex: 1; overflow: auto; }
+  .fullview-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    overflow-anchor: none;
+    scroll-behavior: auto;
+  }
 
   .editor-content { width: min(980px, calc(100% - 48px)); margin: 0 auto; padding: 56px 0 120px; }
   .editor-title, .editor-body {
+    display: block;
     width: 100%; border: 0; outline: 0; resize: none; background: transparent;
+    overflow-anchor: none;
   }
   .editor-title {
     font-size: clamp(32px, 4.5vw, 52px); line-height: 1.15; font-weight: 600;
     margin-bottom: 28px; overflow: hidden;
   }
-  .editor-body { font-size: 18px; line-height: 1.85; min-height: 60vh; }
+  /* 本文欄は固定高にして、入力ごとの自動伸長による親スクロールのずれを防ぐ */
+  .editor-body {
+    font-size: 18px;
+    line-height: 1.85;
+    height: 60vh;
+    min-height: 240px;
+    max-height: calc(100vh - 180px);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
   .editor-title::placeholder, .editor-body::placeholder, .search input::placeholder {
     color: var(--md-sys-color-on-surface-variant);
   }
   .editor-status { margin-top: 20px; font-size: 13px; color: var(--md-sys-color-on-surface-variant); }
-  .ai-loading {
-    position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
-    background: rgba(0,0,0,0.1); z-index: 5;
-  }
 
   .trash-content { width: min(900px, calc(100% - 40px)); margin: 0 auto; padding: 24px 0 64px; }
   .trash-list { display: flex; flex-direction: column; gap: 10px; }
@@ -181,6 +194,16 @@
   .dl-tools { display: flex; gap: 8px; flex-wrap: wrap; padding-bottom: 8px; }
   .supporting { font-size: 12px; }
   .ask-text { margin: 0; }
+  #cloudList .cloud-note-row { cursor: pointer; }
+  #cloudList .cloud-native-checkbox {
+    appearance: auto; -webkit-appearance: checkbox;
+    width: 20px; height: 20px; min-width: 20px; margin: 0 16px 0 4px;
+    padding: 0; accent-color: var(--md-sys-color-primary, #6750a4);
+    cursor: pointer; flex: 0 0 auto;
+  }
+  #cloudList .cloud-note-row.is-selected { background: var(--md-sys-color-secondary-container); }
+  #cloudList .cloud-note-row.is-existing { opacity: .7; }
+  #cloudList .cloud-note-copy { min-width: 0; }
 
   /* ダイアログ：幅の下限と内側の余白を確保 */
   md-dialog:not([fullscreen]) { min-width: 280px; max-width: 560px; }
@@ -193,6 +216,7 @@
     .editor-content { width: calc(100% - 32px); padding-top: 32px; }
     .fullview-bar { padding: 0 8px; }
     .right-actions { gap: 4px; }
+    .editor-body { height: 58vh; max-height: calc(100dvh - 160px); }
   }
 </style>
 </head>
@@ -271,19 +295,10 @@
   </header>
 
   <div class="fullview-scroll" id="editorScroll">
-    <div class="editor-content" style="position:relative;">
-      <div class="ai-loading" id="aiLoading"><md-circular-progress indeterminate></md-circular-progress></div>
+    <div class="editor-content">
       <textarea class="editor-title" id="editorTitle" rows="1" placeholder="タイトル"></textarea>
-      <textarea class="editor-body" id="editorBody" placeholder="メモの内容を入力...（テキストを選択するとAIメニューが表示されます）"></textarea>
+      <textarea class="editor-body" id="editorBody" placeholder="メモの内容を入力..."></textarea>
       <div class="editor-status" id="editorStatus"></div>
-
-      <!-- 選択時のコンテキストメニュー -->
-      <div class="anchor-fixed" id="ctxAnchor"></div>
-      <md-menu id="ctxMenu" anchor="ctxAnchor" positioning="popover">
-        <md-menu-item id="ctxCopy"><div slot="headline">コピー</div><md-icon slot="start">content_copy</md-icon></md-menu-item>
-        <md-menu-item id="ctxSummarize"><div slot="headline">要約する</div><md-icon slot="start">auto_awesome</md-icon></md-menu-item>
-        <md-menu-item id="ctxElaborate"><div slot="headline">具体化する</div><md-icon slot="start">auto_awesome</md-icon></md-menu-item>
-      </md-menu>
     </div>
   </div>
 </section>
@@ -355,20 +370,31 @@
   const cloudKey = uid => NOTE_PREFIX + uid;
 
   const $ = id => document.getElementById(id);
-  const esc = s => String(s ?? "").replace(/[&<>'"]/g, t => ({
+  const esc = s => String(s ?? "").replace(/[&<>\'"]/g, t => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
   }[t]));
   const genId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 
   // ================= データ =================
-  let notes = (JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
-    { id: "1", title: "お客様を歓迎します！", content: "", isDeleted: false },
-    { id: "2", title: "必ずご確認ください", content: "記録ノートへようこそ。", isDeleted: false }
-  ]).map(n => {
+  let notes = (() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [
+        { id: "1", title: "お客様を歓迎します！", content: "", isDeleted: false },
+        { id: "2", title: "必ずご確認ください", content: "記録ノートへようこそ。", isDeleted: false }
+      ];
+    } catch (error) {
+      console.error("[記録メモ] 保存データの読み込みに失敗しました。初期データを使用します。", error);
+      return [
+        { id: "1", title: "お客様を歓迎します！", content: "", isDeleted: false },
+        { id: "2", title: "必ずご確認ください", content: "記録ノートへようこそ。", isDeleted: false }
+      ];
+    }
+  })().map(n => {
     const id = String(n.id ?? genId());
     return {
       id,
-      uid: n.uid || genId(),          // クラウド用の安定ID（端末をまたいで同一メモを識別）
+      uid: n.uid || genId(),
       title: typeof n.title === "string" ? n.title : "",
       content: typeof n.content === "string" ? n.content : "",
       isDeleted: !!n.isDeleted,
@@ -384,6 +410,7 @@
   function saveNotes() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+      console.info(`[記録メモ] ローカル保存完了（${notes.length}件）。`);
     } catch (e) {
       console.error("[記録メモ] localStorageへの保存に失敗しました。", e);
     }
@@ -405,6 +432,11 @@
   function ask({ title, text, ok = "OK", single = false }) {
     return new Promise(resolve => {
       const d = $("dlgAsk");
+      if (!d) {
+        console.error('[記録メモ] ダイアログ要素 "dlgAsk" が見つかりません。');
+        resolve(false);
+        return;
+      }
       $("askTitle").textContent = title;
       $("askText").textContent = text;
       $("askOk").textContent = ok;
@@ -420,14 +452,20 @@
   const msg = (title, text) => ask({ title, text, ok: "閉じる", single: true });
 
   async function withBusy(fn) {
-    $("busy").hidden = false;
-    try { return await fn(); } finally { $("busy").hidden = true; }
+    const busy = $("busy");
+    if (!busy) {
+      console.error('[記録メモ] 処理中表示 "busy" が見つかりません。');
+      return fn();
+    }
+    busy.hidden = false;
+    try { return await fn(); } finally { busy.hidden = true; }
   }
   async function guard(fn, okText) {
     try {
       await withBusy(fn);
       if (okText) await msg("完了", okText);
     } catch (e) {
+      console.error("[記録メモ] 操作に失敗しました。", e);
       await msg("エラー", e.message || String(e));
     }
   }
@@ -458,11 +496,14 @@
   async function refreshAuth() {
     let user = null;
     try {
-      if (await OF8.isLoggedIn()) {
+      if (OF8 && await OF8.isLoggedIn()) {
         const info = await OF8.accountInfo();
         user = info.account;
       }
-    } catch (e) { user = null; }
+    } catch (e) {
+      console.error("[記録メモ] ログイン状態の確認に失敗しました。", e);
+      user = null;
+    }
     view.user = user;
     renderAuth();
   }
@@ -475,7 +516,7 @@
     if (!u) return;
     const btn = $("accountBtn");
     if (u.icon) {
-      btn.innerHTML = `<img alt="" src="data:${u.iconMimeType || "image/png"};base64,${u.icon}">`;
+      btn.innerHTML = `<img alt="" src="data:${esc(u.iconMimeType || "image/png")};base64,${esc(u.icon)}">`;
     } else {
       btn.textContent = (u.name || u.id || "?").slice(0, 1);
     }
@@ -484,21 +525,25 @@
 
   $("loginBtn").onclick = async () => {
     try {
-      await withBusy(() => OF8.login());   // ユーザー操作の中で呼ぶ
+      if (!OF8 || typeof OF8.login !== "function") throw new Error("アカウントサービスを読み込めませんでした。");
+      await withBusy(() => OF8.login());
       await refreshAuth();
     } catch (e) {
+      console.error("[記録メモ] ログインに失敗しました。", e);
       await msg("ログインできませんでした", e.message);
     }
   };
   $("accountBtn").onclick = () => { $("accMenu").open = !$("accMenu").open; };
   $("syncBtn").onclick = () => { $("syncMenu").open = !$("syncMenu").open; };
   $("accLogout").onclick = () => guard(async () => {
+    if (!OF8 || typeof OF8.logout !== "function") throw new Error("アカウントサービスを読み込めませんでした。");
     await OF8.logout();
     await refreshAuth();
   });
 
   // ================= 同期：アップロード（強制上書き） =================
   async function uploadAll() {
+    if (!OF8 || typeof OF8.sync !== "function") throw new Error("アカウント同期サービスを利用できません。");
     const { items } = await OF8.sync();
     const localKeys = new Set(notes.map(n => cloudKey(n.uid)));
     // このアプリの階層のうち、端末に無いものはクラウドから削除
@@ -515,6 +560,7 @@
       });
       await serial(() => OF8.setItem(cloudKey(n.uid), value));
     }
+    console.info(`[記録メモ] クラウドへのアップロード完了（${notes.length}件）。`);
   }
 
   $("syncUp").onclick = async () => {
@@ -529,11 +575,22 @@
 
   // ================= 同期：ダウンロード（選択して追加） =================
   async function fetchCloudNotes() {
+    if (!OF8 || typeof OF8.sync !== "function") throw new Error("アカウント同期サービスを利用できません。");
     const { items } = await OF8.sync();
-    return Object.entries(items || {})
+    const result = Object.entries(items || {})
       .filter(([k]) => k.startsWith(NOTE_PREFIX))
-      .map(([, v]) => { try { const o = JSON.parse(v); return o && o.uid ? o : null; } catch { return null; } })
+      .map(([, v]) => {
+        try {
+          const o = JSON.parse(v);
+          return o && typeof o.uid === "string" && o.uid ? o : null;
+        } catch (error) {
+          console.warn("[記録メモ] クラウドのメモ1件を解析できませんでした。", error);
+          return null;
+        }
+      })
       .filter(Boolean);
+    console.info(`[記録メモ] クラウドから${result.length}件を読み込みました。`);
+    return result;
   }
 
   let dlMap = new Map();
@@ -543,6 +600,7 @@
     try {
       cloud = await withBusy(fetchCloudNotes);
     } catch (e) {
+      console.error("[記録メモ] クラウドの読み込みに失敗しました。", e);
       return msg("エラー", e.message);
     }
     const localUids = new Set(notes.map(n => n.uid));
@@ -559,56 +617,167 @@
 
   function renderCloudList(list, localUids) {
     const el = $("cloudList");
-    el.innerHTML = "";
-    if (!list.length) {
-      el.innerHTML = `<div class="empty">クラウドにメモがありません</div>`;
+    if (!el) {
+      console.error('[記録メモ] ダウンロード一覧 "cloudList" が見つかりません。');
+      return;
     }
+    el.replaceChildren();
+
+    if (!list.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "クラウドにメモがありません";
+      el.appendChild(empty);
+      updateDlCount();
+      console.info("[記録メモ] ダウンロード一覧は空です。");
+      return;
+    }
+
     list.forEach(n => {
       const exists = localUids.has(n.uid);
       const item = document.createElement("md-list-item");
-      item.innerHTML = `
-        <md-checkbox slot="start" data-uid="${esc(n.uid)}" ${exists ? "disabled" : ""}></md-checkbox>
-        <div slot="headline">${esc(n.title || "無題の記録メモ")}${n.isDeleted ? "（ゴミ箱）" : ""}</div>
-        <div slot="supporting-text" class="supporting">${esc((n.content || "").slice(0, 80))}${exists ? "　※この端末にあり" : ""}</div>`;
+      item.className = `cloud-note-row${exists ? " is-existing" : ""}`;
+      item.dataset.uid = n.uid;
+
+      // Material Web の md-checkbox はダイアログ内でクリック／状態反映が不安定な場合があるため、
+      // ネイティブ checkbox を使用し、選択状態を DOM の checked プロパティで一元管理する。
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "cloud-native-checkbox";
+      checkbox.slot = "start";
+      checkbox.dataset.uid = n.uid;
+      checkbox.checked = false;
+      checkbox.disabled = exists;
+      checkbox.setAttribute("aria-label", `${n.title || "無題の記録メモ"}を選択`);
+      checkbox.addEventListener("change", () => {
+        item.classList.toggle("is-selected", checkbox.checked);
+        updateDlCount();
+      });
+
+      const copy = document.createElement("div");
+      copy.className = "cloud-note-copy";
+      copy.slot = "headline";
+      const headline = document.createElement("div");
+      headline.textContent = `${n.title || "無題の記録メモ"}${n.isDeleted ? "（ゴミ箱）" : ""}`;
+      const supporting = document.createElement("div");
+      supporting.slot = "supporting-text";
+      supporting.className = "supporting";
+      supporting.textContent = `${(n.content || "").slice(0, 80)}${exists ? "　※この端末にあり" : ""}`;
+      copy.append(headline, supporting);
+      item.append(checkbox, copy);
+
+      item.addEventListener("click", event => {
+        if (checkbox.disabled || event.composedPath().includes(checkbox)) return;
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      item.addEventListener("keydown", event => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        if (event.target === item) {
+          event.preventDefault();
+          if (!checkbox.disabled) {
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        }
+      });
+      item.tabIndex = 0;
       el.appendChild(item);
     });
     updateDlCount();
+    console.info(`[記録メモ] ダウンロード一覧を表示しました（${list.length}件）。`);
+  }
+
+  function getSelectedCloudNotes() {
+    const el = $("cloudList");
+    if (!el) {
+      console.error('[記録メモ] ダウンロード一覧 "cloudList" が見つかりません。');
+      return [];
+    }
+    return [...el.querySelectorAll('input.cloud-native-checkbox[type="checkbox"]')]
+      .filter(checkbox => checkbox.checked && !checkbox.disabled)
+      .map(checkbox => dlMap.get(checkbox.dataset.uid))
+      .filter(Boolean);
   }
 
   function updateDlCount() {
-    const n = document.querySelectorAll("#cloudList md-checkbox:checked").length;
-    $("dlApply").textContent = n ? `追加（${n}件）` : "追加";
-    $("dlApply").disabled = !n;
+    const selectedCount = getSelectedCloudNotes().length;
+    const applyButton = $("dlApply");
+    if (!applyButton) {
+      console.error('[記録メモ] 追加ボタン "dlApply" が見つかりません。');
+      return;
+    }
+    applyButton.textContent = selectedCount ? `追加（${selectedCount}件）` : "追加";
+    applyButton.disabled = selectedCount === 0;
   }
+
   $("cloudList").addEventListener("change", updateDlCount);
   $("dlSelectNew").onclick = () => {
-    document.querySelectorAll("#cloudList md-checkbox:not([disabled])").forEach(c => c.checked = true);
+    const el = $("cloudList");
+    if (!el) {
+      console.error('[記録メモ] ダウンロード一覧 "cloudList" が見つかりません。');
+      return;
+    }
+    const checkboxes = el.querySelectorAll('input.cloud-native-checkbox[type="checkbox"]');
+    let selected = 0;
+    checkboxes.forEach(checkbox => {
+      checkbox.checked = !checkbox.disabled;
+      checkbox.closest("md-list-item")?.classList.toggle("is-selected", checkbox.checked);
+      if (checkbox.checked) selected++;
+    });
     updateDlCount();
+    console.info(`[記録メモ] この端末にないメモを選択しました（${selected}件）。`);
   };
   $("dlClear").onclick = () => {
-    document.querySelectorAll("#cloudList md-checkbox").forEach(c => c.checked = false);
+    const el = $("cloudList");
+    if (!el) {
+      console.error('[記録メモ] ダウンロード一覧 "cloudList" が見つかりません。');
+      return;
+    }
+    el.querySelectorAll('input.cloud-native-checkbox[type="checkbox"]').forEach(checkbox => {
+      checkbox.checked = false;
+      checkbox.closest("md-list-item")?.classList.remove("is-selected");
+    });
     updateDlCount();
+    console.info("[記録メモ] ダウンロード選択を解除しました。");
   };
   $("dlCancel").onclick = () => $("dlDialog").close();
   $("dlApply").onclick = async () => {
-    const picked = [...document.querySelectorAll("#cloudList md-checkbox:checked")]
-      .map(c => dlMap.get(c.dataset.uid)).filter(Boolean);
-    if (!picked.length) return;
+    const picked = getSelectedCloudNotes();
+    if (!picked.length) {
+      console.warn("[記録メモ] 追加するメモが選択されていません。");
+      return;
+    }
+
+    let addedCount = 0;
+    let updatedCount = 0;
     picked.forEach(n => {
-      notes.unshift({
-        id: n.uid,           // 端末内IDもuidに揃える（重複しない）
+      const existing = notes.find(note => note.uid === n.uid);
+      const cloudNote = {
+        id: existing ? existing.id : n.uid,
         uid: n.uid,
-        title: n.title || "",
-        content: n.content || "",
+        title: typeof n.title === "string" ? n.title : "",
+        content: typeof n.content === "string" ? n.content : "",
         isDeleted: !!n.isDeleted,
-        createdAt: n.createdAt || Date.now(),
-        updatedAt: n.updatedAt || Date.now()
-      });
+        createdAt: Number(n.createdAt) || Date.now(),
+        updatedAt: Number(n.updatedAt) || Date.now()
+      };
+      if (existing) {
+        Object.assign(existing, cloudNote);
+        updatedCount++;
+      } else {
+        notes.unshift(cloudNote);
+        addedCount++;
+      }
     });
     saveNotes();
     $("dlDialog").close();
     renderNotes();
-    showSnackbar(`${picked.length}件を追加しました。`);
+    const summary = [];
+    if (addedCount) summary.push(`${addedCount}件を追加`);
+    if (updatedCount) summary.push(`${updatedCount}件を更新`);
+    showSnackbar(`${summary.join("、")}しました。`);
+    console.info(`[記録メモ] クラウドから${addedCount}件を追加、${updatedCount}件を更新しました。`);
   };
 
   // ================= 一覧広告 =================
@@ -695,30 +864,57 @@
 
   // ================= 編集 =================
   function autoGrow(el) {
+    if (!el) {
+      console.error("[記録メモ] 高さ調整対象の入力欄が見つかりません。");
+      return;
+    }
     el.style.height = "auto";
-    el.style.height = el.scrollHeight + "px";
+    el.style.height = `${el.scrollHeight}px`;
   }
 
   function openEditor(id) {
     const note = findNote(id);
-    if (!note) return;
+    if (!note) {
+      console.error(`[記録メモ] 編集対象のメモが見つかりません（id=${id}）。`);
+      return;
+    }
     activeId = id;
-    $("editorTitle").value = note.title;
-    $("editorBody").value = note.content;
+    const titleEl = $("editorTitle");
+    const bodyEl = $("editorBody");
+    titleEl.value = note.title;
+    bodyEl.value = note.content;
     $("editorStatus").textContent = formatDate(note);
     $("editorView").classList.add("active");
     $("editorView").setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
-    requestAnimationFrame(() => { autoGrow($("editorTitle")); autoGrow($("editorBody")); });
+    // 初期表示後もタイトルは内容に合わせて伸長する。親スクロール位置は入力前の値に戻す。
+    requestAnimationFrame(() => autoGrow(titleEl));
+    console.info(`[記録メモ] 編集画面を開きました（id=${id}）。`);
   }
+
+  $("editorTitle").addEventListener("input", event => {
+    const editorScroll = $("editorScroll");
+    if (!editorScroll) {
+      console.error('[記録メモ] 編集スクロール領域 "editorScroll" が見つかりません。');
+      autoGrow(event.currentTarget);
+      return;
+    }
+    const previousScrollTop = editorScroll.scrollTop;
+    autoGrow(event.currentTarget);
+    editorScroll.scrollTop = previousScrollTop;
+  });
 
   function saveActive() {
     const note = findNote(activeId);
-    if (!note) return false;
+    if (!note) {
+      console.error("[記録メモ] 保存対象のメモが見つかりません。");
+      return false;
+    }
     note.title = $("editorTitle").value.trim() || "無題の記録メモ";
     note.content = $("editorBody").value.trim();
     note.updatedAt = Date.now();
     saveNotes();
+    console.info(`[記録メモ] メモを保存しました（id=${note.id}）。`);
     return true;
   }
 
@@ -729,6 +925,7 @@
     document.body.style.overflow = "";
     activeId = null;
     renderNotes();
+    console.info("[記録メモ] 編集画面を閉じました。");
   }
 
   $("addBtn").onclick = () => {
@@ -743,7 +940,10 @@
 
   $("trashNoteBtn").onclick = () => {
     const note = findNote(activeId);
-    if (!note) return;
+    if (!note) {
+      console.error("[記録メモ] ゴミ箱へ移動するメモが見つかりません。");
+      return;
+    }
     note.isDeleted = true;
     note.updatedAt = Date.now();
     saveNotes();
@@ -765,79 +965,30 @@
     document.body.appendChild(a);
     a.click();
     a.remove();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    console.info("[記録メモ] テキストファイルのダウンロードを開始しました。");
   };
-
-  // 選択時のAIメニュー
-  let selStart = 0, selEnd = 0;
-  const body = $("editorBody");
-  body.addEventListener("input", () => autoGrow(body));
-  $("editorTitle").addEventListener("input", e => autoGrow(e.target));
-
-  body.addEventListener("mouseup", e => {
-    setTimeout(() => {
-      selStart = body.selectionStart;
-      selEnd = body.selectionEnd;
-      if (selStart !== selEnd) {
-        const a = $("ctxAnchor");
-        a.style.left = e.clientX + "px";
-        a.style.top = e.clientY + "px";
-        $("ctxMenu").open = true;
-      } else {
-        $("ctxMenu").open = false;
-      }
-    }, 10);
-  });
-
-  $("ctxCopy").onclick = () => {
-    navigator.clipboard.writeText(body.value.substring(selStart, selEnd));
-    body.focus();
-  };
-
-  async function processAI(type) {
-    const selectedText = body.value.substring(selStart, selEnd);
-    if (!selectedText) return;
-
-    $("aiLoading").style.display = "flex";
-    const fullText = body.value;
-    const surroundingText = fullText.substring(Math.max(0, selStart - 150), Math.min(fullText.length, selEnd + 150));
-    const action = type === "elaborate" ? "具体化" : "要約";
-    const promptMessage = `${selectedText} この文を${action}してください。(${action}した文だけ出せ。余計な部分含めるな。)参考：${surroundingText}`;
-
-    try {
-      const res = await fetch("https://bhwxeffktrxzfdmpfhpd.supabase.co/functions/v1/noteapp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: promptMessage })
-      });
-      if (!res.ok) throw new Error("API Error");
-      const data = await res.json();
-      body.setRangeText(data.choices[0].message.content, selStart, selEnd, "select");
-      autoGrow(body);
-    } catch (e) {
-      await msg("AIエラー", e.message);
-    } finally {
-      $("aiLoading").style.display = "none";
-      body.focus();
-    }
-  }
-  $("ctxSummarize").onclick = () => processAI("summarize");
-  $("ctxElaborate").onclick = () => processAI("elaborate");
 
   // ================= ゴミ箱 =================
   function openTrash() {
     renderTrash();
     $("trashView").classList.add("active");
     $("trashView").setAttribute("aria-hidden", "false");
+    console.info("[記録メモ] ゴミ箱を開きました。");
   }
   function closeTrash() {
     $("trashView").classList.remove("active");
     $("trashView").setAttribute("aria-hidden", "true");
     renderNotes();
+    console.info("[記録メモ] ゴミ箱を閉じました。");
   }
 
   function renderTrash() {
     const el = $("trashList");
+    if (!el) {
+      console.error('[記録メモ] ゴミ箱一覧 "trashList" が見つかりません。');
+      return;
+    }
     const deleted = notes.filter(n => n.isDeleted);
     el.innerHTML = "";
     if (!deleted.length) {
@@ -856,11 +1007,17 @@
           <md-text-button data-act="restore">復元</md-text-button>
           <md-text-button data-act="purge">完全削除</md-text-button>
         </div>`;
-      item.querySelector('[data-act="restore"]').onclick = () => {
+      const restoreButton = item.querySelector('[data-act="restore"]');
+      const purgeButton = item.querySelector('[data-act="purge"]');
+      if (!restoreButton || !purgeButton) {
+        console.error("[記録メモ] ゴミ箱の操作ボタンを作成できませんでした。", note.id);
+        return;
+      }
+      restoreButton.onclick = () => {
         note.isDeleted = false; note.updatedAt = Date.now();
         saveNotes(); renderTrash();
       };
-      item.querySelector('[data-act="purge"]').onclick = () => {
+      purgeButton.onclick = () => {
         notes = notes.filter(n => n.id !== note.id);
         saveNotes(); renderTrash();
         showSnackbar("完全に削除しました。");
@@ -903,6 +1060,7 @@
   saveNotes();
   renderNotes();
   refreshAuth();
+  console.info("[記録メモ] 初期化が完了しました。");
 })();
 </script>
  <script src="https://search3958.github.io/check.js"></script>
