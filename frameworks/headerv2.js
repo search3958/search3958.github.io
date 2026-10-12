@@ -1358,7 +1358,7 @@ items: [
 
 href:
 
-"https://search3958.github.io/red/"
+"https://search3958.github.io/i/red/"
 
 },
 
@@ -1366,7 +1366,7 @@ href:
 
 href:
 
-"https://search3958.github.io/red/ganghoa"
+"https://search3958.github.io/i/red/ganghoa"
 
 }
 
