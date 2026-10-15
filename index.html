@@ -136,7 +136,7 @@
 
 .xincard{
     display:flex;
-    justify-content:center;
+    justify-content:space-between;
     align-items:center;
     padding-top:24px;
     gap:4px;
@@ -148,10 +148,12 @@
 }
 
 .goodcard,.xincard{
-  margin:13px;
-  box-shadow: 0 0 3px 2px inset #0000001a;
+  margin:12px auto;
+  box-shadow: 0 0 3px 2px inset #0001;
   border-radius:30px;
+  width:calc(100% - 24px);
   corner-shape: superellipse(1.6);
+  max-width:1200px;
 }
 .app-icon{
     border-radius:100px;
@@ -163,7 +165,9 @@
 }
 .app-image{
     width:65vw;
-    max-width:700px
+    max-width:700px;
+    margin-top: -27px;
+    pointer-events: none;
 }
 .xin-reveal{
     opacity:0;
@@ -296,18 +300,30 @@ a {
         animation:none;
       }
     }
-    footer{
-      padding:48px 0px;
-      padding-top:15px;
-      text-align:center;
-      font-size:20px;
-
-    }
     .link{
       border-radius:8px;
       corner-shape:superellipse(1.4);
       border:#0003 1px solid;
       height:48px;
+    }
+    .flexin {
+    display: flex;
+    max-width: 1200px;
+    margin: auto;
+    justify-content: center;
+    padding: 0 12px;
+    gap: 12px;
+  }
+  .flexin .xincard{
+    margin:0;
+  }
+.flexin .xincard .app-image{width:100%;}
+    @media screen and (max-width: 600px) {
+    .flexin {  flex-direction: column; padding:0px;}
+  .flexin .xincard{
+  margin:0 12px;
+  }
+
     }
 </style>
   <body>
@@ -330,6 +346,23 @@ a {
 
     </div>
 
+
+    <div class="goodcard" style="color:#000;font-weight:600;background:color(display-p3 0.14 1 0.57);">
+      <span class="xin-reveal" style="--xin-delay:0s;">私について</span>
+      <span class="xin-reveal" style="--xin-delay:0s;font-size:20px">簡潔に言うとインドア派の日本語話者です</span>
+        <div class="xin-reveal" style="--xin-delay:0.12s;display:flex;gap:4px;flex-wrap: wrap;justify-content: center;">
+          <div class="goodxiao black"><div class="small">年代</div>高校生</div>
+          <div class="goodxiao white"><div class="small">趣味</div>アプリ開発</div>
+          <div class="goodxiao black"><div class="small">第一言語</div>ja-JP</div>
+          <div class="goodxiao white"><div class="small">好きな色</div>緑</div>
+        </div>
+
+    </div>
+
+
+    <div class="flexin">
+
+      
     <div class="xincard" style="
     background-image: linear-gradient(180deg, #e6f7ff, #acd0ff);
 ">
@@ -345,18 +378,20 @@ a {
     </div>
     
 
-    <div class="goodcard" style="color:#000;font-weight:600;background:color(display-p3 0.14 1 0.57);">
-      <span class="xin-reveal" style="--xin-delay:0s;">私について</span>
-      <span class="xin-reveal" style="--xin-delay:0s;font-size:20px">簡潔に言うとインドア派の日本語話者です</span>
-        <div class="xin-reveal" style="--xin-delay:0.12s;display:flex;gap:4px;flex-wrap: wrap;justify-content: center;">
-          <div class="goodxiao black"><div class="small">年代</div>高校生</div>
-          <div class="goodxiao white"><div class="small">趣味</div>アプリ開発</div>
-          <div class="goodxiao black"><div class="small">第一言語</div>ja-JP</div>
-          <div class="goodxiao white"><div class="small">好きな色</div>緑</div>
+    <div class="xincard" style="
+    background-image: linear-gradient(180deg, #d6ffe0, #afffc8);
+">
+        <img class="app-icon xin-reveal" style="--xin-delay:0s;" src="/imgs/260501-baram.webp">
+        <div class="small xin-reveal" style="--xin-delay:0.08s;">
+            Baram Code
         </div>
+        <span class="app-name xin-reveal" style="--xin-delay:0.16s;">風のように<br>素早く開発</span>
+        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#02f169;color:#000;" onclick="window.location.href='https://search3958.github.io/baram/'">今すぐ見る</button>
+        <img class="app-image xin-reveal" style="--xin-delay:0.32s;" src="/imgs/260501-baram-image.webp">
 
     </div>
 
+    </div>
 
 
     <div class="xincard" style="background:#fff">
@@ -373,31 +408,18 @@ a {
 
     <div class="xincard" style=" padding:24px 0;color:#FFFBB0;background: conic-gradient(at 50% 100%, rgb(255 237 0 / 55%) 0deg, rgb(255 0 0 / 25%) 60deg, rgb(255 203 18 / 26%) 89deg, rgb(255 224 0) 
 203deg, rgb(255 69 0) 274deg, rgb(255 0 0 / 25%) 307deg), linear-gradient(77.417deg, #c40000 0%, #ff0000 100%);">
-        
-        <span class="app-name xin-reveal" style="--xin-delay:0.16s;font-size:40px;font-family:serif;filter:drop-shadow(0 8px 16px #0008)">第一目標と<br>輝く功績</span>
-        
+        <img class="xin-reveal" src="imgs/261015_ganghoa.png" height="64px">
+        <span class="app-name xin-reveal" style="--xin-delay:0.16s;font-size:40px;font-family:serif;filter:drop-shadow(0 8px 16px #0008)">輝く功績のために<br>共に強化する</span>
         
         <div class="small xin-reveal" style="--xin-delay:0.08s;font-size:24px;">
-            重要にする価値観と実績をご紹介
-        </div>
+            価値観、相互強化同意内容等をご確認ください
+          </div>
 
-
-        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#fff;color:#000;" onclick="window.location.href='https://search3958.github.io/i/red/'">見に行く</button>
-
-    </div>
-
-
-    <div class="xincard" style="
-    background-image: linear-gradient(180deg, #d6ffe0, #afffc8);
-">
-        <img class="app-icon xin-reveal" style="--xin-delay:0s;" src="/imgs/260501-baram.webp">
-        <div class="small xin-reveal" style="--xin-delay:0.08s;">
-            Baram Code
-        </div>
-        <span class="app-name xin-reveal" style="--xin-delay:0.16s;">風のように<br>素早く開発</span>
-        <button class="primary-btn xin-reveal" style="--xin-delay:0.24s;background:#02f169;color:#000;" onclick="window.location.href='https://search3958.github.io/baram/'">今すぐ見る</button>
-        <img class="app-image xin-reveal" style="--xin-delay:0.32s;" src="/imgs/260501-baram-image.webp">
-
+<div class="xin-reveal" style="--xin-delay:0.2s;display:flex;gap:16px;flex-wrap: wrap;justify-content: center;">
+        <button class="primary-btn" style="--xin-delay:0.24s;background:#fff;color:#000;" onclick="window.location.href='https://search3958.github.io/i/red/'">第一目標</button>
+        <button class="primary-btn" style="--xin-delay:0.24s;background:#fff;color:#000;" onclick="window.location.href='https://search3958.github.io/i/red/'">相互強化同意内容</button>
+        <button class="primary-btn" style="--xin-delay:0.24s;background:#fff;color:#000;" onclick="window.location.href='https://search3958.github.io/i/red/'">SKさんについて</button>
+</div>
     </div>
 
     <div class="goodcard">
@@ -736,6 +758,6 @@ a {
   gtag('config', 'G-7N56NHPY3C');
 </script>
 <script src="/frameworks/lang.js" data-xml="/xml/index.xml"></script>
-<script src="https://search3958.github.io/check.js?check=none"></script>
+<script src="check.js?check=none"></script>
 </body>
 </html>
