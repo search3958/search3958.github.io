@@ -600,7 +600,7 @@ const t = translations[this.STATE.language] || translations.ja;
 const style = document.createElement("style");
 style.setAttribute("data-RedCheck-style", "info-widget");
 style.textContent = `
-.RedCheck-info-widget{position:fixed;right:16px;bottom:16px;z-index:2147483646;display:flex;flex-direction:row-reverse;align-items:stretch;gap:0;padding:5px;background:rgba(0,0,0,.3);border:none;border-radius:99px;corner-shape:superellipse(1.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);font-family:Inter,"Noto Sans JP",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+.RedCheck-info-widget{position:fixed;right:16px;bottom:16px;z-index:2147483646;display:flex;flex-direction:row-reverse;align-items:stretch;gap:0;padding:5px;background:rgba(0,0,0,.1);border:none;border-radius:99px;corner-shape:superellipse(1.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);font-family:Inter,"Noto Sans JP",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
 .RedCheck-info-widget:hover{background:rgba(0,0,0,.8)}
 .RedCheck-info-widget__toggle{display:flex;align-items:center;justify-content:center;flex:0 0 24px;width:24px;height:24px;padding:0;margin:2px;border:0;color:#fff9;background:transparent}
 .RedCheck-info-widget__toggle svg{display:block;width:22px;height:22px;fill:currentColor}

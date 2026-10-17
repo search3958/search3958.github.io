@@ -664,7 +664,7 @@ width: 100vw;
 display: flex;
 justify-content: center;
 align-items: center;
-backdrop-filter: blur(16px);
+backdrop-filter: blur(24px);
 padding: 0;
 font-size: 13px;
 height: 52px;
@@ -782,16 +782,16 @@ list-style: none;
 margin: 0;
 padding: 0;
 opacity: 0;
-transform: translateY(5px);
+transform: translateY(-8px);
 }
 #${MENU_ID}.is-open .headerv2-menu-list li {
-animation: headerv2-menu-item-in 300ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-animation-delay: calc(var(--headerv2-item-index, 0) * 55ms);
+animation: headerv2-menu-item-in 0.4s cubic-bezier(0.1, 0.8, 0.36, 1) forwards;
+animation-delay: calc(var(--headerv2-item-index, 0) * 40ms);
 }
 @keyframes headerv2-menu-item-in {
 from {
 opacity: 0;
-transform: translateY(5px);
+transform: translateY(-8px);
 }
 to {
 opacity: 1;
