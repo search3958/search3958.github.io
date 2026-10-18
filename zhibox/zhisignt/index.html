@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>ZhiSight Beta</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+.card{border:1px solid #ddd;border-radius:10px;padding:16px;margin:16px 0}
+.card small{color:#888;font-weight:normal}
+code{word-break:break-all}
+.hours{display:flex;align-items:flex-end;gap:3px;height:120px;margin:12px 0}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;font-size:10px;text-align:center}
+.bar i{background:#4a7;display:block;min-height:1px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td{border-bottom:1px solid #eee;padding:3px 4px}
+td.n{text-align:right}
+.note{color:#888;font-size:12px}
+input{padding:6px;margin:2px}
+</style>
+</head>
+<body>
+<h1>ZhiSight Beta ダッシュボード</h1>
+<div id="auth"><button id="login">0F8アカウントでログイン</button></div>
+<div id="main" hidden>
+  <p>期間: <select id="days">
+    <option value="7">7日</option>
+    <option value="30" selected>30日</option>
+    <option value="60">60日</option>
+  </select></p>
+  <details open>
+    <summary>アプリを登録</summary>
+    <p><input id="newName" placeholder="名前">
+       <input id="newOrigin" size="32" placeholder="https://search3958.github.io">
+       <button id="create">登録</button></p>
+    <p class="note">登録するとアクセスキーが発行され、0F8アカウントに保存されます。</p>
+  </details>
+  <details>
+    <summary>他アカウントのアプリを追加（アクセスキー）</summary>
+    <p><input id="extKey" size="48" placeholder="アクセスキー">
+       <button id="addExt">追加</button></p>
+  </details>
+  <div id="apps"></div>
+</div>
+
+<script src="https://search3958.github.io/frameworks/client-service.js"></script>
+<script>
+// 集計API（zhisight Worker）の接続先
+var API = 'https://zhisight.takesen2278.workers.dev';
+
+var OF8 = window.OF8Account;
+var apps = [];
+
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function mask(k) { return k.slice(0, 4) + '••••••••'; }
+
+async function loadApps() {
+  var raw = await OF8.getItem('zs1_apps');
+  apps = raw ? JSON.parse(raw) : [];
+}
+async function saveApps() {
+  await OF8.setItem('zs1_apps', JSON.stringify(apps));
+}
+
+// API 呼び出し。通信失敗（CORS・ネットワーク）と API のエラーを区別する
+async function api(path, key, method, body) {
+  var opts = { method: method || 'GET', headers: { Authorization: 'Bearer ' + key } };
+  if (body !== undefined) {
+    opts.headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(body);
+  }
+  var res;
+  try {
+    res = await fetch(API + path, opts);
+  } catch (e) {
+    throw new Error('通信に失敗しました（接続先・CORS・ネットワークを確認）');
+  }
+  var data = await res.json().catch(function () { return {}; });
+  if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+  return data;
+}
+
+function table(title, rows) {
+  var body = rows.length
+    ? rows.map(function (r) { return '<tr><td>' + esc(r.item) + '</td><td class="n">' + r.cnt + '</td></tr>'; }).join('')
+    : '<tr><td colspan="2">データなし</td></tr>';
+  return '<div><h3>' + title + '</h3><table>' + body + '</table></div>';
+}
+
+function statsHtml(s) {
+  var summary = '<p>ユーザー数（延べ）: <b>' + s.summary.users + '</b> ／ 累計表示回数: <b>' + s.summary.pv +
+    '</b> ／ ユーザーあたり平均表示回数: <b>' + s.summary.pv_per_user + '</b></p>';
+  var max = Math.max.apply(null, s.hours.concat([1]));
+  var bars = s.hours.map(function (v, h) {
+    return '<div class="bar" title="' + h + '時: ' + v + '"><i style="height:' + Math.round(v / max * 100) +
+      '%"></i><span>' + h + '</span></div>';
+  }).join('');
+  return summary +
+    '<div class="hours">' + bars + '</div>' +
+    '<div class="grid">' +
+      table('人気のページ', s.pages) +
+      table('国', s.countries) +
+      table('都市', s.cities) +
+      table('OS', s.os) +
+    '</div>' +
+    '<p class="note">' + esc(s.note) + '</p>';
+}
+
+function cardHtml(app) {
+  var allowLabel = app.allow_any_origin ? '全オリジン許可: ON（OFFにする）' : '全オリジン許可: OFF（ONにする）';
+  return '<article class="card" data-id="' + esc(app.app_id) + '">' +
+    '<h2>' + esc(app.name) + ' <small>' + esc(app.origin) + '</small></h2>' +
+    '<p>アプリID: <code>' + esc(app.app_id) + '</code></p>' +
+    '<p>アクセスキー: <code class="key">' + esc(mask(app.access_key)) + '</code> ' +
+      '<button data-act="reveal">表示/非表示</button></p>' +
+    '<p><button data-act="refresh">今すぐ集計</button> ' +
+      '<button data-act="rotate">キーを再発行</button> ' +
+      '<button data-act="allowany">' + allowLabel + '</button> ' +
+      '<button data-act="remove">一覧から外す</button></p>' +
+    '<p class="note">全オリジン許可をONにすると、登録したオリジン以外からも受信します。開発やテスト用です。</p>' +
+    '<div class="stats">読み込み中...</div>' +
+    '</article>';
+}
+
+async function loadStats(app, refresh) {
+  var box = document.querySelector('[data-id="' + app.app_id + '"] .stats');
+  if (!box) return;
+  try {
+    if (refresh) await api('/api/refresh', app.access_key, 'POST');
+    var s = await api('/api/stats?days=' + $('days').value, app.access_key);
+    app.allow_any_origin = s.app.allow_any_origin;
+    box.innerHTML = statsHtml(s);
+  } catch (e) {
+    box.textContent = '取得に失敗: ' + e.message;
+  }
+}
+
+function render() {
+  $('apps').innerHTML = apps.map(cardHtml).join('');
+  apps.forEach(function (a) { loadStats(a, false); });
+}
+
+function show() {
+  $('auth').hidden = true;
+  $('main').hidden = false;
+}
+
+async function setAllowAny(app, value) {
+  try {
+    await api('/api/apps/allow-any', app.access_key, 'POST', { allow_any_origin: value });
+    app.allow_any_origin = value;
+    await saveApps();
+    render();
+  } catch (e) {
+    alert('切り替えに失敗: ' + e.message);
+  }
+}
+
+async function rotateApp(app) {
+  if (!confirm('キーを再発行します。古いキーは使えなくなります。よろしいですか？')) return;
+  try {
+    var res = await api('/api/apps/rotate', app.access_key, 'POST');
+    app.access_key = res.access_key;
+    await saveApps();
+    render();
+  } catch (e) {
+    alert('再発行に失敗: ' + e.message);
+  }
+}
+
+$('login').onclick = async function () {
+  try {
+    await OF8.login();
+    await loadApps();
+    show();
+    render();
+  } catch (e) { alert(e.message); }
+};
+
+$('days').onchange = function () { render(); };
+
+$('apps').addEventListener('click', async function (e) {
+  var btn = e.target.closest('button');
+  if (!btn) return;
+  var card = btn.closest('.card');
+  var app = apps.find(function (a) { return a.app_id === card.getAttribute('data-id'); });
+  if (!app) return;
+  var act = btn.getAttribute('data-act');
+
+  if (act === 'reveal') {
+    var k = card.querySelector('.key');
+    k.textContent = k.textContent.indexOf('•') >= 0 ? app.access_key : mask(app.access_key);
+  }
+  if (act === 'refresh') loadStats(app, true);
+  if (act === 'rotate') rotateApp(app);
+  if (act === 'allowany') setAllowAny(app, !app.allow_any_origin);
+  if (act === 'remove') {
+    apps = apps.filter(function (a) { return a.app_id !== app.app_id; });
+    await saveApps();
+    render();
+  }
+});
+
+$('create').onclick = async function () {
+  var name = $('newName').value.trim();
+  var origin = $('newOrigin').value.trim();
+  try {
+    var d = await api('/api/apps', '', 'POST', { name: name, origin: origin });
+    apps.push({
+      app_id: d.app_id, name: d.name, origin: d.origin,
+      access_key: d.access_key, allow_any_origin: false
+    });
+    await saveApps();
+    $('newName').value = '';
+    $('newOrigin').value = '';
+    render();
+    alert('登録しました。アクセスキーは0F8アカウントに保存されています。');
+  } catch (e) { alert('登録に失敗: ' + e.message); }
+};
+
+$('addExt').onclick = async function () {
+  var key = $('extKey').value.trim();
+  try {
+    var s = await api('/api/stats?days=1', key);
+    if (apps.some(function (a) { return a.app_id === s.app.app_id; })) throw new Error('すでに追加済みです');
+    apps.push({
+      app_id: s.app.app_id, name: s.app.name, origin: s.app.origin,
+      access_key: key, allow_any_origin: !!s.app.allow_any_origin
+    });
+    await saveApps();
+    $('extKey').value = '';
+    render();
+  } catch (e) { alert('追加できません: ' + e.message); }
+};
+
+(async function boot() {
+  if (await OF8.isLoggedIn()) {
+    await loadApps();
+    show();
+    render();
+  }
+})();
+</script>
+</body>
+</html>
