@@ -42,8 +42,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://search3958.github.io/frameworks/icons/icons.css">
 <style>
   :root {
     --font: "Inter", "Noto Sans JP", system-ui, sans-serif;
@@ -260,7 +259,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease, opacity 0.2s ease;
   }
-  .start-btn .material-icons-round { font-size: 1.2em; }
+  .start-btn .icon { font-size: 1.2em; }
   .start-btn:disabled { opacity: 0.35; cursor: default; }
   .start-btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
   /* ---------- 실행 화면(캔버스) ---------- */
@@ -386,7 +385,7 @@
       </div>
       <p class="note" data-i18n="setupNote">설정으로 돌아가려면 일시정지한 후<br>오른쪽 아래 홈 버튼을 누르세요.<br><a class="note" href="https://search3958.github.io/">제작자 정보</a></p>
       <button id="startBtn" class="start-btn" disabled>
-        <span class="material-icons-round" aria-hidden="true">play_arrow</span>
+        <span class="icon icon-play" aria-hidden="true"></span>
         <span data-i18n="startLabel">시작</span>
       </button>
     </div>

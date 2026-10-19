@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="0F8 Account のアカウント管理画面です。">
   <title>0F8 Account</title>
+    <link rel="icon" href="https://search3958.github.io/project/logos/3958logo_main.svg">
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&display=swap">
+  <link rel="stylesheet" href="https://search3958.github.io/frameworks/icons/icons.css">
   <link rel="stylesheet" href="account-service.css">
   <link rel="stylesheet" href="m3color.css">
 
@@ -26,7 +27,7 @@
         <div class="account-brand md-typescale-title-large">0F8 Account</div>
         <div class="account-header-actions" aria-label="アカウント操作">
           <md-icon-button id="refresh-dashboard" aria-label="アカウント情報を更新" type="button">
-            <md-icon>refresh</md-icon>
+            <md-icon><span class="icon icon-refresh"></span></md-icon>
           </md-icon-button>
         </div>
       </div>
@@ -38,7 +39,7 @@
         <p class="md-typescale-body-large">アカウント情報、保存容量、認証状態を管理します。</p>
       </div>
       <md-filled-button id="dashboard-login" type="button" has-icon>
-        <md-icon slot="icon">login</md-icon>
+        <md-icon slot="icon"><span class="icon icon-login"></span></md-icon>
         ログイン
       </md-filled-button>
       <p id="dashboard-login-status" class="account-status md-typescale-body-medium" aria-live="polite"></p>
@@ -70,14 +71,14 @@
 
         <md-list class="dashboard-list">
           <md-list-item>
-            <md-icon slot="start">person</md-icon>
+            <md-icon slot="start"><span class="icon icon-person"></span></md-icon>
             <div slot="headline">名前</div>
             <div id="account-name-summary" slot="supporting-text">-</div>
             <md-filled-tonal-button id="open-name-dialog" slot="end" type="button">変更</md-filled-tonal-button>
           </md-list-item>
           <md-divider></md-divider>
           <md-list-item>
-            <md-icon slot="start">account_circle</md-icon>
+            <md-icon slot="start"><span class="icon icon-image"></span></md-icon>
             <div slot="headline">アイコン</div>
             <div id="icon-file-name" slot="supporting-text">64×64px / 13KB以内</div>
             <div slot="end" class="dashboard-item-actions">
@@ -97,19 +98,19 @@
 
         <md-list class="dashboard-list">
           <md-list-item>
-            <md-icon slot="start">database</md-icon>
+            <md-icon slot="start"><span class="icon icon-data"></span></md-icon>
             <div slot="headline">保存データ</div>
             <div id="usage-total" slot="supporting-text">-</div>
           </md-list-item>
           <md-divider></md-divider>
           <md-list-item>
-            <md-icon slot="start">image</md-icon>
+            <md-icon slot="start"><span class="icon icon-image"></span></md-icon>
             <div slot="headline">アイコン</div>
             <div id="usage-icon" slot="supporting-text">-</div>
           </md-list-item>
           <md-divider></md-divider>
           <md-list-item>
-            <md-icon slot="start">storage</md-icon>
+            <md-icon slot="start"><span class="icon icon-block-1"></span></md-icon>
             <div slot="headline">合計</div>
             <div id="usage-account-total" slot="supporting-text">-</div>
           </md-list-item>
@@ -127,7 +128,7 @@
           <div class="usage-domain-heading">
             <h3 class="md-typescale-title-medium">ドメイン別データ</h3>
             <md-outlined-button id="refresh-usage" type="button" has-icon>
-              <md-icon slot="icon">refresh</md-icon>
+              <md-icon slot="icon"><span class="icon icon-refresh"></span></md-icon>
               更新
             </md-outlined-button>
           </div>
@@ -144,28 +145,28 @@
 
         <md-list class="dashboard-list">
           <md-list-item>
-            <md-icon slot="start">lock</md-icon>
+            <md-icon slot="start"><span class="icon icon-lock"></span></md-icon>
             <div slot="headline">パスワード</div>
             <div slot="supporting-text">パスワードを安全に変更できます。</div>
             <md-filled-tonal-button id="open-password-dialog" slot="end" type="button">変更</md-filled-tonal-button>
           </md-list-item>
           <md-divider></md-divider>
           <md-list-item>
-            <md-icon slot="start">devices</md-icon>
+            <md-icon slot="start"><span class="icon icon-laptop"></span></md-icon>
             <div slot="headline">すべての端末からログアウト</div>
             <div slot="supporting-text">現在のログインをすべて無効にします。</div>
             <md-outlined-button id="logout-all" slot="end" type="button">ログアウト</md-outlined-button>
           </md-list-item>
           <md-divider></md-divider>
           <md-list-item>
-            <md-icon slot="start">logout</md-icon>
+            <md-icon slot="start"><span class="icon icon-logout"></span></md-icon>
             <div slot="headline">この端末からログアウト</div>
             <div slot="supporting-text">この端末だけからログアウトします。</div>
             <md-text-button id="logout" slot="end" type="button">ログアウト</md-text-button>
           </md-list-item>
           <md-divider></md-divider>
           <md-list-item>
-            <md-icon slot="start">delete_forever</md-icon>
+            <md-icon slot="start"><span class="icon icon-delete_forever"></span></md-icon>
             <div slot="headline">アカウントを削除</div>
             <div slot="supporting-text">アカウントと保存データを完全に削除します。</div>
             <md-outlined-button id="delete-account" slot="end" type="button">削除</md-outlined-button>
@@ -179,7 +180,7 @@
   <md-dialog id="name-dialog" class="fullscreen-dialog" aria-label="名前を変更">
     <div slot="headline" class="dialog-headline">
       <md-icon-button id="close-name-dialog" aria-label="名前の変更を閉じる" type="button">
-        <md-icon>close</md-icon>
+        <md-icon><span class="icon icon-close"></span></md-icon>
       </md-icon-button>
       <span class="md-typescale-headline-small">名前を変更</span>
     </div>
@@ -204,7 +205,7 @@
   <md-dialog id="password-dialog" class="fullscreen-dialog" aria-label="パスワードを変更">
     <div slot="headline" class="dialog-headline">
       <md-icon-button id="close-password-dialog" aria-label="パスワードの変更を閉じる" type="button">
-        <md-icon>close</md-icon>
+        <md-icon><span class="icon icon-close"></span></md-icon>
       </md-icon-button>
       <span class="md-typescale-headline-small">パスワードを変更</span>
     </div>
@@ -221,8 +222,8 @@
         required
         supporting-text="8文字以上">
         <md-icon-button id="toggle-current-password" toggle slot="trailing-icon" aria-label="現在のパスワードを表示">
-          <md-icon>visibility</md-icon>
-          <md-icon slot="selected">visibility_off</md-icon>
+          <md-icon><span class="icon icon-show"></span></md-icon>
+          <md-icon slot="selected"><span class="icon icon-hide"></span></md-icon>
         </md-icon-button>
       </md-outlined-text-field>
 
@@ -236,8 +237,8 @@
         required
         supporting-text="8文字以上">
         <md-icon-button id="toggle-new-password" toggle slot="trailing-icon" aria-label="新しいパスワードを表示">
-          <md-icon>visibility</md-icon>
-          <md-icon slot="selected">visibility_off</md-icon>
+          <md-icon><span class="icon icon-show"></span></md-icon>
+          <md-icon slot="selected"><span class="icon icon-hide"></span></md-icon>
         </md-icon-button>
       </md-outlined-text-field>
 

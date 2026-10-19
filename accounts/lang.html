@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>言語を選択</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://search3958.github.io/frameworks/icons/icons.css">
     <style>
         :root {
             --primary: color(display-p3 0.4 1 0.573 / 1);
@@ -62,7 +62,9 @@
             transform: translateY(-10px);
             pointer-events: none;
         }
-        span.material-icons {
+        .icon-animation .icon {
+            display: block;
+            margin: 0 auto;
             font-size: 64px;
             color: #000;
         }
@@ -151,7 +153,7 @@
 <div class="selector-card" id="card">
     <div class="header-container">
         <div class="icon-animation" id="iconWrapper">
-            <span class="material-icons">language</span>
+            <span class="icon icon-lnguage"></span>
         </div>
         <div class="text-animation hide" id="titleWrapper">
             <h1 id="titleText" style="margin:0; font-size: 24px;">Language</h1>

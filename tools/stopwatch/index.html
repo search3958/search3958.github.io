@@ -8,6 +8,7 @@
 <meta name="description" content="シンプルで美しい、Material Design採用のストップウォッチ。全画面表示、テーマカラー変更などカスタマイズ対応。">
 <meta name="theme-color" content="#5b2929">
 <link rel="icon" href="https://search3958.github.io/project/logos/3958logo_main.svg">
+<link rel="stylesheet" href="https://search3958.github.io/frameworks/icons/icons.css">
 
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
@@ -237,7 +238,11 @@ button {
 	transform: scale(0.95)
 }
 
-.fab svg {
+.close-btn .icon {
+	width: 24px;
+	height: 24px
+}
+.fab svg, .fab .icon {
 	width: 24px;
 	height: 24px;
 	fill: currentColor
@@ -280,7 +285,7 @@ button {
 	transform: scale(0.95)
 }
 
-.control-btn svg {
+.control-btn svg, .control-btn .icon {
 	width: 24px;
 	height: 24px;
 	fill: currentColor
@@ -626,13 +631,13 @@ ins {
 
 <nav class="fab-container">
 <button class="fab" onclick="toggleFullscreen()" aria-label="全画面表示の切り替え">
-<svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+<span class="icon icon-fullscreen"></span>
 </button>
 <button class="fab" onclick="openModal('menu-modal')" aria-label="メニューを開く">
-<svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+<span class="icon icon-block-1"></span>
 </button>
 <button class="fab" onclick="openModal('settings-modal')" aria-label="設定を開く">
-<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84a.484.484 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.27.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+<span class="icon icon-settings"></span>
 </button>
 </nav>
 
@@ -650,11 +655,11 @@ ins {
 </div>
 <div class="controls-container">
 <button id="reset-btn" class="control-btn monotone-btn" onclick="resetTimer()" aria-label="リセット">
-<svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+<span class="icon icon-refresh"></span>
 </button>
 <button id="start-pause-btn" class="control-btn primary-btn" onclick="startPauseTimer()" aria-label="開始">
-<svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-<svg id="pause-icon" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+<span id="play-icon" class="icon icon-play"></span>
+<span id="pause-icon" class="icon icon-pause" style="display:none;"></span>
 <span id="start-pause-text" style="display:none;"></span>
 </button>
 </div>
@@ -667,7 +672,7 @@ ins {
 <div class="modal-header">
 <h2 class="modal-title">メニュー</h2>
 <button class="close-btn" onclick="closeModal(null, 'menu-modal')" aria-label="閉じる">
-<svg width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+<span class="icon icon-close"></span>
 </button>
 </div>
 <ul class="menu-list">
@@ -686,7 +691,7 @@ ins {
 <div class="modal-header">
 <h2 class="modal-title">設定</h2>
 <button class="close-btn" onclick="closeModal(null, 'settings-modal')" aria-label="閉じる">
-<svg width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+<span class="icon icon-close"></span>
 </button>
 </div>
 

@@ -6,32 +6,69 @@
     light: { start: 0, stops: [[0, '#FFFFFF'], [0.3, '#FFFFFF'], [0.6, '#8DF9FF'], [0.85, '#0077FF'], [1, '#0077FF']] }
   };
   const CANVAS_FONT = '"Inter", "Noto Sans JP", sans-serif';
-  const ICON_FONT = '"Material Icons Round"';
-  const ICON_SYMBOL_FONT = '"Material Symbols Rounded"';
   const WEEK = TIMER_TEXT.weekdaysShort;
-  // Canvas はアイコンのリガチャに対応しないため、Material Symbols の codepoint を直接描画。
+  // Canvas はアイコンフォントのリガチャを使えないため、icons.css に埋め込まれた
+  // SVG（--icon-<name> カスタムプロパティ）を読み込んで色を付け替えながら描画する。
   const ICON = {
-    play: '\ue037',
-    pause: '\ue034',
-    home: '\ue88a',
-    batAndroid0: '\uf30d',
-    batAndroid1: '\uf30c',
-    batAndroid2: '\uf30b',
-    batAndroid3: '\uf30a',
-    batAndroid4: '\uf309',
-    batAndroid5: '\uf308',
-    batAndroid6: '\uf307',
-    batAndroidFull: '\uf304'
+    play: 'play',
+    pause: 'pause',
+    home: 'home'
   };
   const BATTERY_ICONS = [
-    ICON.batAndroid0,
-    ICON.batAndroid1,
-    ICON.batAndroid2,
-    ICON.batAndroid3,
-    ICON.batAndroid4,
-    ICON.batAndroid5,
-    ICON.batAndroid6
+    'battery_0',
+    'battery_1',
+    'battery_2',
+    'battery_3',
+    'battery_4',
+    'battery_5'
   ];
+  const BATTERY_ICON_FULL = BATTERY_ICONS[BATTERY_ICONS.length - 1];
+  function iconUrl(name) {
+    const value = getComputedStyle(document.documentElement)
+      .getPropertyValue(`--icon-${name}`)
+      .trim();
+    const match = /^url\((?:'|")?(.*?)(?:'|")?\)$/.exec(value);
+    return match ? match[1] : '';
+  }
+  const iconImages = new Map();
+  for (const name of [ICON.play, ICON.pause, ICON.home, ...BATTERY_ICONS]) {
+    const url = iconUrl(name);
+    if (!url) continue;
+    const img = new Image();
+    img.src = url;
+    if (img.decode) img.decode().catch(() => {});
+    iconImages.set(name, img);
+  }
+  // アイコンは黒一色なので、オフスクリーンへ描いて色で塗り替えたものをキャッシュする。
+  const iconTintCache = new Map();
+  function tintedIcon(name, size, color) {
+    const img = iconImages.get(name);
+    if (!img || !img.complete || !img.naturalWidth) return null;
+    const px = Math.max(1, Math.round(size * DPR));
+    const key = `${name}|${px}|${color}`;
+    let layer = iconTintCache.get(key);
+    if (!layer) {
+      layer = document.createElement('canvas');
+      layer.width = px;
+      layer.height = px;
+      const g = layer.getContext('2d');
+      g.drawImage(img, 0, 0, px, px);
+      g.globalCompositeOperation = 'source-in';
+      g.fillStyle = color;
+      g.fillRect(0, 0, px, px);
+      iconTintCache.set(key, layer);
+    }
+    return layer;
+  }
+  // (x, y) を中心に size 四方でアイコンを描画する。
+  function drawIcon(ctx, name, x, y, size, color, alpha = 1) {
+    const layer = tintedIcon(name, size, color);
+    if (!layer) return;
+    const prevAlpha = ctx.globalAlpha;
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(layer, x - size / 2, y - size / 2, size, size);
+    ctx.globalAlpha = prevAlpha;
+  }
   const TAU = Math.PI * 2;
   const PI = Math.PI;
   // Canvas の 0 度は右向き。270 度にしてグラデーションの開始位置を真上へ。
@@ -355,9 +392,9 @@
   }
   function batteryIconForLevel(level) {
     const safeLevel = Number.isFinite(level) ? Math.max(0, Math.min(1, level)) : 1;
-    if (safeLevel >= 1) return ICON.batAndroidFull;
-    const index = Math.min(6, Math.floor(safeLevel * 7));
-    return BATTERY_ICONS[index] || ICON.batAndroid0;
+    if (safeLevel >= 1) return BATTERY_ICON_FULL;
+    const index = Math.min(BATTERY_ICONS.length - 1, Math.floor(safeLevel * BATTERY_ICONS.length));
+    return BATTERY_ICONS[index] || BATTERY_ICONS[0];
   }
   // オフスクリーン描画用レイヤー（デバイスピクセル解像度）
   function makeLayer(w, h, draw) {
@@ -619,13 +656,10 @@
         const lv = Number.isFinite(bat.level) ? Math.max(0, Math.min(1, bat.level)) : 1;
         const batIcon = batteryIconForLevel(lv);
         batIconFade.set(batIcon, now, 350);
-        ctx.font = `${20 * U}px ${ICON_SYMBOL_FONT}`;
         ctx.textAlign = 'right';
         const batteryColor = contrastColorAt(iconX - 10 * U, 30 * U);
         batIconFade.draw(now, (g, a) => {
-          ctx.globalAlpha = a * 0.72;
-          ctx.fillStyle = batteryColor;
-          ctx.fillText(g, iconX, 30 * U);
+          drawIcon(ctx, g, iconX - 10 * U, 30 * U, 20 * U, batteryColor, a * 0.72);
         });
         // 残量％は30%以下のときだけ表示（フェードで出し入れ）
         const showBat = lv <= 0.3;
@@ -647,14 +681,11 @@
     drawGlassAt(lx, cy, 1);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = `${20 * U}px ${ICON_FONT}`;
     const playbackIcon = state.finishedWithoutNotice ? ICON.pause : (state.running ? ICON.pause : ICON.play);
     iconFade.set(playbackIcon, now, 350);
     const playbackIconColor = contrastColorAt(lx, cy);
     iconFade.draw(now, (g, a) => {
-      ctx.globalAlpha = a;
-      ctx.fillStyle = playbackIconColor;
-      ctx.fillText(g, lx, cy);
+      drawIcon(ctx, g, lx, cy, 20 * U, playbackIconColor, a);
     });
     // 進捗テキスト（値・状態が変わるとき同時クロスフェード）
     const label = state.finishedWithoutNotice
@@ -674,11 +705,8 @@
     // 右下：ホーム（一時停止中のみ、フェードで出現）
     if (pv > 0) {
       drawGlassAt(rx, cy, pv);
-      ctx.globalAlpha = pv;
       ctx.textAlign = 'center';
-      ctx.font = `${20 * U}px ${ICON_FONT}`;
-      ctx.fillStyle = contrastColorAt(rx, cy);
-      ctx.fillText(ICON.home, rx, cy);
+      drawIcon(ctx, ICON.home, rx, cy, 20 * U, contrastColorAt(rx, cy), pv);
     }
     ctx.globalAlpha = 1;
   }
@@ -799,8 +827,5 @@
     document.fonts.load('300 56px "Inter"').catch(() => {});
     document.fonts.load('600 18px "Inter"').catch(() => {});
     document.fonts.load('600 18px "Noto Sans JP"', TIMER_TEXT.fontSample).catch(() => {});
-    document.fonts.load('20px "Material Icons Round"', ICON.play + ICON.pause + ICON.home).catch(() => {});
-    document.fonts.load('20px "Material Symbols Rounded"', BATTERY_ICONS.join('') + ICON.batAndroidFull)
-      .catch(() => {});
   }
 })();
