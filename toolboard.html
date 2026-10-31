@@ -1,778 +1,1756 @@
-<!DOCTYPE html>
-<html>
-<meta charset="UTF-8">
-<title>ツールボード</title>
-  <head>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="icon" href="https://search3958.github.io/favicon-newtab.svg">
-    <script>
-if ("paintWorklet" in CSS) {
-  const workletCode = `
-    const drawSquircle=(ctx,geom,radii,smooth,lineWidth,color)=>{const defaultFill=color;const lineWidthOffset=lineWidth/2;ctx.beginPath();ctx.lineTo(radii[0],lineWidthOffset);ctx.lineTo(geom.width-radii[1],lineWidthOffset);ctx.bezierCurveTo(geom.width-radii[1]/smooth,lineWidthOffset,geom.width-lineWidthOffset,radii[1]/smooth,geom.width-lineWidthOffset,radii[1]);ctx.lineTo(geom.width-lineWidthOffset,geom.height-radii[2]);ctx.bezierCurveTo(geom.width-lineWidthOffset,geom.height-radii[2]/smooth,geom.width-radii[2]/smooth,geom.height-lineWidthOffset,geom.width-radii[2],geom.height-lineWidthOffset);ctx.lineTo(radii[3],geom.height-lineWidthOffset);ctx.bezierCurveTo(radii[3]/smooth,geom.height-lineWidthOffset,lineWidthOffset,geom.height-radii[3]/smooth,lineWidthOffset,geom.height-radii[3]);ctx.lineTo(lineWidthOffset,radii[0]);ctx.bezierCurveTo(lineWidthOffset,radii[0]/smooth,radii[0]/smooth,lineWidthOffset,radii[0],lineWidthOffset);ctx.closePath();if(lineWidth){ctx.strokeStyle=defaultFill;ctx.lineWidth=lineWidth;ctx.stroke()}else{ctx.fillStyle=defaultFill;ctx.fill()}};class SquircleClass{static get contextOptions(){return{alpha:true}}static get inputProperties(){return["--squircle-radius","--squircle-radius-top-left","--squircle-radius-top-right","--squircle-radius-bottom-right","--squircle-radius-bottom-left","--squircle-smooth","--squircle-outline","--squircle-fill"]}paint(ctx,geom,properties){const smoothRatio=10;const distanceRatio=1.8;const squircleSmooth=parseFloat(properties.get("--squircle-smooth")*smoothRatio);const individualRadiiProps=SquircleClass.inputProperties.slice(1,5);let squircleRadii=individualRadiiProps.map(prop=>{const value=properties.get(prop);return value?parseInt(value,10)*distanceRatio:NaN});let shorthand_R;if(squircleRadii.some(isNaN)){const radiusRegex=/([0-9]+[a-z%]*)/g;const radius_shorthand=properties.get("--squircle-radius").toString();const matches=radius_shorthand.match(radiusRegex);if(matches){shorthand_R=matches.map(val=>parseInt(val,10)*distanceRatio);while(shorthand_R.length<4){if(shorthand_R.length===1){shorthand_R.push(shorthand_R[0])}else if(shorthand_R.length===2){shorthand_R=[shorthand_R[0],shorthand_R[1],shorthand_R[0],shorthand_R[1]]}else if(shorthand_R.length===3){shorthand_R=[shorthand_R[0],shorthand_R[1],shorthand_R[2],shorthand_R[1]]}}}else{const defaultRadius=squircleRadii.every(isNaN)?8*distanceRatio:0;shorthand_R=[defaultRadius,defaultRadius,defaultRadius,defaultRadius]}}squircleRadii=squircleRadii.map((val,i)=>isNaN(val)?shorthand_R[i]:val);const squrcleOutline=parseFloat(properties.get("--squircle-outline"),10);const squrcleColor=properties.get("--squircle-fill").toString();const isSmooth=()=>{if(typeof properties.get("--squircle-smooth")[0]!=="undefined"){if(squircleSmooth===0){return 1}return squircleSmooth}else{return 10}};const isOutline=()=>{if(squrcleOutline){return squrcleOutline}else{return 0}};const isColor=()=>{if(squrcleColor){return squrcleColor}else{return"#f45"}};const maxRadius=Math.max(...squircleRadii);if(maxRadius<geom.width/2&&maxRadius<geom.height/2){drawSquircle(ctx,geom,squircleRadii,isSmooth(),isOutline(),isColor())}else{const minRadius=Math.min(geom.width/2,geom.height/2);drawSquircle(ctx,geom,squircleRadii.map(()=>minRadius),isSmooth(),isOutline(),isColor())}}}if(typeof registerPaint!=="undefined"){registerPaint("squircle",SquircleClass)}
-  `;
-  const blob = new Blob([workletCode], { type: 'application/javascript' });
-  const blobURL = URL.createObjectURL(blob);
-  CSS.paintWorklet.addModule(blobURL);
-}
-</script>
-  <script type="importmap">
-    {
-      "imports": {
-        "@material/web/": "https://esm.run/@material/web/"
-      }
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5f7">
+  <title>Sentaro Workspace</title>
+  <style id="app-styles">
+    :root {
+      color-scheme: light;
+      --page-bg: #f0f0f2;
+      --surface: #ffffff;
+      --text: #08090b;
+      --muted: #a5a7ad;
+      --accent: #00f58a;
+      --green: #00f58a;
+      --key: #eeeeF0;
+      --key-dark: #d5d8de;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-  </script>
-  <script type="module">
-    import '@material/web/all.js';
-    import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
 
-    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
-  </script>
-  <script>
-  if (CSS && 'paintWorklet' in CSS) {
-    CSS.paintWorklet.addModule('https://unpkg.com/smooth-corners');
-  }
-</script>
-  </head>
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--page-bg); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      background: var(--page-bg);
+      color: var(--text);
+    }
+    button, input, textarea { font: inherit; }
+    button { color: inherit; }
+
+    .main-container {
+      width: min(668px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 37px 0 48px;
+    }
+    .dashboard-heading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 0 32px;
+      text-align: center;
+    }
+    .dashboard-heading h1 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.25;
+      font-weight: 680;
+      letter-spacing: -.045em;
+    }
+    .profile-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .profile-link {
+      display: inline-flex;
+      min-height: 38px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 999px;
+      background: #fff;
+      color: #08090b;
+      font-size: 21px;
+      font-weight: 450;
+      letter-spacing: -.035em;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background .2s ease, transform .2s cubic-bezier(.2,.8,.2,1);
+    }
+    a.profile-link:hover { background: #e5e5e8; transform: translateY(-1px); }
+    a.profile-link:active { transform: scale(.97); }
+
+    .dashboard-masonry {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+      column-gap: 28px;
+    }
+    .dashboard-column {
+      display: grid;
+      min-width: 0;
+      align-content: start;
+      gap: 28px;
+    }
+    .dashboard-column-right { gap: 36px; }
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+    .widget-card {
+      position: relative;
+      display: flex;
+      width: 100%;
+      min-width: 0;
+      flex-direction: column;
+      overflow: hidden;
+      border: 0;
+      border-radius: 29px;
+      background: var(--surface);
+      box-shadow: none;
+      animation: card-arrive .72s cubic-bezier(.2,.8,.2,1) both;
+      transform-origin: 50% 35%;
+      transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease;
+      break-inside: avoid;
+    }
+    .dashboard-column-left .widget-card:nth-child(1) { animation-delay: .04s; }
+    .dashboard-column-left .widget-card:nth-child(2) { animation-delay: .16s; }
+    .dashboard-column-left .widget-card:nth-child(3) { animation-delay: .28s; }
+    .dashboard-column-right .widget-card:nth-child(1) { animation-delay: .10s; }
+    .dashboard-column-right .widget-card:nth-child(2) { animation-delay: .22s; }
+    @keyframes card-arrive {
+      from { opacity: 0; transform: translateY(18px) scale(.975); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .widget-header {
+      position: absolute;
+      z-index: 2;
+      top: 12px;
+      right: 14px;
+      left: 16px;
+      display: flex;
+      min-height: 28px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+    .window-controls, .widget-actions {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 5px;
+    }
+    .window-controls {
+      height: 24px;
+      gap: 0;
+      padding: 0 3px;
+      border-radius: 999px;
+      background: rgba(229, 230, 233, .88);
+    }
+    .icon-button {
+      display: inline-grid;
+      width: 28px;
+      height: 28px;
+      flex: 0 0 auto;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: #b8bac2;
+      cursor: pointer;
+      transition: color .18s ease, background .18s ease, transform .22s cubic-bezier(.2,.8,.2,1), opacity .18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .icon-button:hover { color: #666a72; background: rgba(0,0,0,.055); }
+    .icon-button:active { transform: scale(.84); }
+    .icon-button:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible {
+      outline: 2px solid #1d8cff;
+      outline-offset: 3px;
+    }
+    .icon-button svg {
+      width: 19px;
+      height: 19px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .window-controls .icon-button {
+      position: relative;
+      width: 17px;
+      height: 24px;
+      border-radius: 0;
+      color: transparent;
+    }
+    .window-controls .icon-button::after {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #a7a9af;
+      content: "";
+      transition: transform .18s ease, background .18s ease;
+    }
+    .window-controls .icon-button:first-child::after { background: #a3a5ac; }
+    .window-controls .icon-button:last-child::after { background: #92959d; }
+    .window-controls .icon-button:hover::after { background: #70747c; transform: scale(1.1); }
+    .widget-heading { display: none; }
+    .widget-body {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      flex: 1;
+      flex-direction: column;
+      padding: 16px;
+    }
+    .widget-footer { display: none; }
+    .muted { color: var(--muted); }
+
+    /* Calculator */
+    .widget-card[data-widget="calculator"] { height: 320px; }
+    .widget-card[data-widget="calculator"] .widget-body { padding: 47px 16px 14px; }
+    .calculator-display {
+      position: relative;
+      display: flex;
+      min-height: 64px;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-start;
+      overflow: hidden;
+      padding: 3px 2px 9px;
+    }
+    .calculator-expression {
+      width: 100%;
+      min-height: 34px;
+      overflow: hidden;
+      color: #090a0b;
+      font-size: 28px;
+      font-weight: 450;
+      letter-spacing: -.055em;
+      text-align: right;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .calculator-result {
+      max-width: 100%;
+      overflow: hidden;
+      color: #00df82;
+      font-size: 16px;
+      font-weight: 560;
+      letter-spacing: -.025em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .calculator-backspace {
+      position: absolute;
+      top: 17px;
+      left: 0;
+      display: grid;
+      width: 23px;
+      height: 18px;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 3px 2px 2px 3px;
+      background: #08090b;
+      color: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      transition: transform .18s ease, background .18s ease;
+      clip-path: polygon(0 50%, 25% 0, 100% 0, 100% 100%, 25% 100%);
+    }
+    .calculator-backspace:hover { background: #3b3d42; }
+    .calculator-backspace:active { transform: scale(.9); }
+    .calculator-keypad {
+      display: grid;
+      flex: 1;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(5, minmax(0, 1fr));
+      gap: 5px;
+      min-height: 0;
+    }
+    .calc-key {
+      min-width: 0;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 11px;
+      background: #eeeeF0;
+      color: transparent;
+      cursor: pointer;
+      font-size: 0;
+      transition: background .16s ease, transform .18s cubic-bezier(.2,.8,.2,1), filter .16s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .calc-key:nth-child(4n) { background: #d6d9df; }
+    .calc-key:hover { filter: brightness(.96); }
+    .calc-key:active { transform: scale(.94); }
+    .calc-key.equals { background: #00f58a; }
+    .calc-key.equals:hover { filter: brightness(.96); }
+
+    /* Stopwatch / timer */
+    .widget-card[data-widget="time"] {
+      height: 204px;
+      border-radius: 30px;
+      background: linear-gradient(112deg, #00a4f5 0%, #00bdf3 48%, #6ce9f3 100%);
+      color: #fff;
+    }
+    .widget-card[data-widget="time"] .widget-header { top: 12px; }
+    .widget-card[data-widget="time"] .window-controls { background: rgba(224, 255, 255, .43); }
+    .widget-card[data-widget="time"] .window-controls .icon-button::after { background: rgba(0, 92, 143, .55); }
+    .widget-card[data-widget="time"] .icon-button { color: rgba(0, 95, 133, .42); }
+    .widget-card[data-widget="time"] .icon-button:hover { color: rgba(0, 73, 108, .8); background: rgba(255,255,255,.18); }
+    .widget-card[data-widget="time"] .widget-body { padding: 68px 15px 12px; align-items: center; }
+    .widget-card[data-widget="time"] .widget-actions { gap: 2px; }
+    .time-panel { display: flex; width: 100%; flex-direction: column; align-items: center; padding: 0; }
+    .time-panel[hidden] { display: none; }
+    .time-display {
+      width: 100%;
+      margin: 0;
+      color: #fff;
+      font-size: clamp(39px, 5vw, 55px);
+      font-weight: 410;
+      letter-spacing: -.065em;
+      line-height: 1.15;
+      text-align: center;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 2px 10px rgba(0, 79, 128, .08);
+      cursor: default;
+    }
+    .time-display small { color: inherit; font-size: .92em; letter-spacing: inherit; }
+    .mode-switch {
+      position: absolute;
+      right: 50%;
+      bottom: 13px;
+      display: flex;
+      width: fit-content;
+      gap: 2px;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.98);
+      transform: translateX(50%);
+    }
+    .mode-switch button {
+      min-height: 25px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #111;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 550;
+      letter-spacing: .015em;
+      transition: background .2s ease, color .2s ease, transform .2s ease;
+    }
+    .mode-switch button[aria-pressed="true"] { background: #ececef; color: #050505; }
+    .mode-switch button:active { transform: scale(.95); }
+    .timer-progress { width: 78%; height: 3px; overflow: hidden; margin: 8px 0 9px; border-radius: 99px; background: rgba(255,255,255,.3); }
+    .timer-progress span { display: block; width: 0; height: 100%; border-radius: inherit; background: #fff; transition: width .1s linear; }
+    .timer-inputs { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; }
+    .timer-inputs label { display: grid; gap: 3px; color: rgba(255,255,255,.82); font-size: 9px; text-align: center; }
+    .timer-inputs input {
+      width: 47px;
+      height: 28px;
+      padding: 0 4px;
+      border: 1px solid rgba(255,255,255,.36);
+      border-radius: 7px;
+      background: rgba(255,255,255,.22);
+      color: #fff;
+      text-align: center;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+    .timer-inputs input::-webkit-inner-spin-button { appearance: none; }
+    .time-controls, .lap-list { display: none; }
+    .widget-card[data-widget="time"][data-time-mode="timer"] .widget-body { padding-top: 51px; }
+    .widget-card[data-widget="time"][data-time-mode="timer"] .time-display { font-size: 39px; }
+    .widget-card[data-widget="time"][data-time-mode="timer"] .timer-progress { margin-top: 4px; }
+
+    /* Color picker */
+    .widget-card[data-widget="color"] {
+      height: 185px;
+      border-radius: 30px;
+      background: #00ff88;
+      color: #050505;
+    }
+    .widget-card[data-widget="color"] .widget-header { top: 12px; }
+    .widget-card[data-widget="color"] .window-controls { background: rgba(255,255,255,.34); }
+    .widget-card[data-widget="color"] .window-controls .icon-button::after { background: rgba(0, 116, 93, .5); }
+    .widget-card[data-widget="color"] .icon-button { color: rgba(0, 127, 88, .58); }
+    .widget-card[data-widget="color"] .icon-button:hover { color: #005f43; background: rgba(0,0,0,.07); }
+    .widget-card[data-widget="color"] .widget-body { padding: 45px 15px 9px; }
+    .color-preview {
+      display: flex;
+      min-height: 0;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      transition: background .2s ease;
+    }
+    .color-code {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: auto 0 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #050505;
+      cursor: copy;
+      font-size: clamp(40px, 5vw, 51px);
+      font-weight: 470;
+      letter-spacing: -.055em;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+    .color-code:hover { transform: scale(1.025); }
+    .color-code:active { transform: scale(.97); }
+    .color-caption {
+      margin: auto 0 0;
+      padding-top: 25px;
+      color: #050505;
+      font-size: 12px;
+      font-weight: 450;
+      letter-spacing: .015em;
+      line-height: 1;
+    }
+    .color-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      border: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .color-fields, .rgb-value { display: none !important; }
+
+    /* Memo */
+    .widget-card[data-widget="memo"] { height: 260px; border-radius: 30px; }
+    .widget-card[data-widget="memo"] .widget-header { top: 12px; }
+    .widget-card[data-widget="memo"] .widget-actions { gap: 0; }
+    .widget-card[data-widget="memo"] .widget-body { padding: 50px 16px 14px; }
+    .memo-area {
+      display: block;
+      width: 100%;
+      min-height: 0;
+      flex: 1;
+      resize: none;
+      overflow: auto;
+      padding: 0 13px;
+      border: 0;
+      border-radius: 17px;
+      outline: 0;
+      background-color: transparent;
+      background-image: repeating-linear-gradient(to bottom, #eeeeF0 0, #eeeeF0 48px, transparent 48px, transparent 55px);
+      background-attachment: local;
+      color: #08090b;
+      font-size: 19px;
+      font-weight: 650;
+      line-height: 55px;
+      letter-spacing: -.035em;
+      white-space: pre-wrap;
+    }
+    .memo-area::placeholder { color: #9fa1a8; font-size: 15px; font-weight: 450; }
+    .memo-area:focus-visible { outline: 0; }
+
+    /* Calendar */
+    .widget-card[data-widget="calendar"] { min-height: 320px; border-radius: 30px; }
+    .widget-card[data-widget="calendar"] .widget-body { padding: 52px 17px 17px; }
+    .calendar-topline { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 13px; }
+    .calendar-month { font-size: 21px; font-weight: 680; letter-spacing: -.045em; }
+    .calendar-year { margin-left: 7px; color: var(--muted); font-size: 12px; font-weight: 500; letter-spacing: 0; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+    .calendar-weekday { padding: 5px 0 7px; color: #a3a5ac; font-size: 10px; text-align: center; }
+    .calendar-day {
+      position: relative;
+      display: grid;
+      min-width: 0;
+      min-height: 31px;
+      place-items: center;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #42454c;
+      cursor: pointer;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      transition: background .16s ease, color .16s ease, transform .16s ease;
+    }
+    .calendar-day:hover { background: #f0f0f2; }
+    .calendar-day:active { transform: scale(.9); }
+    .calendar-day.outside { color: #c3c5ca; }
+    .calendar-day.today { color: #00bb72; font-weight: 750; }
+    .calendar-day.selected { background: #00e783; color: #07130d; font-weight: 700; }
+    .calendar-day.has-event::after { position: absolute; bottom: 3px; width: 3px; height: 3px; border-radius: 50%; background: #00bf75; content: ""; }
+    .calendar-day.selected.has-event::after { background: #07130d; }
+    .calendar-event-editor { margin-top: 14px; padding-top: 12px; border-top: 1px solid #ececef; }
+    .calendar-selected-date { margin-bottom: 7px; color: #64666d; font-size: 11px; font-weight: 650; }
+    .calendar-event-row { display: flex; gap: 6px; }
+    .calendar-event-row input {
+      min-width: 0;
+      flex: 1;
+      height: 34px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 9px;
+      background: #f0f0f2;
+      color: var(--text);
+      font-size: 12px;
+    }
+    .primary-button, .subtle-button {
+      min-height: 34px;
+      padding: 0 11px;
+      border: 0;
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 620;
+      transition: background .16s ease, transform .16s ease;
+    }
+    .primary-button { background: #00e783; color: #06150e; }
+    .primary-button:hover { background: #00d97a; }
+    .subtle-button { background: #eeeeF0; color: #53555c; }
+    .subtle-button:hover { background: #e2e3e6; }
+    .primary-button:active, .subtle-button:active { transform: scale(.95); }
+
+    /* Full-viewport maximize layer */
+    .maximize-layer {
+      position: fixed;
+      z-index: 10000;
+      inset: 0;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      padding: 0;
+      overflow: hidden;
+      background: rgba(240, 240, 242, .94);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transition: opacity .24s ease, visibility .24s ease;
+    }
+    .maximize-layer.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
+    .maximize-layer.is-closing { opacity: 0; visibility: visible; pointer-events: none; }
+    .maximize-layer .widget-card {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      max-height: none;
+      flex-direction: column;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      animation: fullscreen-open .38s cubic-bezier(.18,.85,.28,1) both;
+      transition: none;
+    }
+    @keyframes fullscreen-open {
+      from { opacity: .7; transform: scale(.975); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .maximize-layer .widget-body {
+      min-height: 0;
+      flex: 1;
+      overflow: auto;
+      padding: clamp(24px, 5vw, 64px);
+    }
+    .maximize-layer .widget-header { top: 22px; right: 24px; left: 26px; }
+    .maximize-layer .calculator-keypad { gap: 10px; }
+    .maximize-layer .calc-key { border-radius: 16px; }
+    .maximize-layer .time-display { font-size: clamp(70px, 14vw, 160px); }
+    .maximize-layer .mode-switch { bottom: 28px; }
+    .maximize-layer .widget-card[data-widget="calculator"] .widget-body { padding: 100px clamp(22px, 8vw, 130px) 36px; }
+    .maximize-layer .calculator-display { min-height: clamp(150px, 24vh, 260px); }
+    .maximize-layer .calculator-expression { font-size: clamp(42px, 6vw, 76px); min-height: 1.35em; }
+    .maximize-layer .calculator-result { font-size: clamp(25px, 3vw, 42px); }
+    .maximize-layer .widget-card[data-widget="color"] .widget-body { padding: 100px 28px 40px; }
+    .maximize-layer .color-code { font-size: clamp(64px, 11vw, 150px); }
+    .maximize-layer .color-caption { font-size: clamp(14px, 2vw, 22px); padding-top: 42px; }
+    .maximize-layer .widget-card[data-widget="memo"] .widget-body { padding: 88px 28px 32px; }
+    .maximize-layer .memo-area { font-size: clamp(20px, 2.5vw, 32px); line-height: 1.9; }
+
+    .toast-region {
+      position: fixed;
+      z-index: 11000;
+      right: 20px;
+      bottom: 20px;
+      display: grid;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      max-width: min(340px, calc(100vw - 40px));
+      padding: 11px 15px;
+      border: 0;
+      border-radius: 12px;
+      background: #202124;
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      color: white;
+      font-size: 12px;
+      animation: toast-in .22s cubic-bezier(.2,.8,.2,1) both;
+    }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    body.pip-mode { min-width: 280px; min-height: 100vh; padding: 9px; background: var(--page-bg); }
+    body.pip-mode .widget-card {
+      display: flex;
+      width: 100%;
+      min-height: calc(100vh - 18px);
+      flex-direction: column;
+      margin: 0;
+      border-radius: 24px;
+      box-shadow: none;
+      animation: none;
+    }
+    body.pip-mode .widget-body { flex: 1; }
+    body.pip-mode .widget-heading { max-width: 34%; }
+
+    @media (max-width: 700px) {
+      .main-container { width: min(100% - 24px, 520px); padding: 28px 0 36px; }
+      .dashboard-heading { margin-bottom: 22px; }
+      .dashboard-heading h1 { font-size: 24px; }
+      .profile-link { min-height: 35px; padding: 0 13px; font-size: 19px; }
+      .dashboard-masonry { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 0; }
+      .dashboard-column { display: contents; }
+      .widget-card { width: 100%; margin-bottom: 16px; }
+      .widget-card[data-widget="calculator"] { height: 320px; }
+      .widget-card[data-widget="time"] { height: 204px; }
+      .widget-card[data-widget="color"] { height: 185px; }
+      .widget-card[data-widget="memo"] { height: 260px; }
+      .widget-card[data-widget="calculator"] { order: 1; }
+      .widget-card[data-widget="time"] { order: 2; }
+      .widget-card[data-widget="color"] { order: 3; }
+      .widget-card[data-widget="memo"] { order: 4; }
+      .widget-card[data-widget="calendar"] { order: 5; }
+      .widget-card[data-widget="time"] .time-display { font-size: clamp(43px, 11vw, 58px); }
+      .maximize-layer .widget-card { width: 100vw; height: 100vh; height: 100dvh; border-radius: 0; }
+      .maximize-layer .widget-card[data-widget="calculator"] .widget-body { padding: 90px 18px 25px; }
+      .maximize-layer .widget-card[data-widget="memo"] .widget-body { padding: 76px 16px 20px; }
+    }
+    @media (max-width: 390px) {
+      .main-container { width: calc(100% - 20px); }
+      .dashboard-masonry { column-gap: 0; }
+      .widget-card[data-widget="calculator"] { height: 305px; }
+      .widget-card[data-widget="calculator"] .widget-body { padding-right: 13px; padding-left: 13px; }
+      .calculator-keypad { gap: 4px; }
+      .calc-key { border-radius: 9px; }
+      .widget-card[data-widget="time"] .time-display { font-size: 43px; }
+      .color-code { font-size: 44px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
 <body>
-  <div class="title">ダッシュボード</div>
-  <div class="search-box"><md-ripple></md-ripple>
-        <form action="https://www.google.com/search" method="get">
-            <input class="searchtext" type="text" name="q" placeholder="Googleで検索" required>
-            <button class="searchbtn" type="submit"><span class="material-symbols-rounded searchicon">
-search
-</span></button>
-        </form>
-    </div>
-  <div class="sidebar">
- <label class="label-a side">
-        <input type="radio" name="board" value="a" id="radio-a" class="nonedisplay" checked> 
-   <span class="material-symbols-rounded">
-dashboard
-</span>
-    </label><br><br>
-    <label class="label-b side">
-        <input type="radio" name="board" value="b" class="nonedisplay" id="radio-b"> <span class="material-symbols-rounded">
-pages
-</span>
-    </label></div>
-<div class="board-a">
-  <div class="top">
-    <div class="ripple">
-    <div id="timeDisplay"></div><md-ripple></md-ripple></div>
-    <div class="complication github-icon">
-      <md-ripple></md-ripple>
-      <a href="https://github.com/"><svg height="50px" aria-hidden="true" viewBox="0 0 24 24" version="1.1" width="50px" data-view-component="true">
-    <path d="M12.5.75C6.146.75 1 5.896 1 12.25c0 5.089 3.292 9.387 7.863 10.91.575.101.79-.244.79-.546 0-.273-.014-1.178-.014-2.142-2.889.532-3.636-.704-3.866-1.35-.13-.331-.69-1.352-1.18-1.625-.402-.216-.977-.748-.014-.762.906-.014 1.553.834 1.769 1.179 1.035 1.74 2.688 1.25 3.349.948.1-.747.402-1.25.733-1.538-2.559-.287-5.232-1.279-5.232-5.678 0-1.25.445-2.285 1.178-3.09-.115-.288-.517-1.467.115-3.048 0 0 .963-.302 3.163 1.179.92-.259 1.897-.388 2.875-.388.977 0 1.955.13 2.875.388 2.2-1.495 3.162-1.179 3.162-1.179.633 1.581.23 2.76.115 3.048.733.805 1.179 1.825 1.179 3.09 0 4.413-2.688 5.39-5.247 5.678.417.36.776 1.05.776 2.128 0 1.538-.014 2.774-.014 3.162 0 .302.216.662.79.547C20.709 21.637 24 17.324 24 12.25 24 5.896 18.854.75 12.5.75Z"></path>
-</svg></a>
-    </div>
-    <div class="complication">
-      <md-ripple></md-ripple>
-      <div class="date-a"></div>
-    <div class="date-b"></div>
-    </div>
-    <div class="complication">
-      <md-ripple></md-ripple>
-      <a href="https://search3958.github.io"><img src="https://search3958.github.io/favicon-webmaker.svg" height="60px" class="scode-icon"></a>
-    </div>
-  </div>
-  <div class="widget">
-  <div class="calculator">
-    <input type="text" class="calc-display" id="display" placeholder="計算機">
-    <div class="calc-buttons">
-        <button class="calc-button" onclick="appendValue('7')">7<md-ripple></md-ripple></button>
-        <button class="calc-button" onclick="appendValue('8')">8<md-ripple></md-ripple></button>
-        <button class="calc-button" onclick="appendValue('9')">9<md-ripple></md-ripple></button>
-        <button class="calc-button operation" onclick="appendValue('/')">÷<md-ripple></md-ripple></button>
-        <button class="calc-button" onclick="appendValue('4')">4<md-ripple></md-ripple></button>
-        <button class="calc-button" onclick="appendValue('5')">5<md-ripple></md-ripple></button>
-        <button class="calc-button" onclick="appendValue('6')">6<md-ripple></md-ripple></button>
-        <button class="calc-button operation" onclick="appendValue('*')">×<md-ripple></md-ripple></button>
-        <button class="calc-button" onclick="appendValue('1')">1<md-ripple></md-ripple></button>
-        <button class="calc-button" onclick="appendValue('2')">2<md-ripple></md-ripple></button>
-        <button class="calc-button" onclick="appendValue('3')">3<md-ripple></md-ripple></button>
-        <button class="calc-button operation" onclick="appendValue('-')">−<md-ripple></md-ripple></button>
-        <button class="calc-button" onclick="appendValue('0')">0<md-ripple></md-ripple></button>
-        <button class="calc-button" onclick="appendValue('.')">.<md-ripple></md-ripple></button>
-        <button class="calc-button" onclick="clearDisplay()">C<md-ripple></md-ripple></button>
-        <button class="calc-button operation" onclick="appendValue('+')">+<md-ripple></md-ripple></button>
-        <button class="calc-button equal" onclick="calculate()">=<md-ripple></md-ripple></button>
-    </div>
-</div>
-  <div class="note">ノート
-      <textarea id="myTextBox" rows="10" cols="50" placeholder="入力した内容は自動で復元されます。"></textarea>
-    </div>
-<div class="shortcut">ショートカット
-      <div class="textbox-container">
-        <input class="cut-text" type="text" id="textbox1" placeholder="テキストボックス1">
-        <button class="cut-btn" onclick="openURL(1)">開く<md-ripple></md-ripple></button>
-    </div>
-    <div class="textbox-container">
-        <input class="cut-text" type="text" id="textbox2" placeholder="テキストボックス2">
-        <button class="cut-btn" onclick="openURL(2)">開く<md-ripple></md-ripple></button>
-    </div>
-    <div class="textbox-container">
-        <input class="cut-text" type="text" id="textbox3" placeholder="テキストボックス3">
-        <button class="cut-btn" onclick="openURL(3)">開く<md-ripple></md-ripple></button>
-    </div>
-    <div class="textbox-container">
-        <input class="cut-text" type="text" id="textbox4" placeholder="テキストボックス4">
-        <button class="cut-btn" onclick="openURL(4)">開く<md-ripple></md-ripple></button>
-    </div>
-    <div class="textbox-container">
-        <input class="cut-text" type="text" id="textbox5" placeholder="テキストボックス5">
-        <button class="cut-btn" onclick="openURL(5)">開く<md-ripple></md-ripple></button>
-    </div>
-    <div class="textbox-container">
-        <input class="cut-text" type="text" id="textbox6" placeholder="テキストボックス6">
-        <button class="cut-btn" onclick="openURL(6)">開く<md-ripple></md-ripple></button>
-    </div>
-    </div>
-    <div class="stopwatch">ストップウォッチ
-      <div id="stopwatch-time">00:00:00</div>
-      <div class="stopwatch-buttons">
-    <button id="stopwatch-startStopBtn">開始<md-ripple></md-ripple></button>
-    <button id="stopwatch-resetBtn">リセット<md-ripple></md-ripple></button>
-    </div></div>
-      <div class="colorbox">カラーピッカー
-    <div class="color-picker-container">
-        <label for="color-picker"><div id="color-box" class="color-box"><md-ripple></md-ripple></div></label>
-        <input type="color" id="color-picker">
-    </div><div style="display: flex;justify-content: center;">
-        <input type="text" id="hex-input" placeholder="#000000"></div>
-    </div>
-</div>
-</div>
-  <div class="board-b">
-    <p class="sc">Google</p><div class="links">
-<link-box href="mail.google.com" img="gmail.webp">Gmail</link-box>
-<link-box href="classroom.google.com" img="classroom.webp">Classroom</link-box>
-<link-box href="youtube.com" img="youtube.webp">Youtube</link-box>
-<link-box href="docs.google.com" img="document.webp">Document</link-box>
-<link-box href="docs.google.com/presentation/" img="slide.webp">Slide</link-box>
-<link-box href="docs.google.com/spreadsheet/" img="spreadsheet.webp">Spreadsheet</link-box>
-<link-box href="translate.google.com" img="translate.webp">Translate</link-box>
-<link-box href="gemini.google.com" img="gemini.webp">Gemini</link-box>
-<link-box href="drive.google.com/" img="drive.webp">ドライブ</link-box>
-<link-box href="about.google/products" img="product.webp">Product</link-box></div>
-<p class="sc">学習と作業効率化</p><div class="links">
-<link-box href="app.monoxer.com" img="monoxer.webp">Monoxer</link-box>
-<link-box href="chatgpt.com" img="chatgpt.webp">Chat GPT</link-box>
-<link-box href="copilot.microsoft.com" img="copilot.webp">Copilot</link-box>
-<link-box href="codepen.io" img="codepen.webp">Codepen</link-box>
-<link-box href="https://claude.ai/new" img="claude.webp">Claude</link-box>
-<link-box href="canva.com" img="canva.webp">Canva</link-box>
-<link-box href="www.office.com/?auth=1" img="microsoft365.webp">Microsoft 365</link-box>
-<link-box href="turbowarp.org" img="turbowarp.webp">TurboWarp</link-box>
-<link-box href="kahoot.it" img="kahoot.webp">Kahoot</link-box>
-  </div>
-<p class="sc">ショッピング</p><div class="links">
-<link-box href="www.amazon.co.jp/" img="amazon.webp">Amazon</link-box>
-<link-box href="ja.aliexpress.com/" img="aliexpress.webp">AliExpress</link-box>
-<link-box href="www.wish.com/ja" img="wish.webp">Wish</link-box>
-<link-box href="jp.mercari.com/" img="mercari.webp">Mercali</link-box>
-<link-box href="www.taobao.com/" img="taobao.webp">淘宝</link-box>
-  </div>
-  <p class="sc">娯楽</p><div class="links"><div class="links">
-  <link-box href="scratch.mit.edu" img="scratch.webp">Scratch</link-box>
-<link-box href="poki.com" img="poki.webp">poki</link-box>
-<link-box href="snake.io" img="snakeio.webp">Snake.io</link-box>
-<link-box href="www.google.com/logos/2010/pacman10-i.html" img="pacman.webp">PACMAN</link-box>
-<link-box href="www.instagram.com/" img="instagram.webp">Instagram</link-box>
-<link-box href="www.netflix.com/jp/" img="netflix.webp">Netflix</link-box>
-<link-box href="weverse.io/?hl=ja" img="weverse.webp">Weverse</link-box>
-<link-box href="www.primevideo.com/ref=atv_nb_lcl_ja_JP" img="primevideo.webp">Prime Video</link-box>
-<link-box href="open.spotify.com/intl-ja" img="spotify.webp">Spotify</link-box>
-    </div></div>
-  </div>
-</body>  <script src="https://search3958.github.io/check.js"></script>
-<style>* {
-  font-family: "Inter", serif
-}
-body{
-  background:#e8e9de;
-}
-:root {
-  --text-color: #0f0f0faa;
-  --primary:#4c662b;
-}
-
-.board-a {
-  background:#f9faef;
-  height: calc(100vh - 100px);
-  width: calc(100vw - 120px);
-  bottom: 0;
-  right: 0;
-  border-radius: 56px 0 0 0;
-  overflow: scroll;
-  display: none
-}
-
-.top {
-  padding: 27px;
-  display: flex;
-  gap: 16px
-}
-
-.widget {
-  flex-wrap: wrap;
-  padding: 27px;
-  display: flex;
-  gap: 16px;
-  padding-top: 0
-}
-
-.complication {
-  background: #fff;
-  width: 60px;
-  height: 60px;
-  border-radius: 30px;
-  position: relative
-}
-
-#timeDisplay {
-  width: 120px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: #fff;
-  border-radius: 30px;
-  --smooth-corners: 12, 5;
-  mask-image: paint(smooth-corners);
-  -webkit-mask-image: paint(smooth-corners);
-  font-weight: 500
-}
-
-.github-icon {
-  padding: 4.5px;
-  width: 51px;
-  height: 51px
-}
-
-.ripple {
-  position: relative;
-  border-radius: 30px
-}
-
-.date-a,
-.date-b {
-  text-align: center;
-  position: relative;
-  top: 6px
-}
-
-.date-b {
-  font-size: 24px
-}
-
-.date-a {
-  color: #c70808;
-  font-weight: 500
-}
-
-.scode-icon {
-  border-radius: 30px
-}
-
-.calculator {
-  background: #eeefe3;
-  padding: 16px;
-  border-radius: 30px;
-  width: 18vw;
-  min-width: 300px;
-  max-width: 500px;
-  height: 348px
-}
-
-.calc-display {
-  width: calc(100% - 20px);
-  height: 50px;
-  background: #e2e3d8;
-  border: none;
-  outline: none;
-  border-radius: 14px;
-  margin-bottom: 10px;
-  padding: 0 10px;
-  font-size: 1.5rem;
-  text-align: right
-}
-
-.calc-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px
-}
-
-.calc-button {
-  height: 50px;
-  background: #dce7c8;
-  border: none;
-  border-radius: 14px;
-  font-size: 1.2rem;
-  position: relative;
-  color:#404a33;
-}
-
-.calc-button.operation {
-  background: #bcece7;
-  color: #1f4e4b
-}
-
-.calc-button.equal {
-  background: var(--primary);
-  color: #fff;
-  grid-column: span 4
-}
-
-.note {
-  background: #eeefe3;
-  border-radius: 30px;
-  padding: 16px;
-  height: 348px;
-  width: 20vw;
-  min-width: 265px;
-  max-width: 700px
-}
-
-.shortcut {
-  background: #eeefe3;
-  border-radius: 30px;
-  padding: 16px;
-  height: 348px;
-  width: 20vw;
-  min-width: 230px;
-  max-width: 600px
-}
-
-#myTextBox {
-  resize: none;
-  width: calc(100% - 16px);
-  height: calc(348px - 45px);
-  border-radius: 14px;
-  margin-top: 4px;
-  padding: 8px;
-  border: none;
-  background: #e2e3d8
-}
-
-.cut-text {
-  width: 100%;
-  margin-right: 8px;
-  border-radius: 14px;
-  border: none;
-  background: #e2e3d8;
-  padding-left: 8px
-}
-
-.cut-btn {
-  width: 60px;
-  border-radius: 14px;
-  border: none;
-  position: relative;
-  background: var(--primary);
-  color: #fff
-}
-
-.textbox-container {
-  display: flex;
-  height: 44px;
-  margin-bottom: 10px;
-  position: relative;
-  top: 8px
-}
-
-#stopwatch-time {
-  font-size: 48px;
-  margin: 20px;
-  text-align: center;
-  position: relative;
-  top: 55px
-}
-
-.stopwatch {
-  background: #eeefe3;
-  border-radius: 30px;
-  padding: 16px;
-  height: 348px;
-  width: 15vw;
-  min-width: 270px;
-  max-width: 400px
-}
-
-.stopwatch-buttons {
-  display: flex;
-  gap: 8px
-}
-
-#stopwatch-startStopBtn,
-#stopwatch-resetBtn {
-  width: 100%;
-  height: 60px;
-  border-radius: 30px;
-  border: none;
-  background: #bcece7;
-  color:#1f4e4b;
-  position: relative;
-  top: 70px
-}
-
-#stopwatch-startStopBtn {
-  background: var(--primary);
-  color: #fff
-}
-
-.geminibox {
-  background: #fff;
-  border-radius: 30px;
-  padding: 16px;
-  height: 348px;
-  width: 20vw;
-  min-width: 265px;
-  max-width: 700px;
-  overflow: scroll
-}
-
-.mine {
-  background: #000;
-  color: #fff;
-  padding: 8px 16px;
-  width: fit-content;
-  border-radius: 24px;
-  font-weight: 500 !important;
-  margin-top: 10px
-}
-
-.gemini {
-  background: linear-gradient(to bottom right, blue, pink);
-  color: #fff;
-  padding: 8px 16px;
-  width: fit-content;
-  border-radius: 24px;
-  font-weight: 500 !important;
-  margin-top: 10px
-}
-
-.message,
-.gemini-message {
-  padding: 8px;
-  background: #f0f0f0;
-  margin-top: 8px;
-  border-radius: 24px;
-  max-width: 600px;
-  width: fit-content;
-  margin-bottom: 1em
-}
-
-#chat-box {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 1em
-}
-
-.bold {
-  font-weight: 500 !important
-}
-
-.send-box {
-  display: flex;
-  justify-content: center;
-  padding: 16px
-}
-
-.code-container {
-  position: relative
-}
-
-.copy-button {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  cursor: pointer;
-  border: none;
-  background: #fff;
-  border-radius: 100px;
-  padding: 8px
-}
-
-pre {
-  width: 600px;
-  word-break: break-all
-}
-
-#user-input {
-  width: 550px !important;
-  padding: 8px;
-  border-radius: 24px 8px 8px 24px;
-  min-height: 50px;
-  border: none;
-  background: #f0f0f0
-}
-
-#send-btn {
-  width: 50px;
-  border-radius: 8px 24px 24px 8px;
-  margin-left: 4px;
-  background: #0f0f0f;
-  color: #fff;
-  border: none
-}
-
-.color-box {
-  width: 70%;
-  height: 80px;
-  margin-top: 10px;
-  background: #000;
-  border-radius: 100px;
-  margin: 20px auto;
-  position: relative;
-  margin-top: 50px;
-  background: var(--primary)
-}
-
-.colorbox {
-  background: #eeefe3;
-  border-radius: 30px;
-  padding: 16px;
-  height: 348px;
-  width: 15vw;
-  min-width: 270px;
-  max-width: 400px;
-  display: block
-}
-
-#color-picker {
-  position: relative;
-  bottom: 75px;
-  left: 60px;
-  opacity: 0
-}
-
-#hex-input {
-  font-size: 24px;
-  border-radius: 13px;
-  width: 130px;
-  padding: 8px;
-  text-align: center;
-  margin: 0 auto;
-  border:none;
-  background:#e8e9de;
-}
-
-.board-b {
-  display: none;
-  background: #f9faef;
-  height: calc(100vh - 100px);
-  width: calc(100vw - 120px);
-  bottom: 0;
-  right: 0;
-  border-radius: 56px 0 0 0;
-  overflow: scroll
-}
-
-.material-symbols-rounded {
-  scale: 1;
-  transition: all 0.4s cubic-bezier(.51, 0, 0, 1), scale 0.2s ease;
-  font-size: 50px !important;
-  background: #0000;
-  border-radius: 10px;
-  padding: 4px
-}
-
-.material-symbols-rounded:active {
-  scale: .85;
-  background: #0003
-}
-
-.nonedisplay {
-  display: none
-}
-
-.sidebar {
-  display: block;
-  position: fixed;
-  top: 31px;
-  left: 31px
-}
-
-.title {
-  font-size: 32px;
-  position: fixed;
-  top: 31px;
-  left: 120px
-}
-
-.search-box {
-  background: #f9faef;
-  width: fit-content;
-  position: fixed;
-  top: 20px;
-  left: calc(50vw - 200px);
-  display: flex;
-  align-items: center;
-  height: 60px;
-  width: 402px;
-  border-radius: 100px
-}
-
-.searchbtn {
-  height: 60px;
-  width: 66px;
-  border: none;
-  background: none;
-  border-radius: 100px;
-  position: relative
-}
-
-.searchtext {
-  height: 60px;
-  width: 314px;
-  padding: 0;
-  border: none;
-  background: none;
-  border-radius: 100px;
-  position: relative;
-  outline: none;
-  font-size: 24px;
-  padding-left: 16px;
-  position: relative;
-  bottom: 3px
-}
-
-.searchicon {
-  font-size: 30px !important;
-  border-radius: 100px;
-  position: relative;
-  top: 3px;
-  left: 3px
-}
-
-.container {
-  perspective: 800px;
-  width: 192px;
-  height: 117px;
-  position: relative;
-  margin: 14px 10px;
-  text-align: center;
-  border-radius: 40px
-}
-
-.links {
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap
-}
-
-.box {
-  width: 192px;
-  height: 117px;
-  border-radius: 42px;
-  background-color: var(--link-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease-out;
-  --smooth-corners: 6.4, 3.6;
-  mask-image: paint(smooth-corners);
-  -webkit-mask-image: paint(smooth-corners);
-  transform: rotateX(0deg) rotateY(0deg)
-}
-
-.shortcutimg {
-  width: 192px;
-  height: 117px;
-  position: relative;
-  top: 1px;
-  background: #fff
-}
-
-.sc {
-  text-align: center;
-  width: 100%;
-  margin-top: 24px;
-  font-size: 24px;
-  margin-bottom: 0
-}
-
-@media (prefers-color-scheme:dark) {
-  :root {
-    --text-color: #fffb;
-    --md-ripple-hover-color: #fff;
-    --md-ripple-pressed-color: #fff
-  }
-
-  body {
-    background: #000;
-    color: #fff
-  }
-
-  .board-a,
-  .board-b {
-    background: #222;
-    color: #fff
-  }
-
-  .calculator,
-  .note,
-  .shortcut,
-  .stopwatch,
-  .colorbox {
-    background: #000;
-    color: #fff
-  }
-
-  .calc-display {
-    background: #222;
-    color: #fff
-  }
-
-  .calc-button {
-    background: #252525;
-    color: #fff
-  }
-
-  .calc-button.operation {
-    background: #001d35;
-    color: #e5edff
-  }
-
-  #myTextBox,
-  .cut-text,
-  #stopwatch-resetBtn,
-  #hex-input {
-    background: #222;
-    color: #fff
-  }
-
-  .date-b {
-    color: #000
-  }
-
-  .material-symbols-rounded:active {
-    background: #fff3
-  }
-
-  .searchtext {
-    color: #fff
-  }
-
-  .search-box {
-    background: #222
-  }
-
-  .searchicon {
-    color: #fff
-  }
-
-  .shortcutimg {
-    background: #000
-  }
-}</style>
-
-<script>function updateTime(){const displayTime=document.getElementById('timeDisplay');const now=new Date();const hours=now.getHours().toString().padStart(2,'0');const minutes=now.getMinutes().toString().padStart(2,'0');const seconds=now.getSeconds()+now.getMilliseconds()/1000;const degree=(seconds/60)*360;displayTime.style.background=`conic-gradient(from ${degree}deg, rgba(20, 127, 255, 1) 0deg, rgba(0, 108, 238, 1) 180deg, rgba(0, 87, 190, 1) 274deg, rgba(0, 63, 137, 1) 360deg)`;displayTime.textContent=`${hours}:${minutes}`;requestAnimationFrame(updateTime)} updateTime();const today=new Date();const weekdays=["SUN","MON","TUE","WED","THU","FRI","SAT"];const weekdayText=weekdays[today.getDay()];const dayOfMonth=today.getDate().toString().padStart(2,'0');document.querySelector('.date-a').textContent=weekdayText;document.querySelector('.date-b').textContent=dayOfMonth;const displayCalc=document.getElementById('display');const textBox=document.getElementById('myTextBox');function loadSavedData(){const savedValue=localStorage.getItem('calculatorDisplay');if(savedValue){displayCalc.value=savedValue} const savedText=localStorage.getItem('textBoxContent');if(savedText){textBox.value=savedText} for(let i=1;i<=6;i++){const savedText=localStorage.getItem(`textbox${i}`);if(savedText){document.getElementById(`textbox${i}`).value=savedText}}} function saveDisplay(){localStorage.setItem('calculatorDisplay',displayCalc.value)} function saveTextBoxData(){for(let i=1;i<=6;i++){let textbox=document.getElementById(`textbox${i}`);localStorage.setItem(`textbox${i}`,textbox.value)} localStorage.setItem('textBoxContent',textBox.value)} window.onload=loadSavedData;displayCalc.addEventListener('input',saveDisplay);textBox.addEventListener('input',saveTextBoxData);for(let i=1;i<=6;i++){document.getElementById(`textbox${i}`).addEventListener('input',saveTextBoxData)} function openURL(boxNumber){const content=document.getElementById(`textbox${boxNumber}`).value;if(content){let url=content;if(!/^https?:\/\//i.test(content)){url=`https://${url}`} window.open(url,'_blank')}else{alert('テキストボックスに内容がありません')}} function appendValue(value){const display=document.getElementById('display');display.value+=value} function clearDisplay(){const display=document.getElementById('display');display.value='';localStorage.removeItem('calculatorDisplay')} function calculate(){const display=document.getElementById('display');try{const result=eval(display.value);display.value=result;localStorage.setItem('calculatorDisplay',result)}catch(e){display.value='Error'}} let stopwatchStartTime;let stopwatchElapsedTime=0;let stopwatchTimerInterval;let isStopwatchRunning=!1;const stopwatchStartStopBtn=document.getElementById("stopwatch-startStopBtn");const stopwatchResetBtn=document.getElementById("stopwatch-resetBtn");const stopwatchTimeDisplay=document.getElementById("stopwatch-time");stopwatchStartStopBtn.addEventListener("click",()=>{if(isStopwatchRunning){clearInterval(stopwatchTimerInterval);isStopwatchRunning=!1;stopwatchStartStopBtn.textContent="開始"}else{stopwatchStartTime=Date.now()-stopwatchElapsedTime;stopwatchTimerInterval=setInterval(()=>{stopwatchElapsedTime=Date.now()-stopwatchStartTime;updateStopwatchTimeDisplay(stopwatchElapsedTime)},1000);isStopwatchRunning=!0;stopwatchStartStopBtn.textContent="停止"}});stopwatchResetBtn.addEventListener("click",()=>{clearInterval(stopwatchTimerInterval);isStopwatchRunning=!1;stopwatchElapsedTime=0;stopwatchStartStopBtn.textContent="開始";stopwatchTimeDisplay.textContent="00:00:00"});function updateStopwatchTimeDisplay(ms){const hours=String(Math.floor(ms/3600000)).padStart(2,'0');const minutes=String(Math.floor((ms%3600000)/60000)).padStart(2,'0');const seconds=String(Math.floor((ms%60000)/1000)).padStart(2,'0');stopwatchTimeDisplay.textContent=`${hours}:${minutes}:${seconds}`} const colorPicker=document.getElementById('color-picker');const hexInput=document.getElementById('hex-input');const colorBox=document.getElementById('color-box');const savedColor=localStorage.getItem('userpickcolorSub');if(savedColor){colorPicker.value=savedColor;hexInput.value=savedColor;colorBox.style.backgroundColor=savedColor} colorPicker.addEventListener('input',function(){const color=colorPicker.value;hexInput.value=color;colorBox.style.backgroundColor=color;localStorage.setItem('userpickcolorSub',color)});hexInput.addEventListener('input',function(){const color=hexInput.value;if(/^#[0-9A-Fa-f]{6}$/.test(color)){colorBox.style.backgroundColor=color;colorPicker.value=color;localStorage.setItem('userpickcolorSub',color)}});const radioA=document.getElementById('radio-a');const radioB=document.getElementById('radio-b');const boardA=document.querySelector('.board-a');const labelA=document.querySelector('.label-a');const labelB=document.querySelector('.label-b');const boardB=document.querySelector('.board-b');const title=document.querySelector('.title');function toggleBoards(){if(radioA.checked){boardA.style.display='block';boardA.style.position='fixed';boardB.style.display='none';labelA.style.fontVariationSettings='\'FILL\' 1,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelA.style.color='var(--primary)';labelB.style.fontVariationSettings='\'FILL\' 0,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelB.style.color='#0f0f0faa';title.textContent='ダッシュボード'}else if(radioB.checked){boardA.style.display='none';boardB.style.display='block';boardB.style.position='fixed';title.textContent='ショートカット';labelA.style.fontVariationSettings='\'FILL\' 0,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelA.style.color='#0f0f0faa';labelB.style.fontVariationSettings='\'FILL\' 1,\'wght\' 400,\'GRAD\' 0,\'opsz\' 24';labelB.style.color='var(--primary)'}} radioA.addEventListener('change',toggleBoards);radioB.addEventListener('change',toggleBoards);toggleBoards();class LinkBox extends HTMLElement{static get observedAttributes(){return['href','img']} constructor(){super();this.render()} attributeChangedCallback(){this.render()} render(){const href=this.getAttribute('href')||'#';const img=this.getAttribute('img')||'';this.innerHTML=`<div class="container"> <div class="box"> <a href="https://${href}"> <img class="shortcutimg" src="https://search3958.github.io/newtab/img/${img}" alt="${this.textContent}"> <md-ripple></md-ripple> </a> </div> <div>${this.textContent}</div> </div>`;this.addMouseEvents(this.querySelector('.container'))} addMouseEvents(container){const box=container.querySelector('.box');container.onmousemove=(e)=>{const{left,top,width,height}=box.getBoundingClientRect();box.style.transform=`rotateX(${-((e.clientY - top) - height / 2) / 6}deg) rotateY(${((e.clientX - left) - width / 2) / 6}deg)`};container.onmouseleave=()=>box.style.transform='rotateX(0) rotateY(0)'}} customElements.define('link-box',LinkBox);document.querySelectorAll('.container').forEach(container=>{container.onmousemove=(e)=>{const box=container.querySelector('.box');const{left,top,width,height}=box.getBoundingClientRect();box.style.transform=`rotateX(${-((e.clientY - top) - height / 2) / 6}deg) rotateY(${((e.clientX - left) - width / 2) / 6}deg)`;container.onmouseleave=()=>box.style.transform='rotateX(0) rotateY(0)'}})</script>
+  <main class="main-container">
+    <header class="dashboard-heading">
+      <h1>こんにちは。李</h1>
+      <nav class="profile-links" aria-label="プロフィール">
+        <a class="profile-link" href="https://search3958.github.io/">About me</a>
+        <span class="profile-link" aria-label="0F8 Account">0F8 Account</span>
+      </nav>
+    </header>
+
+    <section class="dashboard-masonry" id="dashboard-masonry" aria-label="ツール一覧">
+      <div class="dashboard-column dashboard-column-left">
+        <!-- Calculator -->
+        <article class="widget-card" data-widget="calculator" data-expression="1230+4" data-result="1234" data-just-evaluated="true" aria-label="計算機">
+          <header class="widget-header">
+            <div class="window-controls" aria-label="ウィンドウ操作">
+              <button class="icon-button" type="button" data-action="pip" aria-label="計算機をPIPで開く" title="PIPで開く"><span class="visually-hidden">PIP</span></button>
+              <button class="icon-button" type="button" data-action="maximize" aria-label="計算機を全画面表示" title="全画面表示"><span class="visually-hidden">全画面表示</span></button>
+            </div>
+            <div class="widget-heading">計算機</div>
+            <div class="widget-actions">
+              <button class="icon-button" type="button" data-action="clear" aria-label="計算機をクリア" title="クリア">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 6h11M8 6V4h4v2m-6.2 0 .7 10.2h6.9L14.1 6M8.2 9v4.5m3.6-4.5v4.5"/></svg>
+              </button>
+              <button class="icon-button" type="button" data-action="copy" aria-label="計算結果をコピー" title="コピー">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="6" width="9.5" height="11" rx="1.7"/><path d="M12.5 6V4.7A1.7 1.7 0 0 0 10.8 3H5A1.7 1.7 0 0 0 3.3 4.7v8.1A1.7 1.7 0 0 0 5 14.5h2"/></svg>
+              </button>
+            </div>
+          </header>
+          <div class="widget-body">
+            <div class="calculator-display" aria-live="polite">
+              <button class="calculator-backspace" type="button" data-calc="backspace" aria-label="1文字削除" title="1文字削除">×</button>
+              <div class="calculator-expression" data-role="expression">1230+4</div>
+              <div class="calculator-result" data-role="result">1234</div>
+            </div>
+            <div class="calculator-keypad" aria-label="計算機キー">
+              <button class="calc-key utility" data-calc="clear" type="button" aria-label="全消去">AC</button>
+              <button class="calc-key utility" data-calc="%" type="button" aria-label="パーセント">%</button>
+              <button class="calc-key utility" data-calc="(" type="button" aria-label="左括弧">(</button>
+              <button class="calc-key operator" data-calc="/" type="button" aria-label="割る">÷</button>
+              <button class="calc-key" data-calc="7" type="button" aria-label="7">7</button>
+              <button class="calc-key" data-calc="8" type="button" aria-label="8">8</button>
+              <button class="calc-key" data-calc="9" type="button" aria-label="9">9</button>
+              <button class="calc-key operator" data-calc="*" type="button" aria-label="掛ける">×</button>
+              <button class="calc-key" data-calc="4" type="button" aria-label="4">4</button>
+              <button class="calc-key" data-calc="5" type="button" aria-label="5">5</button>
+              <button class="calc-key" data-calc="6" type="button" aria-label="6">6</button>
+              <button class="calc-key operator" data-calc="-" type="button" aria-label="引く">−</button>
+              <button class="calc-key" data-calc="1" type="button" aria-label="1">1</button>
+              <button class="calc-key" data-calc="2" type="button" aria-label="2">2</button>
+              <button class="calc-key" data-calc="3" type="button" aria-label="3">3</button>
+              <button class="calc-key operator" data-calc="+" type="button" aria-label="足す">+</button>
+              <button class="calc-key utility" data-calc=")" type="button" aria-label="右括弧">)</button>
+              <button class="calc-key" data-calc="0" type="button" aria-label="0">0</button>
+              <button class="calc-key" data-calc="." type="button" aria-label="小数点">.</button>
+              <button class="calc-key equals" data-calc="=" type="button" aria-label="計算">=</button>
+            </div>
+            <div class="widget-footer"><span>キーボード入力にも対応</span><span data-role="calc-status">Ready</span></div>
+          </div>
+        </article>
+
+        <!-- Color picker -->
+        <article class="widget-card" data-widget="color" aria-label="カラーピッカー">
+          <header class="widget-header">
+            <div class="window-controls" aria-label="ウィンドウ操作">
+              <button class="icon-button" type="button" data-action="pip" aria-label="カラーピッカーをPIPで開く" title="PIPで開く"><span class="visually-hidden">PIP</span></button>
+              <button class="icon-button" type="button" data-action="maximize" aria-label="カラーピッカーを全画面表示" title="全画面表示"><span class="visually-hidden">全画面表示</span></button>
+            </div>
+            <div class="widget-heading">カラーピッカー</div>
+            <div class="widget-actions">
+              <button class="icon-button" type="button" data-action="pick-color" aria-label="色を選択" title="色を選択">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m13.5 3.5 3 3M11.7 5.3l3 3M4 16l1.1-4.1L13.8 3l3.2 3.2-8.7 8.7L4 16Z"/><path d="M3 17h5"/></svg>
+              </button>
+            </div>
+          </header>
+          <div class="widget-body">
+            <div class="color-preview" data-role="color-preview">
+              <button class="color-code" type="button" data-action="copy" aria-label="カラーコードをコピー" title="カラーコードをコピー"><span data-role="color-preview-label">#00FF88</span></button>
+              <div class="color-caption">SENTARO BRAND COLOR</div>
+            </div>
+            <div class="color-fields">
+              <input class="color-input" data-role="color-input" type="color" value="#00ff88" aria-label="色を選択">
+              <div class="hex-field"><label for="color-hex">HEX</label><input id="color-hex" data-role="color-hex" type="text" value="#00FF88" spellcheck="false" maxlength="7" autocomplete="off"></div>
+            </div>
+            <div class="widget-footer"><span>RGB</span><span class="rgb-value" data-role="color-rgb">rgb(0, 255, 136)</span></div>
+          </div>
+        </article>
+
+        <!-- Calendar -->
+        <article class="widget-card" data-widget="calendar" aria-label="カレンダー">
+          <header class="widget-header">
+            <div class="window-controls" aria-label="ウィンドウ操作">
+              <button class="icon-button" type="button" data-action="pip" aria-label="カレンダーをPIPで開く" title="PIPで開く"><span class="visually-hidden">PIP</span></button>
+              <button class="icon-button" type="button" data-action="maximize" aria-label="カレンダーを全画面表示" title="全画面表示"><span class="visually-hidden">全画面表示</span></button>
+            </div>
+            <div class="widget-heading">カレンダー</div>
+            <div class="widget-actions">
+              <button class="icon-button" type="button" data-calendar="previous" aria-label="前の月" title="前の月"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 4.5-5.5 5.5 5.5 5.5"/></svg></button>
+              <button class="icon-button" type="button" data-calendar="next" aria-label="次の月" title="次の月"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5"/></svg></button>
+              <button class="icon-button" type="button" data-calendar="today" aria-label="今日" title="今日"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12.5" rx="2"/><path d="M6.5 2.8v3.4m7-3.4v3.4M3 8h14"/><circle cx="10" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></button>
+            </div>
+          </header>
+          <div class="widget-body">
+            <div class="calendar-topline"><div><span class="calendar-month" data-role="calendar-month">10月</span><span class="calendar-year" data-role="calendar-year">2026</span></div></div>
+            <div class="calendar-grid" data-role="calendar-grid" aria-label="月間カレンダー"></div>
+            <div class="calendar-event-editor">
+              <div class="calendar-selected-date" data-role="calendar-selected-date">2026年10月31日（土）</div>
+              <div class="calendar-event-row">
+                <input data-role="calendar-event-input" type="text" maxlength="100" placeholder="この日の予定を追加" aria-label="選択日の予定">
+                <button class="primary-button" type="button" data-calendar="save">保存</button>
+                <button class="subtle-button" type="button" data-calendar="delete">削除</button>
+              </div>
+            </div>
+            <div class="widget-footer"><span>日付を選択して予定を登録</span><span data-role="calendar-status">この端末に保存</span></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="dashboard-column dashboard-column-right">
+        <!-- Stopwatch and timer -->
+        <article class="widget-card" data-widget="time" data-time-mode="stopwatch" aria-label="ストップウォッチとタイマー">
+          <header class="widget-header">
+            <div class="window-controls" aria-label="ウィンドウ操作">
+              <button class="icon-button" type="button" data-action="pip" aria-label="ストップウォッチ／タイマーをPIPで開く" title="PIPで開く"><span class="visually-hidden">PIP</span></button>
+              <button class="icon-button" type="button" data-action="maximize" aria-label="ストップウォッチ／タイマーを全画面表示" title="全画面表示"><span class="visually-hidden">全画面表示</span></button>
+            </div>
+            <div class="widget-heading">ストップウォッチ / タイマー</div>
+            <div class="widget-actions">
+              <button class="icon-button" type="button" data-action="reset-time" aria-label="時間をリセット" title="リセット">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg>
+              </button>
+              <button class="icon-button" type="button" data-action="time-toggle" aria-label="スタート" title="スタート">
+                <svg data-role="time-toggle-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M6.5 4.5 16 10l-9.5 5.5z" fill="currentColor" stroke="none"/></svg>
+              </button>
+            </div>
+          </header>
+          <div class="widget-body">
+            <div class="mode-switch" role="group" aria-label="モード切り替え">
+              <button type="button" data-time-mode="stopwatch" aria-pressed="true">STOPWATCH</button>
+              <button type="button" data-time-mode="timer" aria-pressed="false">TIMER</button>
+            </div>
+            <section class="time-panel" data-time-panel="stopwatch">
+              <div class="time-display" data-role="stopwatch-display" role="button" tabindex="0" aria-label="ストップウォッチ。計測中に押すとラップタイムを記録" title="計測中に押すとラップタイムを記録">00 00 00</div>
+              <div class="time-controls">
+                <button class="primary-button" type="button" data-stopwatch="toggle">スタート</button>
+                <button class="subtle-button" type="button" data-stopwatch="lap" disabled>ラップ</button>
+                <button class="subtle-button" type="button" data-stopwatch="reset">リセット</button>
+              </div>
+              <ol class="lap-list" data-role="laps" aria-label="ラップタイム"></ol>
+            </section>
+            <section class="time-panel" data-time-panel="timer" hidden>
+              <div class="time-display" data-role="timer-display">00 05 00</div>
+              <div class="timer-progress" aria-hidden="true"><span data-role="timer-progress"></span></div>
+              <div class="timer-inputs">
+                <label>時間<input data-timer-input="hours" type="number" min="0" max="99" value="0" inputmode="numeric"></label>
+                <span class="muted">:</span>
+                <label>分<input data-timer-input="minutes" type="number" min="0" max="59" value="5" inputmode="numeric"></label>
+                <span class="muted">:</span>
+                <label>秒<input data-timer-input="seconds" type="number" min="0" max="59" value="0" inputmode="numeric"></label>
+              </div>
+              <div class="time-controls">
+                <button class="primary-button" type="button" data-timer="toggle">スタート</button>
+                <button class="subtle-button" type="button" data-timer="reset">リセット</button>
+              </div>
+            </section>
+            <div class="widget-footer"><span data-role="time-status">停止中</span><span>時間はこのページを開いている間も計測</span></div>
+          </div>
+        </article>
+
+        <!-- Memo -->
+        <article class="widget-card" data-widget="memo" aria-label="メモ">
+          <header class="widget-header">
+            <div class="window-controls" aria-label="ウィンドウ操作">
+              <button class="icon-button" type="button" data-action="pip" aria-label="メモをPIPで開く" title="PIPで開く"><span class="visually-hidden">PIP</span></button>
+              <button class="icon-button" type="button" data-action="maximize" aria-label="メモを全画面表示" title="全画面表示"><span class="visually-hidden">全画面表示</span></button>
+            </div>
+            <div class="widget-heading">メモ</div>
+            <div class="widget-actions">
+              <button class="icon-button" type="button" data-action="focus-memo" aria-label="メモを追加" title="メモを追加">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.5v13M3.5 10h13"/></svg>
+              </button>
+            </div>
+          </header>
+          <div class="widget-body">
+            <textarea class="memo-area" data-role="memo" placeholder="メモを入力…" aria-label="メモ本文"></textarea>
+            <div class="widget-footer"><span>入力内容はこのブラウザに自動保存</span><span data-role="memo-status">保存済み</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="maximize-layer" id="maximize-layer" aria-label="全画面表示"></div>
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEYS = Object.freeze({
+        memo: "workspace.memo.v1",
+        calendar: "workspace.calendar.events.v1"
+      });
+      const root = document.getElementById("dashboard-masonry");
+      const maximizeLayer = document.getElementById("maximize-layer");
+      const toastRegion = document.getElementById("toast-region");
+
+      if (!root || !maximizeLayer || !toastRegion) {
+        console.error("[Workspace] 必要なページ要素が見つかりません。", {
+          root: Boolean(root), maximizeLayer: Boolean(maximizeLayer), toastRegion: Boolean(toastRegion)
+        });
+        return;
+      }
+
+      const log = (message, detail) => {
+        if (detail === undefined) console.info(`[Workspace] ${message}`);
+        else console.info(`[Workspace] ${message}`, detail);
+      };
+      const reportError = (message, error) => console.error(`[Workspace] ${message}`, error || "原因不明のエラー");
+      const safeStorage = {
+        get(key, fallback = "") {
+          try {
+            const value = localStorage.getItem(key);
+            return value === null ? fallback : value;
+          } catch (error) {
+            reportError(`ローカル保存データを読み込めません: ${key}`, error);
+            return fallback;
+          }
+        },
+        set(key, value) {
+          try {
+            localStorage.setItem(key, value);
+            return true;
+          } catch (error) {
+            reportError(`ローカル保存データを書き込めません: ${key}`, error);
+            return false;
+          }
+        },
+        remove(key) {
+          try {
+            localStorage.removeItem(key);
+            return true;
+          } catch (error) {
+            reportError(`ローカル保存データを削除できません: ${key}`, error);
+            return false;
+          }
+        }
+      };
+
+      const showToast = (message) => {
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.textContent = message;
+        toastRegion.append(toast);
+        window.setTimeout(() => toast.remove(), 2400);
+      };
+
+      async function copyText(value, successMessage = "コピーしました") {
+        const text = String(value ?? "");
+        if (!text) {
+          showToast("コピーする内容がありません");
+          return false;
+        }
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const temporary = document.createElement("textarea");
+            temporary.value = text;
+            temporary.setAttribute("readonly", "");
+            temporary.style.position = "fixed";
+            temporary.style.opacity = "0";
+            document.body.append(temporary);
+            temporary.select();
+            const copied = document.execCommand("copy");
+            temporary.remove();
+            if (!copied) throw new Error("ブラウザがコピー操作を拒否しました");
+          }
+          showToast(successMessage);
+          log("テキストをコピーしました");
+          return true;
+        } catch (error) {
+          reportError("コピーに失敗しました", error);
+          showToast("コピーできませんでした");
+          return false;
+        }
+      }
+
+      const getCard = (element) => element?.closest?.(".widget-card") || null;
+      const getRole = (card, role) => {
+        const element = card?.querySelector(`[data-role="${role}"]`);
+        if (!element) reportError(`カード内の要素が見つかりません: ${role}`);
+        return element;
+      };
+
+      /* Move the actual card node, not a screenshot or duplicate. Its event
+         listeners and live widget state therefore keep working in both modes. */
+      let activePip = null;
+      let activeMaximize = null;
+
+      function restorePip(session, closeWindow = false) {
+        if (!session) return;
+        if (session.placeholder?.parentNode) {
+          session.placeholder.parentNode.insertBefore(session.card, session.placeholder);
+          session.placeholder.remove();
+        }
+        session.card.classList.remove("is-in-pip");
+        if (activePip === session) activePip = null;
+        if (closeWindow && session.window && !session.window.closed) {
+          try { session.window.close(); } catch (error) { reportError("PIPウィンドウを閉じられません", error); }
+        }
+        log("PIP表示を終了しました");
+      }
+
+      async function openPip(card) {
+        if (activePip?.card === card) {
+          restorePip(activePip, true);
+          return;
+        }
+        if (!("documentPictureInPicture" in window) || !window.isSecureContext) {
+          showToast("PIPはHTTPS対応のChromeなどで利用できます");
+          reportError("Document Picture-in-Picture APIが利用できません");
+          return;
+        }
+        if (activeMaximize?.card === card) restoreMaximize(true);
+        if (activePip) restorePip(activePip, true);
+
+        const bounds = card.getBoundingClientRect();
+        const width = Math.max(320, Math.min(620, Math.round(bounds.width || 420)));
+        const height = Math.max(360, Math.min(760, Math.round(Math.max(bounds.height, 460))));
+        try {
+          const pipWindow = await window.documentPictureInPicture.requestWindow({ width, height });
+          const style = document.getElementById("app-styles");
+          if (!style) throw new Error("スタイルシートが見つかりません");
+
+          const pipStyle = style.cloneNode(true);
+          pipStyle.removeAttribute("id");
+          pipWindow.document.head.append(pipStyle);
+          pipWindow.document.title = `${card.querySelector(".widget-heading")?.textContent || "Tool"} - Workspace`;
+          pipWindow.document.body.className = "pip-mode";
+          pipWindow.document.body.append(document.createTextNode(""));
+
+          const placeholder = document.createComment("workspace-pip-placeholder");
+          card.parentNode.insertBefore(placeholder, card);
+          const session = { card, window: pipWindow, placeholder };
+          activePip = session;
+          card.classList.add("is-in-pip");
+          pipWindow.document.body.append(card);
+          pipWindow.addEventListener("pagehide", () => {
+            if (activePip === session) restorePip(session, false);
+          }, { once: true });
+          pipWindow.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") restorePip(session, true);
+          });
+          log("PIP表示を開始しました", card.dataset.widget);
+        } catch (error) {
+          if (activePip?.card === card) restorePip(activePip, false);
+          reportError("PIPウィンドウを開けませんでした", error);
+          showToast("PIPウィンドウを開けませんでした");
+        }
+      }
+
+      let pendingMaximizeSession = null;
+      let maximizeCloseTimer = null;
+
+      function finishMaximizeRestore(session) {
+        if (!session) return;
+        if (session.placeholder?.parentNode) {
+          session.placeholder.parentNode.insertBefore(session.card, session.placeholder);
+          session.placeholder.remove();
+        }
+        session.card.classList.remove("is-maximized");
+        if (activeMaximize === session) activeMaximize = null;
+        if (pendingMaximizeSession === session) pendingMaximizeSession = null;
+        maximizeLayer.classList.remove("is-open", "is-closing");
+        log("全画面表示を終了しました", session.card.dataset.widget);
+      }
+
+      function restoreMaximize(immediate = false) {
+        const session = activeMaximize;
+        if (!session) return;
+        activeMaximize = null;
+        if (maximizeCloseTimer !== null) window.clearTimeout(maximizeCloseTimer);
+        maximizeCloseTimer = null;
+        if (immediate) {
+          finishMaximizeRestore(session);
+          return;
+        }
+        pendingMaximizeSession = session;
+        maximizeLayer.classList.remove("is-open");
+        maximizeLayer.classList.add("is-closing");
+        maximizeCloseTimer = window.setTimeout(() => {
+          if (pendingMaximizeSession === session) finishMaximizeRestore(session);
+          maximizeCloseTimer = null;
+        }, 240);
+      }
+
+      function toggleMaximize(card) {
+        if (pendingMaximizeSession) {
+          if (maximizeCloseTimer !== null) window.clearTimeout(maximizeCloseTimer);
+          maximizeCloseTimer = null;
+          finishMaximizeRestore(pendingMaximizeSession);
+        }
+        if (activePip?.card === card) restorePip(activePip, true);
+        if (activeMaximize?.card === card) {
+          restoreMaximize();
+          return;
+        }
+        if (activeMaximize) restoreMaximize(true);
+        const placeholder = document.createComment("workspace-maximize-placeholder");
+        card.parentNode.insertBefore(placeholder, card);
+        activeMaximize = { card, placeholder };
+        card.classList.add("is-maximized");
+        maximizeLayer.append(card);
+        maximizeLayer.classList.remove("is-closing");
+        maximizeLayer.classList.add("is-open");
+        log("カードを全画面表示しました", card.dataset.widget);
+      }
+
+      function resetTimeCard(card) {
+        if (typeof card._workspaceTimeReset === "function") {
+          card._workspaceTimeReset();
+          return;
+        }
+        reportError("時間ツールのリセット処理が見つかりません");
+      }
+
+      /* Attach the shared window controls to each card itself. This is important:
+         a card moved into a PIP document is no longer a descendant of `root`. */
+      root.querySelectorAll(".widget-card").forEach((widgetCard) => {
+        widgetCard.addEventListener("click", async (event) => {
+          const button = event.target.closest("button");
+          if (!button) return;
+          const card = getCard(button);
+          if (!card) return;
+
+          const action = button.dataset.action;
+          if (action === "pip") {
+            await openPip(card);
+            return;
+          }
+          if (action === "maximize") {
+            toggleMaximize(card);
+            return;
+          }
+          if (action === "copy") {
+            const widget = card.dataset.widget;
+            if (widget === "calculator") await copyText(getRole(card, "result")?.textContent, "計算結果をコピーしました");
+            else if (widget === "color") await copyText(getRole(card, "color-hex")?.value, "カラーコードをコピーしました");
+            else if (widget === "memo") await copyText(getRole(card, "memo")?.value, "メモをコピーしました");
+            return;
+          }
+          if (action === "clear") {
+            if (card.dataset.widget === "calculator") clearCalculator(card);
+            if (card.dataset.widget === "memo") clearMemo(card);
+            return;
+          }
+          if (action === "random-color") {
+            const input = getRole(card, "color-input");
+            if (input) {
+              const hex = `#${Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, "0")}`;
+              input.value = hex;
+              updateColor(card, hex);
+              log("ランダムカラーを生成しました", hex);
+            }
+            return;
+          }
+          if (action === "reset-time") {
+            resetTimeCard(card);
+            return;
+          }
+          if (action === "time-toggle") {
+            if (typeof card._workspaceTimeToggle === "function") card._workspaceTimeToggle();
+            else reportError("時間ツールの開始／停止処理が見つかりません");
+            return;
+          }
+          if (action === "pick-color") {
+            const input = getRole(card, "color-input");
+            if (input) input.click();
+            return;
+          }
+          if (action === "focus-memo") {
+            const memo = getRole(card, "memo");
+            if (memo) memo.focus();
+            return;
+          }
+        });
+      });
+
+      maximizeLayer.addEventListener("click", (event) => {
+        if (event.target === maximizeLayer) restoreMaximize();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && activeMaximize) {
+          restoreMaximize();
+          return;
+        }
+        if (event.target.closest?.("input, textarea, button")) return;
+        const calculator = root.querySelector('[data-widget="calculator"]');
+        if (!calculator || activePip?.card === calculator || activeMaximize?.card === calculator) return;
+        const allowed = /^[0-9.+\-*/()%]$/;
+        if (allowed.test(event.key)) {
+          event.preventDefault();
+          appendCalculatorInput(calculator, event.key);
+        } else if (event.key === "Enter" || event.key === "=") {
+          event.preventDefault();
+          calculate(calculator);
+        } else if (event.key === "Backspace") {
+          event.preventDefault();
+          backspaceCalculator(calculator);
+        } else if (event.key === "Escape") {
+          clearCalculator(calculator);
+        }
+      });
+
+      /* Calculator: recursive-descent parser; no eval or Function constructor. */
+      function evaluateExpression(source) {
+        const compact = source.replace(/\s+/g, "");
+        const tokens = compact.match(/(?:\d+(?:\.\d*)?|\.\d+)|[()+\-*/%]/g) || [];
+        if (!compact || tokens.join("") !== compact) throw new Error("式を確認してください");
+        let position = 0;
+        const peek = () => tokens[position];
+        const take = () => tokens[position++];
+
+        function primary() {
+          const token = take();
+          if (token === "(") {
+            const value = expression();
+            if (take() !== ")") throw new Error("括弧が閉じられていません");
+            return value;
+          }
+          if (token === undefined || !/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(token)) {
+            throw new Error("数値を入力してください");
+          }
+          return Number(token);
+        }
+        function unary() {
+          if (peek() === "+") { take(); return unary(); }
+          if (peek() === "-") { take(); return -unary(); }
+          let value = primary();
+          while (peek() === "%") { take(); value /= 100; }
+          return value;
+        }
+        function term() {
+          let value = unary();
+          while (peek() === "*" || peek() === "/") {
+            const operator = take();
+            const right = unary();
+            if (operator === "/" && right === 0) throw new Error("0で割ることはできません");
+            value = operator === "*" ? value * right : value / right;
+          }
+          return value;
+        }
+        function expression() {
+          let value = term();
+          while (peek() === "+" || peek() === "-") {
+            const operator = take();
+            const right = term();
+            value = operator === "+" ? value + right : value - right;
+          }
+          return value;
+        }
+        const result = expression();
+        if (position !== tokens.length || !Number.isFinite(result)) throw new Error("式を確認してください");
+        return Number.parseFloat(result.toPrecision(12)).toString();
+      }
+
+      function renderCalculator(card, expression, result, status = "Ready") {
+        const expressionNode = getRole(card, "expression");
+        const resultNode = getRole(card, "result");
+        const statusNode = getRole(card, "calc-status");
+        if (expressionNode) expressionNode.textContent = expression || "\u00a0";
+        if (resultNode) resultNode.textContent = result;
+        if (statusNode) statusNode.textContent = status;
+        card.dataset.expression = expression;
+        card.dataset.result = result;
+      }
+      function appendCalculatorInput(card, value) {
+        let expression = card.dataset.expression || "";
+        if (card.dataset.justEvaluated === "true") {
+          if (/^[0-9.(]$/.test(value)) expression = "";
+          else if (/^[+*/%-]$/.test(value)) expression = card.dataset.result || expression;
+        }
+        card.dataset.justEvaluated = "false";
+        expression += value;
+        renderCalculator(card, expression, expression || "0");
+      }
+      function clearCalculator(card) {
+        card.dataset.justEvaluated = "false";
+        renderCalculator(card, "", "0", "Cleared");
+        log("計算機をクリアしました");
+      }
+      function backspaceCalculator(card) {
+        const expression = (card.dataset.expression || "").slice(0, -1);
+        card.dataset.justEvaluated = "false";
+        renderCalculator(card, expression, expression || "0");
+      }
+      function calculate(card) {
+        const expression = card.dataset.expression || "";
+        if (!expression) return;
+        try {
+          const result = evaluateExpression(expression);
+          card.dataset.justEvaluated = "true";
+          renderCalculator(card, expression, result, "Calculated");
+          log("計算しました", { expression, result });
+        } catch (error) {
+          renderCalculator(card, expression, "Error", "入力エラー");
+          reportError("計算式を評価できません", error);
+        }
+      }
+      const calculatorCard = root.querySelector('[data-widget="calculator"]');
+      if (!calculatorCard) reportError("計算機カードが見つかりません");
+      else {
+        calculatorCard.addEventListener("click", (event) => {
+          const key = event.target.closest("[data-calc]");
+          if (!key) return;
+          const value = key.dataset.calc;
+          if (value === "clear") clearCalculator(calculatorCard);
+          else if (value === "backspace") backspaceCalculator(calculatorCard);
+          else if (value === "=") calculate(calculatorCard);
+          else appendCalculatorInput(calculatorCard, value);
+        });
+        log("計算機を初期化しました");
+      }
+
+      /* Stopwatch and countdown timer */
+      const timeCard = root.querySelector('[data-widget="time"]');
+      if (!timeCard) reportError("時間ツールカードが見つかりません");
+      else initializeTimeTools(timeCard);
+
+      function formatStopwatch(milliseconds) {
+        const totalCentiseconds = Math.floor(milliseconds / 10);
+        const minutes = Math.floor(totalCentiseconds / 6000);
+        const seconds = Math.floor((totalCentiseconds % 6000) / 100);
+        const centiseconds = totalCentiseconds % 100;
+        return `${String(minutes).padStart(2, "0")} ${String(seconds).padStart(2, "0")} ${String(centiseconds).padStart(2, "0")}`;
+      }
+      function formatTimer(milliseconds) {
+        const totalSeconds = Math.max(0, Math.ceil(milliseconds / 1000));
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(hours).padStart(2, "0")} ${String(minutes).padStart(2, "0")} ${String(seconds).padStart(2, "0")}`;
+      }
+      function initializeTimeTools(card) {
+        const state = {
+          mode: "stopwatch",
+          stopwatchRunning: false,
+          stopwatchStartedAt: 0,
+          stopwatchElapsed: 0,
+          stopwatchInterval: null,
+          laps: [],
+          timerRunning: false,
+          timerDeadline: 0,
+          timerRemaining: 0,
+          timerInitial: 0,
+          timerInterval: null
+        };
+        const stopwatchDisplay = getRole(card, "stopwatch-display");
+        const timerDisplay = getRole(card, "timer-display");
+        const status = getRole(card, "time-status");
+        const lapsNode = getRole(card, "laps");
+        const timerProgress = getRole(card, "timer-progress");
+        const startStopwatch = card.querySelector('[data-stopwatch="toggle"]');
+        const lapButton = card.querySelector('[data-stopwatch="lap"]');
+        const timerToggle = card.querySelector('[data-timer="toggle"]');
+        const headerToggle = card.querySelector('[data-action="time-toggle"]');
+
+        function setStatus(value) { if (status) status.textContent = value; }
+        function syncHeaderToggle() {
+          if (!headerToggle) return;
+          const running = state.mode === "timer" ? state.timerRunning : state.stopwatchRunning;
+          const icon = getRole(card, "time-toggle-icon");
+          if (icon) {
+            icon.innerHTML = running
+              ? '<path d="M6 4.5h3.2v11H6zM11 4.5h3.2v11H11z" fill="currentColor" stroke="none" />'
+              : '<path d="M6.5 4.5 16 10l-9.5 5.5z" fill="currentColor" stroke="none" />';
+          }
+          headerToggle.setAttribute("aria-label", running ? "一時停止" : "スタート");
+          headerToggle.title = running ? "一時停止" : "スタート";
+        }
+        function elapsedStopwatch() {
+          return state.stopwatchElapsed + (state.stopwatchRunning ? performance.now() - state.stopwatchStartedAt : 0);
+        }
+        function updateStopwatch() {
+          if (stopwatchDisplay) stopwatchDisplay.innerHTML = formatStopwatch(elapsedStopwatch());
+        }
+        function stopStopwatchInterval() {
+          if (state.stopwatchInterval !== null) window.clearInterval(state.stopwatchInterval);
+          state.stopwatchInterval = null;
+        }
+        function resetStopwatch() {
+          stopStopwatchInterval();
+          state.stopwatchRunning = false;
+          state.stopwatchElapsed = 0;
+          state.laps = [];
+          if (lapsNode) lapsNode.replaceChildren();
+          if (startStopwatch) startStopwatch.textContent = "スタート";
+          if (lapButton) lapButton.disabled = true;
+          updateStopwatch();
+          syncHeaderToggle();
+          setStatus("停止中");
+          log("ストップウォッチをリセットしました");
+        }
+        function toggleStopwatch() {
+          if (!state.stopwatchRunning) {
+            state.stopwatchRunning = true;
+            state.stopwatchStartedAt = performance.now();
+            if (startStopwatch) startStopwatch.textContent = "ストップ";
+            if (lapButton) lapButton.disabled = false;
+            syncHeaderToggle();
+            setStatus("計測中");
+            state.stopwatchInterval = window.setInterval(updateStopwatch, 30);
+            log("ストップウォッチを開始しました");
+          } else {
+            state.stopwatchElapsed = elapsedStopwatch();
+            state.stopwatchRunning = false;
+            stopStopwatchInterval();
+            if (startStopwatch) startStopwatch.textContent = "再開";
+            syncHeaderToggle();
+            setStatus("一時停止中");
+            updateStopwatch();
+            log("ストップウォッチを停止しました");
+          }
+        }
+        function addLap() {
+          if (!state.stopwatchRunning) return;
+          const elapsed = elapsedStopwatch();
+          const previous = state.laps.at(-1) || 0;
+          state.laps.push(elapsed);
+          if (!lapsNode) return;
+          const item = document.createElement("li");
+          const label = document.createElement("span");
+          const value = document.createElement("span");
+          label.textContent = `ラップ ${state.laps.length}`;
+          value.textContent = `+${formatStopwatch(elapsed - previous).replace(/<small>|<\/small>/g, "")}`;
+          item.append(label, value);
+          lapsNode.prepend(item);
+          log("ラップを記録しました", state.laps.length);
+        }
+
+        function readTimerInput() {
+          const read = (name, max) => {
+            const input = card.querySelector(`[data-timer-input="${name}"]`);
+            if (!input) { reportError(`タイマー入力欄がありません: ${name}`); return 0; }
+            const value = Number.parseInt(input.value, 10);
+            const normalized = Number.isFinite(value) ? Math.min(max, Math.max(0, value)) : 0;
+            input.value = String(normalized);
+            return normalized;
+          };
+          return (read("hours", 99) * 3600 + read("minutes", 59) * 60 + read("seconds", 59)) * 1000;
+        }
+        function stopTimerInterval() {
+          if (state.timerInterval !== null) window.clearInterval(state.timerInterval);
+          state.timerInterval = null;
+        }
+        function updateTimer() {
+          const remaining = Math.max(0, state.timerDeadline - Date.now());
+          state.timerRemaining = remaining;
+          if (timerDisplay) timerDisplay.innerHTML = formatTimer(remaining);
+          if (timerProgress) {
+            const percent = state.timerInitial > 0 ? (1 - remaining / state.timerInitial) * 100 : 0;
+            timerProgress.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+          }
+          if (remaining <= 0 && state.timerRunning) {
+            state.timerRunning = false;
+            stopTimerInterval();
+            if (timerToggle) timerToggle.textContent = "スタート";
+            syncHeaderToggle();
+            setStatus("時間になりました");
+            showToast("タイマーが終了しました");
+            log("タイマーが終了しました");
+          }
+        }
+        function resetTimer() {
+          stopTimerInterval();
+          state.timerRunning = false;
+          state.timerRemaining = readTimerInput();
+          state.timerInitial = state.timerRemaining;
+          if (timerToggle) timerToggle.textContent = "スタート";
+          updateTimer();
+          syncHeaderToggle();
+          setStatus("停止中");
+          log("タイマーをリセットしました");
+        }
+        function toggleTimer() {
+          if (!state.timerRunning) {
+            const selected = state.timerRemaining > 0 ? state.timerRemaining : readTimerInput();
+            if (selected <= 0) {
+              showToast("時間を設定してください");
+              return;
+            }
+            state.timerRemaining = selected;
+            if (state.timerInitial <= 0 || state.timerRemaining === readTimerInput()) state.timerInitial = selected;
+            state.timerDeadline = Date.now() + selected;
+            state.timerRunning = true;
+            if (timerToggle) timerToggle.textContent = "一時停止";
+            syncHeaderToggle();
+            setStatus("カウントダウン中");
+            state.timerInterval = window.setInterval(updateTimer, 100);
+            updateTimer();
+            log("タイマーを開始しました", selected);
+          } else {
+            state.timerRemaining = Math.max(0, state.timerDeadline - Date.now());
+            state.timerRunning = false;
+            stopTimerInterval();
+            if (timerToggle) timerToggle.textContent = "再開";
+            updateTimer();
+            syncHeaderToggle();
+            setStatus("一時停止中");
+            log("タイマーを一時停止しました");
+          }
+        }
+
+        card.addEventListener("click", (event) => {
+          const stopwatchSurface = event.target.closest('[data-role="stopwatch-display"]');
+          if (stopwatchSurface) {
+            addLap();
+            return;
+          }
+          const modeButton = event.target.closest("[data-time-mode]");
+          if (modeButton) {
+            state.mode = modeButton.dataset.timeMode;
+            card.dataset.timeMode = state.mode;
+            card.querySelectorAll("[data-time-mode]").forEach((button) => button.setAttribute("aria-pressed", String(button === modeButton)));
+            card.querySelectorAll("[data-time-panel]").forEach((panel) => { panel.hidden = panel.dataset.timePanel !== state.mode; });
+            setStatus(state.mode === "timer" ? "タイマー" : "ストップウォッチ");
+            syncHeaderToggle();
+            log("時間ツールのモードを変更しました", state.mode);
+            return;
+          }
+          const stopwatchAction = event.target.closest("[data-stopwatch]")?.dataset.stopwatch;
+          if (stopwatchAction === "toggle") toggleStopwatch();
+          else if (stopwatchAction === "lap") addLap();
+          else if (stopwatchAction === "reset") resetStopwatch();
+          const timerAction = event.target.closest("[data-timer]")?.dataset.timer;
+          if (timerAction === "toggle") toggleTimer();
+          else if (timerAction === "reset") resetTimer();
+        });
+        card.addEventListener("keydown", (event) => {
+          if (event.target.matches('[data-role="stopwatch-display"]') && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
+            addLap();
+          }
+        });
+        card.addEventListener("change", (event) => {
+          if (event.target.matches("[data-timer-input]") && !state.timerRunning) resetTimer();
+        });
+
+        card._workspaceTimeReset = () => state.mode === "timer" ? resetTimer() : resetStopwatch();
+        card._workspaceTimeToggle = () => state.mode === "timer" ? toggleTimer() : toggleStopwatch();
+        resetStopwatch();
+        resetTimer();
+      }
+
+      /* Color picker */
+      const colorCard = root.querySelector('[data-widget="color"]');
+      function updateColor(card, rawValue) {
+        const hex = String(rawValue || "").trim().toUpperCase();
+        if (!/^#[0-9A-F]{6}$/.test(hex)) return false;
+        const input = getRole(card, "color-input");
+        const hexInput = getRole(card, "color-hex");
+        const preview = getRole(card, "color-preview");
+        const previewLabel = getRole(card, "color-preview-label");
+        const rgbNode = getRole(card, "color-rgb");
+        const red = Number.parseInt(hex.slice(1, 3), 16);
+        const green = Number.parseInt(hex.slice(3, 5), 16);
+        const blue = Number.parseInt(hex.slice(5, 7), 16);
+        if (input) input.value = hex.toLowerCase();
+        if (hexInput) hexInput.value = hex;
+        if (preview) preview.style.backgroundColor = "transparent";
+        card.style.backgroundColor = hex;
+        if (previewLabel) {
+          previewLabel.textContent = hex;
+          const redLinear = red / 255;
+          const greenLinear = green / 255;
+          const blueLinear = blue / 255;
+          const luminance = .2126 * redLinear + .7152 * greenLinear + .0722 * blueLinear;
+          const colorCode = previewLabel.closest(".color-code");
+          if (colorCode) colorCode.style.color = luminance > .58 ? "#050505" : "#ffffff";
+          const caption = card.querySelector(".color-caption");
+          if (caption) caption.style.color = luminance > .58 ? "#050505" : "#ffffff";
+        }
+        if (rgbNode) rgbNode.textContent = `rgb(${red}, ${green}, ${blue})`;
+        return true;
+      }
+      if (!colorCard) reportError("カラーピッカーカードが見つかりません");
+      else {
+        const colorInput = getRole(colorCard, "color-input");
+        const hexInput = getRole(colorCard, "color-hex");
+        colorInput?.addEventListener("input", () => updateColor(colorCard, colorInput.value));
+        hexInput?.addEventListener("change", () => {
+          if (!updateColor(colorCard, hexInput.value)) {
+            showToast("HEXは #RRGGBB の形式で入力してください");
+            hexInput.value = getRole(colorCard, "color-input")?.value.toUpperCase() || "#00FF88";
+          }
+        });
+        hexInput?.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") hexInput.blur();
+        });
+        updateColor(colorCard, colorInput?.value || "#3978f6");
+        log("カラーピッカーを初期化しました");
+      }
+
+      /* Memo with guarded localStorage persistence. */
+      const memoCard = root.querySelector('[data-widget="memo"]');
+      function initializeMemo(card) {
+        const textarea = getRole(card, "memo");
+        const status = getRole(card, "memo-status");
+        if (!textarea) return;
+        textarea.value = safeStorage.get(STORAGE_KEYS.memo, "");
+        let saveTimer = null;
+        textarea.addEventListener("input", () => {
+          if (status) status.textContent = "保存中…";
+          if (saveTimer !== null) window.clearTimeout(saveTimer);
+          saveTimer = window.setTimeout(() => {
+            const saved = safeStorage.set(STORAGE_KEYS.memo, textarea.value);
+            if (status) status.textContent = saved ? "保存済み" : "保存できません";
+            if (saved) log("メモを保存しました", { characters: textarea.value.length });
+          }, 280);
+        });
+        card._workspaceClearMemo = () => {
+          textarea.value = "";
+          if (saveTimer !== null) window.clearTimeout(saveTimer);
+          const saved = safeStorage.set(STORAGE_KEYS.memo, "");
+          if (status) status.textContent = saved ? "保存済み" : "保存できません";
+          log("メモを消去しました");
+        };
+      }
+      function clearMemo(card) {
+        if (typeof card._workspaceClearMemo === "function") card._workspaceClearMemo();
+        else reportError("メモの初期化処理が見つかりません");
+      }
+      if (!memoCard) reportError("メモカードが見つかりません");
+      else {
+        initializeMemo(memoCard);
+        log("メモを初期化しました");
+      }
+
+      /* Calendar: local date keys avoid UTC date-shift issues. */
+      const calendarCard = root.querySelector('[data-widget="calendar"]');
+      function localDateKey(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      }
+      function parseDateKey(key) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key);
+        if (!match) return null;
+        const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+      function initializeCalendar(card) {
+        const now = new Date();
+        const state = {
+          month: new Date(now.getFullYear(), now.getMonth(), 1),
+          selected: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+          events: {}
+        };
+        const monthNode = getRole(card, "calendar-month");
+        const yearNode = getRole(card, "calendar-year");
+        const grid = getRole(card, "calendar-grid");
+        const selectedNode = getRole(card, "calendar-selected-date");
+        const eventInput = getRole(card, "calendar-event-input");
+        const status = getRole(card, "calendar-status");
+        const weekdayNames = ["月", "火", "水", "木", "金", "土", "日"];
+
+        try {
+          const parsed = JSON.parse(safeStorage.get(STORAGE_KEYS.calendar, "{}"));
+          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+            state.events = Object.fromEntries(Object.entries(parsed).filter(([key, value]) => /^\d{4}-\d{2}-\d{2}$/.test(key) && typeof value === "string"));
+          }
+        } catch (error) {
+          reportError("カレンダーの保存データが壊れています。空の予定表で起動します", error);
+          state.events = {};
+        }
+
+        function formatSelected(date) {
+          const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+          return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日（${weekdays[date.getDay()]}）`;
+        }
+        function saveEvents() {
+          const saved = safeStorage.set(STORAGE_KEYS.calendar, JSON.stringify(state.events));
+          if (status) status.textContent = saved ? "この端末に保存" : "保存できません";
+          if (saved) log("カレンダーの予定を保存しました");
+          return saved;
+        }
+        function updateSelected() {
+          const key = localDateKey(state.selected);
+          if (selectedNode) selectedNode.textContent = formatSelected(state.selected);
+          if (eventInput) eventInput.value = state.events[key] || "";
+        }
+        function render() {
+          if (!grid || !monthNode || !yearNode) return;
+          monthNode.textContent = `${state.month.getMonth() + 1}月`;
+          yearNode.textContent = String(state.month.getFullYear());
+          const firstDay = new Date(state.month.getFullYear(), state.month.getMonth(), 1);
+          const daysInMonth = new Date(state.month.getFullYear(), state.month.getMonth() + 1, 0).getDate();
+          const offset = (firstDay.getDay() + 6) % 7;
+          const cellCount = Math.ceil((offset + daysInMonth) / 7) * 7;
+          const todayKey = localDateKey(new Date());
+          const selectedKey = localDateKey(state.selected);
+          const fragment = document.createDocumentFragment();
+
+          weekdayNames.forEach((name) => {
+            const heading = document.createElement("div");
+            heading.className = "calendar-weekday";
+            heading.textContent = name;
+            fragment.append(heading);
+          });
+          for (let index = 0; index < cellCount; index += 1) {
+            const date = new Date(state.month.getFullYear(), state.month.getMonth(), 1 - offset + index);
+            const key = localDateKey(date);
+            const day = document.createElement("button");
+            day.type = "button";
+            day.className = "calendar-day";
+            day.dataset.date = key;
+            day.textContent = String(date.getDate());
+            day.setAttribute("aria-label", formatSelected(date));
+            if (date.getMonth() !== state.month.getMonth()) day.classList.add("outside");
+            if (key === todayKey) day.classList.add("today");
+            if (key === selectedKey) day.classList.add("selected");
+            if (state.events[key]) day.classList.add("has-event");
+            fragment.append(day);
+          }
+          grid.replaceChildren(fragment);
+          updateSelected();
+        }
+        function shiftMonth(amount) {
+          state.month = new Date(state.month.getFullYear(), state.month.getMonth() + amount, 1);
+          render();
+          log("カレンダーの月を変更しました", localDateKey(state.month));
+        }
+        card.addEventListener("click", (event) => {
+          const day = event.target.closest("[data-date]");
+          if (day) {
+            const date = parseDateKey(day.dataset.date);
+            if (!date) { reportError("カレンダーの日付を読み取れません", day.dataset.date); return; }
+            state.selected = date;
+            state.month = new Date(date.getFullYear(), date.getMonth(), 1);
+            render();
+            return;
+          }
+          const action = event.target.closest("[data-calendar]")?.dataset.calendar;
+          if (action === "previous") shiftMonth(-1);
+          else if (action === "next") shiftMonth(1);
+          else if (action === "today") {
+            const today = new Date();
+            state.month = new Date(today.getFullYear(), today.getMonth(), 1);
+            state.selected = today;
+            render();
+          } else if (action === "save") {
+            if (!eventInput) return;
+            const key = localDateKey(state.selected);
+            const value = eventInput.value.trim();
+            if (value) state.events[key] = value;
+            else delete state.events[key];
+            saveEvents();
+            render();
+            showToast(value ? "予定を保存しました" : "予定を削除しました");
+          } else if (action === "delete") {
+            const key = localDateKey(state.selected);
+            delete state.events[key];
+            if (eventInput) eventInput.value = "";
+            saveEvents();
+            render();
+            showToast("予定を削除しました");
+          }
+        });
+        render();
+        log("カレンダーを初期化しました");
+      }
+      if (!calendarCard) reportError("カレンダーカードが見つかりません");
+      else initializeCalendar(calendarCard);
+
+      log("Workspaceを初期化しました", {
+        widgets: root.querySelectorAll(".widget-card").length,
+        pictureInPicture: "documentPictureInPicture" in window,
+        secureContext: window.isSecureContext
+      });
+    })();
+  </script>
+</body>
 </html>

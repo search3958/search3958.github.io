@@ -478,7 +478,7 @@
                 >ようこそ！</h2>
                 <p class="RedCheckOSS-consent-card__text">
                     次回のアクセス以降，利用規約と<br>
-                    個人情報政策に同意したものとします
+                    個人情報処理政策に同意したものとします
                 </p>
                 <div class="RedCheckOSS-consent-card__actions">
                     <a
@@ -734,10 +734,10 @@
             const policyLink = document.createElement("a");
             policyLink.className = "RedCheckOSS-info-widget__link";
             policyLink.href = this.CONFIG.POLICIES_URL;
-            policyLink.textContent = "利用規約および個人情報政策";
+            policyLink.textContent = "利用規約および個人情報処理政策";
             policyLink.setAttribute(
                 "aria-label",
-                "利用規約および個人情報政策"
+                "利用規約および個人情報処理政策"
             );
 
             links.appendChild(aboutLink);

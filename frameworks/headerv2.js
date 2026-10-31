@@ -23,7 +23,7 @@ back: "戻る",
 home: "ホーム"
 },
 footer: {
-policies: "利用規約と個人情報政策",
+policies: "利用規約と個人情報処理政策",
 language: "言語",
 support: "サポート",
 notice: "信頼されるサービスを目指しておりますが、高校生ゆえ不手際があるかもしれません\nその際はお問い合わせフォームよりご指摘いただけますと幸いです"
@@ -63,7 +63,7 @@ items: [
 "私のGitHub",
 "問い合わせ",
 "アカウント",
-"利用規約および個人情報政策",
+"利用規約および個人情報処理政策",
 "Language"
 ]
 }
@@ -540,7 +540,7 @@ const footerHTML = `
 <footer>
 <span>
 <a href="https://search3958.github.io/policies/">
-<span data-headerv2-i18n="footer.policies">利用規約と個人情報政策</span>
+<span data-headerv2-i18n="footer.policies">利用規約と個人情報処理政策</span>
 </a>
 ・
 <a href="https://search3958.github.io/accounts/lang">

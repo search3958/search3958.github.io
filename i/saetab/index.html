@@ -107,7 +107,7 @@
 .small{
     font-size:16px;
     opacity:0.7;
-    transition: 1.5s all cubic-bezier(1,0,.18,1);
+    transition: 0.75s all cubic-bezier(1,0,.18,1);
     padding-top:0px;
     font-weight:400;
     font-variation-settings:
@@ -130,12 +130,12 @@
 
 }
 .message{
-    transition: 2s all cubic-bezier(.06,.37,0,1),1s filter cubic-bezier(.19,.08,0,1);
+    transition: 1s all cubic-bezier(.06,.37,0,1),0.5s filter cubic-bezier(.19,.08,0,1);
     opacity:1;
     filter:blur(0px);
     display:block;
     transform:translateY(0px);
-    transition-delay:0.7s;
+    transition-delay:0.3s;
     display:block;
 }
 .message.before{
@@ -336,18 +336,6 @@
     .feature-section.steps-section{
       grid-template-columns:1fr;
     }
-    @media (min-width:1200px){
-      .feature-section.searchbox-hero .feature-image::after{
-        content:"";
-        position:absolute;
-        top:0;
-        right:0;
-        bottom:0;
-        width:clamp(120px, 16vw, 320px);
-        background:linear-gradient(to right, rgba(255, 255, 255, 0), #fff 82%);
-        pointer-events:none;
-      }
-    }
     .steps-wrap{
       display:grid;
       gap:10px;
@@ -507,6 +495,37 @@
             transition:none!important;
         }
     }
+
+.goodcard{ 
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding-top:24px;
+    text-align:center;
+    gap:4px;
+    font-size:32px;
+    flex-direction: column;
+    background-image: radial-gradient(circle at 50% 190%, rgba(0, 13, 25, 1), rgb(0 122 82) 66%, rgb(0 128 82) 73%, rgb(0 117 79) 80%, rgb(0 92 71) 87%, rgba(0, 13, 25, 1));
+    color:#fff;
+    padding-bottom:24px;
+    }
+    .goodxiao{
+      padding:24px 32px;
+      border-radius:100px;
+      background-color:#0f8;
+      font-weight:bold;
+      color:#000;
+    }
+    .goodxiao.white{
+      background-color:#fff;
+      border-radius:12px;
+      padding:24px;
+    }
+    .goodxiao.black{
+      background-color:#000000;
+      color:#fff;
+    }
 </style>
   <body>
 
@@ -515,15 +534,15 @@
         <div class="small before">
             SaeTab 7
         </div>
-        <span class="message before">ただ 素早く
-        <br><button class="primary-btn xin-reveal" style="--xin-delay:0.1s;background:#000;color:#fff;" onclick="window.location.href='https://search3958.github.io/newtab/?value=try-about-saetab'">今すぐ使ってみる</button><button class="primary-btn xin-reveal" style="--xin-delay:0.1s;background:#000;color:#fff;margin-left:4px;" onclick="window.location.href='https://search3958.github.io/support/docs/ja/newtab_setup.html'">設定開始</button>
+        <span class="message before">素早くアクセス
+        <br><button class="primary-btn xin-reveal" style="--xin-delay:0.1s;background:#000;color:#fff;" onclick="window.location.href='https://search3958.github.io/newtab/?value=try-about-saetab'">今すぐ試す</button><button class="primary-btn xin-reveal" style="--xin-delay:0.1s;background:#000;color:#fff;margin-left:4px;" onclick="window.location.href='https://search3958.github.io/support/docs/ja/newtab_setup.html'">設定開始</button>
 </span>
     </div>
     
     <section class="feature-section plain searchbox-hero section-reveal">
             <div>
-        <h2 class="feature-headline">完全無料<br>登録不要</h2>
-        <p class="feature-description">設定するだけで<br>すぐに使用できます。</p>
+        <h2 class="feature-headline">キーからも<br>マウスからも</h2>
+        <p class="feature-description">日常でよく使うアプリを<br>すぐに使用できます</p>
       </div>
       <div class="feature-image xin-reveal" style="--xin-delay:0.1s">
         <img src="screenshot.png" alt="screenshot">
@@ -533,8 +552,8 @@
     <section class="feature-section gradient section-reveal" style="--section-delay:0.1s">
 
       <div>
-        <h2 class="feature-headline">時間は貴重です<br>チャンスを逃さないで</h2>
-        <p class="feature-description">キーボード入力からも高速にアクセスできます</p>
+        <h2 class="feature-headline">貴重な時間の<br>無駄を減らす</h2>
+        <p class="feature-description">素早くキーボード入力からアクセス</p>
       </div>
       <div class="feature-image xin-reveal" style="--xin-delay:0.1s">
         <img src="searchbox.png" alt="searchbox">
@@ -543,8 +562,7 @@
 
     <section class="feature-section plain steps-section section-reveal" style="--section-delay:0.15s">
       <div>
-        <h2 class="feature-headline">設定はたったの<br>3ステップ。</h2>
-        <div class="steps-wrap">
+        <h2 class="feature-headline">設定はたったの<br>3ステップ。</h2>        <div class="steps-wrap">
           <div class="step-item stat-card" style="--stat-delay:0s">
             <strong>1 導入</strong>
             SaeTabを新しいタブとして設定するために、New Tab Redirect拡張機能をChromeウェブストアからインストールします。
@@ -557,12 +575,29 @@
             <strong>3 保存</strong>
             オプションページのテキストボックスにSaeTabのURL（https://search3958.github.io/newtab/）を入力し、Saveをクリックすれば設定完了です。
           </div>
+        <button class="primary-btn xin-reveal" style="--xin-delay:0.1s;background:#000;color:#fff;margin-left:4px;" onclick="window.location.href='https://search3958.github.io/support/docs/ja/newtab_setup.html'">詳しい設定方法を閲覧 (推奨)</button>
+
         </div>
       </div>
     </section>
 
 
-    <div class="history-grid">
+    <div class="goodcard">
+      <span class="xin-reveal" style="--xin-delay:0s;">
+        <span style="color:#0f8;">信頼できる</span>実績を<br>ご確認ください</span>
+        <div class="xin-reveal" style="--xin-delay:0.12s;display:flex;gap:4px">
+          <div class="goodxiao"><div class="small">イベント数</div>83K+</div>
+          <div class="goodxiao white"><div class="small">アクセス回数</div>27K+</div>
+        </div>
+        <div class="xin-reveal" style="--xin-delay:0.24s;display:flex;gap:4px">
+          <div class="goodxiao white"><div class="small">新規使用者</div>2,856</div>
+          <div class="goodxiao"><div class="small">持続率</div>94%</div>
+        </div>
+
+
+    </div>
+
+    <div class="history-grid" style="display:none">
                               <div class="history-card scroll-scale">
     <a href="https://search3958.github.io/newtab/" style="text-decoration: none; color: inherit;">
         <h3>v7</h3>
@@ -719,7 +754,7 @@
 
     <div class="xincard section-reveal" style="--section-delay:0.1s;padding:48px 0; background-image: conic-gradient(from 247deg, rgba(58, 255, 160, 1) 0deg, rgba(0, 255, 246, 1) 0deg, rgba(58, 255, 160, 1) 180deg, rgba(255, 255, 255, 1) 180deg, rgba(88, 255, 239, 1) 227deg, rgba(0, 242, 105, 1) 360deg);">
         
-        <span class="app-name xin-reveal" style="--xin-delay:0.16s;font-size:40px;">願いをひとつ<br>叶えます</span>
+        <span class="app-name xin-reveal" style="--xin-delay:0.16s;font-size:40px;">問い合わせは<br>こちらから</span>
         
         
         <div class="small xin-reveal" style="--xin-delay:0.08s;font-size:24px;">
@@ -766,12 +801,12 @@
 @property --${NS}-s4 {
   syntax: "<percentage>";
   inherits: false;
-  initial-value: 49.9%;
+  initial-value: 60%;
 }
 @property --${NS}-s5 {
   syntax: "<percentage>";
   inherits: false;
-  initial-value: 50.1%;
+  initial-value: 60%;
 }
 
 .first {
@@ -784,7 +819,7 @@
     radial-gradient(circle farthest-side at 100% 50%, rgba(255,255,255,0) var(--${NS}-s1), rgba(255,255,255,0.12) var(--${NS}-s2), rgba(255,255,255,0.21) var(--${NS}-s3), rgba(255,255,255,0.65) var(--${NS}-s4), rgba(255,255,255,0) var(--${NS}-s5)),
     radial-gradient(circle farthest-side at 0% 50%, rgba(255,255,255,0) var(--${NS}-s1), rgba(255,255,255,0.12) var(--${NS}-s2), rgba(255,255,255,0.21) var(--${NS}-s3), rgba(255,255,255,0.5) var(--${NS}-s4), rgba(255,255,255,0) var(--${NS}-s5)),
     linear-gradient(0deg, rgb(0 255 242), rgb(0 255 128));
-  animation: ${NS}-beam 2s cubic-bezier(.16,1,.3,1) forwards;
+  animation: ${NS}-beam 3s cubic-bezier(.16,1,.3,1) forwards;
 }
 
 @keyframes ${NS}-beam {
@@ -799,8 +834,8 @@
     --${NS}-s1: 17%;
     --${NS}-s2: 25%;
     --${NS}-s3: 34%;
-    --${NS}-s4: 49.9%;
-    --${NS}-s5: 50.1%;
+    --${NS}-s4: 60%;
+    --${NS}-s5: 60%;
   }
 }
 `;
@@ -816,7 +851,7 @@
         elements.forEach(el => {
             el.classList.remove('before');
         });
-    }, 300);
+    }, 200);
 });
 </script>
 

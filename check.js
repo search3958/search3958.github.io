@@ -1,7 +1,7 @@
 (function () {
 "use strict";
 const SAFE_CHECK_VERSION = "3.1";
-console.log(`붉은기 안전확인체계 ${SAFE_CHECK_VERSION}`);
+console.log(`AnJeon Checker ${SAFE_CHECK_VERSION}`);
 const DEBUG = false;
 const SUPPORTED_LANGUAGES = ["ja", "en", "zh", "ko-kp", "ko", "zh-tw"];
 const TRUSTED_SPECIAL_FIELDS = new Set([
@@ -43,12 +43,12 @@ return null;
 const translations = {
 ja: {
 welcome: "ようこそ！",
-consentText: "次回のアクセス以降、利用規約と\n個人情報政策に同意したものとします",
+consentText: "次回のアクセス以降、利用規約と\n個人情報処理政策に同意したものとします",
 documents: "書類閲覧",
 deny: "同意しない",
 agree: "同意して閉じる",
 about: "私について",
-policies: "利用規約および個人情報政策",
+policies: "利用規約および個人情報処理政策",
 widgetLabel: "サイト情報",
 debugLabel: "安全確認デバッグ"
 },
@@ -554,7 +554,7 @@ observer.observe(document.body, { childList: true, subtree: true });
 showDebugState() {
 try {
 const state = {
-"붉은기 안전확인체계": SAFE_CHECK_VERSION,
+"안전확인체계": SAFE_CHECK_VERSION,
 "모드": this.STATE.checkMode === "none" ? "check=none" : "normal",
 "소스": this.STATE.scriptSource || null,
 "UUID": this.STATE.uuid || null,
