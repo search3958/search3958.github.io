@@ -1,0 +1,2733 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#f4f5f7">
+  <link rel="stylesheet" href="https://search3958.github.io/frameworks/icons/icons.css">
+  <title>ToolBoard</title>
+  <style id="app-styles">
+    :root {
+      color-scheme: light;
+      --page-bg: #F1F1F3;
+      --surface: #ffffff;
+      --text: #08090b;
+      --muted: #a5a7ad;
+      --accent: #00f58a;
+      --green: #00f58a;
+      --key: #eeeeF0;
+      --key-dark: #d5d8de;
+      font-family: "TikTok Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--page-bg); scrollbar-gutter: stable; }
+    body.is-maximized { overflow: hidden; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      background: var(--page-bg);
+      color: var(--text);
+    }
+    button, input, textarea { font: inherit; }
+    button { color: inherit; }
+
+    .main-container {
+      width: min(668px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 37px 0 48px;
+    }
+    .dashboard-heading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 0 32px;
+      text-align: center;
+    }
+    .dashboard-heading h1 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.25;
+      font-weight: 680;
+      letter-spacing: -.045em;
+    }
+    .profile-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .profile-link {
+      display: inline-flex;
+      min-height: 38px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 999px;
+      background: #fff;
+      color: #08090b;
+      font-size: 21px;
+      font-weight: 450;
+      letter-spacing: -.035em;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background .2s ease, transform .2s cubic-bezier(.2,.8,.2,1);
+    }
+    a.profile-link:hover { background: #e5e5e8; transform: translateY(-1px); }
+    a.profile-link:active { transform: scale(.97); }
+
+    .dashboard-masonry {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+      column-gap: 28px;
+    }
+    .dashboard-column {
+      display: grid;
+      min-width: 0;
+      align-content: start;
+      gap: 28px;
+    }
+    .dashboard-column-right { gap: 36px; }
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+    .widget-card {
+      position: relative;
+      display: flex;
+      width: 100%;
+      min-width: 0;
+      flex-direction: column;
+      overflow: hidden;
+      border: 0;
+      border-radius: 42px;
+      corner-shape: superellipse(1.6);
+      background: var(--surface);
+      box-shadow: none;
+      animation: card-arrive .72s cubic-bezier(.2,.8,.2,1) both;
+      transform-origin: 50% 35%;
+      transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease;
+      break-inside: avoid;
+    }
+    .dashboard-column-left .widget-card:nth-child(1) { animation-delay: .04s; }
+    .dashboard-column-left .widget-card:nth-child(2) { animation-delay: .16s; }
+    .dashboard-column-left .widget-card:nth-child(3) { animation-delay: .28s; }
+    .dashboard-column-right .widget-card:nth-child(1) { animation-delay: .10s; }
+    .dashboard-column-right .widget-card:nth-child(2) { animation-delay: .22s; }
+    @keyframes card-arrive {
+      from { opacity: 0; transform: translateY(18px) scale(.975); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .widget-header {
+      position: absolute;
+      z-index: 2;
+      top: 12px;
+      right: 14px;
+      left: 16px;
+      display: flex;
+      min-height: 28px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+    .window-controls, .widget-actions {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 5px;
+    }
+    .window-controls {
+      height: 24px;
+      gap: 0;
+      padding: 0 3px;
+      border-radius: 999px;
+      background: rgba(229, 230, 233, .88);
+    }
+    .icon-button {
+      display: inline-grid;
+      width: 28px;
+      height: 28px;
+      flex: 0 0 auto;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: #b8bac2;
+      cursor: pointer;
+      transition: color .18s ease, background .18s ease, transform .22s cubic-bezier(.2,.8,.2,1), opacity .18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .icon-button:active { transform: scale(.84); }
+    .icon-button:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible {
+      outline: 2px solid #1d8cff;
+      outline-offset: 3px;
+    }
+    .icon-button svg {
+      width: 19px;
+      height: 19px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .window-controls .icon-button {
+      position: relative;
+      width: 17px;
+      height: 24px;
+      border-radius: 0;
+      color: transparent;
+    }
+    .window-controls .icon-button::after {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #a7a9af;
+      content: "";
+      transition: transform .18s ease, background .18s ease;
+    }
+    .window-controls .icon-button:first-child::after { background: #a3a5ac; }
+    .window-controls .icon-button:last-child::after { background: #92959d; }
+    .window-controls .icon-button:hover::after { background: #70747c; transform: scale(1.1); }
+    .widget-heading { display: none; }
+    .widget-body {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      flex: 1;
+      flex-direction: column;
+      padding: 16px;
+    }
+    .widget-footer { display: none; }
+    .muted { color: var(--muted); }
+
+    /* Calculator */
+    .widget-card[data-widget="calculator"] { height: 320px; }
+    .widget-card[data-widget="calculator"] .widget-body { padding: 47px 16px 14px; }
+    .calculator-display {
+      position: relative;
+      display: flex;
+      min-height: 64px;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-start;
+      overflow: hidden;
+      padding: 3px 2px 9px;
+    }
+    .calculator-expression {
+      width: 100%;
+      min-height: 34px;
+      overflow: hidden;
+      color: #090a0b;
+      font-size: 28px;
+      font-weight: 450;
+      letter-spacing: -.055em;
+      text-align: right;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .calculator-result {
+      max-width: 100%;
+      overflow: hidden;
+      color: #00df82;
+      font-size: 16px;
+      font-weight: 560;
+      letter-spacing: -.025em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .calculator-backspace {
+      position: absolute;
+      top: 17px;
+      left: 0;
+      width: 23px;
+      height: 18px;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .calculator-keypad {
+      display: grid;
+      flex: 1;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(5, minmax(0, 1fr));
+      gap: 3px;
+      min-height: 0;
+      overflow:hidden;
+      border-radius:16px;
+    }
+    .calc-key {
+      min-width: 0;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 6px;
+      background: #eeeeF0;
+      color: #151619;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 560;
+      line-height: 1;
+      transition: background .16s ease, color .16s ease, transform .18s cubic-bezier(.2,.8,.2,1), filter .16s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .calc-key:nth-child(4n) { background: #d6d9df; }
+    .calc-key:hover { filter: brightness(.96); }
+    .calc-key:active { transform: scale(.94); }
+    .calc-key.equals { background: #00f58a; }
+    .calc-key.equals:hover { filter: brightness(.96); }
+
+    /* Stopwatch / timer */
+    .widget-card[data-widget="time"] {
+      height: 204px;
+      
+      background: conic-gradient(#00a4f5 0%, #00e1f3 50%, #f7feff 100%);
+      color: #fff;
+    }
+    .widget-card[data-widget="time"] .widget-header { top: 12px; }
+    .widget-card[data-widget="time"] .window-controls { background: rgba(224, 255, 255, .43); }
+    .widget-card[data-widget="time"] .window-controls .icon-button::after { background: rgba(0, 92, 143, .55); }
+    .widget-card[data-widget="time"] .icon-button { color: rgba(0, 95, 133, .42); }
+    .widget-card[data-widget="time"] .icon-button:hover { color: rgba(0, 73, 108, .8); background: rgba(255,255,255,.18); }
+    .widget-card[data-widget="time"] .widget-body { padding: 68px 15px 12px; align-items: center; }
+    .widget-card[data-widget="time"] .widget-actions { gap: 2px; }
+    .time-panel { display: flex; width: 100%; flex-direction: column; align-items: center; padding: 0; }
+    .time-panel[hidden] { display: none; }
+    .time-display {
+      width: 100%;
+      margin: 0;
+      color: #fff;
+      font-size: clamp(39px, 5vw, 55px);
+      font-weight: 410;
+      letter-spacing: -.065em;
+      line-height: 1.15;
+      text-align: center;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 2px 10px rgba(0, 79, 128, .08);
+      cursor: default;
+    }
+    .time-display small { color: inherit; font-size: .92em; letter-spacing: inherit; }
+    .mode-switch {
+      position: absolute;
+      right: 50%;
+      bottom: 13px;
+      display: flex;
+      width: fit-content;
+      gap: 2px;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.98);
+      transform: translateX(50%);
+    }
+    .mode-switch button {
+      min-height: 25px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #111;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 550;
+      letter-spacing: .015em;
+      transition: background .2s ease, color .2s ease, transform .2s ease;
+    }
+    .mode-switch button[aria-pressed="true"] { background: #ececef; color: #050505; }
+    .mode-switch button:active { transform: scale(.95); }
+    .timer-progress { width: 78%; height: 3px; overflow: hidden; margin: 8px 0 9px; border-radius: 99px; background: rgba(255,255,255,.3); }
+    .timer-progress span { display: block; width: 0; height: 100%; border-radius: inherit; background: #fff; transition: width .1s linear; }
+    .timer-inputs { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; }
+    .timer-inputs label { display: grid; gap: 3px; color: rgba(255,255,255,.82); font-size: 9px; text-align: center; }
+    .timer-inputs input {
+      width: 47px;
+      height: 28px;
+      padding: 0 4px;
+      border: 1px solid rgba(255,255,255,.36);
+      border-radius: 7px;
+      background: rgba(255,255,255,.22);
+      color: #fff;
+      text-align: center;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+    .timer-inputs input::-webkit-inner-spin-button { appearance: none; }
+    .time-controls, .lap-list { display: none; }
+    .widget-card[data-widget="time"][data-time-mode="timer"] .widget-body { padding-top: 51px; }
+    .widget-card[data-widget="time"][data-time-mode="timer"] .time-display { font-size: 39px; }
+    .widget-card[data-widget="time"][data-time-mode="timer"] .timer-progress { margin-top: 4px; }
+
+    /* Color picker */
+    .widget-card[data-widget="color"] {
+      height: 185px;
+      
+      background: #00ff88;
+      color: #050505;
+    }
+    .widget-card[data-widget="color"] .widget-header { top: 12px; }
+    .widget-card[data-widget="color"] .window-controls { background: rgba(255,255,255,.34); }
+    .widget-card[data-widget="color"] .window-controls .icon-button::after { background: rgba(0, 116, 93, .5); }
+    .widget-card[data-widget="color"] .icon-button { color: rgba(0, 127, 88, .58); }
+    .widget-card[data-widget="color"] .icon-button:hover { color: #005f43; background: rgba(0,0,0,.07); }
+    .widget-card[data-widget="color"] .widget-body { padding: 45px 15px 9px; }
+    .color-preview {
+      display: flex;
+      min-height: 0;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      transition: background .2s ease;
+    }
+    .color-code {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      margin: auto 0 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      outline: 0;
+      background: transparent;
+      color: #050505;
+      cursor: text;
+      font-size: clamp(40px, 5vw, 51px);
+      font-weight: 470;
+      letter-spacing: -.055em;
+      line-height: 1.1;
+      text-align: center;
+      text-transform: uppercase;
+      font-variant-numeric: tabular-nums;
+      caret-color: currentColor;
+      transition: color .2s ease, opacity .2s ease;
+    }
+    .color-code:focus-visible { outline: 0; opacity: .82; }
+    .color-caption {
+      margin: auto 0 0;
+      padding-top: 25px;
+      color: #050505;
+      font-size: 12px;
+      font-weight: 450;
+      letter-spacing: .015em;
+      line-height: 1;
+    }
+    .color-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      border: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .color-fields, .rgb-value { display: none !important; }
+
+    /* Memo: compact note list, with a separate title/body editor. */
+    .widget-card[data-widget="memo"] { height: 260px;  }
+    .widget-card[data-widget="memo"] .widget-header { top: 12px; }
+    .widget-card[data-widget="memo"] .widget-actions { gap: 0; }
+    .widget-card[data-widget="memo"] .widget-body { padding: 50px 16px 14px; }
+    .memo-list {
+      display: flex;
+      min-height: 0;
+      flex: 1;
+      flex-direction: column;
+      gap: 8px;
+      overflow: auto;
+      scrollbar-width: none;
+      overscroll-behavior: contain;
+      padding-bottom: 2px;
+    }
+    .memo-list::-webkit-scrollbar { display: none; }
+    .memo-item {
+      display: grid;
+      width: 100%;
+      min-height: 54px;
+      flex: 0 0 54px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 43%);
+      align-items: center;
+      gap: 9px;
+      padding: 7px 13px;
+      border: 0;
+      border-radius: 17px;
+      background: #eeeeF0;
+      color: #08090b;
+      text-align: left;
+      cursor: pointer;
+      transition: background .16s ease, transform .2s cubic-bezier(.2,.8,.2,1);
+    }
+    .memo-item:hover { background: #e7e7ea; }
+    .memo-item:active { transform: scale(.985); }
+    .memo-item-title {
+      display: block;
+      min-width: 0;
+      overflow: hidden;
+      font-size: 19px;
+      font-weight: 650;
+      letter-spacing: -.04em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .memo-item-preview {
+      display: -webkit-box;
+      min-width: 0;
+      overflow: hidden;
+      color: #a4a5aa;
+      font-size: 10px;
+      font-weight: 450;
+      line-height: 1.28;
+      letter-spacing: -.015em;
+      overflow-wrap: anywhere;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+    .memo-empty {
+      display: grid;
+      flex: 1;
+      place-items: center;
+      color: #a5a6ab;
+      font-size: 13px;
+    }
+    .memo-editor {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+      gap: 9px;
+      padding: 0;
+      background: #fff;
+      animation: memo-editor-in .2s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .memo-editor[hidden], .memo-list[hidden], .memo-empty[hidden] { display: none !important; }
+    @keyframes memo-editor-in {
+      from { opacity: 0; transform: translateY(5px) scale(.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .memo-title-input {
+      width: 100%;
+      height: 41px;
+      flex: 0 0 auto;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 12px;
+      outline: 0;
+      background: #eeeeF0;
+      color: #08090b;
+      font-size: 16px;
+      font-weight: 650;
+    }
+    .memo-body-input {
+      width: 100%;
+      min-height: 0;
+      flex: 1;
+      resize: none;
+      padding: 11px 12px;
+      border: 0;
+      border-radius: 12px;
+      outline: 0;
+      background: #f3f3f5;
+      color: #202124;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+    .memo-editor-actions {
+      display: flex;
+      flex: 0 0 auto;
+      justify-content: flex-end;
+      gap: 7px;
+    }
+    .memo-editor-actions .primary-button,
+    .memo-editor-actions .subtle-button { min-height: 32px; }
+    .memo-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+    /* Calendar */
+    .widget-card[data-widget="calendar"] { min-height: 320px;  }
+    .widget-card[data-widget="calendar"] .widget-body { padding: 52px 17px 17px; }
+    .calendar-topline { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 13px; }
+    .calendar-month { font-size: 21px; font-weight: 680; letter-spacing: -.045em; }
+    .calendar-year { margin-left: 7px; color: var(--muted); font-size: 12px; font-weight: 500; letter-spacing: 0; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+    .calendar-weekday { padding: 5px 0 7px; color: #a3a5ac; font-size: 10px; text-align: center; }
+    .calendar-day {
+      position: relative;
+      display: grid;
+      min-width: 0;
+      min-height: 31px;
+      place-items: center;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #42454c;
+      cursor: pointer;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      transition: background .16s ease, color .16s ease, transform .16s ease;
+    }
+    .calendar-day:hover { background: #f0f0f2; }
+    .calendar-day:active { transform: scale(.9); }
+    .calendar-day.outside { color: #c3c5ca; }
+    .calendar-day.today { color: #00bb72; font-weight: 750; }
+    .calendar-day.selected { background: #00e783; color: #07130d; font-weight: 700; }
+    .calendar-day.has-event::after { position: absolute; bottom: 3px; width: 3px; height: 3px; border-radius: 50%; background: #00bf75; content: ""; }
+    .calendar-day.selected.has-event::after { background: #07130d; }
+    .calendar-event-editor { margin-top: 14px; padding-top: 12px; border-top: 1px solid #ececef; display:none; }
+    .calendar-selected-date { margin-bottom: 7px; color: #64666d; font-size: 11px; font-weight: 650; }
+    .calendar-event-row { display: flex; gap: 6px; }
+    .calendar-event-row input {
+      min-width: 0;
+      flex: 1;
+      height: 34px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 9px;
+      background: #f0f0f2;
+      color: var(--text);
+      font-size: 12px;
+    }
+    .primary-button, .subtle-button {
+      min-height: 34px;
+      padding: 0 11px;
+      border: 0;
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 620;
+      transition: background .16s ease, transform .16s ease;
+    }
+    .primary-button { background: #00e783; color: #06150e; }
+    .primary-button:hover { background: #00d97a; }
+    .subtle-button { background: #eeeeF0; color: #53555c; }
+    .subtle-button:hover { background: #e2e3e6; }
+    .primary-button:active, .subtle-button:active { transform: scale(.95); }
+
+    /* Full-viewport maximize layer. The original grid slot stays in place. */
+    .widget-placeholder {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      height: var(--placeholder-height, 1px);
+      min-height: var(--placeholder-height, 1px);
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .maximize-layer {
+      position: fixed;
+      z-index: 10000;
+      inset: 0;
+      display: block;
+      overflow: hidden;
+      background: rgba(240, 240, 242, .96);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transition: opacity .46s ease, visibility 0s linear .48s;
+      isolation: isolate;
+    }
+    .maximize-layer.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition: opacity .3s ease, visibility 0s;
+    }
+    .maximize-layer.is-closing {
+      opacity: 0;
+      visibility: visible;
+      pointer-events: none;
+      transition: opacity .46s ease, visibility 0s;
+    }
+    .maximize-layer .widget-card {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      max-height: none;
+      flex-direction: column;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      transform-origin: top left;
+      transform: translate3d(0,0,0) scale(1);
+      transition: transform .48s cubic-bezier(.2,.88,.28,1), border-radius .48s cubic-bezier(.2,.88,.28,1);
+      will-change: transform, border-radius;
+      animation: none;
+    }
+    .maximize-layer .widget-body {
+      min-height: 0;
+      flex: 1;
+      overflow: auto;
+      padding: clamp(24px, 5vw, 64px);
+    }
+    .maximize-layer .widget-header { top: 22px; right: 24px; left: 26px; }
+    .maximize-layer .calculator-keypad { gap: 10px; }
+    .maximize-layer .calc-key { border-radius: 16px; font-size: clamp(20px, 2.5vw, 34px); }
+    .maximize-layer .time-display { font-size: clamp(70px, 14vw, 160px); }
+    .maximize-layer .mode-switch { bottom: 28px; }
+    .maximize-layer .widget-card[data-widget="calculator"] .widget-body { padding: 100px clamp(22px, 8vw, 130px) 36px; }
+    .maximize-layer .calculator-display { min-height: clamp(150px, 24vh, 260px); }
+    .maximize-layer .calculator-expression { font-size: clamp(42px, 6vw, 76px); min-height: 1.35em; }
+    .maximize-layer .calculator-result { font-size: clamp(25px, 3vw, 42px); }
+    .maximize-layer .widget-card[data-widget="color"] .widget-body { padding: 100px 28px 40px; }
+    .maximize-layer .color-code { font-size: clamp(64px, 11vw, 150px); }
+    .maximize-layer .color-caption { font-size: clamp(14px, 2vw, 22px); padding-top: 42px; }
+    .maximize-layer .widget-card[data-widget="memo"] .widget-body { padding: 88px 28px 32px; }
+    .maximize-layer .memo-list { gap: 12px; }
+    .maximize-layer .memo-item { min-height: 80px; flex-basis: 80px; padding: 12px 20px; border-radius: 22px; }
+    .maximize-layer .memo-item-title { font-size: clamp(22px, 3vw, 34px); }
+    .maximize-layer .memo-item-preview { font-size: clamp(12px, 1.5vw, 17px); }
+    .maximize-layer .memo-editor { gap: 14px; }
+    .maximize-layer .memo-title-input { height: 58px; font-size: clamp(22px, 2.5vw, 32px); }
+    .maximize-layer .memo-body-input { font-size: clamp(16px, 2vw, 24px); }
+    .maximize-layer .memo-editor-actions .primary-button,
+    .maximize-layer .memo-editor-actions .subtle-button { min-height: 44px; padding: 0 20px; font-size: 14px; }
+
+    .toast-region {
+      position: fixed;
+      z-index: 11000;
+      right: 20px;
+      bottom: 20px;
+      display: grid;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      max-width: min(340px, calc(100vw - 40px));
+      padding: 11px 15px;
+      border: 0;
+      border-radius: 12px;
+      background: #202124;
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      color: white;
+      font-size: 12px;
+      animation: toast-in .22s cubic-bezier(.2,.8,.2,1) both;
+    }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    body.pip-mode { min-width: 280px; min-height: 100vh; padding: 9px; background: var(--page-bg); }
+    body.pip-mode .widget-card {
+      display: flex;
+      width: 100%;
+      min-height: calc(100vh - 18px);
+      flex-direction: column;
+      margin: 0;
+      border-radius: 24px;
+      box-shadow: none;
+      animation: none;
+    }
+    body.pip-mode .widget-body { flex: 1; }
+    body.pip-mode .widget-heading { max-width: 34%; }
+
+    @media (max-width: 700px) {
+      .main-container { width: min(100% - 24px, 520px); padding: 28px 0 36px; }
+      .dashboard-heading { margin-bottom: 22px; }
+      .dashboard-heading h1 { font-size: 24px; }
+      .profile-link { min-height: 35px; padding: 0 13px; font-size: 19px; }
+      .dashboard-masonry { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 0; }
+      .dashboard-column { display: contents; }
+      .widget-card { width: 100%; margin-bottom: 16px; }
+      .widget-card[data-widget="calculator"] { height: 320px; }
+      .widget-card[data-widget="time"] { height: 204px; }
+      .widget-card[data-widget="color"] { height: 185px; }
+      .widget-card[data-widget="memo"] { height: 260px; }
+      .widget-card[data-widget="calculator"] { order: 1; }
+      .widget-card[data-widget="time"] { order: 2; }
+      .widget-card[data-widget="color"] { order: 3; }
+      .widget-card[data-widget="memo"] { order: 4; }
+      .widget-card[data-widget="calendar"] { order: 5; }
+      .widget-card[data-widget="time"] .time-display { font-size: clamp(43px, 11vw, 58px); }
+      .maximize-layer .widget-card { width: 100vw; height: 100vh; height: 100dvh; }
+      .maximize-layer .widget-card[data-widget="calculator"] .widget-body { padding: 90px 18px 25px; }
+      .maximize-layer .widget-card[data-widget="memo"] .widget-body { padding: 76px 16px 20px; }
+      .maximize-layer .memo-item { grid-template-columns: minmax(0, 1fr) minmax(0, 42%); }
+    }
+    @media (max-width: 390px) {
+      .main-container { width: calc(100% - 20px); }
+      .dashboard-masonry { column-gap: 0; }
+      .widget-card[data-widget="calculator"] { height: 305px; }
+      .widget-card[data-widget="calculator"] .widget-body { padding-right: 13px; padding-left: 13px; }
+      .calculator-keypad { gap: 4px; }
+      .calc-key { border-radius: 9px; }
+      .widget-card[data-widget="time"] .time-display { font-size: 43px; }
+      .color-code { font-size: 44px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+    /* 437 × 65 の元レイアウト比率を保ったまま縮小します。 */
+    .widget-strip {
+      position: relative;
+      container-type: inline-size;
+      width: min(437px, calc(100vw - 24px));
+      aspect-ratio: 437 / 65;
+      isolation: isolate;
+    }
+
+    .widget-strip__pill {
+      position: absolute;
+      display: block;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--widget-strip-white);
+      box-shadow: 0 0 24px 10px rgba(224, 225, 227, 0.9);
+    }
+
+    .widget-strip__pill--clock {
+      top: 2.3077%;
+      left: 0;
+      width: 38.2360%;
+      height: 95.3846%;
+    }
+
+    .widget-strip__pill--calendar {
+      top: 2.3077%;
+      left: 41.4380%;
+      width: 37.0710%;
+      height: 95.3846%;
+    }
+
+    .widget-strip__pill--value {
+      top: 0;
+      left: 81.7140%;
+      width: 18.0780%;
+      height: 100%;
+    }
+
+    /*
+      Clock silhouette masks are monochrome SVG paths, not SVG artwork.
+      M / H / S monochrome masks stay fixed; only their conic color fields rotate.
+      The exact outer and inner contours come from the supplied path geometry.
+    */
+    .widget-strip__clock-emblem {
+      position: absolute;
+      top: 50%;
+      left: 21.27%;
+      width: 24.55%;
+      aspect-ratio: 41.2 / 47;
+      transform: translate(-50%, -50%);
+      isolation: isolate;
+      overflow: visible;
+    }
+
+    .widget-strip__clock-base,
+    .widget-strip__clock-mask {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+    }
+
+    .widget-strip__clock-base {
+      z-index: 0;
+      background: #00ba85;
+      -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjE1IDkgNDEuMiA0NyI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0yOC4zNDg0IDEzLjk4NzlDMjkuMzk3OSAxMi44MTM5IDI5LjkyMjYgMTIuMjI2OCAzMC40MjQ0IDExLjgxODlDMzMuNDA3NiA5LjM5MzY5IDM3LjY3OTQgOS4zOTM2OSA0MC42NjI2IDExLjgxODlDNDEuMTY0MyAxMi4yMjY4IDQxLjY4OTEgMTIuODEzOSA0Mi43Mzg1IDEzLjk4NzlWMTMuOTg3OUM0My4wNzA1IDE0LjM1OTMgNDMuMjM2NSAxNC41NDUgNDMuNDA5MyAxNC43MTY1QzQ0LjQwMzkgMTUuNzAzNCA0NS42MzY0IDE2LjQxNjEgNDYuOTg3IDE2Ljc4NTRDNDcuMjIxNyAxNi44NDk1IDQ3LjQ2NTMgMTYuOTAwNyA0Ny45NTI0IDE3LjAwMjlWMTcuMDAyOUM0OS40OTIzIDE3LjMyNjIgNTAuMjYyMiAxNy40ODc5IDUwLjg2NTggMTcuNzE5MUM1NC40NTQ0IDE5LjA5NDIgNTYuNTkwMiAyMi43OTk1IDU1Ljk4NDkgMjYuNTk5OEM1NS44ODMxIDI3LjIzOSA1NS42Mzc5IDI3Ljk4NzYgNTUuMTQ3NCAyOS40ODVWMjkuNDg1QzU0Ljk5MjMgMjkuOTU4NiA1NC45MTQ3IDMwLjE5NTUgNTQuODUyOSAzMC40MzExQzU0LjQ5NjggMzEuNzg3MyA1NC40OTY4IDMzLjIxMjcgNTQuODUyOSAzNC41Njg5QzU0LjkxNDcgMzQuODA0NSA1NC45OTIzIDM1LjA0MTQgNTUuMTQ3NCAzNS41MTVWMzUuNTE1QzU1LjYzNzkgMzcuMDEyNCA1NS44ODMxIDM3Ljc2MSA1NS45ODQ5IDM4LjQwMDJDNTYuNTkwMiA0Mi4yMDA1IDU0LjQ1NDQgNDUuOTA1OCA1MC44NjU4IDQ3LjI4MDlDNTAuMjYyMiA0Ny41MTIxIDQ5LjQ5MjMgNDcuNjczOCA0Ny45NTI0IDQ3Ljk5NzFWNDcuOTk3MUM0Ny40NjUzIDQ4LjA5OTMgNDcuMjIxNyA0OC4xNTA1IDQ2Ljk4NyA0OC4yMTQ2QzQ1LjYzNjQgNDguNTgzOSA0NC40MDM5IDQ5LjI5NjYgNDMuNDA5MyA1MC4yODM1QzQzLjIzNjUgNTAuNDU1IDQzLjA3MDUgNTAuNjQwNyA0Mi43Mzg1IDUxLjAxMjFWNTEuMDEyMUM0MS42ODkxIDUyLjE4NjEgNDEuMTY0MyA1Mi43NzMyIDQwLjY2MjYgNTMuMTgxMUMzNy42Nzk0IDU1LjYwNjMgMzMuNDA3NiA1NS42MDYzIDMwLjQyNDQgNTMuMTgxMUMyOS45MjI2IDUyLjc3MzIgMjkuMzk3OSA1Mi4xODYxIDI4LjM0ODQgNTEuMDEyMVY1MS4wMTIxQzI4LjAxNjQgNTAuNjQwNyAyNy44NTA1IDUwLjQ1NSAyNy42Nzc2IDUwLjI4MzVDMjYuNjgzIDQ5LjI5NjYgMjUuNDUwNiA0OC41ODM5IDI0LjA5OTkgNDguMjE0NkMyMy44NjUzIDQ4LjE1MDUgMjMuNjIxNyA0OC4wOTkzIDIzLjEzNDUgNDcuOTk3MVY0Ny45OTcxQzIxLjU5NDcgNDcuNjczOCAyMC44MjQ3IDQ3LjUxMjEgMjAuMjIxMiA0Ny4yODA5QzE2LjYzMjYgNDUuOTA1OCAxNC40OTY3IDQyLjIwMDUgMTUuMTAyMSAzOC40MDAyQzE1LjIwMzkgMzcuNzYxIDE1LjQ0OTEgMzcuMDEyNCAxNS45Mzk1IDM1LjUxNVYzNS41MTVDMTYuMDk0NyAzNS4wNDE0IDE2LjE3MjIgMzQuODA0NSAxNi4yMzQxIDM0LjU2ODlDMTYuNTkwMSAzMy4yMTI3IDE2LjU5MDEgMzEuNzg3MyAxNi4yMzQxIDMwLjQzMTFDMTYuMTcyMiAzMC4xOTU1IDE2LjA5NDcgMjkuOTU4NiAxNS45Mzk1IDI5LjQ4NVYyOS40ODVDMTUuNDQ5MSAyNy45ODc2IDE1LjIwMzkgMjcuMjM5IDE1LjEwMjEgMjYuNTk5OEMxNC40OTY3IDIyLjc5OTUgMTYuNjMyNiAxOS4wOTQyIDIwLjIyMTIgMTcuNzE5MUMyMC44MjQ3IDE3LjQ4NzkgMjEuNTk0NyAxNy4zMjYyIDIzLjEzNDUgMTcuMDAyOVYxNy4wMDI5QzIzLjYyMTcgMTYuOTAwNyAyMy44NjUzIDE2Ljg0OTUgMjQuMDk5OSAxNi43ODU0QzI1LjQ1MDYgMTYuNDE2MSAyNi42ODMgMTUuNzAzNCAyNy42Nzc2IDE0LjcxNjVDMjcuODUwNSAxNC41NDUgMjguMDE2NCAxNC4zNTkzIDI4LjM0ODQgMTMuOTg3OVYxMy45ODc5WiIvPjwvc3ZnPg==");
+      mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjE1IDkgNDEuMiA0NyI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0yOC4zNDg0IDEzLjk4NzlDMjkuMzk3OSAxMi44MTM5IDI5LjkyMjYgMTIuMjI2OCAzMC40MjQ0IDExLjgxODlDMzMuNDA3NiA5LjM5MzY5IDM3LjY3OTQgOS4zOTM2OSA0MC42NjI2IDExLjgxODlDNDEuMTY0MyAxMi4yMjY4IDQxLjY4OTEgMTIuODEzOSA0Mi43Mzg1IDEzLjk4NzlWMTMuOTg3OUM0My4wNzA1IDE0LjM1OTMgNDMuMjM2NSAxNC41NDUgNDMuNDA5MyAxNC43MTY1QzQ0LjQwMzkgMTUuNzAzNCA0NS42MzY0IDE2LjQxNjEgNDYuOTg3IDE2Ljc4NTRDNDcuMjIxNyAxNi44NDk1IDQ3LjQ2NTMgMTYuOTAwNyA0Ny45NTI0IDE3LjAwMjlWMTcuMDAyOUM0OS40OTIzIDE3LjMyNjIgNTAuMjYyMiAxNy40ODc5IDUwLjg2NTggMTcuNzE5MUM1NC40NTQ0IDE5LjA5NDIgNTYuNTkwMiAyMi43OTk1IDU1Ljk4NDkgMjYuNTk5OEM1NS44ODMxIDI3LjIzOSA1NS42Mzc5IDI3Ljk4NzYgNTUuMTQ3NCAyOS40ODVWMjkuNDg1QzU0Ljk5MjMgMjkuOTU4NiA1NC45MTQ3IDMwLjE5NTUgNTQuODUyOSAzMC40MzExQzU0LjQ5NjggMzEuNzg3MyA1NC40OTY4IDMzLjIxMjcgNTQuODUyOSAzNC41Njg5QzU0LjkxNDcgMzQuODA0NSA1NC45OTIzIDM1LjA0MTQgNTUuMTQ3NCAzNS41MTVWMzUuNTE1QzU1LjYzNzkgMzcuMDEyNCA1NS44ODMxIDM3Ljc2MSA1NS45ODQ5IDM4LjQwMDJDNTYuNTkwMiA0Mi4yMDA1IDU0LjQ1NDQgNDUuOTA1OCA1MC44NjU4IDQ3LjI4MDlDNTAuMjYyMiA0Ny41MTIxIDQ5LjQ5MjMgNDcuNjczOCA0Ny45NTI0IDQ3Ljk5NzFWNDcuOTk3MUM0Ny40NjUzIDQ4LjA5OTMgNDcuMjIxNyA0OC4xNTA1IDQ2Ljk4NyA0OC4yMTQ2QzQ1LjYzNjQgNDguNTgzOSA0NC40MDM5IDQ5LjI5NjYgNDMuNDA5MyA1MC4yODM1QzQzLjIzNjUgNTAuNDU1IDQzLjA3MDUgNTAuNjQwNyA0Mi43Mzg1IDUxLjAxMjFWNTEuMDEyMUM0MS42ODkxIDUyLjE4NjEgNDEuMTY0MyA1Mi43NzMyIDQwLjY2MjYgNTMuMTgxMUMzNy42Nzk0IDU1LjYwNjMgMzMuNDA3NiA1NS42MDYzIDMwLjQyNDQgNTMuMTgxMUMyOS45MjI2IDUyLjc3MzIgMjkuMzk3OSA1Mi4xODYxIDI4LjM0ODQgNTEuMDEyMVY1MS4wMTIxQzI4LjAxNjQgNTAuNjQwNyAyNy44NTA1IDUwLjQ1NSAyNy42Nzc2IDUwLjI4MzVDMjYuNjgzIDQ5LjI5NjYgMjUuNDUwNiA0OC41ODM5IDI0LjA5OTkgNDguMjE0NkMyMy44NjUzIDQ4LjE1MDUgMjMuNjIxNyA0OC4wOTkzIDIzLjEzNDUgNDcuOTk3MVY0Ny45OTcxQzIxLjU5NDcgNDcuNjczOCAyMC44MjQ3IDQ3LjUxMjEgMjAuMjIxMiA0Ny4yODA5QzE2LjYzMjYgNDUuOTA1OCAxNC40OTY3IDQyLjIwMDUgMTUuMTAyMSAzOC40MDAyQzE1LjIwMzkgMzcuNzYxIDE1LjQ0OTEgMzcuMDEyNCAxNS45Mzk1IDM1LjUxNVYzNS41MTVDMTYuMDk0NyAzNS4wNDE0IDE2LjE3MjIgMzQuODA0NSAxNi4yMzQxIDM0LjU2ODlDMTYuNTkwMSAzMy4yMTI3IDE2LjU5MDEgMzEuNzg3MyAxNi4yMzQxIDMwLjQzMTFDMTYuMTcyMiAzMC4xOTU1IDE2LjA5NDcgMjkuOTU4NiAxNS45Mzk1IDI5LjQ4NVYyOS40ODVDMTUuNDQ5MSAyNy45ODc2IDE1LjIwMzkgMjcuMjM5IDE1LjEwMjEgMjYuNTk5OEMxNC40OTY3IDIyLjc5OTUgMTYuNjMyNiAxOS4wOTQyIDIwLjIyMTIgMTcuNzE5MUMyMC44MjQ3IDE3LjQ4NzkgMjEuNTk0NyAxNy4zMjYyIDIzLjEzNDUgMTcuMDAyOVYxNy4wMDI5QzIzLjYyMTcgMTYuOTAwNyAyMy44NjUzIDE2Ljg0OTUgMjQuMDk5OSAxNi43ODU0QzI1LjQ1MDYgMTYuNDE2MSAyNi42ODMgMTUuNzAzNCAyNy42Nzc2IDE0LjcxNjVDMjcuODUwNSAxNC41NDUgMjguMDE2NCAxNC4zNTkzIDI4LjM0ODQgMTMuOTg3OVYxMy45ODc5WiIvPjwvc3ZnPg==");
+    }
+
+    .widget-strip__clock-mask {
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+    }
+
+    .widget-strip__clock-paint {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      height: 100%;
+      transform-origin: 50% 50%;
+      pointer-events: none;
+    }
+
+    /* M: Minute — bottom layer. The silhouette stays fixed; only its color field rotates. */
+    .widget-strip__clock-mask--minute {
+      z-index: 1;
+      -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjE1IDkgNDEuMiA0NyI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0yOC4zNDg0IDEzLjk4NzlDMjkuMzk3OSAxMi44MTM5IDI5LjkyMjYgMTIuMjI2OCAzMC40MjQ0IDExLjgxODlDMzMuNDA3NiA5LjM5MzY5IDM3LjY3OTQgOS4zOTM2OSA0MC42NjI2IDExLjgxODlDNDEuMTY0MyAxMi4yMjY4IDQxLjY4OTEgMTIuODEzOSA0Mi43Mzg1IDEzLjk4NzlWMTMuOTg3OUM0My4wNzA1IDE0LjM1OTMgNDMuMjM2NSAxNC41NDUgNDMuNDA5MyAxNC43MTY1QzQ0LjQwMzkgMTUuNzAzNCA0NS42MzY0IDE2LjQxNjEgNDYuOTg3IDE2Ljc4NTRDNDcuMjIxNyAxNi44NDk1IDQ3LjQ2NTMgMTYuOTAwNyA0Ny45NTI0IDE3LjAwMjlWMTcuMDAyOUM0OS40OTIzIDE3LjMyNjIgNTAuMjYyMiAxNy40ODc5IDUwLjg2NTggMTcuNzE5MUM1NC40NTQ0IDE5LjA5NDIgNTYuNTkwMiAyMi43OTk1IDU1Ljk4NDkgMjYuNTk5OEM1NS44ODMxIDI3LjIzOSA1NS42Mzc5IDI3Ljk4NzYgNTUuMTQ3NCAyOS40ODVWMjkuNDg1QzU0Ljk5MjMgMjkuOTU4NiA1NC45MTQ3IDMwLjE5NTUgNTQuODUyOSAzMC40MzExQzU0LjQ5NjggMzEuNzg3MyA1NC40OTY4IDMzLjIxMjcgNTQuODUyOSAzNC41Njg5QzU0LjkxNDcgMzQuODA0NSA1NC45OTIzIDM1LjA0MTQgNTUuMTQ3NCAzNS41MTVWMzUuNTE1QzU1LjYzNzkgMzcuMDEyNCA1NS44ODMxIDM3Ljc2MSA1NS45ODQ5IDM4LjQwMDJDNTYuNTkwMiA0Mi4yMDA1IDU0LjQ1NDQgNDUuOTA1OCA1MC44NjU4IDQ3LjI4MDlDNTAuMjYyMiA0Ny41MTIxIDQ5LjQ5MjMgNDcuNjczOCA0Ny45NTI0IDQ3Ljk5NzFWNDcuOTk3MUM0Ny40NjUzIDQ4LjA5OTMgNDcuMjIxNyA0OC4xNTA1IDQ2Ljk4NyA0OC4yMTQ2QzQ1LjYzNjQgNDguNTgzOSA0NC40MDM5IDQ5LjI5NjYgNDMuNDA5MyA1MC4yODM1QzQzLjIzNjUgNTAuNDU1IDQzLjA3MDUgNTAuNjQwNyA0Mi43Mzg1IDUxLjAxMjFWNTEuMDEyMUM0MS42ODkxIDUyLjE4NjEgNDEuMTY0MyA1Mi43NzMyIDQwLjY2MjYgNTMuMTgxMUMzNy42Nzk0IDU1LjYwNjMgMzMuNDA3NiA1NS42MDYzIDMwLjQyNDQgNTMuMTgxMUMyOS45MjI2IDUyLjc3MzIgMjkuMzk3OSA1Mi4xODYxIDI4LjM0ODQgNTEuMDEyMVY1MS4wMTIxQzI4LjAxNjQgNTAuNjQwNyAyNy44NTA1IDUwLjQ1NSAyNy42Nzc2IDUwLjI4MzVDMjYuNjgzIDQ5LjI5NjYgMjUuNDUwNiA0OC41ODM5IDI0LjA5OTkgNDguMjE0NkMyMy44NjUzIDQ4LjE1MDUgMjMuNjIxNyA0OC4wOTkzIDIzLjEzNDUgNDcuOTk3MVY0Ny45OTcxQzIxLjU5NDcgNDcuNjczOCAyMC44MjQ3IDQ3LjUxMjEgMjAuMjIxMiA0Ny4yODA5QzE2LjYzMjYgNDUuOTA1OCAxNC40OTY3IDQyLjIwMDUgMTUuMTAyMSAzOC40MDAyQzE1LjIwMzkgMzcuNzYxIDE1LjQ0OTEgMzcuMDEyNCAxNS45Mzk1IDM1LjUxNVYzNS41MTVDMTYuMDk0NyAzNS4wNDE0IDE2LjE3MjIgMzQuODA0NSAxNi4yMzQxIDM0LjU2ODlDMTYuNTkwMSAzMy4yMTI3IDE2LjU5MDEgMzEuNzg3MyAxNi4yMzQxIDMwLjQzMTFDMTYuMTcyMiAzMC4xOTU1IDE2LjA5NDcgMjkuOTU4NiAxNS45Mzk1IDI5LjQ4NVYyOS40ODVDMTUuNDQ5MSAyNy45ODc2IDE1LjIwMzkgMjcuMjM5IDE1LjEwMjEgMjYuNTk5OEMxNC40OTY3IDIyLjc5OTUgMTYuNjMyNiAxOS4wOTQyIDIwLjIyMTIgMTcuNzE5MUMyMC44MjQ3IDE3LjQ4NzkgMjEuNTk0NyAxNy4zMjYyIDIzLjEzNDUgMTcuMDAyOVYxNy4wMDI5QzIzLjYyMTcgMTYuOTAwNyAyMy44NjUzIDE2Ljg0OTUgMjQuMDk5OSAxNi43ODU0QzI1LjQ1MDYgMTYuNDE2MSAyNi42ODMgMTUuNzAzNCAyNy42Nzc2IDE0LjcxNjVDMjcuODUwNSAxNC41NDUgMjguMDE2NCAxNC4zNTkzIDI4LjM0ODQgMTMuOTg3OVYxMy45ODc5WiIvPjwvc3ZnPg==");
+      mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjE1IDkgNDEuMiA0NyI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0yOC4zNDg0IDEzLjk4NzlDMjkuMzk3OSAxMi44MTM5IDI5LjkyMjYgMTIuMjI2OCAzMC40MjQ0IDExLjgxODlDMzMuNDA3NiA5LjM5MzY5IDM3LjY3OTQgOS4zOTM2OSA0MC42NjI2IDExLjgxODlDNDEuMTY0MyAxMi4yMjY4IDQxLjY4OTEgMTIuODEzOSA0Mi43Mzg1IDEzLjk4NzlWMTMuOTg3OUM0My4wNzA1IDE0LjM1OTMgNDMuMjM2NSAxNC41NDUgNDMuNDA5MyAxNC43MTY1QzQ0LjQwMzkgMTUuNzAzNCA0NS42MzY0IDE2LjQxNjEgNDYuOTg3IDE2Ljc4NTRDNDcuMjIxNyAxNi44NDk1IDQ3LjQ2NTMgMTYuOTAwNyA0Ny45NTI0IDE3LjAwMjlWMTcuMDAyOUM0OS40OTIzIDE3LjMyNjIgNTAuMjYyMiAxNy40ODc5IDUwLjg2NTggMTcuNzE5MUM1NC40NTQ0IDE5LjA5NDIgNTYuNTkwMiAyMi43OTk1IDU1Ljk4NDkgMjYuNTk5OEM1NS44ODMxIDI3LjIzOSA1NS42Mzc5IDI3Ljk4NzYgNTUuMTQ3NCAyOS40ODVWMjkuNDg1QzU0Ljk5MjMgMjkuOTU4NiA1NC45MTQ3IDMwLjE5NTUgNTQuODUyOSAzMC40MzExQzU0LjQ5NjggMzEuNzg3MyA1NC40OTY4IDMzLjIxMjcgNTQuODUyOSAzNC41Njg5QzU0LjkxNDcgMzQuODA0NSA1NC45OTIzIDM1LjA0MTQgNTUuMTQ3NCAzNS41MTVWMzUuNTE1QzU1LjYzNzkgMzcuMDEyNCA1NS44ODMxIDM3Ljc2MSA1NS45ODQ5IDM4LjQwMDJDNTYuNTkwMiA0Mi4yMDA1IDU0LjQ1NDQgNDUuOTA1OCA1MC44NjU4IDQ3LjI4MDlDNTAuMjYyMiA0Ny41MTIxIDQ5LjQ5MjMgNDcuNjczOCA0Ny45NTI0IDQ3Ljk5NzFWNDcuOTk3MUM0Ny40NjUzIDQ4LjA5OTMgNDcuMjIxNyA0OC4xNTA1IDQ2Ljk4NyA0OC4yMTQ2QzQ1LjYzNjQgNDguNTgzOSA0NC40MDM5IDQ5LjI5NjYgNDMuNDA5MyA1MC4yODM1QzQzLjIzNjUgNTAuNDU1IDQzLjA3MDUgNTAuNjQwNyA0Mi43Mzg1IDUxLjAxMjFWNTEuMDEyMUM0MS42ODkxIDUyLjE4NjEgNDEuMTY0MyA1Mi43NzMyIDQwLjY2MjYgNTMuMTgxMUMzNy42Nzk0IDU1LjYwNjMgMzMuNDA3NiA1NS42MDYzIDMwLjQyNDQgNTMuMTgxMUMyOS45MjI2IDUyLjc3MzIgMjkuMzk3OSA1Mi4xODYxIDI4LjM0ODQgNTEuMDEyMVY1MS4wMTIxQzI4LjAxNjQgNTAuNjQwNyAyNy44NTA1IDUwLjQ1NSAyNy42Nzc2IDUwLjI4MzVDMjYuNjgzIDQ5LjI5NjYgMjUuNDUwNiA0OC41ODM5IDI0LjA5OTkgNDguMjE0NkMyMy44NjUzIDQ4LjE1MDUgMjMuNjIxNyA0OC4wOTkzIDIzLjEzNDUgNDcuOTk3MVY0Ny45OTcxQzIxLjU5NDcgNDcuNjczOCAyMC44MjQ3IDQ3LjUxMjEgMjAuMjIxMiA0Ny4yODA5QzE2LjYzMjYgNDUuOTA1OCAxNC40OTY3IDQyLjIwMDUgMTUuMTAyMSAzOC40MDAyQzE1LjIwMzkgMzcuNzYxIDE1LjQ0OTEgMzcuMDEyNCAxNS45Mzk1IDM1LjUxNVYzNS41MTVDMTYuMDk0NyAzNS4wNDE0IDE2LjE3MjIgMzQuODA0NSAxNi4yMzQxIDM0LjU2ODlDMTYuNTkwMSAzMy4yMTI3IDE2LjU5MDEgMzEuNzg3MyAxNi4yMzQxIDMwLjQzMTFDMTYuMTcyMiAzMC4xOTU1IDE2LjA5NDcgMjkuOTU4NiAxNS45Mzk1IDI5LjQ4NVYyOS40ODVDMTUuNDQ5MSAyNy45ODc2IDE1LjIwMzkgMjcuMjM5IDE1LjEwMjEgMjYuNTk5OEMxNC40OTY3IDIyLjc5OTUgMTYuNjMyNiAxOS4wOTQyIDIwLjIyMTIgMTcuNzE5MUMyMC44MjQ3IDE3LjQ4NzkgMjEuNTk0NyAxNy4zMjYyIDIzLjEzNDUgMTcuMDAyOVYxNy4wMDI5QzIzLjYyMTcgMTYuOTAwNyAyMy44NjUzIDE2Ljg0OTUgMjQuMDk5OSAxNi43ODU0QzI1LjQ1MDYgMTYuNDE2MSAyNi42ODMgMTUuNzAzNCAyNy42Nzc2IDE0LjcxNjVDMjcuODUwNSAxNC41NDUgMjguMDE2NCAxNC4zNTkzIDI4LjM0ODQgMTMuOTg3OVYxMy45ODc5WiIvPjwvc3ZnPg==");
+    }
+
+    .widget-strip__clock-mask--minute .widget-strip__clock-paint {
+      background: conic-gradient(
+        from 57.4825deg,
+        rgba(111, 255, 255, 0) 0deg,
+        rgba(111, 255, 255, 0) 180deg,
+        rgba(110, 255, 255, .22) 261.346deg,
+        rgba(239, 252, 255, 1) 360deg
+      );
+      width: 154.1%;
+      height: 135.1%;
+      transform: translate(-50%, -50%) rotate(var(--clock-minute-gradient-angle, 0deg));
+    }
+
+    /* H: Hour — middle layer; fixed smaller silhouette, rotating color field. */
+    .widget-strip__clock-mask--hour {
+      z-index: 2;
+      scale:0.9;
+      -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjE1IDkgNDEuMiA0NyI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0yOS43MTkgMTcuNjA5OEMzMC41Njg1IDE2LjY2NTUgMzAuOTkzMyAxNi4xOTMzIDMxLjM5OTUgMTUuODY1MkMzMy44MTQ1IDEzLjkxNDUgMzcuMjcyNiAxMy45MTQ1IDM5LjY4NzYgMTUuODY1MkM0MC4wOTM3IDE2LjE5MzMgNDAuNTE4NSAxNi42NjU1IDQxLjM2ODEgMTcuNjA5OFYxNy42MDk4QzQxLjYzNjggMTcuOTA4NiA0MS43NzEyIDE4LjA1NzkgNDEuOTExMSAxOC4xOTU5QzQyLjcxNjMgMTguOTg5NyA0My43MTQgMTkuNTYyOSA0NC44MDc0IDE5Ljg2QzQ0Ljk5NzMgMTkuOTExNiA0NS4xOTQ1IDE5Ljk1MjcgNDUuNTg4OCAyMC4wMzVWMjAuMDM1QzQ2LjgzNTQgMjAuMjk1IDQ3LjQ1ODcgMjAuNDI1IDQ3Ljk0NzMgMjAuNjExQzUwLjg1MjMgMjEuNzE3IDUyLjU4MTQgMjQuNjk3NCA1Mi4wOTEzIDI3Ljc1NDJDNTIuMDA4OSAyOC4yNjgzIDUxLjgxMDQgMjguODcwNSA1MS40MTM0IDMwLjA3NDhWMzAuMDc0OEM1MS4yODc4IDMwLjQ1NTggNTEuMjI1IDMwLjY0NjMgNTEuMTc0OSAzMC44MzU5QzUwLjg4NjcgMzEuOTI2NyA1MC44ODY3IDMzLjA3MzIgNTEuMTc0OSAzNC4xNjQxQzUxLjIyNSAzNC4zNTM2IDUxLjI4NzggMzQuNTQ0MSA1MS40MTM0IDM0LjkyNTFWMzQuOTI1MUM1MS44MTA0IDM2LjEyOTUgNTIuMDA4OSAzNi43MzE3IDUyLjA5MTMgMzcuMjQ1OEM1Mi41ODE0IDQwLjMwMjUgNTAuODUyMyA0My4yODI5IDQ3Ljk0NzMgNDQuMzg5QzQ3LjQ1ODcgNDQuNTc1IDQ2LjgzNTQgNDQuNzA1IDQ1LjU4ODggNDQuOTY1VjQ0Ljk2NUM0NS4xOTQ1IDQ1LjA0NzMgNDQuOTk3MyA0NS4wODg0IDQ0LjgwNzQgNDUuMTRDNDMuNzE0IDQ1LjQzNyA0Mi43MTYzIDQ2LjAxMDMgNDEuOTExMSA0Ni44MDQxQzQxLjc3MTIgNDYuOTQyIDQxLjYzNjggNDcuMDkxNCA0MS4zNjgxIDQ3LjM5MDFWNDcuMzkwMUM0MC41MTg1IDQ4LjMzNDUgNDAuMDkzNyA0OC44MDY3IDM5LjY4NzYgNDkuMTM0OEMzNy4yNzI2IDUxLjA4NTUgMzMuODE0NSA1MS4wODU1IDMxLjM5OTUgNDkuMTM0OEMzMC45OTMzIDQ4LjgwNjcgMzAuNTY4NSA0OC4zMzQ1IDI5LjcxOSA0Ny4zOTAxVjQ3LjM5MDFDMjkuNDUwMiA0Ny4wOTE0IDI5LjMxNTggNDYuOTQyIDI5LjE3NTkgNDYuODA0MUMyOC4zNzA4IDQ2LjAxMDMgMjcuMzczMSA0NS40MzcgMjYuMjc5NyA0NS4xNEMyNi4wODk3IDQ1LjA4ODQgMjUuODkyNSA0NS4wNDczIDI1LjQ5ODIgNDQuOTY1VjQ0Ljk2NUMyNC4yNTE2IDQ0LjcwNSAyMy42Mjg0IDQ0LjU3NSAyMy4xMzk4IDQ0LjM4OUMyMC4yMzQ3IDQzLjI4MjkgMTguNTA1NyA0MC4zMDI1IDE4Ljk5NTcgMzcuMjQ1OEMxOS4wNzgxIDM2LjczMTcgMTkuMjc2NiAzNi4xMjk1IDE5LjY3MzYgMzQuOTI1MVYzNC45MjUxQzE5Ljc5OTIgMzQuNTQ0MSAxOS44NjIgMzQuMzUzNiAxOS45MTIxIDM0LjE2NDFDMjAuMjAwMyAzMy4wNzMyIDIwLjIwMDMgMzEuOTI2NyAxOS45MTIxIDMwLjgzNTlDMTkuODYyIDMwLjY0NjMgMTkuNzk5MiAzMC40NTU4IDE5LjY3MzYgMzAuMDc0OFYzMC4wNzQ4QzE5LjI3NjYgMjguODcwNSAxOS4wNzgxIDI4LjI2ODMgMTguOTk1NyAyNy43NTQyQzE4LjUwNTcgMjQuNjk3NCAyMC4yMzQ3IDIxLjcxNyAyMy4xMzk4IDIwLjYxMUMyMy42Mjg0IDIwLjQyNSAyNC4yNTE2IDIwLjI5NSAyNS40OTgyIDIwLjAzNVYyMC4wMzVDMjUuODkyNSAxOS45NTI3IDI2LjA4OTcgMTkuOTExNiAyNi4yNzk3IDE5Ljg2QzI3LjM3MzEgMTkuNTYyOSAyOC4zNzA4IDE4Ljk4OTcgMjkuMTc1OSAxOC4xOTU5QzI5LjMxNTggMTguMDU3OSAyOS40NTAyIDE3LjkwODYgMjkuNzE5IDE3LjYwOThWMTcuNjA5OFoiLz48L3N2Zz4=");
+      mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjE1IDkgNDEuMiA0NyI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0yOS43MTkgMTcuNjA5OEMzMC41Njg1IDE2LjY2NTUgMzAuOTkzMyAxNi4xOTMzIDMxLjM5OTUgMTUuODY1MkMzMy44MTQ1IDEzLjkxNDUgMzcuMjcyNiAxMy45MTQ1IDM5LjY4NzYgMTUuODY1MkM0MC4wOTM3IDE2LjE5MzMgNDAuNTE4NSAxNi42NjU1IDQxLjM2ODEgMTcuNjA5OFYxNy42MDk4QzQxLjYzNjggMTcuOTA4NiA0MS43NzEyIDE4LjA1NzkgNDEuOTExMSAxOC4xOTU5QzQyLjcxNjMgMTguOTg5NyA0My43MTQgMTkuNTYyOSA0NC44MDc0IDE5Ljg2QzQ0Ljk5NzMgMTkuOTExNiA0NS4xOTQ1IDE5Ljk1MjcgNDUuNTg4OCAyMC4wMzVWMjAuMDM1QzQ2LjgzNTQgMjAuMjk1IDQ3LjQ1ODcgMjAuNDI1IDQ3Ljk0NzMgMjAuNjExQzUwLjg1MjMgMjEuNzE3IDUyLjU4MTQgMjQuNjk3NCA1Mi4wOTEzIDI3Ljc1NDJDNTIuMDA4OSAyOC4yNjgzIDUxLjgxMDQgMjguODcwNSA1MS40MTM0IDMwLjA3NDhWMzAuMDc0OEM1MS4yODc4IDMwLjQ1NTggNTEuMjI1IDMwLjY0NjMgNTEuMTc0OSAzMC44MzU5QzUwLjg4NjcgMzEuOTI2NyA1MC44ODY3IDMzLjA3MzIgNTEuMTc0OSAzNC4xNjQxQzUxLjIyNSAzNC4zNTM2IDUxLjI4NzggMzQuNTQ0MSA1MS40MTM0IDM0LjkyNTFWMzQuOTI1MUM1MS44MTA0IDM2LjEyOTUgNTIuMDA4OSAzNi43MzE3IDUyLjA5MTMgMzcuMjQ1OEM1Mi41ODE0IDQwLjMwMjUgNTAuODUyMyA0My4yODI5IDQ3Ljk0NzMgNDQuMzg5QzQ3LjQ1ODcgNDQuNTc1IDQ2LjgzNTQgNDQuNzA1IDQ1LjU4ODggNDQuOTY1VjQ0Ljk2NUM0NS4xOTQ1IDQ1LjA0NzMgNDQuOTk3MyA0NS4wODg0IDQ0LjgwNzQgNDUuMTRDNDMuNzE0IDQ1LjQzNyA0Mi43MTYzIDQ2LjAxMDMgNDEuOTExMSA0Ni44MDQxQzQxLjc3MTIgNDYuOTQyIDQxLjYzNjggNDcuMDkxNCA0MS4zNjgxIDQ3LjM5MDFWNDcuMzkwMUM0MC41MTg1IDQ4LjMzNDUgNDAuMDkzNyA0OC44MDY3IDM5LjY4NzYgNDkuMTM0OEMzNy4yNzI2IDUxLjA4NTUgMzMuODE0NSA1MS4wODU1IDMxLjM5OTUgNDkuMTM0OEMzMC45OTMzIDQ4LjgwNjcgMzAuNTY4NSA0OC4zMzQ1IDI5LjcxOSA0Ny4zOTAxVjQ3LjM5MDFDMjkuNDUwMiA0Ny4wOTE0IDI5LjMxNTggNDYuOTQyIDI5LjE3NTkgNDYuODA0MUMyOC4zNzA4IDQ2LjAxMDMgMjcuMzczMSA0NS40MzcgMjYuMjc5NyA0NS4xNEMyNi4wODk3IDQ1LjA4ODQgMjUuODkyNSA0NS4wNDczIDI1LjQ5ODIgNDQuOTY1VjQ0Ljk2NUMyNC4yNTE2IDQ0LjcwNSAyMy42Mjg0IDQ0LjU3NSAyMy4xMzk4IDQ0LjM4OUMyMC4yMzQ3IDQzLjI4MjkgMTguNTA1NyA0MC4zMDI1IDE4Ljk5NTcgMzcuMjQ1OEMxOS4wNzgxIDM2LjczMTcgMTkuMjc2NiAzNi4xMjk1IDE5LjY3MzYgMzQuOTI1MVYzNC45MjUxQzE5Ljc5OTIgMzQuNTQ0MSAxOS44NjIgMzQuMzUzNiAxOS45MTIxIDM0LjE2NDFDMjAuMjAwMyAzMy4wNzMyIDIwLjIwMDMgMzEuOTI2NyAxOS45MTIxIDMwLjgzNTlDMTkuODYyIDMwLjY0NjMgMTkuNzk5MiAzMC40NTU4IDE5LjY3MzYgMzAuMDc0OFYzMC4wNzQ4QzE5LjI3NjYgMjguODcwNSAxOS4wNzgxIDI4LjI2ODMgMTguOTk1NyAyNy43NTQyQzE4LjUwNTcgMjQuNjk3NCAyMC4yMzQ3IDIxLjcxNyAyMy4xMzk4IDIwLjYxMUMyMy42Mjg0IDIwLjQyNSAyNC4yNTE2IDIwLjI5NSAyNS40OTgyIDIwLjAzNVYyMC4wMzVDMjUuODkyNSAxOS45NTI3IDI2LjA4OTcgMTkuOTExNiAyNi4yNzk3IDE5Ljg2QzI3LjM3MzEgMTkuNTYyOSAyOC4zNzA4IDE4Ljk4OTcgMjkuMTc1OSAxOC4xOTU5QzI5LjMxNTggMTguMDU3OSAyOS40NTAyIDE3LjkwODYgMjkuNzE5IDE3LjYwOThWMTcuNjA5OFoiLz48L3N2Zz4=");
+    }
+
+    .widget-strip__clock-mask--hour .widget-strip__clock-paint {
+      background: conic-gradient(
+        from 304.8823deg,
+        rgba(0, 255, 255, 0) 0deg,
+        rgba(0, 255, 255, .5) 180deg,
+        rgba(255, 255, 255, 1) 360deg
+      );
+      width: 126.7%;
+      height: 111.1%;
+      transform: translate(-50%, -50%) rotate(var(--clock-hour-gradient-angle, 0deg));
+    }
+
+    /* S: Second — top layer. The silhouette stays fixed; only its color field rotates. */
+    .widget-strip__clock-mask--second {
+      z-index: 3;
+      -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjE1IDkgNDEuMiA0NyI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0yOC4zNDg0IDEzLjk4NzlDMjkuMzk3OSAxMi44MTM5IDI5LjkyMjYgMTIuMjI2OCAzMC40MjQ0IDExLjgxODlDMzMuNDA3NiA5LjM5MzY5IDM3LjY3OTQgOS4zOTM2OSA0MC42NjI2IDExLjgxODlDNDEuMTY0MyAxMi4yMjY4IDQxLjY4OTEgMTIuODEzOSA0Mi43Mzg1IDEzLjk4NzlWMTMuOTg3OUM0My4wNzA1IDE0LjM1OTMgNDMuMjM2NSAxNC41NDUgNDMuNDA5MyAxNC43MTY1QzQ0LjQwMzkgMTUuNzAzNCA0NS42MzY0IDE2LjQxNjEgNDYuOTg3IDE2Ljc4NTRDNDcuMjIxNyAxNi44NDk1IDQ3LjQ2NTMgMTYuOTAwNyA0Ny45NTI0IDE3LjAwMjlWMTcuMDAyOUM0OS40OTIzIDE3LjMyNjIgNTAuMjYyMiAxNy40ODc5IDUwLjg2NTggMTcuNzE5MUM1NC40NTQ0IDE5LjA5NDIgNTYuNTkwMiAyMi43OTk1IDU1Ljk4NDkgMjYuNTk5OEM1NS44ODMxIDI3LjIzOSA1NS42Mzc5IDI3Ljk4NzYgNTUuMTQ3NCAyOS40ODVWMjkuNDg1QzU0Ljk5MjMgMjkuOTU4NiA1NC45MTQ3IDMwLjE5NTUgNTQuODUyOSAzMC40MzExQzU0LjQ5NjggMzEuNzg3MyA1NC40OTY4IDMzLjIxMjcgNTQuODUyOSAzNC41Njg5QzU0LjkxNDcgMzQuODA0NSA1NC45OTIzIDM1LjA0MTQgNTUuMTQ3NCAzNS41MTVWMzUuNTE1QzU1LjYzNzkgMzcuMDEyNCA1NS44ODMxIDM3Ljc2MSA1NS45ODQ5IDM4LjQwMDJDNTYuNTkwMiA0Mi4yMDA1IDU0LjQ1NDQgNDUuOTA1OCA1MC44NjU4IDQ3LjI4MDlDNTAuMjYyMiA0Ny41MTIxIDQ5LjQ5MjMgNDcuNjczOCA0Ny45NTI0IDQ3Ljk5NzFWNDcuOTk3MUM0Ny40NjUzIDQ4LjA5OTMgNDcuMjIxNyA0OC4xNTA1IDQ2Ljk4NyA0OC4yMTQ2QzQ1LjYzNjQgNDguNTgzOSA0NC40MDM5IDQ5LjI5NjYgNDMuNDA5MyA1MC4yODM1QzQzLjIzNjUgNTAuNDU1IDQzLjA3MDUgNTAuNjQwNyA0Mi43Mzg1IDUxLjAxMjFWNTEuMDEyMUM0MS42ODkxIDUyLjE4NjEgNDEuMTY0MyA1Mi43NzMyIDQwLjY2MjYgNTMuMTgxMUMzNy42Nzk0IDU1LjYwNjMgMzMuNDA3NiA1NS42MDYzIDMwLjQyNDQgNTMuMTgxMUMyOS45MjI2IDUyLjc3MzIgMjkuMzk3OSA1Mi4xODYxIDI4LjM0ODQgNTEuMDEyMVY1MS4wMTIxQzI4LjAxNjQgNTAuNjQwNyAyNy44NTA1IDUwLjQ1NSAyNy42Nzc2IDUwLjI4MzVDMjYuNjgzIDQ5LjI5NjYgMjUuNDUwNiA0OC41ODM5IDI0LjA5OTkgNDguMjE0NkMyMy44NjUzIDQ4LjE1MDUgMjMuNjIxNyA0OC4wOTkzIDIzLjEzNDUgNDcuOTk3MVY0Ny45OTcxQzIxLjU5NDcgNDcuNjczOCAyMC44MjQ3IDQ3LjUxMjEgMjAuMjIxMiA0Ny4yODA5QzE2LjYzMjYgNDUuOTA1OCAxNC40OTY3IDQyLjIwMDUgMTUuMTAyMSAzOC40MDAyQzE1LjIwMzkgMzcuNzYxIDE1LjQ0OTEgMzcuMDEyNCAxNS45Mzk1IDM1LjUxNVYzNS41MTVDMTYuMDk0NyAzNS4wNDE0IDE2LjE3MjIgMzQuODA0NSAxNi4yMzQxIDM0LjU2ODlDMTYuNTkwMSAzMy4yMTI3IDE2LjU5MDEgMzEuNzg3MyAxNi4yMzQxIDMwLjQzMTFDMTYuMTcyMiAzMC4xOTU1IDE2LjA5NDcgMjkuOTU4NiAxNS45Mzk1IDI5LjQ4NVYyOS40ODVDMTUuNDQ5MSAyNy45ODc2IDE1LjIwMzkgMjcuMjM5IDE1LjEwMjEgMjYuNTk5OEMxNC40OTY3IDIyLjc5OTUgMTYuNjMyNiAxOS4wOTQyIDIwLjIyMTIgMTcuNzE5MUMyMC44MjQ3IDE3LjQ4NzkgMjEuNTk0NyAxNy4zMjYyIDIzLjEzNDUgMTcuMDAyOVYxNy4wMDI5QzIzLjYyMTcgMTYuOTAwNyAyMy44NjUzIDE2Ljg0OTUgMjQuMDk5OSAxNi43ODU0QzI1LjQ1MDYgMTYuNDE2MSAyNi42ODMgMTUuNzAzNCAyNy42Nzc2IDE0LjcxNjVDMjcuODUwNSAxNC41NDUgMjguMDE2NCAxNC4zNTkzIDI4LjM0ODQgMTMuOTg3OVYxMy45ODc5WiIvPjwvc3ZnPg==");
+      mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjE1IDkgNDEuMiA0NyI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0yOC4zNDg0IDEzLjk4NzlDMjkuMzk3OSAxMi44MTM5IDI5LjkyMjYgMTIuMjI2OCAzMC40MjQ0IDExLjgxODlDMzMuNDA3NiA5LjM5MzY5IDM3LjY3OTQgOS4zOTM2OSA0MC42NjI2IDExLjgxODlDNDEuMTY0MyAxMi4yMjY4IDQxLjY4OTEgMTIuODEzOSA0Mi43Mzg1IDEzLjk4NzlWMTMuOTg3OUM0My4wNzA1IDE0LjM1OTMgNDMuMjM2NSAxNC41NDUgNDMuNDA5MyAxNC43MTY1QzQ0LjQwMzkgMTUuNzAzNCA0NS42MzY0IDE2LjQxNjEgNDYuOTg3IDE2Ljc4NTRDNDcuMjIxNyAxNi44NDk1IDQ3LjQ2NTMgMTYuOTAwNyA0Ny45NTI0IDE3LjAwMjlWMTcuMDAyOUM0OS40OTIzIDE3LjMyNjIgNTAuMjYyMiAxNy40ODc5IDUwLjg2NTggMTcuNzE5MUM1NC40NTQ0IDE5LjA5NDIgNTYuNTkwMiAyMi43OTk1IDU1Ljk4NDkgMjYuNTk5OEM1NS44ODMxIDI3LjIzOSA1NS42Mzc5IDI3Ljk4NzYgNTUuMTQ3NCAyOS40ODVWMjkuNDg1QzU0Ljk5MjMgMjkuOTU4NiA1NC45MTQ3IDMwLjE5NTUgNTQuODUyOSAzMC40MzExQzU0LjQ5NjggMzEuNzg3MyA1NC40OTY4IDMzLjIxMjcgNTQuODUyOSAzNC41Njg5QzU0LjkxNDcgMzQuODA0NSA1NC45OTIzIDM1LjA0MTQgNTUuMTQ3NCAzNS41MTVWMzUuNTE1QzU1LjYzNzkgMzcuMDEyNCA1NS44ODMxIDM3Ljc2MSA1NS45ODQ5IDM4LjQwMDJDNTYuNTkwMiA0Mi4yMDA1IDU0LjQ1NDQgNDUuOTA1OCA1MC44NjU4IDQ3LjI4MDlDNTAuMjYyMiA0Ny41MTIxIDQ5LjQ5MjMgNDcuNjczOCA0Ny45NTI0IDQ3Ljk5NzFWNDcuOTk3MUM0Ny40NjUzIDQ4LjA5OTMgNDcuMjIxNyA0OC4xNTA1IDQ2Ljk4NyA0OC4yMTQ2QzQ1LjYzNjQgNDguNTgzOSA0NC40MDM5IDQ5LjI5NjYgNDMuNDA5MyA1MC4yODM1QzQzLjIzNjUgNTAuNDU1IDQzLjA3MDUgNTAuNjQwNyA0Mi43Mzg1IDUxLjAxMjFWNTEuMDEyMUM0MS42ODkxIDUyLjE4NjEgNDEuMTY0MyA1Mi43NzMyIDQwLjY2MjYgNTMuMTgxMUMzNy42Nzk0IDU1LjYwNjMgMzMuNDA3NiA1NS42MDYzIDMwLjQyNDQgNTMuMTgxMUMyOS45MjI2IDUyLjc3MzIgMjkuMzk3OSA1Mi4xODYxIDI4LjM0ODQgNTEuMDEyMVY1MS4wMTIxQzI4LjAxNjQgNTAuNjQwNyAyNy44NTA1IDUwLjQ1NSAyNy42Nzc2IDUwLjI4MzVDMjYuNjgzIDQ5LjI5NjYgMjUuNDUwNiA0OC41ODM5IDI0LjA5OTkgNDguMjE0NkMyMy44NjUzIDQ4LjE1MDUgMjMuNjIxNyA0OC4wOTkzIDIzLjEzNDUgNDcuOTk3MVY0Ny45OTcxQzIxLjU5NDcgNDcuNjczOCAyMC44MjQ3IDQ3LjUxMjEgMjAuMjIxMiA0Ny4yODA5QzE2LjYzMjYgNDUuOTA1OCAxNC40OTY3IDQyLjIwMDUgMTUuMTAyMSAzOC40MDAyQzE1LjIwMzkgMzcuNzYxIDE1LjQ0OTEgMzcuMDEyNCAxNS45Mzk1IDM1LjUxNVYzNS41MTVDMTYuMDk0NyAzNS4wNDE0IDE2LjE3MjIgMzQuODA0NSAxNi4yMzQxIDM0LjU2ODlDMTYuNTkwMSAzMy4yMTI3IDE2LjU5MDEgMzEuNzg3MyAxNi4yMzQxIDMwLjQzMTFDMTYuMTcyMiAzMC4xOTU1IDE2LjA5NDcgMjkuOTU4NiAxNS45Mzk1IDI5LjQ4NVYyOS40ODVDMTUuNDQ5MSAyNy45ODc2IDE1LjIwMzkgMjcuMjM5IDE1LjEwMjEgMjYuNTk5OEMxNC40OTY3IDIyLjc5OTUgMTYuNjMyNiAxOS4wOTQyIDIwLjIyMTIgMTcuNzE5MUMyMC44MjQ3IDE3LjQ4NzkgMjEuNTk0NyAxNy4zMjYyIDIzLjEzNDUgMTcuMDAyOVYxNy4wMDI5QzIzLjYyMTcgMTYuOTAwNyAyMy44NjUzIDE2Ljg0OTUgMjQuMDk5OSAxNi43ODU0QzI1LjQ1MDYgMTYuNDE2MSAyNi42ODMgMTUuNzAzNCAyNy42Nzc2IDE0LjcxNjVDMjcuODUwNSAxNC41NDUgMjguMDE2NCAxNC4zNTkzIDI4LjM0ODQgMTMuOTg3OVYxMy45ODc5WiIvPjwvc3ZnPg==");
+    }
+
+    .widget-strip__clock-mask--second .widget-strip__clock-paint {
+      background: conic-gradient(
+        from 180deg,
+        rgba(255, 239, 60, 0) 0deg,
+        rgba(255, 239, 60, 0) 231.309deg,
+        rgba(255, 238, 60, .22) 270.177deg,
+        rgba(255, 249, 189, 1) 360deg
+      );
+      width: 114.8%;
+      height: 100.6%;
+      transform: translate(-50%, -50%) rotate(var(--clock-second-gradient-angle, 0deg));
+    }
+
+    .widget-strip__clock-text,
+    .widget-strip__calendar-text,
+    .widget-strip__value-text {
+      position: absolute;
+      top: 50%;
+      display: block;
+      margin: 0;
+      padding: 0;
+      color: var(--widget-strip-ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 400;
+      line-height: 1;
+      white-space: nowrap;
+      transform: translateY(-50%);
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+
+    .widget-strip__clock-text {
+      left: 40.76%;
+      font-size: 7.55cqw;
+      letter-spacing: .005em;
+    }
+
+    .widget-strip__clock-minute,
+    .widget-strip__calendar-day {
+      font-weight: 700;
+    }
+
+    .widget-strip__calendar-emblem {
+      position: absolute;
+      top: 50%;
+      left: 20.68%;
+      width: 27.80%;
+      aspect-ratio: 1 / 1;
+      transform: translate(-50%, -50%);
+      display: block;
+      isolation: isolate;
+      background: #d70000;
+      -webkit-mask-image:
+        radial-gradient(ellipse 34% 34% at 50% 50%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 50% 16%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 67% 21%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 79% 33%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 84% 50%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 79% 67%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 67% 79%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 50% 84%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 33% 79%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 21% 67%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 16% 50%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 21% 33%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 33% 21%, #000 98%, transparent 100%);
+      mask-image:
+        radial-gradient(ellipse 34% 34% at 50% 50%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 50% 16%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 67% 21%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 79% 33%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 84% 50%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 79% 67%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 67% 79%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 50% 84%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 33% 79%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 21% 67%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 16% 50%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 21% 33%, #000 98%, transparent 100%),
+        radial-gradient(ellipse 16% 16% at 33% 21%, #000 98%, transparent 100%);
+      -webkit-mask-composite: source-over;
+      mask-composite: add;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+    }
+
+    .widget-strip__calendar-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: conic-gradient(
+        from var(--calendar-month-angle, 0deg),
+        rgba(255, 239, 60, 0) 0deg,
+        rgba(255, 238, 60, .22) 152.308deg,
+        rgba(255, 249, 189, 1) 360deg
+      );
+    }
+
+    .widget-strip__calendar-text {
+      left: 41.80%;
+      font-size: 7.55cqw;
+      letter-spacing: -.035em;
+    }
+
+    .widget-strip__value-fill {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      border-radius: inherit;
+      background: conic-gradient(
+        from 90deg,
+        rgba(129, 255, 196, 1) 0deg,
+        rgba(0, 255, 136, 1) 46.7308deg,
+        rgba(0, 238, 127, 1) 230.192deg,
+        rgba(255, 255, 255, 1) 230.228deg,
+        rgba(255, 255, 255, 1) 315deg,
+        rgba(129, 255, 196, 1) 360deg
+      );
+    }
+
+    /* グラデーションは外周だけに残し、内側は白く抜きます。 */
+    .widget-strip__value-fill::after {
+      content: "";
+      position: absolute;
+      inset: 18.46% 15.2%;
+      border-radius: 999px;
+      background: var(--widget-strip-white);
+    }
+
+    .widget-strip__value-text {
+      left: 50%;
+      z-index: 1;
+      font-size: 6.65cqw;
+      letter-spacing: -.035em;
+      transform: translate(-50%, -50%);
+    }
+
+
+    /* Floating three-pill dock */
+    :root {
+      --widget-strip-white: #ffffff;
+      --widget-strip-ink: #080808;
+    }
+    .widget-strip {
+      position: fixed;
+      z-index: 9000;
+      left: 50%;
+      bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+      width: min(437px, calc(100vw - 24px));
+      aspect-ratio: 437 / 65;
+      transform: translate3d(-50%, 0, 0);
+      will-change: transform, opacity, filter;
+      animation: widget-dock-arrive .72s cubic-bezier(.22, 1, .36, 1) .18s both;
+      transition:
+        opacity .3s ease,
+        transform .52s cubic-bezier(.22, 1, .36, 1),
+        filter .38s ease;
+    }
+    .widget-strip__clock-text,
+    .widget-strip__calendar-text,
+    .widget-strip__value-text {
+      font-family: "TikTok Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+    .widget-strip.is-arrived {
+      animation: none;
+    }
+    @keyframes widget-dock-arrive {
+      from { opacity: 0; transform: translate3d(-50%, 22px, 0) scale(.96); filter: blur(7px); }
+      to { opacity: 1; transform: translate3d(-50%, 0, 0) scale(1); filter: blur(0); }
+    }
+    body.is-maximized .widget-strip {
+      animation: none;
+      opacity: 0;
+      transform: translate3d(-50%, 22px, 0) scale(.94);
+      filter: blur(8px);
+      pointer-events: none;
+    }
+
+    /* Snapshot-based card morph: the preview keeps the original layout while zooming. */
+    .maximize-layer {
+      background: rgba(241, 241, 243, .78);
+      backdrop-filter: blur(24px) saturate(1.35);
+      -webkit-backdrop-filter: blur(24px) saturate(1.35);
+      transition: opacity .34s cubic-bezier(.22, 1, .36, 1), visibility 0s linear .4s;
+    }
+    .maximize-layer.is-open {
+      transition: opacity .28s cubic-bezier(.22, 1, .36, 1), visibility 0s;
+    }
+    .maximize-layer.is-closing {
+      transition: opacity .38s cubic-bezier(.32, 0, .18, 1), visibility 0s;
+    }
+    .maximize-layer .widget-card {
+      z-index: 1;
+      transition: opacity .16s ease;
+    }
+    .widget-card.is-transition-hidden {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    .widget-card--transition-snapshot {
+      position: fixed !important;
+      z-index: 2 !important;
+      display: flex !important;
+      margin: 0 !important;
+      transform-origin: top left !important;
+      pointer-events: none !important;
+      animation: none !important;
+      transition: none !important;
+      will-change: transform, border-radius;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .maximize-layer .widget-header {
+      top: calc(22px + env(safe-area-inset-top, 0px));
+      right: calc(24px + env(safe-area-inset-right, 0px));
+      left: calc(26px + env(safe-area-inset-left, 0px));
+    }
+    .maximize-layer .widget-body {
+      padding-bottom: calc(clamp(24px, 5vw, 64px) + env(safe-area-inset-bottom, 0px));
+    }
+
+    .main-container {
+      padding-bottom: calc(48px + 88px + env(safe-area-inset-bottom, 0px));
+    }
+    @media (max-width: 700px) {
+      .main-container {
+        padding-bottom: calc(36px + 86px + env(safe-area-inset-bottom, 0px));
+      }
+      .widget-strip {
+        width: min(437px, calc(100vw - 28px));
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .widget-strip {
+        animation: none !important;
+        transition: none !important;
+      }
+      .widget-card--transition-snapshot { display: none !important; }
+      .maximize-layer,
+      .maximize-layer.is-open,
+      .maximize-layer.is-closing {
+        transition: none !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <main class="main-container">
+    <header class="dashboard-heading">
+      <h1>こんにちは。李</h1>
+      <nav class="profile-links" aria-label="プロフィール">
+        <a class="profile-link" href="https://search3958.github.io/">About me</a>
+        <span class="profile-link" aria-label="0F8 Account">0F8 Account</span>
+      </nav>
+    </header>
+
+    <section class="dashboard-masonry" id="dashboard-masonry" aria-label="ツール一覧">
+      <div class="dashboard-column dashboard-column-left">
+        <!-- Calculator -->
+        <article class="widget-card" data-widget="calculator" data-expression="1230+4" data-result="1234" data-just-evaluated="true" aria-label="計算機">
+          <header class="widget-header">
+            <div class="window-controls" aria-label="ウィンドウ操作">
+              <button class="icon-button" type="button" data-action="pip" aria-label="計算機をPIPで開く" title="PIPで開く"><span class="visually-hidden">PIP</span></button>
+              <button class="icon-button" type="button" data-action="maximize" aria-label="計算機を全画面表示" title="全画面表示"><span class="visually-hidden">全画面表示</span></button>
+            </div>
+            <div class="widget-heading">計算機</div>
+            <div class="widget-actions">
+              <button class="icon-button" type="button" data-action="clear" aria-label="計算機をクリア" title="クリア">
+                <span class="icon icon-delete" aria-hidden="true"></span>
+              </button>
+              <button class="icon-button" type="button" data-action="copy" aria-label="計算結果をコピー" title="コピー">
+                <span class="icon icon-copy" aria-hidden="true"></span>
+              </button>
+            </div>
+          </header>
+          <div class="widget-body">
+            <div class="calculator-display" aria-live="polite">
+              <button class="calculator-backspace" type="button" data-calc="backspace" aria-label="1文字削除" title="1文字削除"><span class="icon icon-back" aria-hidden="true"></span></button>
+              <div class="calculator-expression" data-role="expression">1230+4</div>
+              <div class="calculator-result" data-role="result">1234</div>
+            </div>
+            <div class="calculator-keypad" aria-label="計算機キー">
+              <button class="calc-key utility" data-calc="clear" type="button" aria-label="全消去">AC</button>
+              <button class="calc-key utility" data-calc="%" type="button" aria-label="パーセント">%</button>
+              <button class="calc-key utility" data-calc="(" type="button" aria-label="左括弧">(</button>
+              <button class="calc-key operator" data-calc="/" type="button" aria-label="割る">÷</button>
+              <button class="calc-key" data-calc="7" type="button" aria-label="7">7</button>
+              <button class="calc-key" data-calc="8" type="button" aria-label="8">8</button>
+              <button class="calc-key" data-calc="9" type="button" aria-label="9">9</button>
+              <button class="calc-key operator" data-calc="*" type="button" aria-label="掛ける">×</button>
+              <button class="calc-key" data-calc="4" type="button" aria-label="4">4</button>
+              <button class="calc-key" data-calc="5" type="button" aria-label="5">5</button>
+              <button class="calc-key" data-calc="6" type="button" aria-label="6">6</button>
+              <button class="calc-key operator" data-calc="-" type="button" aria-label="引く">−</button>
+              <button class="calc-key" data-calc="1" type="button" aria-label="1">1</button>
+              <button class="calc-key" data-calc="2" type="button" aria-label="2">2</button>
+              <button class="calc-key" data-calc="3" type="button" aria-label="3">3</button>
+              <button class="calc-key operator" data-calc="+" type="button" aria-label="足す">+</button>
+              <button class="calc-key utility" data-calc=")" type="button" aria-label="右括弧">)</button>
+              <button class="calc-key" data-calc="0" type="button" aria-label="0">0</button>
+              <button class="calc-key" data-calc="." type="button" aria-label="小数点">.</button>
+              <button class="calc-key equals" data-calc="=" type="button" aria-label="計算">=</button>
+            </div>
+            <div class="widget-footer"><span>キーボード入力にも対応</span><span data-role="calc-status">Ready</span></div>
+          </div>
+        </article>
+
+        <!-- Color picker -->
+        <article class="widget-card" data-widget="color" aria-label="カラーピッカー">
+          <header class="widget-header">
+            <div class="window-controls" aria-label="ウィンドウ操作">
+              <button class="icon-button" type="button" data-action="pip" aria-label="カラーピッカーをPIPで開く" title="PIPで開く"><span class="visually-hidden">PIP</span></button>
+              <button class="icon-button" type="button" data-action="maximize" aria-label="カラーピッカーを全画面表示" title="全画面表示"><span class="visually-hidden">全画面表示</span></button>
+            </div>
+            <div class="widget-heading">カラーピッカー</div>
+            <div class="widget-actions">
+              <button class="icon-button" type="button" data-action="pick-color" aria-label="色を選択" title="色を選択">
+                <span class="icon icon-brush" aria-hidden="true"></span>
+              </button>
+            </div>
+          </header>
+          <div class="widget-body">
+            <div class="color-preview" data-role="color-preview">
+              <input class="color-code" id="color-hex" data-role="color-hex" type="text" value="#00FF88" aria-label="カラーコード" spellcheck="false" maxlength="7" autocomplete="off" inputmode="text">
+              <div class="color-caption">SENTARO BRAND COLOR</div>
+            </div>
+            <input class="color-input" data-role="color-input" type="color" value="#00ff88" aria-label="色を選択">
+            <div class="widget-footer"><span>RGB</span><span class="rgb-value" data-role="color-rgb">rgb(0, 255, 136)</span></div>
+          </div>
+        </article>
+
+        <!-- Calendar -->
+        <article class="widget-card" data-widget="calendar" aria-label="カレンダー">
+          <header class="widget-header">
+            <div class="window-controls" aria-label="ウィンドウ操作">
+              <button class="icon-button" type="button" data-action="pip" aria-label="カレンダーをPIPで開く" title="PIPで開く"><span class="visually-hidden">PIP</span></button>
+              <button class="icon-button" type="button" data-action="maximize" aria-label="カレンダーを全画面表示" title="全画面表示"><span class="visually-hidden">全画面表示</span></button>
+            </div>
+            <div class="widget-heading">カレンダー</div>
+            <div class="widget-actions">
+              <button class="icon-button" type="button" data-calendar="previous" aria-label="前の月" title="前の月"><span class="icon icon-back" aria-hidden="true"></span></button>
+              <button class="icon-button" type="button" data-calendar="next" aria-label="次の月" title="次の月"><span class="icon icon-continue" aria-hidden="true"></span></button>
+              <button class="icon-button" type="button" data-calendar="today" aria-label="今日" title="今日"><span class="icon icon-home_classic" aria-hidden="true"></span></button>
+            </div>
+          </header>
+          <div class="widget-body">
+            <div class="calendar-topline"><div><span class="calendar-month" data-role="calendar-month">10月</span><span class="calendar-year" data-role="calendar-year">2026</span></div></div>
+            <div class="calendar-grid" data-role="calendar-grid" aria-label="月間カレンダー"></div>
+            <div class="calendar-event-editor">
+              <div class="calendar-selected-date" data-role="calendar-selected-date">2026年10月31日（土）</div>
+              <div class="calendar-event-row">
+                <input data-role="calendar-event-input" type="text" maxlength="100" placeholder="この日の予定を追加" aria-label="選択日の予定">
+                <button class="primary-button" type="button" data-calendar="save">保存</button>
+                <button class="subtle-button" type="button" data-calendar="delete">削除</button>
+              </div>
+            </div>
+            <div class="widget-footer"><span>日付を選択して予定を登録</span><span data-role="calendar-status">この端末に保存</span></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="dashboard-column dashboard-column-right">
+        <!-- Stopwatch and timer -->
+        <article class="widget-card" data-widget="time" data-time-mode="stopwatch" aria-label="ストップウォッチとタイマー">
+          <header class="widget-header">
+            <div class="window-controls" aria-label="ウィンドウ操作">
+              <button class="icon-button" type="button" data-action="pip" aria-label="ストップウォッチ／タイマーをPIPで開く" title="PIPで開く"><span class="visually-hidden">PIP</span></button>
+              <button class="icon-button" type="button" data-action="maximize" aria-label="ストップウォッチ／タイマーを全画面表示" title="全画面表示"><span class="visually-hidden">全画面表示</span></button>
+            </div>
+            <div class="widget-heading">ストップウォッチ / タイマー</div>
+            <div class="widget-actions">
+              <button class="icon-button" type="button" data-action="reset-time" aria-label="時間をリセット" title="リセット">
+                <span class="icon icon-close" aria-hidden="true"></span>
+              </button>
+              <button class="icon-button" type="button" data-action="time-toggle" aria-label="スタート" title="スタート">
+                <svg data-role="time-toggle-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M6.5 4.5 16 10l-9.5 5.5z" fill="currentColor" stroke="none"/></svg>
+              </button>
+            </div>
+          </header>
+          <div class="widget-body">
+            <div class="mode-switch" role="group" aria-label="モード切り替え">
+              <button type="button" data-time-mode="stopwatch" aria-pressed="true">STOPWATCH</button>
+              <button type="button" data-time-mode="timer" aria-pressed="false">TIMER</button>
+            </div>
+            <section class="time-panel" data-time-panel="stopwatch">
+              <div class="time-display" data-role="stopwatch-display" role="button" tabindex="0" aria-label="ストップウォッチ。計測中に押すとラップタイムを記録" title="計測中に押すとラップタイムを記録">00 00 00</div>
+              <div class="time-controls">
+                <button class="primary-button" type="button" data-stopwatch="toggle">スタート</button>
+                <button class="subtle-button" type="button" data-stopwatch="lap" disabled>ラップ</button>
+                <button class="subtle-button" type="button" data-stopwatch="reset">リセット</button>
+              </div>
+              <ol class="lap-list" data-role="laps" aria-label="ラップタイム"></ol>
+            </section>
+            <section class="time-panel" data-time-panel="timer" hidden>
+              <div class="time-display" data-role="timer-display">00 05 00</div>
+              <div class="timer-progress" aria-hidden="true"><span data-role="timer-progress"></span></div>
+              <div class="timer-inputs">
+                <label>時間<input data-timer-input="hours" type="number" min="0" max="99" value="0" inputmode="numeric"></label>
+                <span class="muted">:</span>
+                <label>分<input data-timer-input="minutes" type="number" min="0" max="59" value="5" inputmode="numeric"></label>
+                <span class="muted">:</span>
+                <label>秒<input data-timer-input="seconds" type="number" min="0" max="59" value="0" inputmode="numeric"></label>
+              </div>
+              <div class="time-controls">
+                <button class="primary-button" type="button" data-timer="toggle">スタート</button>
+                <button class="subtle-button" type="button" data-timer="reset">リセット</button>
+              </div>
+            </section>
+            <div class="widget-footer"><span data-role="time-status">停止中</span><span>時間はこのページを開いている間も計測</span></div>
+          </div>
+        </article>
+
+        <!-- Memo -->
+        <article class="widget-card" data-widget="memo" aria-label="メモ">
+          <header class="widget-header">
+            <div class="window-controls" aria-label="ウィンドウ操作">
+              <button class="icon-button" type="button" data-action="pip" aria-label="メモをPIPで開く" title="PIPで開く"><span class="visually-hidden">PIP</span></button>
+              <button class="icon-button" type="button" data-action="maximize" aria-label="メモを全画面表示" title="全画面表示"><span class="visually-hidden">全画面表示</span></button>
+            </div>
+            <div class="widget-heading">メモ</div>
+            <div class="widget-actions">
+              <button class="icon-button" type="button" data-action="focus-memo" aria-label="メモを追加" title="メモを追加">
+                <span class="icon icon-add" aria-hidden="true"></span>
+              </button>
+            </div>
+          </header>
+          <div class="widget-body">
+            <div class="memo-list" data-role="memo-list" aria-label="保存したメモ一覧"></div>
+            <div class="memo-empty" data-role="memo-empty" hidden>メモはありません</div>
+            <section class="memo-editor" data-role="memo-editor" aria-label="メモの編集" hidden>
+              <input class="memo-title-input" data-role="memo-title" type="text" maxlength="100" placeholder="タイトル" aria-label="メモのタイトル">
+              <textarea class="memo-body-input" data-role="memo-body" placeholder="本文を入力…" aria-label="メモの本文"></textarea>
+              <div class="memo-editor-actions">
+                <button class="subtle-button" type="button" data-memo-action="delete" hidden>削除</button>
+                <button class="subtle-button" type="button" data-memo-action="cancel">キャンセル</button>
+                <button class="primary-button" type="button" data-memo-action="save">保存</button>
+              </div>
+            </section>
+            <span class="memo-status" data-role="memo-status" aria-live="polite">保存済み</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="maximize-layer" id="maximize-layer" aria-label="全画面表示"></div>
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEYS = Object.freeze({
+        memo: "workspace.memo.v1",
+        memoNotes: "workspace.memo.notes.v1",
+        calendar: "workspace.calendar.events.v1"
+      });
+      const root = document.getElementById("dashboard-masonry");
+      const maximizeLayer = document.getElementById("maximize-layer");
+      const toastRegion = document.getElementById("toast-region");
+
+      if (!root || !maximizeLayer || !toastRegion) {
+        console.error("[Workspace] 必要なページ要素が見つかりません。", {
+          root: Boolean(root), maximizeLayer: Boolean(maximizeLayer), toastRegion: Boolean(toastRegion)
+        });
+        return;
+      }
+
+      const log = (message, detail) => {
+        if (detail === undefined) console.info(`[Workspace] ${message}`);
+        else console.info(`[Workspace] ${message}`, detail);
+      };
+      const reportError = (message, error) => console.error(`[Workspace] ${message}`, error || "原因不明のエラー");
+      const safeStorage = {
+        get(key, fallback = "") {
+          try {
+            const value = localStorage.getItem(key);
+            return value === null ? fallback : value;
+          } catch (error) {
+            reportError(`ローカル保存データを読み込めません: ${key}`, error);
+            return fallback;
+          }
+        },
+        set(key, value) {
+          try {
+            localStorage.setItem(key, value);
+            return true;
+          } catch (error) {
+            reportError(`ローカル保存データを書き込めません: ${key}`, error);
+            return false;
+          }
+        },
+        remove(key) {
+          try {
+            localStorage.removeItem(key);
+            return true;
+          } catch (error) {
+            reportError(`ローカル保存データを削除できません: ${key}`, error);
+            return false;
+          }
+        }
+      };
+
+      const showToast = (message) => {
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.textContent = message;
+        toastRegion.append(toast);
+        window.setTimeout(() => toast.remove(), 2400);
+      };
+
+      async function copyText(value, successMessage = "コピーしました") {
+        const text = String(value ?? "");
+        if (!text) {
+          showToast("コピーする内容がありません");
+          return false;
+        }
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const temporary = document.createElement("textarea");
+            temporary.value = text;
+            temporary.setAttribute("readonly", "");
+            temporary.style.position = "fixed";
+            temporary.style.opacity = "0";
+            document.body.append(temporary);
+            temporary.select();
+            const copied = document.execCommand("copy");
+            temporary.remove();
+            if (!copied) throw new Error("ブラウザがコピー操作を拒否しました");
+          }
+          showToast(successMessage);
+          log("テキストをコピーしました");
+          return true;
+        } catch (error) {
+          reportError("コピーに失敗しました", error);
+          showToast("コピーできませんでした");
+          return false;
+        }
+      }
+
+      const getCard = (element) => element?.closest?.(".widget-card") || null;
+      const getRole = (card, role) => {
+        const element = card?.querySelector(`[data-role="${role}"]`);
+        if (!element) reportError(`カード内の要素が見つかりません: ${role}`);
+        return element;
+      };
+
+      /* Move the actual card node, not a screenshot or duplicate. Its event
+         listeners and live widget state therefore keep working in both modes. */
+      let activePip = null;
+      let activeMaximize = null;
+
+      function restorePip(session, closeWindow = false) {
+        if (!session) return;
+        if (session.placeholder?.parentNode) {
+          session.placeholder.replaceWith(session.card);
+        }
+        session.card.classList.remove("is-in-pip");
+        if (activePip === session) activePip = null;
+        if (closeWindow && session.window && !session.window.closed) {
+          try { session.window.close(); } catch (error) { reportError("PIPウィンドウを閉じられません", error); }
+        }
+        log("PIP表示を終了しました");
+      }
+
+      async function openPip(card) {
+        if (activePip?.card === card) {
+          restorePip(activePip, true);
+          return;
+        }
+        if (!("documentPictureInPicture" in window) || !window.isSecureContext) {
+          showToast("PIPはHTTPS対応のChromeなどで利用できます");
+          reportError("Document Picture-in-Picture APIが利用できません");
+          return;
+        }
+        if (activeMaximize?.card === card) restoreMaximize(true);
+        if (activePip) restorePip(activePip, true);
+
+        const bounds = card.getBoundingClientRect();
+        const width = Math.max(320, Math.min(620, Math.round(bounds.width || 420)));
+        const height = Math.max(360, Math.min(760, Math.round(Math.max(bounds.height, 460))));
+        try {
+          const pipWindow = await window.documentPictureInPicture.requestWindow({ width, height });
+          const style = document.getElementById("app-styles");
+          if (!style) throw new Error("スタイルシートが見つかりません");
+
+          const pipStyle = style.cloneNode(true);
+          pipStyle.removeAttribute("id");
+          pipWindow.document.head.append(pipStyle);
+          pipWindow.document.title = `${card.querySelector(".widget-heading")?.textContent || "Tool"} - Workspace`;
+          pipWindow.document.body.className = "pip-mode";
+          pipWindow.document.body.append(document.createTextNode(""));
+
+          const placeholderRect = card.getBoundingClientRect();
+          const placeholder = createWidgetPlaceholder(card, placeholderRect);
+          card.parentNode.insertBefore(placeholder, card);
+          const session = { card, window: pipWindow, placeholder };
+          activePip = session;
+          card.classList.add("is-in-pip");
+          pipWindow.document.body.append(card);
+          pipWindow.addEventListener("pagehide", () => {
+            if (activePip === session) restorePip(session, false);
+          }, { once: true });
+          pipWindow.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") restorePip(session, true);
+          });
+          log("PIP表示を開始しました", card.dataset.widget);
+        } catch (error) {
+          if (activePip?.card === card) restorePip(activePip, false);
+          reportError("PIPウィンドウを開けませんでした", error);
+          showToast("PIPウィンドウを開けませんでした");
+        }
+      }
+
+      let pendingMaximizeSession = null;
+
+      function createWidgetPlaceholder(card, rect) {
+        const placeholder = document.createElement("div");
+        placeholder.className = "widget-placeholder";
+        placeholder.setAttribute("aria-hidden", "true");
+        const cardStyle = window.getComputedStyle(card);
+        placeholder.style.setProperty("--placeholder-height", `${Math.max(1, rect.height)}px`);
+        placeholder.style.order = cardStyle.order;
+        placeholder.style.margin = cardStyle.margin;
+        return placeholder;
+      }
+
+      function viewportSize() {
+        const visual = window.visualViewport;
+        return {
+          width: Math.max(1, Math.round(visual?.width || window.innerWidth || document.documentElement.clientWidth)),
+          height: Math.max(1, Math.round(visual?.height || window.innerHeight || document.documentElement.clientHeight))
+        };
+      }
+
+      function prefersReducedMotion() {
+        return Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+      }
+
+      function clearMaximizeCardStyles(card) {
+        card.style.position = "";
+        card.style.top = "";
+        card.style.left = "";
+        card.style.width = "";
+        card.style.height = "";
+        card.style.margin = "";
+        card.style.transformOrigin = "";
+        card.style.transform = "";
+        card.style.borderRadius = "";
+        card.style.transition = "";
+        card.style.willChange = "";
+      }
+
+      function copyLiveControlValues(source, clone) {
+        const sourceControls = source.querySelectorAll("input, textarea, select");
+        const cloneControls = clone.querySelectorAll("input, textarea, select");
+        sourceControls.forEach((control, index) => {
+          const target = cloneControls[index];
+          if (!target) return;
+          if (control.type === "checkbox" || control.type === "radio") {
+            target.checked = control.checked;
+          } else {
+            target.value = control.value;
+          }
+        });
+      }
+
+      function copyComputedStyles(source, clone) {
+        const computed = window.getComputedStyle(source);
+        for (let index = 0; index < computed.length; index += 1) {
+          const property = computed.item(index);
+          clone.style.setProperty(property, computed.getPropertyValue(property));
+        }
+        const sourceChildren = source.children;
+        const cloneChildren = clone.children;
+        for (let index = 0; index < sourceChildren.length; index += 1) {
+          if (cloneChildren[index]) copyComputedStyles(sourceChildren[index], cloneChildren[index]);
+        }
+      }
+
+      function createTransitionSnapshot(card, rect, borderRadius) {
+        const snapshot = card.cloneNode(true);
+        copyComputedStyles(card, snapshot);
+        snapshot.classList.remove("is-maximized", "is-transition-hidden", "is-in-pip");
+        snapshot.classList.add("widget-card--transition-snapshot");
+        snapshot.removeAttribute("id");
+        snapshot.querySelectorAll("[id]").forEach((node) => node.removeAttribute("id"));
+        snapshot.setAttribute("aria-hidden", "true");
+        snapshot.inert = true;
+        copyLiveControlValues(card, snapshot);
+
+        snapshot.style.position = "fixed";
+        snapshot.style.top = "0";
+        snapshot.style.left = "0";
+        snapshot.style.width = `${Math.max(1, rect.width)}px`;
+        snapshot.style.height = `${Math.max(1, rect.height)}px`;
+        snapshot.style.margin = "0";
+        snapshot.style.transformOrigin = "top left";
+        snapshot.style.transform = `translate3d(${rect.left}px, ${rect.top}px, 0) scale(1, 1)`;
+        snapshot.style.borderRadius = borderRadius;
+        snapshot.style.opacity = "1";
+        snapshot.style.pointerEvents = "none";
+        snapshot.style.animation = "none";
+        snapshot.style.transition = "none";
+        return snapshot;
+      }
+
+      function runSnapshotAnimation(session, keyframes, duration = 570) {
+        if (!session.snapshot || prefersReducedMotion() || typeof session.snapshot.animate !== "function") {
+          return Promise.resolve();
+        }
+        try {
+          const animation = session.snapshot.animate(keyframes, {
+            duration,
+            easing: "cubic-bezier(.22, 1, .36, 1)",
+            fill: "forwards"
+          });
+          session.animation = animation;
+          return animation.finished.catch(() => {});
+        } catch (error) {
+          reportError("全画面アニメーションを開始できません", error);
+          return Promise.resolve();
+        }
+      }
+
+      function revealCard(card) {
+        card.classList.remove("is-transition-hidden");
+        if (prefersReducedMotion() || typeof card.animate !== "function") return;
+        try {
+          card.animate(
+            [{ opacity: 0 }, { opacity: 1 }],
+            { duration: 145, easing: "ease-out" }
+          );
+        } catch (_) {}
+      }
+
+      function finishMaximizeRestore(session) {
+        if (!session) return;
+        if (session.animation) {
+          try { session.animation.cancel(); } catch (_) {}
+          session.animation = null;
+        }
+        session.snapshot?.remove();
+        session.snapshot = null;
+
+        clearMaximizeCardStyles(session.card);
+        session.card.classList.remove("is-maximized", "is-transition-hidden");
+        if (session.placeholder?.parentNode) {
+          session.placeholder.replaceWith(session.card);
+        }
+        if (activeMaximize === session) activeMaximize = null;
+        if (pendingMaximizeSession === session) pendingMaximizeSession = null;
+        maximizeLayer.classList.remove("is-open", "is-closing");
+        document.body.classList.remove("is-maximized");
+        revealCard(session.card);
+        log("全画面表示を終了しました", session.card.dataset.widget);
+      }
+
+      function restoreMaximize(immediate = false) {
+        const session = activeMaximize;
+        if (!session) return;
+
+        activeMaximize = null;
+        if (session.animation) {
+          try { session.animation.cancel(); } catch (_) {}
+          session.animation = null;
+        }
+
+        if (immediate || !session.placeholder?.isConnected || prefersReducedMotion()) {
+          finishMaximizeRestore(session);
+          return;
+        }
+
+        const viewport = viewportSize();
+        const targetRect = session.placeholder.getBoundingClientRect();
+        if (!targetRect.width || !targetRect.height) {
+          finishMaximizeRestore(session);
+          return;
+        }
+
+        pendingMaximizeSession = session;
+
+        const fullRect = { left: 0, top: 0, width: viewport.width, height: viewport.height };
+        const snapshot = createTransitionSnapshot(session.card, fullRect, "0px");
+        snapshot.style.transform = "translate3d(0, 0, 0) scale(1, 1)";
+        snapshot.style.borderRadius = "0px";
+        session.snapshot = snapshot;
+        maximizeLayer.append(snapshot);
+
+        session.card.classList.add("is-transition-hidden");
+        maximizeLayer.classList.remove("is-open");
+        maximizeLayer.classList.add("is-closing");
+
+        const scaleX = Math.max(.001, targetRect.width / viewport.width);
+        const scaleY = Math.max(.001, targetRect.height / viewport.height);
+        runSnapshotAnimation(session, [
+          {
+            transform: "translate3d(0, 0, 0) scale(1, 1)",
+            borderRadius: "0px"
+          },
+          {
+            transform: `translate3d(${targetRect.left}px, ${targetRect.top}px, 0) scale(${scaleX}, ${scaleY})`,
+            borderRadius: session.borderRadius
+          }
+        ], 490).then(() => {
+          if (pendingMaximizeSession === session) finishMaximizeRestore(session);
+        });
+      }
+
+      function toggleMaximize(card) {
+        if (pendingMaximizeSession) finishMaximizeRestore(pendingMaximizeSession);
+        if (activePip?.card === card) restorePip(activePip, true);
+        if (activeMaximize?.card === card) {
+          restoreMaximize();
+          return;
+        }
+        if (activeMaximize) restoreMaximize(true);
+
+        const rect = card.getBoundingClientRect();
+        if (!rect.width || !rect.height || !card.parentNode) {
+          reportError("全画面表示の開始位置を取得できません", { width: rect.width, height: rect.height });
+          return;
+        }
+
+        const borderRadius = window.getComputedStyle(card).borderRadius;
+        const snapshot = !prefersReducedMotion() && typeof card.animate === "function"
+          ? createTransitionSnapshot(card, rect, borderRadius)
+          : null;
+        const placeholder = createWidgetPlaceholder(card, rect);
+        const session = {
+          card,
+          placeholder,
+          borderRadius,
+          snapshot,
+          animation: null
+        };
+
+        card.parentNode.insertBefore(placeholder, card);
+        maximizeLayer.append(card);
+        activeMaximize = session;
+
+        card.classList.add("is-maximized", "is-transition-hidden");
+        document.getElementById("widget-strip")?.classList.add("is-arrived");
+        document.body.classList.add("is-maximized");
+
+        card.style.position = "fixed";
+        card.style.top = "0";
+        card.style.left = "0";
+        card.style.width = "100vw";
+        card.style.height = "100vh";
+        card.style.height = "100dvh";
+        card.style.margin = "0";
+        card.style.transformOrigin = "top left";
+        card.style.transform = "none";
+        card.style.willChange = "opacity";
+        card.style.transition = "none";
+        card.style.borderRadius = "0px";
+
+        maximizeLayer.classList.remove("is-closing");
+        maximizeLayer.classList.add("is-open");
+
+        if (snapshot) {
+          maximizeLayer.append(snapshot);
+
+          const viewport = viewportSize();
+          const scaleX = Math.max(.001, viewport.width / rect.width);
+          const scaleY = Math.max(.001, viewport.height / rect.height);
+          runSnapshotAnimation(session, [
+            {
+              transform: `translate3d(${rect.left}px, ${rect.top}px, 0) scale(1, 1)`,
+              borderRadius
+            },
+            {
+              transform: `translate3d(0, 0, 0) scale(${scaleX}, ${scaleY})`,
+              borderRadius: "0px"
+            }
+          ], 590).then(() => {
+            if (activeMaximize !== session) return;
+            session.snapshot?.remove();
+            session.snapshot = null;
+            session.animation = null;
+            revealCard(card);
+          });
+        } else {
+          revealCard(card);
+        }
+
+        log("カードを全画面表示しました", card.dataset.widget);
+      }
+
+      function resetTimeCard(card) {
+        if (typeof card._workspaceTimeReset === "function") {
+          card._workspaceTimeReset();
+          return;
+        }
+        reportError("時間ツールのリセット処理が見つかりません");
+      }
+
+      /* Attach the shared window controls to each card itself. This is important:
+         a card moved into a PIP document is no longer a descendant of `root`. */
+      root.querySelectorAll(".widget-card").forEach((widgetCard) => {
+        widgetCard.addEventListener("click", async (event) => {
+          const button = event.target.closest("button");
+          if (!button) return;
+          const card = getCard(button);
+          if (!card) return;
+
+          const action = button.dataset.action;
+          if (action === "pip") {
+            await openPip(card);
+            return;
+          }
+          if (action === "maximize") {
+            toggleMaximize(card);
+            return;
+          }
+          if (action === "copy") {
+            const widget = card.dataset.widget;
+            if (widget === "calculator") await copyText(getRole(card, "result")?.textContent, "計算結果をコピーしました");
+            else if (widget === "color") await copyText(getRole(card, "color-hex")?.value, "カラーコードをコピーしました");
+            return;
+          }
+          if (action === "clear") {
+            if (card.dataset.widget === "calculator") clearCalculator(card);
+            if (card.dataset.widget === "memo") clearMemo(card);
+            return;
+          }
+          if (action === "random-color") {
+            const input = getRole(card, "color-input");
+            if (input) {
+              const hex = `#${Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, "0")}`;
+              input.value = hex;
+              updateColor(card, hex);
+              log("ランダムカラーを生成しました", hex);
+            }
+            return;
+          }
+          if (action === "reset-time") {
+            resetTimeCard(card);
+            return;
+          }
+          if (action === "time-toggle") {
+            if (typeof card._workspaceTimeToggle === "function") card._workspaceTimeToggle();
+            else reportError("時間ツールの開始／停止処理が見つかりません");
+            return;
+          }
+          if (action === "pick-color") {
+            const input = getRole(card, "color-input");
+            if (input) input.click();
+            return;
+          }
+          if (action === "focus-memo") {
+            if (typeof card._workspaceNewMemo === "function") card._workspaceNewMemo();
+            else reportError("メモ作成処理が見つかりません");
+            return;
+          }
+        });
+      });
+
+      maximizeLayer.addEventListener("click", (event) => {
+        if (event.target === maximizeLayer) restoreMaximize();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && activeMaximize) {
+          restoreMaximize();
+          return;
+        }
+        if (event.target.closest?.("input, textarea, button")) return;
+        const calculator = root.querySelector('[data-widget="calculator"]');
+        if (!calculator || activePip?.card === calculator || activeMaximize?.card === calculator) return;
+        const allowed = /^[0-9.+\-*/()%]$/;
+        if (allowed.test(event.key)) {
+          event.preventDefault();
+          appendCalculatorInput(calculator, event.key);
+        } else if (event.key === "Enter" || event.key === "=") {
+          event.preventDefault();
+          calculate(calculator);
+        } else if (event.key === "Backspace") {
+          event.preventDefault();
+          backspaceCalculator(calculator);
+        } else if (event.key === "Escape") {
+          clearCalculator(calculator);
+        }
+      });
+
+      /* Calculator: recursive-descent parser; no eval or Function constructor. */
+      function evaluateExpression(source) {
+        const compact = source.replace(/\s+/g, "");
+        const tokens = compact.match(/(?:\d+(?:\.\d*)?|\.\d+)|[()+\-*/%]/g) || [];
+        if (!compact || tokens.join("") !== compact) throw new Error("式を確認してください");
+        let position = 0;
+        const peek = () => tokens[position];
+        const take = () => tokens[position++];
+
+        function primary() {
+          const token = take();
+          if (token === "(") {
+            const value = expression();
+            if (take() !== ")") throw new Error("括弧が閉じられていません");
+            return value;
+          }
+          if (token === undefined || !/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(token)) {
+            throw new Error("数値を入力してください");
+          }
+          return Number(token);
+        }
+        function unary() {
+          if (peek() === "+") { take(); return unary(); }
+          if (peek() === "-") { take(); return -unary(); }
+          let value = primary();
+          while (peek() === "%") { take(); value /= 100; }
+          return value;
+        }
+        function term() {
+          let value = unary();
+          while (peek() === "*" || peek() === "/") {
+            const operator = take();
+            const right = unary();
+            if (operator === "/" && right === 0) throw new Error("0で割ることはできません");
+            value = operator === "*" ? value * right : value / right;
+          }
+          return value;
+        }
+        function expression() {
+          let value = term();
+          while (peek() === "+" || peek() === "-") {
+            const operator = take();
+            const right = term();
+            value = operator === "+" ? value + right : value - right;
+          }
+          return value;
+        }
+        const result = expression();
+        if (position !== tokens.length || !Number.isFinite(result)) throw new Error("式を確認してください");
+        return Number.parseFloat(result.toPrecision(12)).toString();
+      }
+
+      function renderCalculator(card, expression, result, status = "Ready") {
+        const expressionNode = getRole(card, "expression");
+        const resultNode = getRole(card, "result");
+        const statusNode = getRole(card, "calc-status");
+        if (expressionNode) expressionNode.textContent = expression || "\u00a0";
+        if (resultNode) resultNode.textContent = result;
+        if (statusNode) statusNode.textContent = status;
+        card.dataset.expression = expression;
+        card.dataset.result = result;
+      }
+      function appendCalculatorInput(card, value) {
+        let expression = card.dataset.expression || "";
+        if (card.dataset.justEvaluated === "true") {
+          if (/^[0-9.(]$/.test(value)) expression = "";
+          else if (/^[+*/%-]$/.test(value)) expression = card.dataset.result || expression;
+        }
+        card.dataset.justEvaluated = "false";
+        expression += value;
+        renderCalculator(card, expression, expression || "0");
+      }
+      function clearCalculator(card) {
+        card.dataset.justEvaluated = "false";
+        renderCalculator(card, "", "0", "Cleared");
+        log("計算機をクリアしました");
+      }
+      function backspaceCalculator(card) {
+        const expression = (card.dataset.expression || "").slice(0, -1);
+        card.dataset.justEvaluated = "false";
+        renderCalculator(card, expression, expression || "0");
+      }
+      function calculate(card) {
+        const expression = card.dataset.expression || "";
+        if (!expression) return;
+        try {
+          const result = evaluateExpression(expression);
+          card.dataset.justEvaluated = "true";
+          renderCalculator(card, expression, result, "Calculated");
+          log("計算しました", { expression, result });
+        } catch (error) {
+          renderCalculator(card, expression, "Error", "入力エラー");
+          reportError("計算式を評価できません", error);
+        }
+      }
+      const calculatorCard = root.querySelector('[data-widget="calculator"]');
+      if (!calculatorCard) reportError("計算機カードが見つかりません");
+      else {
+        calculatorCard.addEventListener("click", (event) => {
+          const key = event.target.closest("[data-calc]");
+          if (!key) return;
+          const value = key.dataset.calc;
+          if (value === "clear") clearCalculator(calculatorCard);
+          else if (value === "backspace") backspaceCalculator(calculatorCard);
+          else if (value === "=") calculate(calculatorCard);
+          else appendCalculatorInput(calculatorCard, value);
+        });
+        log("計算機を初期化しました");
+      }
+
+      /* Stopwatch and countdown timer */
+      const timeCard = root.querySelector('[data-widget="time"]');
+      if (!timeCard) reportError("時間ツールカードが見つかりません");
+      else initializeTimeTools(timeCard);
+
+      function formatStopwatch(milliseconds) {
+        const totalCentiseconds = Math.floor(milliseconds / 10);
+        const minutes = Math.floor(totalCentiseconds / 6000);
+        const seconds = Math.floor((totalCentiseconds % 6000) / 100);
+        const centiseconds = totalCentiseconds % 100;
+        return `${String(minutes).padStart(2, "0")} ${String(seconds).padStart(2, "0")} ${String(centiseconds).padStart(2, "0")}`;
+      }
+      function formatTimer(milliseconds) {
+        const totalSeconds = Math.max(0, Math.ceil(milliseconds / 1000));
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(hours).padStart(2, "0")} ${String(minutes).padStart(2, "0")} ${String(seconds).padStart(2, "0")}`;
+      }
+      function initializeTimeTools(card) {
+        const state = {
+          mode: "stopwatch",
+          stopwatchRunning: false,
+          stopwatchStartedAt: 0,
+          stopwatchElapsed: 0,
+          stopwatchInterval: null,
+          laps: [],
+          timerRunning: false,
+          timerDeadline: 0,
+          timerRemaining: 0,
+          timerInitial: 0,
+          timerInterval: null
+        };
+        const stopwatchDisplay = getRole(card, "stopwatch-display");
+        const timerDisplay = getRole(card, "timer-display");
+        const status = getRole(card, "time-status");
+        const lapsNode = getRole(card, "laps");
+        const timerProgress = getRole(card, "timer-progress");
+        const startStopwatch = card.querySelector('[data-stopwatch="toggle"]');
+        const lapButton = card.querySelector('[data-stopwatch="lap"]');
+        const timerToggle = card.querySelector('[data-timer="toggle"]');
+        const headerToggle = card.querySelector('[data-action="time-toggle"]');
+
+        function setStatus(value) { if (status) status.textContent = value; }
+        function syncHeaderToggle() {
+          if (!headerToggle) return;
+          const running = state.mode === "timer" ? state.timerRunning : state.stopwatchRunning;
+          const icon = getRole(card, "time-toggle-icon");
+          if (icon) {
+            icon.innerHTML = running
+              ? '<path d="M6 4.5h3.2v11H6zM11 4.5h3.2v11H11z" fill="currentColor" stroke="none" />'
+              : '<path d="M6.5 4.5 16 10l-9.5 5.5z" fill="currentColor" stroke="none" />';
+          }
+          headerToggle.setAttribute("aria-label", running ? "一時停止" : "スタート");
+          headerToggle.title = running ? "一時停止" : "スタート";
+        }
+        function elapsedStopwatch() {
+          return state.stopwatchElapsed + (state.stopwatchRunning ? performance.now() - state.stopwatchStartedAt : 0);
+        }
+        function updateStopwatch() {
+          if (stopwatchDisplay) stopwatchDisplay.innerHTML = formatStopwatch(elapsedStopwatch());
+        }
+        function stopStopwatchInterval() {
+          if (state.stopwatchInterval !== null) window.clearInterval(state.stopwatchInterval);
+          state.stopwatchInterval = null;
+        }
+        function resetStopwatch() {
+          stopStopwatchInterval();
+          state.stopwatchRunning = false;
+          state.stopwatchElapsed = 0;
+          state.laps = [];
+          if (lapsNode) lapsNode.replaceChildren();
+          if (startStopwatch) startStopwatch.textContent = "スタート";
+          if (lapButton) lapButton.disabled = true;
+          updateStopwatch();
+          syncHeaderToggle();
+          setStatus("停止中");
+          log("ストップウォッチをリセットしました");
+        }
+        function toggleStopwatch() {
+          if (!state.stopwatchRunning) {
+            state.stopwatchRunning = true;
+            state.stopwatchStartedAt = performance.now();
+            if (startStopwatch) startStopwatch.textContent = "ストップ";
+            if (lapButton) lapButton.disabled = false;
+            syncHeaderToggle();
+            setStatus("計測中");
+            state.stopwatchInterval = window.setInterval(updateStopwatch, 30);
+            log("ストップウォッチを開始しました");
+          } else {
+            state.stopwatchElapsed = elapsedStopwatch();
+            state.stopwatchRunning = false;
+            stopStopwatchInterval();
+            if (startStopwatch) startStopwatch.textContent = "再開";
+            syncHeaderToggle();
+            setStatus("一時停止中");
+            updateStopwatch();
+            log("ストップウォッチを停止しました");
+          }
+        }
+        function addLap() {
+          if (!state.stopwatchRunning) return;
+          const elapsed = elapsedStopwatch();
+          const previous = state.laps.at(-1) || 0;
+          state.laps.push(elapsed);
+          if (!lapsNode) return;
+          const item = document.createElement("li");
+          const label = document.createElement("span");
+          const value = document.createElement("span");
+          label.textContent = `ラップ ${state.laps.length}`;
+          value.textContent = `+${formatStopwatch(elapsed - previous).replace(/<small>|<\/small>/g, "")}`;
+          item.append(label, value);
+          lapsNode.prepend(item);
+          log("ラップを記録しました", state.laps.length);
+        }
+
+        function readTimerInput() {
+          const read = (name, max) => {
+            const input = card.querySelector(`[data-timer-input="${name}"]`);
+            if (!input) { reportError(`タイマー入力欄がありません: ${name}`); return 0; }
+            const value = Number.parseInt(input.value, 10);
+            const normalized = Number.isFinite(value) ? Math.min(max, Math.max(0, value)) : 0;
+            input.value = String(normalized);
+            return normalized;
+          };
+          return (read("hours", 99) * 3600 + read("minutes", 59) * 60 + read("seconds", 59)) * 1000;
+        }
+        function stopTimerInterval() {
+          if (state.timerInterval !== null) window.clearInterval(state.timerInterval);
+          state.timerInterval = null;
+        }
+        function updateTimer() {
+          const remaining = Math.max(0, state.timerDeadline - Date.now());
+          state.timerRemaining = remaining;
+          if (timerDisplay) timerDisplay.innerHTML = formatTimer(remaining);
+          if (timerProgress) {
+            const percent = state.timerInitial > 0 ? (1 - remaining / state.timerInitial) * 100 : 0;
+            timerProgress.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+          }
+          if (remaining <= 0 && state.timerRunning) {
+            state.timerRunning = false;
+            stopTimerInterval();
+            if (timerToggle) timerToggle.textContent = "スタート";
+            syncHeaderToggle();
+            setStatus("時間になりました");
+            showToast("タイマーが終了しました");
+            log("タイマーが終了しました");
+          }
+        }
+        function resetTimer() {
+          stopTimerInterval();
+          state.timerRunning = false;
+          state.timerRemaining = readTimerInput();
+          state.timerInitial = state.timerRemaining;
+          if (timerToggle) timerToggle.textContent = "スタート";
+          updateTimer();
+          syncHeaderToggle();
+          setStatus("停止中");
+          log("タイマーをリセットしました");
+        }
+        function toggleTimer() {
+          if (!state.timerRunning) {
+            const selected = state.timerRemaining > 0 ? state.timerRemaining : readTimerInput();
+            if (selected <= 0) {
+              showToast("時間を設定してください");
+              return;
+            }
+            state.timerRemaining = selected;
+            if (state.timerInitial <= 0 || state.timerRemaining === readTimerInput()) state.timerInitial = selected;
+            state.timerDeadline = Date.now() + selected;
+            state.timerRunning = true;
+            if (timerToggle) timerToggle.textContent = "一時停止";
+            syncHeaderToggle();
+            setStatus("カウントダウン中");
+            state.timerInterval = window.setInterval(updateTimer, 100);
+            updateTimer();
+            log("タイマーを開始しました", selected);
+          } else {
+            state.timerRemaining = Math.max(0, state.timerDeadline - Date.now());
+            state.timerRunning = false;
+            stopTimerInterval();
+            if (timerToggle) timerToggle.textContent = "再開";
+            updateTimer();
+            syncHeaderToggle();
+            setStatus("一時停止中");
+            log("タイマーを一時停止しました");
+          }
+        }
+
+        card.addEventListener("click", (event) => {
+          const stopwatchSurface = event.target.closest('[data-role="stopwatch-display"]');
+          if (stopwatchSurface) {
+            addLap();
+            return;
+          }
+          const modeButton = event.target.closest("[data-time-mode]");
+          if (modeButton) {
+            state.mode = modeButton.dataset.timeMode;
+            card.dataset.timeMode = state.mode;
+            card.querySelectorAll("[data-time-mode]").forEach((button) => button.setAttribute("aria-pressed", String(button === modeButton)));
+            card.querySelectorAll("[data-time-panel]").forEach((panel) => { panel.hidden = panel.dataset.timePanel !== state.mode; });
+            setStatus(state.mode === "timer" ? "タイマー" : "ストップウォッチ");
+            syncHeaderToggle();
+            log("時間ツールのモードを変更しました", state.mode);
+            return;
+          }
+          const stopwatchAction = event.target.closest("[data-stopwatch]")?.dataset.stopwatch;
+          if (stopwatchAction === "toggle") toggleStopwatch();
+          else if (stopwatchAction === "lap") addLap();
+          else if (stopwatchAction === "reset") resetStopwatch();
+          const timerAction = event.target.closest("[data-timer]")?.dataset.timer;
+          if (timerAction === "toggle") toggleTimer();
+          else if (timerAction === "reset") resetTimer();
+        });
+        card.addEventListener("keydown", (event) => {
+          if (event.target.matches('[data-role="stopwatch-display"]') && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
+            addLap();
+          }
+        });
+        card.addEventListener("change", (event) => {
+          if (event.target.matches("[data-timer-input]") && !state.timerRunning) resetTimer();
+        });
+
+        card._workspaceTimeReset = () => state.mode === "timer" ? resetTimer() : resetStopwatch();
+        card._workspaceTimeToggle = () => state.mode === "timer" ? toggleTimer() : toggleStopwatch();
+        resetStopwatch();
+        resetTimer();
+      }
+
+      /* Color picker: editable HEX field is the visible color value. */
+      const colorCard = root.querySelector('[data-widget="color"]');
+      function updateColor(card, rawValue) {
+        const hex = String(rawValue || "").trim().toUpperCase();
+        if (!/^#[0-9A-F]{6}$/.test(hex)) return false;
+        const colorInput = getRole(card, "color-input");
+        const hexInput = getRole(card, "color-hex");
+        const caption = card.querySelector(".color-caption");
+        const rgbNode = getRole(card, "color-rgb");
+        const red = Number.parseInt(hex.slice(1, 3), 16);
+        const green = Number.parseInt(hex.slice(3, 5), 16);
+        const blue = Number.parseInt(hex.slice(5, 7), 16);
+        if (colorInput) colorInput.value = hex.toLowerCase();
+        if (hexInput && hexInput.value !== hex) hexInput.value = hex;
+        card.style.backgroundColor = hex;
+        const luminance = .2126 * (red / 255) + .7152 * (green / 255) + .0722 * (blue / 255);
+        const foreground = luminance > .58 ? "#050505" : "#ffffff";
+        if (hexInput) hexInput.style.color = foreground;
+        if (caption) caption.style.color = foreground;
+        if (rgbNode) rgbNode.textContent = `rgb(${red}, ${green}, ${blue})`;
+        return true;
+      }
+      if (!colorCard) reportError("カラーピッカーカードが見つかりません");
+      else {
+        const colorInput = getRole(colorCard, "color-input");
+        const hexInput = getRole(colorCard, "color-hex");
+        if (!colorInput || !hexInput) {
+          reportError("カラーピッカーの入力要素が不足しています");
+        } else {
+          colorInput.addEventListener("input", () => updateColor(colorCard, colorInput.value));
+          hexInput.addEventListener("input", () => {
+            if (/^#[0-9A-Fa-f]{6}$/.test(hexInput.value.trim())) updateColor(colorCard, hexInput.value);
+          });
+          hexInput.addEventListener("change", () => {
+            if (!updateColor(colorCard, hexInput.value)) {
+              showToast("HEXは #RRGGBB の形式で入力してください");
+              hexInput.value = colorInput.value.toUpperCase();
+            }
+          });
+          hexInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") hexInput.blur();
+          });
+          updateColor(colorCard, colorInput.value || "#00ff88");
+          log("カラーピッカーを初期化しました");
+        }
+      }
+
+      /* Memo list: each note has an independent title and body. */
+      const memoCard = root.querySelector('[data-widget="memo"]');
+      function initializeMemo(card) {
+        const list = getRole(card, "memo-list");
+        const empty = getRole(card, "memo-empty");
+        const editor = getRole(card, "memo-editor");
+        const titleInput = getRole(card, "memo-title");
+        const bodyInput = getRole(card, "memo-body");
+        const status = getRole(card, "memo-status");
+        const deleteButton = card.querySelector('[data-memo-action="delete"]');
+        if (!list || !empty || !editor || !titleInput || !bodyInput || !deleteButton) {
+          reportError("メモ一覧に必要な要素が見つかりません");
+          return;
+        }
+
+        let notes = [];
+        let editingId = null;
+        try {
+          const savedNotes = safeStorage.get(STORAGE_KEYS.memoNotes, "");
+          if (savedNotes) {
+            const parsed = JSON.parse(savedNotes);
+            if (Array.isArray(parsed)) {
+              notes = parsed.filter((note) => note && typeof note === "object")
+                .map((note) => ({
+                  id: String(note.id || createMemoId()),
+                  title: String(note.title || "無題").slice(0, 100),
+                  body: String(note.body || "")
+                }));
+            }
+          } else {
+            const legacyText = safeStorage.get(STORAGE_KEYS.memo, "");
+            if (legacyText.trim()) {
+              notes = [{ id: createMemoId(), title: "メモ", body: legacyText }];
+              safeStorage.set(STORAGE_KEYS.memoNotes, JSON.stringify(notes));
+              log("旧形式のメモをタイトル・本文形式に移行しました");
+            }
+          }
+        } catch (error) {
+          reportError("保存済みメモを読み込めません", error);
+          notes = [];
+        }
+
+        function createMemoId() {
+          if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+          return `memo-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+        }
+
+        function persist(nextNotes) {
+          const saved = safeStorage.set(STORAGE_KEYS.memoNotes, JSON.stringify(nextNotes));
+          if (status) status.textContent = saved ? "保存済み" : "保存できません";
+          if (!saved) return false;
+          notes = nextNotes;
+          log("メモ一覧を保存しました", { count: notes.length });
+          renderList();
+          return true;
+        }
+
+        function renderList() {
+          const fragment = document.createDocumentFragment();
+          for (const note of notes) {
+            const item = document.createElement("button");
+            item.type = "button";
+            item.className = "memo-item";
+            item.dataset.memoId = note.id;
+            item.setAttribute("aria-label", `${note.title}を編集`);
+
+            const title = document.createElement("span");
+            title.className = "memo-item-title";
+            title.textContent = note.title || "無題";
+
+            const preview = document.createElement("span");
+            preview.className = "memo-item-preview";
+            preview.textContent = note.body.trim() || "本文なし";
+
+            item.append(title, preview);
+            fragment.append(item);
+          }
+          list.replaceChildren(fragment);
+          list.hidden = notes.length === 0;
+          empty.hidden = notes.length !== 0;
+        }
+
+        function closeEditor() {
+          editor.hidden = true;
+          editingId = null;
+          titleInput.value = "";
+          bodyInput.value = "";
+          deleteButton.hidden = true;
+          renderList();
+        }
+
+        function openEditor(noteId = null) {
+          const note = noteId ? notes.find((entry) => entry.id === noteId) : null;
+          if (noteId && !note) {
+            reportError("編集対象のメモが見つかりません", noteId);
+            return;
+          }
+          editingId = note?.id || null;
+          titleInput.value = note?.title || "";
+          bodyInput.value = note?.body || "";
+          deleteButton.hidden = !note;
+          list.hidden = true;
+          empty.hidden = true;
+          editor.hidden = false;
+          titleInput.focus();
+          log(note ? "メモを編集します" : "新しいメモを作成します");
+        }
+
+        function saveEditor() {
+          const title = titleInput.value.trim();
+          const body = bodyInput.value;
+          if (!title) {
+            showToast("タイトルを入力してください");
+            titleInput.focus();
+            return;
+          }
+          let nextNotes;
+          if (editingId) {
+            nextNotes = notes.map((note) => note.id === editingId ? { ...note, title, body } : note);
+          } else {
+            nextNotes = [{ id: createMemoId(), title, body }, ...notes];
+          }
+          if (persist(nextNotes)) closeEditor();
+        }
+
+        function deleteEditingNote() {
+          if (!editingId) return;
+          const nextNotes = notes.filter((note) => note.id !== editingId);
+          if (persist(nextNotes)) {
+            closeEditor();
+            showToast("メモを削除しました");
+          }
+        }
+
+        card.addEventListener("click", (event) => {
+          const noteButton = event.target.closest("[data-memo-id]");
+          if (noteButton && card.contains(noteButton)) {
+            openEditor(noteButton.dataset.memoId);
+            return;
+          }
+          const actionButton = event.target.closest("[data-memo-action]");
+          if (!actionButton || !card.contains(actionButton)) return;
+          const action = actionButton.dataset.memoAction;
+          if (action === "save") saveEditor();
+          else if (action === "cancel") closeEditor();
+          else if (action === "delete") deleteEditingNote();
+        });
+
+        card._workspaceNewMemo = () => openEditor();
+        card._workspaceClearMemo = () => {
+          if (persist([])) {
+            closeEditor();
+            log("すべてのメモを消去しました");
+          }
+        };
+        renderList();
+      }
+
+      function clearMemo(card) {
+        if (typeof card._workspaceClearMemo === "function") card._workspaceClearMemo();
+        else reportError("メモの初期化処理が見つかりません");
+      }
+      if (!memoCard) reportError("メモカードが見つかりません");
+      else {
+        initializeMemo(memoCard);
+        log("メモ一覧を初期化しました");
+      }
+
+      /* Calendar: local date keys avoid UTC date-shift issues. */
+      const calendarCard = root.querySelector('[data-widget="calendar"]');
+      function localDateKey(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      }
+      function parseDateKey(key) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key);
+        if (!match) return null;
+        const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+      function initializeCalendar(card) {
+        const now = new Date();
+        const state = {
+          month: new Date(now.getFullYear(), now.getMonth(), 1),
+          selected: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+          events: {}
+        };
+        const monthNode = getRole(card, "calendar-month");
+        const yearNode = getRole(card, "calendar-year");
+        const grid = getRole(card, "calendar-grid");
+        const selectedNode = getRole(card, "calendar-selected-date");
+        const eventInput = getRole(card, "calendar-event-input");
+        const status = getRole(card, "calendar-status");
+        const weekdayNames = ["月", "火", "水", "木", "金", "土", "日"];
+
+        try {
+          const parsed = JSON.parse(safeStorage.get(STORAGE_KEYS.calendar, "{}"));
+          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+            state.events = Object.fromEntries(Object.entries(parsed).filter(([key, value]) => /^\d{4}-\d{2}-\d{2}$/.test(key) && typeof value === "string"));
+          }
+        } catch (error) {
+          reportError("カレンダーの保存データが壊れています。空の予定表で起動します", error);
+          state.events = {};
+        }
+
+        function formatSelected(date) {
+          const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+          return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日（${weekdays[date.getDay()]}）`;
+        }
+        function saveEvents() {
+          const saved = safeStorage.set(STORAGE_KEYS.calendar, JSON.stringify(state.events));
+          if (status) status.textContent = saved ? "この端末に保存" : "保存できません";
+          if (saved) log("カレンダーの予定を保存しました");
+          return saved;
+        }
+        function updateSelected() {
+          const key = localDateKey(state.selected);
+          if (selectedNode) selectedNode.textContent = formatSelected(state.selected);
+          if (eventInput) eventInput.value = state.events[key] || "";
+        }
+        function render() {
+          if (!grid || !monthNode || !yearNode) return;
+          monthNode.textContent = `${state.month.getMonth() + 1}月`;
+          yearNode.textContent = String(state.month.getFullYear());
+          const firstDay = new Date(state.month.getFullYear(), state.month.getMonth(), 1);
+          const daysInMonth = new Date(state.month.getFullYear(), state.month.getMonth() + 1, 0).getDate();
+          const offset = (firstDay.getDay() + 6) % 7;
+          const cellCount = Math.ceil((offset + daysInMonth) / 7) * 7;
+          const todayKey = localDateKey(new Date());
+          const selectedKey = localDateKey(state.selected);
+          const fragment = document.createDocumentFragment();
+
+          weekdayNames.forEach((name) => {
+            const heading = document.createElement("div");
+            heading.className = "calendar-weekday";
+            heading.textContent = name;
+            fragment.append(heading);
+          });
+          for (let index = 0; index < cellCount; index += 1) {
+            const date = new Date(state.month.getFullYear(), state.month.getMonth(), 1 - offset + index);
+            const key = localDateKey(date);
+            const day = document.createElement("button");
+            day.type = "button";
+            day.className = "calendar-day";
+            day.dataset.date = key;
+            day.textContent = String(date.getDate());
+            day.setAttribute("aria-label", formatSelected(date));
+            if (date.getMonth() !== state.month.getMonth()) day.classList.add("outside");
+            if (key === todayKey) day.classList.add("today");
+            if (key === selectedKey) day.classList.add("selected");
+            if (state.events[key]) day.classList.add("has-event");
+            fragment.append(day);
+          }
+          grid.replaceChildren(fragment);
+          updateSelected();
+        }
+        function shiftMonth(amount) {
+          state.month = new Date(state.month.getFullYear(), state.month.getMonth() + amount, 1);
+          render();
+          log("カレンダーの月を変更しました", localDateKey(state.month));
+        }
+        card.addEventListener("click", (event) => {
+          const day = event.target.closest("[data-date]");
+          if (day) {
+            const date = parseDateKey(day.dataset.date);
+            if (!date) { reportError("カレンダーの日付を読み取れません", day.dataset.date); return; }
+            state.selected = date;
+            state.month = new Date(date.getFullYear(), date.getMonth(), 1);
+            render();
+            return;
+          }
+          const action = event.target.closest("[data-calendar]")?.dataset.calendar;
+          if (action === "previous") shiftMonth(-1);
+          else if (action === "next") shiftMonth(1);
+          else if (action === "today") {
+            const today = new Date();
+            state.month = new Date(today.getFullYear(), today.getMonth(), 1);
+            state.selected = today;
+            render();
+          } else if (action === "save") {
+            if (!eventInput) return;
+            const key = localDateKey(state.selected);
+            const value = eventInput.value.trim();
+            if (value) state.events[key] = value;
+            else delete state.events[key];
+            saveEvents();
+            render();
+            showToast(value ? "予定を保存しました" : "予定を削除しました");
+          } else if (action === "delete") {
+            const key = localDateKey(state.selected);
+            delete state.events[key];
+            if (eventInput) eventInput.value = "";
+            saveEvents();
+            render();
+            showToast("予定を削除しました");
+          }
+        });
+        render();
+        log("カレンダーを初期化しました");
+      }
+      if (!calendarCard) reportError("カレンダーカードが見つかりません");
+      else initializeCalendar(calendarCard);
+
+      log("Workspaceを初期化しました", {
+        widgets: root.querySelectorAll(".widget-card").length,
+        pictureInPicture: "documentPictureInPicture" in window,
+        secureContext: window.isSecureContext
+      });
+    })();
+  </script>
+
+  <div class="widget-strip" id="widget-strip" role="group" aria-label="時計、日付、バッテリー">
+    <section class="widget-strip__pill widget-strip__pill--clock" aria-label="現在時刻">
+      <div class="widget-strip__clock-emblem" aria-hidden="true">
+        <span class="widget-strip__clock-base"></span>
+        <span class="widget-strip__clock-mask widget-strip__clock-mask--minute"><span class="widget-strip__clock-paint"></span></span>
+        <span class="widget-strip__clock-mask widget-strip__clock-mask--hour"><span class="widget-strip__clock-paint"></span></span>
+        <span class="widget-strip__clock-mask widget-strip__clock-mask--second"><span class="widget-strip__clock-paint"></span></span>
+      </div>
+      <time class="widget-strip__clock-text" id="widgetStripClockText">
+        <span id="widgetStripHours">--</span> <span class="widget-strip__clock-minute" id="widgetStripMinutes">--</span>
+      </time>
+    </section>
+
+    <section class="widget-strip__pill widget-strip__pill--calendar" aria-label="今日の日付">
+      <div class="widget-strip__calendar-emblem" aria-hidden="true">
+        <span class="widget-strip__calendar-glow"></span>
+      </div>
+      <time class="widget-strip__calendar-text" id="widgetStripCalendarText">
+        <span id="widgetStripWeekday">---</span><span class="widget-strip__calendar-day" id="widgetStripDay">--</span>
+      </time>
+    </section>
+
+    <section class="widget-strip__pill widget-strip__pill--value" aria-label="バッテリー残量75パーセント">
+      <span class="widget-strip__value-fill" aria-hidden="true"></span>
+      <span class="widget-strip__value-text">75</span>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const widgetStrip = document.getElementById("widget-strip");
+      const clockText = document.getElementById("widgetStripClockText");
+      const hoursText = document.getElementById("widgetStripHours");
+      const minutesText = document.getElementById("widgetStripMinutes");
+      const calendarText = document.getElementById("widgetStripCalendarText");
+      const weekdayText = document.getElementById("widgetStripWeekday");
+      const dayText = document.getElementById("widgetStripDay");
+
+      if (![widgetStrip, clockText, hoursText, minutesText, calendarText, weekdayText, dayText].every(Boolean)) {
+        console.error("[WidgetStrip] 必要な要素が見つかりません。");
+        return;
+      }
+
+      widgetStrip.addEventListener("animationend", (event) => {
+        if (event.animationName === "widget-dock-arrive") widgetStrip.classList.add("is-arrived");
+      }, { once: true });
+
+      const weekdayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "short" });
+      let intervalId = 0;
+      let lastCalendarKey = "";
+      const pad2 = (value) => String(value).padStart(2, "0");
+
+      function updateWidgetStrip() {
+        const now = new Date();
+        const hour = now.getHours();
+        const minute = now.getMinutes();
+        const second = now.getSeconds() + now.getMilliseconds() / 1000;
+
+        const hourAngle = ((hour % 12) + minute / 60 + second / 3600) * 30;
+        const minuteAngle = (minute + second / 60) * 6;
+        const secondAngle = second * 6;
+
+        widgetStrip.style.setProperty("--clock-hour-gradient-angle", `${hourAngle}deg`);
+        widgetStrip.style.setProperty("--clock-minute-gradient-angle", `${minuteAngle}deg`);
+        widgetStrip.style.setProperty("--clock-second-gradient-angle", `${secondAngle}deg`);
+
+        const hoursValue = pad2(hour);
+        const minutesValue = pad2(minute);
+        hoursText.textContent = hoursValue;
+        minutesText.textContent = minutesValue;
+        clockText.dateTime = [
+          now.getFullYear(), pad2(now.getMonth() + 1), pad2(now.getDate())
+        ].join("-") + `T${hoursValue}:${minutesValue}:${pad2(now.getSeconds())}`;
+
+        const calendarKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+        if (calendarKey !== lastCalendarKey) {
+          widgetStrip.style.setProperty("--calendar-month-angle", `${now.getMonth() * 30}deg`);
+          weekdayText.textContent = weekdayFormatter.format(now);
+          dayText.textContent = String(now.getDate());
+          calendarText.dateTime = [
+            now.getFullYear(), pad2(now.getMonth() + 1), pad2(now.getDate())
+          ].join("-");
+          lastCalendarKey = calendarKey;
+        }
+      }
+
+      function startClock() {
+        if (intervalId) window.clearInterval(intervalId);
+        updateWidgetStrip();
+        intervalId = window.setInterval(updateWidgetStrip, 100);
+      }
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          if (intervalId) window.clearInterval(intervalId);
+          intervalId = 0;
+        } else {
+          startClock();
+        }
+      });
+
+      startClock();
+    })();
+  </script>
+
+</body>
+</html>
