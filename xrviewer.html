@@ -1,0 +1,1177 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="data:,">
+  <title>AR Model Viewer</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      background: #000;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      overscroll-behavior: none;
+    }
+
+    body {
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #ar-model-stage {
+      position: fixed;
+      inset: 0 0 auto 0;
+      width: 33.333333vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: #000;
+      isolation: isolate;
+    }
+
+    #ar-model-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      outline: none;
+    }
+
+    #ar-model-open {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      width: min(78%, 260px);
+      padding: 20px 14px;
+      transform: translate(-50%, -50%);
+      border: 1px solid #353535;
+      border-radius: 12px;
+      background: #090909;
+      color: #f2f2f2;
+      font: inherit;
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, opacity 180ms ease;
+    }
+
+    #ar-model-open:hover,
+    #ar-model-open:focus-visible {
+      border-color: #777;
+      background: #121212;
+      outline: none;
+    }
+
+    #ar-model-open[hidden],
+    #ar-model-status[hidden] {
+      display: none;
+    }
+
+    #ar-model-open strong {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    #ar-model-open span {
+      color: #888;
+      font-size: 11px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    #ar-model-status {
+      position: absolute;
+      right: 12px;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      left: 12px;
+      color: #aaa;
+      font-size: 11px;
+      line-height: 1.5;
+      text-align: center;
+      pointer-events: none;
+      overflow-wrap: anywhere;
+    }
+
+    #ar-model-stage.is-dragover::after {
+      position: absolute;
+      inset: 10px;
+      border: 1px dashed #777;
+      border-radius: 10px;
+      content: "モデルをドロップ";
+      display: grid;
+      place-items: center;
+      color: #ddd;
+      background: rgb(0 0 0 / 72%);
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    body.has-model #ar-model-open {
+      display: none;
+    }
+
+    @media (max-width: 680px) {
+      #ar-model-stage {
+        width: 33.333333vw;
+      }
+
+      #ar-model-open {
+        width: calc(100% - 16px);
+        padding: 14px 6px;
+        border-radius: 8px;
+      }
+
+      #ar-model-open strong {
+        font-size: 11px;
+      }
+
+      #ar-model-open span {
+        font-size: 9px;
+      }
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+    <p>1가 2나 3다 4라 5마 6바 7사 8아 9자 A차 B카 C타 D파 E하</p>
+  <main id="ar-model-stage" aria-label="3Dモデル表示領域">
+    <canvas id="ar-model-canvas" aria-label="3Dモデル"></canvas>
+
+    <button id="ar-model-open" type="button">
+      <strong>モデルを開く</strong>
+      <span>OBJ / USD / USDC / USDZ<br>ファイルを選択、またはここへドロップ</span>
+    </button>
+
+    <div id="ar-model-status" role="status" aria-live="polite" hidden></div>
+  </main>
+
+  <input
+    id="ar-model-file-input"
+    type="file"
+    accept=".obj,.mtl,.usd,.usda,.usdc,.usdz,.png,.jpg,.jpeg,.webp,.avif"
+    multiple
+    hidden
+  >
+  <input
+    id="ar-model-material-input"
+    type="file"
+    accept=".mtl,.png,.jpg,.jpeg,.webp,.avif"
+    multiple
+    hidden
+  >
+
+  <script type="module">
+    "use strict";
+
+    (async () => {
+      const stage = document.getElementById("ar-model-stage");
+      const canvas = document.getElementById("ar-model-canvas");
+      const openButton = document.getElementById("ar-model-open");
+      const fileInput = document.getElementById("ar-model-file-input");
+      const materialInput = document.getElementById("ar-model-material-input");
+      const status = document.getElementById("ar-model-status");
+
+      const requiredElements = [
+        ["#ar-model-stage", stage],
+        ["#ar-model-canvas", canvas],
+        ["#ar-model-open", openButton],
+        ["#ar-model-file-input", fileInput],
+        ["#ar-model-material-input", materialInput],
+        ["#ar-model-status", status]
+      ];
+
+      const missingElements = requiredElements
+        .filter(([, element]) => !element)
+        .map(([selector]) => selector);
+
+      if (missingElements.length > 0) {
+        console.error("[AR Model Viewer] 必須要素が見つかりません:", missingElements.join(", "));
+        return;
+      }
+
+      let THREE;
+      let OBJLoader;
+      let MTLLoader;
+      let USDLoader;
+
+      try {
+        [THREE, { OBJLoader }, { MTLLoader }, { USDLoader }] = await Promise.all([
+          import("three"),
+          import("three/addons/loaders/OBJLoader.js"),
+          import("three/addons/loaders/MTLLoader.js"),
+          import("three/addons/loaders/USDLoader.js")
+        ]);
+      } catch (error) {
+        console.error("[AR Model Viewer] Three.jsモジュールの読み込みに失敗しました。", error);
+        status.hidden = false;
+        status.textContent = "Three.jsを読み込めません。ネットワーク接続を確認してください。";
+        openButton.hidden = true;
+        return;
+      }
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x000000);
+
+      const camera = new THREE.PerspectiveCamera(34, 1, 0.001, 10000);
+      camera.position.set(0, 0, 5);
+
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: false,
+        powerPreference: "high-performance"
+      });
+
+      renderer.setClearColor(0x000000, 1);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.NoToneMapping;
+
+      scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x454545, 1.8));
+
+      const keyLight = new THREE.DirectionalLight(0xffffff, 2.1);
+      keyLight.position.set(4, 6, 5);
+      scene.add(keyLight);
+
+      const fillLight = new THREE.DirectionalLight(0xffffff, 1.25);
+      fillLight.position.set(-4, 2, -4);
+      scene.add(fillLight);
+
+      const topLight = new THREE.DirectionalLight(0xffffff, 0.55);
+      topLight.position.set(0, 7, 0);
+      scene.add(topLight);
+
+      let currentPivot = null;
+      let currentResourceContext = null;
+      let loadedFiles = [];
+      let loadedModelFile = null;
+      let baseCameraDistance = 5;
+      let currentModelRadius = 1;
+      let zoomFactor = 1;
+      let loadSequence = 0;
+      let resizeObserver = null;
+
+      const MAX_ZOOM = 8;
+      const MIN_ZOOM = 0.15;
+      const WHEEL_ROTATION_FACTOR = 0.0025;
+      const KEY_ROTATION_STEP = THREE.MathUtils.degToRad(8);
+
+      function setStatus(message, visible = true) {
+        status.textContent = message;
+        status.hidden = !visible;
+      }
+
+      function decodeReference(value) {
+        let result = String(value || "").trim();
+        result = result.replace(/^@|@$/g, "");
+
+        try {
+          result = decodeURIComponent(result);
+        } catch (error) {
+          console.warn("[AR Model Viewer] ファイル参照のURLデコードをスキップしました。", error);
+        }
+
+        // A model may store an absolute file:/// URL from the computer it was exported on.
+        // Strip the scheme and match the decoded path against user-selected File objects.
+        result = result.replace(/^file:\/\//i, "");
+        result = result.replace(/^localhost\//i, "/");
+        result = result.split(/[?#]/, 1)[0];
+        return result;
+      }
+
+      function normalizePath(value) {
+        return decodeReference(value)
+          .replace(/\\/g, "/")
+          .replace(/^\.\//, "")
+          .replace(/^\/+/, "")
+          .toLowerCase();
+      }
+
+      function createResourceContext(initialFiles) {
+        const filesByPath = new Map();
+        const filesByName = new Map();
+        const urlsByFile = new Map();
+        const objectUrls = new Set();
+
+        function addFiles(files) {
+          for (const file of Array.from(files || [])) {
+            if (!(file instanceof File)) continue;
+
+            const relativePath = file.webkitRelativePath || file.name;
+            const normalizedPath = normalizePath(relativePath);
+            const normalizedName = normalizePath(file.name);
+
+            filesByPath.set(normalizedPath, file);
+
+            if (!filesByName.has(normalizedName)) {
+              filesByName.set(normalizedName, []);
+            }
+
+            const candidates = filesByName.get(normalizedName);
+            if (!candidates.includes(file)) candidates.push(file);
+          }
+        }
+
+        addFiles(initialFiles);
+
+        function findFile(reference, ownerFile = null) {
+          const normalizedReference = normalizePath(reference);
+          if (!normalizedReference) return null;
+
+          if (filesByPath.has(normalizedReference)) {
+            return filesByPath.get(normalizedReference);
+          }
+
+          if (ownerFile && ownerFile.webkitRelativePath) {
+            const ownerPath = normalizePath(ownerFile.webkitRelativePath);
+            const ownerFolder = ownerPath.includes("/")
+              ? ownerPath.slice(0, ownerPath.lastIndexOf("/") + 1)
+              : "";
+            const relativeCandidate = `${ownerFolder}${normalizedReference}`;
+
+            if (filesByPath.has(relativeCandidate)) {
+              return filesByPath.get(relativeCandidate);
+            }
+          }
+
+          const suffixMatches = [...filesByPath.entries()]
+            .filter(([path]) => path.endsWith(`/${normalizedReference}`));
+
+          if (suffixMatches.length === 1) {
+            return suffixMatches[0][1];
+          }
+
+          const basename = normalizedReference.split("/").pop();
+          const candidates = filesByName.get(basename) || [];
+          return candidates.length === 1 ? candidates[0] : null;
+        }
+
+        function getObjectUrl(file) {
+          if (!urlsByFile.has(file)) {
+            const objectUrl = URL.createObjectURL(file);
+            urlsByFile.set(file, objectUrl);
+            objectUrls.add(objectUrl);
+          }
+
+          return urlsByFile.get(file);
+        }
+
+        function resolveUrl(url) {
+          const reference = String(url || "");
+
+          if (/^(blob:|data:|https?:)/i.test(reference)) {
+            return reference;
+          }
+
+          const file = findFile(reference);
+
+          if (!file) {
+            console.warn(`[AR Model Viewer] 参照ファイルが選択されていません: ${reference}`);
+            return reference;
+          }
+
+          return getObjectUrl(file);
+        }
+
+        return {
+          addFiles,
+          findFile,
+          getObjectUrl,
+          objectUrls,
+          resolveUrl,
+          revoke() {
+            for (const objectUrl of objectUrls) {
+              URL.revokeObjectURL(objectUrl);
+            }
+
+            objectUrls.clear();
+            urlsByFile.clear();
+          }
+        };
+      }
+
+      function disposeMaterial(material) {
+        if (!material) return;
+
+        for (const value of Object.values(material)) {
+          if (value && value.isTexture) {
+            value.dispose();
+          }
+        }
+
+        if (material.uniforms) {
+          for (const uniform of Object.values(material.uniforms)) {
+            const value = uniform && uniform.value;
+            if (value && value.isTexture) {
+              value.dispose();
+            }
+          }
+        }
+
+        material.dispose();
+      }
+
+      function disposeModel(root) {
+        if (!root) return;
+
+        root.traverse((object) => {
+          if (object.geometry && typeof object.geometry.dispose === "function") {
+            object.geometry.dispose();
+          }
+
+          if (Array.isArray(object.material)) {
+            object.material.forEach(disposeMaterial);
+          } else if (object.material) {
+            disposeMaterial(object.material);
+          }
+        });
+      }
+
+      function forEachMaterial(mesh, callback) {
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        for (const material of materials) {
+          if (material) callback(material);
+        }
+      }
+
+      function prepareModelMaterials(model) {
+        let meshCount = 0;
+        let vertexCount = 0;
+        let uvMeshCount = 0;
+        let fallbackMaterialCount = 0;
+        let brightenedMaterialCount = 0;
+
+        model.traverse((object) => {
+          if (!object.isMesh || !object.geometry) return;
+
+          meshCount += 1;
+          const position = object.geometry.getAttribute("position");
+          if (position) vertexCount += position.count;
+
+          if (object.geometry.getAttribute("uv")) uvMeshCount += 1;
+
+          if (!position || position.count < 3) {
+            console.warn(`[AR Model Viewer] 頂点データが不足しているメッシュを検出: ${object.name || "(unnamed)"}`);
+          }
+
+          if (!object.geometry.getAttribute("normal") && position && position.count >= 3) {
+            object.geometry.computeVertexNormals();
+          }
+
+          if (!object.material) {
+            object.material = new THREE.MeshStandardMaterial({
+              color: 0xc7cbd1,
+              roughness: 0.72,
+              metalness: 0
+            });
+            fallbackMaterialCount += 1;
+          }
+
+          forEachMaterial(object, (material) => {
+            // AR viewing against a black background should not lose a model because
+            // its source normals are oriented in the opposite direction.
+            material.side = THREE.DoubleSide;
+
+            // A pure-black, untextured material is indistinguishable from the AR
+            // background. Treat it as a missing material and use a neutral surface.
+            if (material.color && (!material.map || !material.map.image) &&
+                material.color.r < 0.025 && material.color.g < 0.025 && material.color.b < 0.025) {
+              material.color.setHex(0xbfc7d2);
+              if ("metalness" in material) material.metalness = 0;
+              if ("roughness" in material) material.roughness = 0.78;
+              brightenedMaterialCount += 1;
+            }
+
+            material.needsUpdate = true;
+          });
+        });
+
+        if (meshCount === 0 || vertexCount < 3) {
+          throw new Error("メッシュまたは頂点データがありません。USDCの構造が未対応の可能性があります。");
+        }
+
+        console.info(`[AR Model Viewer] モデル検査: ${meshCount}メッシュ / ${vertexCount.toLocaleString()}頂点 / UVあり ${uvMeshCount}メッシュ / 仮マテリアル ${fallbackMaterialCount}件 / 黒色補正 ${brightenedMaterialCount}件`);
+
+        return { meshCount, vertexCount, uvMeshCount, fallbackMaterialCount, brightenedMaterialCount };
+      }
+
+      function isSupportedImageFile(file) {
+        if (!(file instanceof File)) return false;
+        return ["png", "jpg", "jpeg", "webp", "avif"].includes(getExtension(file.name)) ||
+          /^image\/(png|jpeg|webp|avif)$/i.test(file.type || "");
+      }
+
+      function getTextureSlot(fileName) {
+        const name = String(fileName || "").toLowerCase();
+
+        if (/(^|[_. -])(normal|normals|normalmap|nrm|nor)([_. -]|$)/.test(name)) return "normalMap";
+        if (/(^|[_. -])(roughness|rough|rgh)([_. -]|$)/.test(name)) return "roughnessMap";
+        if (/(^|[_. -])(metallic|metalness|metal|mtl)([_. -]|$)/.test(name)) return "metalnessMap";
+        if (/(^|[_. -])(ao|occlusion|ambientocclusion)([_. -]|$)/.test(name)) return "aoMap";
+        if (/(^|[_. -])(emissive|emission|emit)([_. -]|$)/.test(name)) return "emissiveMap";
+        if (/(^|[_. -])(bump|height|displacement|disp)([_. -]|$)/.test(name)) return "bumpMap";
+        return "map";
+      }
+
+      function isTextureReady(texture) {
+        if (!texture || !texture.image) return false;
+
+        const image = texture.image;
+        if (typeof image.complete === "boolean") {
+          return image.complete && (image.naturalWidth || image.width || 0) > 0;
+        }
+
+        if (typeof image.width === "number" && typeof image.height === "number") {
+          return image.width > 0 && image.height > 0;
+        }
+
+        return Boolean(image.data);
+      }
+
+      async function applyLooseTextures(model, files) {
+        const imageFiles = Array.from(files || []).filter(isSupportedImageFile);
+
+        if (imageFiles.length === 0) return 0;
+
+        const textureLoader = new THREE.TextureLoader();
+        const loadedTextures = [];
+
+        for (const file of imageFiles) {
+          const objectUrl = URL.createObjectURL(file);
+
+          try {
+            const texture = await textureLoader.loadAsync(objectUrl);
+            texture.colorSpace = getTextureSlot(file.name) === "map" || getTextureSlot(file.name) === "emissiveMap"
+              ? THREE.SRGBColorSpace
+              : THREE.NoColorSpace;
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.needsUpdate = true;
+            loadedTextures.push({ file, texture, slot: getTextureSlot(file.name) });
+            console.info(`[AR Model Viewer] 追加画像を読み込みました: ${file.name}`);
+          } catch (error) {
+            console.error(`[AR Model Viewer] 追加画像を読み込めませんでした: ${file.name}`, error);
+          } finally {
+            URL.revokeObjectURL(objectUrl);
+          }
+        }
+
+        if (loadedTextures.length === 0) return 0;
+
+        const genericMaps = loadedTextures.filter((entry) => entry.slot === "map");
+        const slots = new Map();
+
+        for (const entry of loadedTextures) {
+          if (!slots.has(entry.slot)) slots.set(entry.slot, entry);
+        }
+
+        let appliedCount = 0;
+        model.traverse((object) => {
+          if (!object.isMesh || !object.material) return;
+
+          forEachMaterial(object, (material) => {
+            for (const [slot, entry] of slots) {
+              // Explicitly selected files should replace missing or broken source maps.
+              if (!(slot in material)) continue;
+              const existingTexture = material[slot];
+              if (isTextureReady(existingTexture)) continue;
+
+              material[slot] = entry.texture;
+              if (slot === "emissiveMap" && material.emissive) material.emissive.set(0xffffff);
+              if (slot === "normalMap" && material.normalScale) material.normalScale.set(1, 1);
+              material.needsUpdate = true;
+              appliedCount += 1;
+            }
+          });
+        });
+
+        if (appliedCount > 0) {
+          console.info(`[AR Model Viewer] 追加画像を${appliedCount}箇所のマテリアルに適用しました。`);
+        } else {
+          console.warn("[AR Model Viewer] 画像は読み込みましたが、適用できるメッシュがありません。");
+        }
+
+        if (genericMaps.length > 1) {
+          console.warn("[AR Model Viewer] 名前から用途を判定できない画像が複数あります。先頭の画像をベースカラーとして使用します。");
+        }
+
+        return appliedCount;
+      }
+
+      function getSurfaceCenter(model, fallbackBox) {
+        // Use the surface-area centroid, not the source object's origin or only
+        // the axis-aligned bounding-box center. This is stable for one-mesh models
+        // and also respects transforms stored on USD mesh nodes.
+        const weightedCenter = new THREE.Vector3();
+        const triangleCenter = new THREE.Vector3();
+        const edgeA = new THREE.Vector3();
+        const edgeB = new THREE.Vector3();
+        const faceNormal = new THREE.Vector3();
+        const a = new THREE.Vector3();
+        const b = new THREE.Vector3();
+        const c = new THREE.Vector3();
+        let totalArea = 0;
+
+        model.updateMatrixWorld(true);
+
+        model.traverse((object) => {
+          if (!object.isMesh || !object.geometry) return;
+
+          const geometry = object.geometry;
+          const position = geometry.getAttribute("position");
+          if (!position || position.count < 3) return;
+
+          const index = geometry.getIndex();
+          const elementCount = index ? index.count : position.count;
+          const rangeStart = Math.max(0, geometry.drawRange.start || 0);
+          const requestedCount = Number.isFinite(geometry.drawRange.count)
+            ? geometry.drawRange.count
+            : elementCount - rangeStart;
+          const rangeEnd = Math.min(elementCount, rangeStart + requestedCount);
+          const start = rangeStart + ((3 - (rangeStart % 3)) % 3);
+
+          for (let offset = start; offset + 2 < rangeEnd; offset += 3) {
+            const ia = index ? index.getX(offset) : offset;
+            const ib = index ? index.getX(offset + 1) : offset + 1;
+            const ic = index ? index.getX(offset + 2) : offset + 2;
+
+            a.fromBufferAttribute(position, ia).applyMatrix4(object.matrixWorld);
+            b.fromBufferAttribute(position, ib).applyMatrix4(object.matrixWorld);
+            c.fromBufferAttribute(position, ic).applyMatrix4(object.matrixWorld);
+
+            edgeA.subVectors(b, a);
+            edgeB.subVectors(c, a);
+            faceNormal.crossVectors(edgeA, edgeB);
+            const area = faceNormal.length() * 0.5;
+
+            if (!Number.isFinite(area) || area <= 1e-12) continue;
+
+            triangleCenter.copy(a).add(b).add(c).multiplyScalar(1 / 3);
+            weightedCenter.addScaledVector(triangleCenter, area);
+            totalArea += area;
+          }
+        });
+
+        if (totalArea > 1e-12) {
+          return weightedCenter.multiplyScalar(1 / totalArea);
+        }
+
+        return fallbackBox.getCenter(new THREE.Vector3());
+      }
+
+      function fitModel(model) {
+        model.updateMatrixWorld(true);
+
+        const originalBox = new THREE.Box3().setFromObject(model);
+        if (originalBox.isEmpty()) {
+          throw new Error("モデル内に表示可能なメッシュがありません。");
+        }
+
+        const originalSize = originalBox.getSize(new THREE.Vector3());
+        const center = getSurfaceCenter(model, originalBox);
+        const maxDimension = Math.max(originalSize.x, originalSize.y, originalSize.z);
+
+        if (!Number.isFinite(maxDimension) || maxDimension <= 0) {
+          throw new Error("モデルのサイズを計算できません。");
+        }
+
+        // Keep the pivot at the model's actual geometric center. Object3D.attach
+        // preserves all child/world transforms while moving the rotation origin.
+        const pivot = new THREE.Group();
+        pivot.position.copy(center);
+        pivot.updateMatrixWorld(true);
+        pivot.attach(model);
+        pivot.scale.setScalar(1.8 / maxDimension);
+        pivot.updateMatrixWorld(true);
+
+        // The model can be asymmetric around its surface centroid. Measure the
+        // farthest bounding-box corner from the pivot so every rotated pose fits.
+        const fittedBox = new THREE.Box3().setFromObject(pivot);
+        if (fittedBox.isEmpty()) {
+          throw new Error("モデルの表示範囲を計算できません。");
+        }
+
+        const pivotWorldPosition = pivot.getWorldPosition(new THREE.Vector3());
+        const corners = [
+          [fittedBox.min.x, fittedBox.min.y, fittedBox.min.z],
+          [fittedBox.min.x, fittedBox.min.y, fittedBox.max.z],
+          [fittedBox.min.x, fittedBox.max.y, fittedBox.min.z],
+          [fittedBox.min.x, fittedBox.max.y, fittedBox.max.z],
+          [fittedBox.max.x, fittedBox.min.y, fittedBox.min.z],
+          [fittedBox.max.x, fittedBox.min.y, fittedBox.max.z],
+          [fittedBox.max.x, fittedBox.max.y, fittedBox.min.z],
+          [fittedBox.max.x, fittedBox.max.y, fittedBox.max.z]
+        ];
+
+        let radius = 0;
+        for (const corner of corners) {
+          radius = Math.max(radius, new THREE.Vector3(...corner).distanceTo(pivotWorldPosition));
+        }
+
+        if (!Number.isFinite(radius) || radius <= 0) {
+          throw new Error("モデルの表示範囲を計算できません。");
+        }
+
+        return { pivot, radius };
+      }
+
+      function updateBaseCameraDistance() {
+        const aspect = Math.max(stage.clientWidth, 1) / Math.max(stage.clientHeight, 1);
+        const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+        const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * aspect);
+        const limitingFov = Math.min(verticalFov, horizontalFov);
+
+        baseCameraDistance = (currentModelRadius / Math.sin(limitingFov / 2)) * 1.18;
+        updateCameraDistance();
+      }
+
+      function updateCameraDistance() {
+        const distance = baseCameraDistance / zoomFactor;
+        const target = currentPivot
+          ? currentPivot.getWorldPosition(new THREE.Vector3())
+          : new THREE.Vector3();
+
+        camera.position.set(target.x, target.y, target.z + distance);
+        camera.near = Math.max(distance / 10000, 0.0001);
+        camera.far = Math.max(distance * 100 + target.length(), 100);
+        camera.lookAt(target);
+        camera.updateProjectionMatrix();
+      }
+
+      function setStageWidthForZoom() {
+        // Keep the default AR strip at one third of the screen. As zoom grows,
+        // grow the actual viewport toward full screen instead of only moving the camera.
+        const widthVw = Math.min(100, Math.max(20, (100 / 3) * zoomFactor));
+        stage.style.width = `${widthVw.toFixed(4)}vw`;
+      }
+
+      function resetView() {
+        if (currentPivot) {
+          currentPivot.rotation.set(0, 0, 0);
+        }
+        zoomFactor = 1;
+        setStageWidthForZoom();
+        resizeRenderer();
+        console.info("[AR Model Viewer] 表示をリセットしました。");
+      }
+
+      function preparePivot(model) {
+        prepareModelMaterials(model);
+        return fitModel(model);
+      }
+
+      async function parseObj(modelFile, resourceContext) {
+        const objText = await modelFile.text();
+        const manager = new THREE.LoadingManager();
+        manager.setURLModifier(resourceContext.resolveUrl);
+        manager.onError = (url) => {
+          console.error(`[AR Model Viewer] OBJの参照リソースを読み込めませんでした: ${url}`);
+        };
+
+        const materialReferences = [...objText.matchAll(/^\s*mtllib\s+(.+?)\s*$/gim)]
+          .map((match) => match[1].trim().replace(/^['"]|['"]$/g, ""));
+
+        let materialCreator = null;
+
+        if (materialReferences.length > 0) {
+          const mtlFile = resourceContext.findFile(materialReferences[0], modelFile);
+
+          if (mtlFile) {
+            const mtlText = await mtlFile.text();
+            const mtlLoader = new MTLLoader(manager);
+            materialCreator = mtlLoader.parse(mtlText, "");
+            materialCreator.preload();
+          } else {
+            console.warn(`[AR Model Viewer] MTLファイルが見つかりません: ${materialReferences[0]}`);
+          }
+
+          if (materialReferences.length > 1) {
+            console.warn("[AR Model Viewer] 複数のMTL指定があります。先頭のMTLを使用します。");
+          }
+        }
+
+        const objLoader = new OBJLoader(manager);
+        if (materialCreator) {
+          objLoader.setMaterials(materialCreator);
+        }
+
+        const model = objLoader.parse(objText);
+        if (!model || !model.children.length) {
+          throw new Error("OBJファイルからモデルを読み込めませんでした。");
+        }
+
+        return model;
+      }
+
+      async function parseUsd(modelFile, resourceContext) {
+        const buffer = await modelFile.arrayBuffer();
+        const manager = new THREE.LoadingManager();
+        manager.setURLModifier(resourceContext.resolveUrl);
+        const loader = new USDLoader(manager);
+
+        return new Promise((resolve, reject) => {
+          try {
+            const parsedModel = loader.parse(buffer, "", resolve, reject);
+            if (!parsedModel) {
+              reject(new Error("USDLoaderがモデルを生成できませんでした。"));
+            }
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+
+      function getExtension(fileName) {
+        const lastDot = String(fileName).lastIndexOf(".");
+        return lastDot >= 0 ? fileName.slice(lastDot + 1).toLowerCase() : "";
+      }
+
+      async function loadModel(files, options = {}) {
+        const usableFiles = Array.from(files || []).filter((file) => file instanceof File);
+        if (usableFiles.length === 0) {
+          console.warn("[AR Model Viewer] 読み込めるファイルがありません。");
+          return false;
+        }
+
+        const modelExtensions = new Set(["obj", "usd", "usda", "usdc", "usdz"]);
+        const modelFiles = usableFiles.filter((file) => modelExtensions.has(getExtension(file.name)));
+        const modelFile = modelFiles[0] || null;
+
+        if (!modelFile) {
+          setStatus("モデルが未読込です。Oでモデル、Mでマテリアル画像を選択できます。");
+          console.error("[AR Model Viewer] 対応しているモデルファイルが選択されていません。");
+          return false;
+        }
+
+        if (modelFiles.length > 1) {
+          console.warn(`[AR Model Viewer] モデルファイルが複数選択されています。先頭の${modelFile.name}を読み込みます。`);
+        }
+
+        const currentSequence = ++loadSequence;
+        const nextResourceContext = createResourceContext(usableFiles);
+        let parsedModel = null;
+        let nextPivot = null;
+        setStatus("モデルを読み込んでいます…");
+
+        try {
+          const extension = getExtension(modelFile.name);
+          parsedModel = extension === "obj"
+            ? await parseObj(modelFile, nextResourceContext)
+            : await parseUsd(modelFile, nextResourceContext);
+
+          if (currentSequence !== loadSequence) {
+            disposeModel(parsedModel);
+            nextResourceContext.revoke();
+            return false;
+          }
+
+          // Apply selected image files before material fallback processing. This
+          // prevents a missing USD map from being mistaken for a black material.
+          const looseTextureFiles = options.looseTextureFiles || usableFiles.filter(isSupportedImageFile);
+          if (looseTextureFiles.length > 0) {
+            await applyLooseTextures(parsedModel, looseTextureFiles);
+          }
+
+          const preparedModel = preparePivot(parsedModel);
+          nextPivot = preparedModel.pivot;
+          const nextModelRadius = preparedModel.radius;
+
+          // A second file selection may have started while textures were loading.
+          // Do not replace the currently visible model with an outdated result.
+          if (currentSequence !== loadSequence) {
+            disposeModel(nextPivot);
+            nextResourceContext.revoke();
+            return false;
+          }
+
+          const previousPivot = currentPivot;
+          const previousResourceContext = currentResourceContext;
+
+          scene.add(nextPivot);
+          currentPivot = nextPivot;
+          currentModelRadius = nextModelRadius;
+          zoomFactor = 1;
+          setStageWidthForZoom();
+          currentResourceContext = nextResourceContext;
+          loadedFiles = usableFiles.slice();
+          loadedModelFile = modelFile;
+          resizeRenderer();
+
+          if (previousPivot) {
+            scene.remove(previousPivot);
+            disposeModel(previousPivot);
+          }
+
+          if (previousResourceContext) {
+            previousResourceContext.revoke();
+          }
+
+          stage.classList.remove("is-dragover");
+          document.body.classList.add("has-model");
+          setStatus("", false);
+          console.info(`[AR Model Viewer] 読み込み完了: ${modelFile.name} / 使用可能ファイル ${loadedFiles.length}件`);
+          console.info("[AR Model Viewer] 回転中心:", {
+            x: Number(currentPivot.position.x.toFixed(4)),
+            y: Number(currentPivot.position.y.toFixed(4)),
+            z: Number(currentPivot.position.z.toFixed(4)),
+            radius: Number(currentModelRadius.toFixed(4))
+          });
+          return true;
+        } catch (error) {
+          if (nextPivot) {
+            if (nextPivot.parent) nextPivot.parent.remove(nextPivot);
+            disposeModel(nextPivot);
+          } else if (parsedModel) {
+            disposeModel(parsedModel);
+          }
+
+          nextResourceContext.revoke();
+          console.error(`[AR Model Viewer] モデルの読み込みに失敗しました: ${modelFile.name}`, error);
+          setStatus(`読み込みに失敗しました: ${error && error.message ? error.message : "詳細はコンソールを確認してください。"}`);
+          return false;
+        }
+      }
+
+      async function loadAdditionalMaterials(files) {
+        const additions = Array.from(files || []).filter((file) => file instanceof File);
+
+        if (!currentPivot || !loadedModelFile) {
+          console.warn("[AR Model Viewer] 先にモデルを読み込んでください。");
+          setStatus("先にモデルを読み込んでください。");
+          return;
+        }
+
+        if (additions.length === 0) {
+          console.warn("[AR Model Viewer] 追加ファイルが選択されていません。");
+          return;
+        }
+
+        const deduplicatedFiles = new Map();
+        for (const file of [...loadedFiles, ...additions]) {
+          const key = `${file.name.toLowerCase()}|${file.size}|${file.lastModified}`;
+          if (!deduplicatedFiles.has(key)) deduplicatedFiles.set(key, file);
+        }
+
+        const mergedFiles = [...deduplicatedFiles.values()];
+        const addedImages = additions.filter(isSupportedImageFile);
+        const hasMtl = additions.some((file) => getExtension(file.name) === "mtl");
+
+        // Reparse the original model with the newly selected resources so USD/OBJ
+        // references can resolve to local File objects instead of inaccessible file:// URLs.
+        const loaded = await loadModel(mergedFiles, {
+          looseTextureFiles: addedImages
+        });
+
+        if (loaded) {
+          const imageCount = addedImages.length;
+          const mtlText = hasMtl ? " / MTLを追加" : "";
+          setStatus("", false);
+          console.info(`[AR Model Viewer] 追加リソース適用完了: ${imageCount}枚の画像${mtlText}`);
+          console.info(`[AR Model Viewer] 追加ファイル: ${additions.map((file) => file.name).join(", ")}`);
+        }
+      }
+
+      function resizeRenderer() {
+        if (!stage || !renderer || !camera) {
+          console.error("[AR Model Viewer] サイズ変更に必要な要素がありません。");
+          return;
+        }
+
+        const width = Math.max(stage.clientWidth, 1);
+        const height = Math.max(stage.clientHeight, 1);
+
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+
+        if (currentPivot) {
+          updateBaseCameraDistance();
+        }
+      }
+
+      function onWheel(event) {
+        event.preventDefault();
+
+        if (!currentPivot) return;
+
+        const horizontalDelta = Number.isFinite(event.deltaX) ? event.deltaX : 0;
+        const verticalDelta = Number.isFinite(event.deltaY) ? event.deltaY : 0;
+
+        currentPivot.rotation.y += (verticalDelta + horizontalDelta * 0.35) * WHEEL_ROTATION_FACTOR;
+
+        if (horizontalDelta !== 0) {
+          currentPivot.rotation.x += horizontalDelta * WHEEL_ROTATION_FACTOR * 0.45;
+        }
+      }
+
+      function onKeyDown(event) {
+        const target = event.target;
+        if (target && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))) {
+          return;
+        }
+
+        const key = event.key;
+        const lowerKey = key.toLowerCase();
+
+        if (["+", "=", "-", "_", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(key) || lowerKey === "o" || lowerKey === "m") {
+          event.preventDefault();
+        }
+
+        if (lowerKey === "o") {
+          fileInput.click();
+          return;
+        }
+
+        if (lowerKey === "m") {
+          materialInput.click();
+          return;
+        }
+
+        if (!currentPivot) return;
+
+        switch (key) {
+          case "+":
+          case "=":
+          case "Add":
+            zoomFactor = Math.min(MAX_ZOOM, zoomFactor * 1.18);
+            setStageWidthForZoom();
+            resizeRenderer();
+            break;
+          case "-":
+          case "_":
+          case "Subtract":
+            zoomFactor = Math.max(MIN_ZOOM, zoomFactor / 1.18);
+            setStageWidthForZoom();
+            resizeRenderer();
+            break;
+          case "ArrowLeft":
+            currentPivot.rotation.y -= KEY_ROTATION_STEP;
+            break;
+          case "ArrowRight":
+            currentPivot.rotation.y += KEY_ROTATION_STEP;
+            break;
+          case "ArrowUp":
+            currentPivot.rotation.x -= KEY_ROTATION_STEP;
+            break;
+          case "ArrowDown":
+            currentPivot.rotation.x += KEY_ROTATION_STEP;
+            break;
+          case "r":
+          case "R":
+            resetView();
+            break;
+          default:
+            break;
+        }
+      }
+
+      openButton.addEventListener("click", () => fileInput.click());
+
+      fileInput.addEventListener("change", async (event) => {
+        const selectedFiles = event.target && event.target.files;
+        await loadModel(selectedFiles);
+        fileInput.value = "";
+      });
+
+      materialInput.addEventListener("change", async (event) => {
+        const selectedFiles = event.target && event.target.files;
+        await loadAdditionalMaterials(selectedFiles);
+        materialInput.value = "";
+      });
+
+      window.addEventListener("wheel", onWheel, { passive: false });
+      window.addEventListener("keydown", onKeyDown);
+
+      window.addEventListener("dragenter", (event) => {
+        event.preventDefault();
+        stage.classList.add("is-dragover");
+      });
+
+      window.addEventListener("dragover", (event) => {
+        event.preventDefault();
+      });
+
+      window.addEventListener("dragleave", (event) => {
+        if (event.relatedTarget === null) {
+          stage.classList.remove("is-dragover");
+        }
+      });
+
+      window.addEventListener("drop", async (event) => {
+        event.preventDefault();
+        stage.classList.remove("is-dragover");
+
+        const droppedFiles = event.dataTransfer ? Array.from(event.dataTransfer.files || []) : [];
+        const hasModelFile = droppedFiles.some((file) => ["obj", "usd", "usda", "usdc", "usdz"].includes(getExtension(file.name)));
+
+        if (hasModelFile) {
+          await loadModel(droppedFiles);
+        } else {
+          await loadAdditionalMaterials(droppedFiles);
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        setStageWidthForZoom();
+        resizeRenderer();
+      }, { passive: true });
+
+      if (typeof ResizeObserver === "function") {
+        resizeObserver = new ResizeObserver(resizeRenderer);
+        resizeObserver.observe(stage);
+      }
+
+      function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+      }
+
+      resizeRenderer();
+      render();
+      console.info("[AR Model Viewer] 初期化完了。O: モデルを開く / M: 画像・MTLを追加 / ホイール: 回転 / +/-: 拡大縮小");
+
+      window.addEventListener("beforeunload", () => {
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+        }
+
+        if (currentPivot) {
+          disposeModel(currentPivot);
+        }
+
+        if (currentResourceContext) {
+          currentResourceContext.revoke();
+        }
+
+        renderer.dispose();
+      }, { once: true });
+    })();
+  </script>
+</body>
+</html>
