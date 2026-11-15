@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://search3958.github.io/frameworks/icons/icons.css">
+<link rel="stylesheet" href="../../m3color.css">
+<link rel="icon" href="../icon.svg">
+<meta name="color-scheme" content="light dark">
+<title>Header Studio | Sentaro</title>
+<script type="importmap">
+{
+  "imports": {
+    "@material/web/": "https://esm.run/@material/web/"
+  }
+}
+</script>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wdth,wght,ROND@6..144,25..151,1..1000,0..100&display=swap');
+    *{
+        font-family: "Google Sans Flex", "Noto Sans KR",sans-serif;
+            line-height: 1.5 !important;
+    }
+:root {
+  color-scheme: light dark;
+  background: Canvas;
+  color: CanvasText;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: Canvas; color: CanvasText; }
+button, input, textarea, select { font: inherit; }
+.app-bar {
+  position: sticky; top: 0; z-index: 20; min-height: 64px;
+  display: grid; grid-template-columns: auto minmax(0, 1fr);
+  align-items: center; gap: 16px; padding: 0 22px;
+  background: Canvas;
+}
+.menu-cluster { display: flex; align-items: center; gap: 2px; white-space: nowrap; }
+#mainTabs { min-width: 0; justify-self: center; border-radius:99px;}
+.workspace { display: block; min-height: calc(100vh - 65px); }
+.section-rail {
+  position: fixed; top: 65px; left: 0; bottom: 0; z-index: 15; width: 224px; height: auto;
+  overflow-y: auto; overflow-x: hidden; align-self: start;
+  padding: 24px 12px;
+  display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
+}
+.rail-heading { margin: 0 12px 8px; font-size: 12px; font-weight: 600; opacity: .72; }
+.rail-button { display: flex; width: 100%; min-width: 0; justify-content: flex-start; text-align: left; }
+.rail-button .icon { flex: 0 0 auto; margin-right: 9px; }
+.rail-button::part(label) { display: flex; justify-content: flex-start; width: 100%; text-align: left; }
+.workspace-main { min-height:100vh; min-width: 0; margin-left: 224px; padding: 30px clamp(16px, 3vw, 44px) 72px;     background: var(--color-bg);
+    border-radius: 24px 0 0 0;}
+.page-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin: 0 0 24px; }
+.page-heading h1 { margin: 0; font-size: clamp(24px, 3vw, 32px); font-weight: 500; letter-spacing: -.025em; }
+.page-heading p { margin: 7px 0 0; opacity: .72; font-size: 13px; line-height: 1.6; }
+.editor-content { width: min(100%, 1040px); }
+.section-card { padding: 20px 0; border-bottom: 1px solid color-mix(in srgb, currentColor 16%, transparent); }
+.section-card:first-child { padding-top: 0; }
+.section-card:last-child { border-bottom: 0; }
+.section-card-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 16px; }
+.section-card-head h2 { margin: 0; font-size: 17px; font-weight: 600; }
+.section-card-head p { margin: 5px 0 0; font-size: 12px; opacity: .7; }
+.field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.field-grid.single { grid-template-columns: minmax(0, 1fr); }
+.field { min-width: 0; width: 100%; }
+md-outlined-text-field, md-filled-text-field, md-outlined-select { width: 100%; }
+md-outlined-text-field.textarea-field { min-height: 130px; }
+.logo-fields { display: grid; gap: 14px; max-width: 760px; }
+.item-list { display: grid; gap: 10px; }
+.item-row {
+  display: grid; grid-template-columns: minmax(140px, .78fr) minmax(200px, 1.22fr) auto;
+  align-items: center; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+.item-row:last-child { border-bottom: 0; }
+.order-actions { display: flex; align-items: center; gap: 2px; }
+.order-actions md-icon-button { --md-icon-button-icon-size: 20px; }
+.add-row { margin-top: 14px; }
+.empty-state { padding: 26px 16px; text-align: center; opacity: .68; border: 1px dashed color-mix(in srgb, currentColor 30%, transparent); border-radius: 18px; }
+.menu-card { padding: 18px 0 22px; border-bottom: 1px solid color-mix(in srgb, currentColor 16%, transparent); }
+.menu-card:first-child { padding-top: 0; }
+.menu-card:last-child { border-bottom: 0; }
+.menu-card h2 { margin: 0 0 10px; font-size: 17px; font-weight: 600; }
+.menu-card .item-row { padding-inline: 0; }
+.table-wrap { width: 100%; overflow-x: auto; border: 1px solid color-mix(in srgb, currentColor 18%, transparent); border-radius: 16px; }
+.translation-table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: max-content; background: #fff; color: #222; }
+.translation-table th, .translation-table td { padding: 8px 10px; border-bottom: 1px solid #e5e5e5; border-right: 1px solid #ededed; vertical-align: middle; background: #fff; }
+.translation-table tr:last-child td { border-bottom: 0; }
+.translation-table th:last-child, .translation-table td:last-child { border-right: 0; }
+.translation-table th { position: sticky; top: 0; z-index: 1; text-align: left; font-size: 12px; font-weight: 650; background: #f7f7f7; }
+.translation-table th:first-child { position: sticky; left: 0; z-index: 3; min-width: 220px; }
+.translation-table td:first-child { position: sticky; left: 0; z-index: 2; min-width: 220px; background: #fff; }
+.translation-table .row-label { font-size: 13px; white-space: normal; }
+.translation-table .translation-cell { min-width: 210px; }
+.translation-input { display: block; width: 210px; min-height: 38px; padding: 8px 2px; border: 0; outline: 0; border-radius: 0; background: #fff; color: #222; font: inherit; font-size: 13px; box-shadow: none; }
+.translation-input:focus { outline: 0; border: 0; box-shadow: inset 0 -1px #777; }
+.translation-textarea { min-height: 82px; resize: vertical; line-height: 1.5; }
+.language-manager { display: grid; gap: 12px; margin-bottom: 24px; }
+.language-list { display: grid; gap: 6px; max-width: 560px; }
+.language-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; }
+.language-row input, .lang-add-row input { min-width: 0; width: 100%; height: 38px; padding: 0 10px; border: 1px solid color-mix(in srgb, currentColor 24%, transparent); border-radius: 6px; background: Canvas; color: CanvasText; font: inherit; }
+.language-row .language-fixed { padding: 8px 10px; font-size: 14px; }
+.lang-add-row { display: flex; align-items: center; gap: 10px; max-width: 560px; }
+.lang-add-row input { flex: 1; }
+.icon { display: inline-block; vertical-align: -0.12em; }
+.inline-help { margin: 9px 0 0; font-size: 12px; opacity: .7; line-height: 1.6; }
+.settings-stack { display: grid; gap: 18px; max-width: 650px; }
+.settings-row { display: grid; grid-template-columns: minmax(170px, .8fr) minmax(220px, 1.2fr); align-items: center; gap: 20px; }
+.settings-row label { font-size: 14px; }
+.code-input { display: block; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; min-height: 260px; resize: vertical; padding: 14px; border: 1px solid color-mix(in srgb, currentColor 28%, transparent); border-radius: 12px; background: Canvas; color: CanvasText; font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 16px; }
+md-dialog { --md-dialog-container-max-width: min(760px, calc(100vw - 32px)); }
+.dialog-content { display: block; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; }
+#importDialog { width: min(760px, calc(100vw - 32px)); max-width: calc(100vw - 32px); }
+#importDialog [slot="content"] { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; }
+.toast { position: fixed; z-index: 50; left: 50%; bottom: 24px; transform: translate(-50%, 18px); opacity: 0; pointer-events: none; transition: opacity .18s ease, transform .18s ease; padding: 12px 18px; border-radius: 999px; background: CanvasText; color: Canvas; box-shadow: 0 4px 18px color-mix(in srgb, CanvasText 20%, transparent); font-size: 13px; }
+.toast.visible { opacity: 1; transform: translate(-50%, 0); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (max-width: 900px) {
+  .app-bar { grid-template-columns: auto minmax(0,1fr); gap: 10px; padding-inline: 12px; }
+  .section-rail { width: 190px; }
+  .workspace-main { margin-left: 190px; }
+}
+@media (max-width: 640px) {
+  .app-bar { grid-template-columns: minmax(0, 1fr); padding: 8px 12px 0; gap: 4px; }
+  .menu-cluster { order: 0; }
+  #mainTabs { order: 1; width: 100%; }
+  .workspace { grid-template-columns: minmax(0, 1fr); }
+  .section-rail { position: fixed; top: 108px; left: 0; right: 0; bottom: auto; z-index: 19; width: 100%; height: auto; max-height: 76px; flex-direction: row; align-items: center; overflow-x: auto; overflow-y: hidden; padding: 8px 12px; border-right: 0; border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent); background: Canvas; }
+  .rail-heading { display: none; }
+  .rail-button { width: auto; min-width: max-content; flex: 0 0 auto; }
+  .rail-button::part(label) { width: auto; }
+  .workspace-main { margin-left: 0; padding: 96px 14px 52px; }
+  .item-row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .order-actions { justify-content: flex-end; }
+  .field-grid { grid-template-columns: minmax(0, 1fr); }
+  .settings-row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+</style>
+</head>
+<body>
+<header class="app-bar">
+  <div class="menu-cluster">
+    <div class="menu-anchor">
+      <md-text-button id="fileMenuButton" aria-haspopup="menu" aria-expanded="false"><span class="icon icon-file" aria-hidden="true"></span> File</md-text-button>
+      <md-menu id="fileMenu" anchor="fileMenuButton" positioning="document">
+        <md-menu-item data-command="new"><span slot="start" class="icon icon-add" aria-hidden="true"></span><div slot="headline">New</div></md-menu-item>
+        <md-menu-item data-command="import-script"><span slot="start" class="icon icon-upload" aria-hidden="true"></span><div slot="headline">Import Script</div></md-menu-item>
+        <md-menu-item data-command="open-project"><span slot="start" class="icon icon-folder" aria-hidden="true"></span><div slot="headline">Open Project</div></md-menu-item>
+        <md-menu-item data-command="save-project"><span slot="start" class="icon icon-download" aria-hidden="true"></span><div slot="headline">Save Project</div></md-menu-item>
+        <md-menu-item data-command="copy-script"><span slot="start" class="icon icon-copy" aria-hidden="true"></span><div slot="headline">Copy Script</div></md-menu-item>
+        <md-menu-item data-command="copy-project"><span slot="start" class="icon icon-copy" aria-hidden="true"></span><div slot="headline">Copy Project</div></md-menu-item>
+        <md-menu-item data-command="export-script"><span slot="start" class="icon icon-download" aria-hidden="true"></span><div slot="headline">Export Script</div></md-menu-item>
+      </md-menu>
+    </div>
+    <div class="menu-anchor">
+      <md-text-button id="commonMenuButton" aria-haspopup="menu" aria-expanded="false"><span class="icon icon-settings" aria-hidden="true"></span> General Settings</md-text-button>
+      <md-menu id="commonMenu" anchor="commonMenuButton" positioning="document">
+        <md-menu-item data-command="setting-language-key"><span slot="start" class="icon icon-key" aria-hidden="true"></span><div slot="headline">Language Storage Key</div></md-menu-item>
+        <md-menu-item data-command="setting-output-theme"><span slot="start" class="icon icon-sun" aria-hidden="true"></span><div slot="headline">Header Appearance</div></md-menu-item>
+        <md-menu-item data-command="setting-editor-theme"><span slot="start" class="icon icon-laptop" aria-hidden="true"></span><div slot="headline">Editor Appearance</div></md-menu-item>
+      </md-menu>
+    </div>
+  </div>
+  <md-tabs id="mainTabs" aria-label="Editing Area">
+    <md-primary-tab id="headerTab" active>Header</md-primary-tab>
+    <md-primary-tab id="footerTab">Footer</md-primary-tab>
+  </md-tabs>
+</header>
+<div class="workspace">
+  <nav class="section-rail" id="sectionRail" aria-label="Editor Sections"></nav>
+  <main class="workspace-main">
+    <div class="page-heading">
+      <div><h1 id="pageTitle">Navigation Items</h1><p id="pageDescription"></p></div>
+    </div>
+    <div class="editor-content" id="editorPanel"></div>
+  </main>
+</div>
+<md-dialog id="importDialog">
+  <div slot="headline">Import Script</div>
+  <div slot="content" class="dialog-content">
+    <p>Paste an existing header script. The code will not be executed; only its configuration data will be parsed.</p>
+    <textarea id="scriptInput" class="code-input" spellcheck="false" placeholder="(() => { ... })();"></textarea>
+    <div id="importStatus" aria-live="polite"></div>
+  </div>
+  <div slot="actions">
+    <md-text-button data-command="close-import"><span class="icon icon-close" aria-hidden="true"></span> Cancel</md-text-button>
+    <md-filled-button data-command="parse-import"><span class="icon icon-upload" aria-hidden="true"></span> Import</md-filled-button>
+  </div>
+</md-dialog>
+<md-dialog id="languageKeyDialog">
+  <div slot="headline">Language Storage Key</div>
+  <div slot="content" class="dialog-content">
+    <md-outlined-text-field id="storageKeyField" label="localStorage key" placeholder="selectedLang"></md-outlined-text-field>
+  </div>
+  <div slot="actions"><md-text-button data-command="close-language-key">Close</md-text-button><md-filled-button data-command="save-language-key">Apply</md-filled-button></div>
+</md-dialog>
+<md-dialog id="outputThemeDialog">
+  <div slot="headline">Header Appearance</div>
+  <div slot="content" class="dialog-content">
+    <md-outlined-select id="outputThemeField" value="system" aria-label="Header Appearance">
+      <md-select-option value="system"><div slot="headline">System default</div></md-select-option>
+      <md-select-option value="light"><div slot="headline">Light</div></md-select-option>
+      <md-select-option value="dark"><div slot="headline">Dark</div></md-select-option>
+    </md-outlined-select>
+  </div>
+  <div slot="actions"><md-text-button data-command="close-output-theme">Close</md-text-button><md-filled-button data-command="save-output-theme">Apply</md-filled-button></div>
+</md-dialog>
+<md-dialog id="editorThemeDialog">
+  <div slot="headline">Editor Appearance</div>
+  <div slot="content" class="dialog-content">
+    <md-outlined-select id="editorThemeField" value="system" aria-label="Editor Appearance">
+      <md-select-option value="system"><div slot="headline">System default</div></md-select-option>
+      <md-select-option value="light"><div slot="headline">Light</div></md-select-option>
+      <md-select-option value="dark"><div slot="headline">Dark</div></md-select-option>
+    </md-outlined-select>
+  </div>
+  <div slot="actions"><md-text-button data-command="close-editor-theme">Close</md-text-button><md-filled-button data-command="save-editor-theme">Apply</md-filled-button></div>
+</md-dialog>
+<input class="visually-hidden" id="projectFileInput" type="file" accept="application/json,.json">
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module">
+import '@material/web/all.js';
+import {styles as typeScaleStyles} from '@material/web/typography/md-typescale-styles.js';
+
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, typeScaleStyles.styleSheet];
+
+'use strict';
+const BUILTIN_SCRIPT = "// https://search3958.github.io/\n// Generated by Sentaro's service.\n// Please do not remove this credit.\n\n(() => {\n\"use strict\";\nconst NS = \"headerv2\";\nconst scriptTag = document.currentScript;\nif (!scriptTag) {\nconsole.error(`[${NS}] script tag not found.`);\nreturn;\n}\nconst STYLE_ID = \"headerv2-style\";\nconst MENU_ID = \"headerv2-menu\";\nconst BACKDROP_ID = \"headerv2-backdrop\";\nconst MOBILE_BREAKPOINT = 680;\nconst I18N = {\nja: {\nheader: {\nproducts: \"プロダクト\",\nsaetab: \"SaeTab 7\",\nbelief: \"信念\",\nsupport: \"サポートと情報\",\nmenu: \"メニュー\",\nclose: \"閉じる\",\nback: \"戻る\",\nhome: \"ホーム\"\n},\nfooter: {\npolicies: \"利用規約と個人情報処理政策\",\nlanguage: \"言語\",\nsupport: \"サポート\",\nnotice: \"信頼されるサービスを目指しておりますが、高校生ゆえ不手際があるかもしれません\\nその際はお問い合わせフォームよりご指摘いただけますと幸いです\"\n},\nmenus: {\nred: {\ntitle: \"信念\",\nitems: [\n\"第一目標\",\n\"相互強化に関する同意内容\",\n\"SKについて\"\n]\n},\nsaetab: {\ntitle: \"SaeTab 7\",\nitems: [\n\"SaeTab 7について知る\",\n\"設定方法\",\n\"今すぐ試す\"\n]\n},\nproducts: {\ntitle: \"プロダクト\",\nitems: [\n\"プロダクト一覧\",\n\"ツール\",\n\"BaramOS\",\n\"私のGoogle Play\",\n\"ロゴ\",\n\"Nidele Series\"\n]\n},\nsupport: {\ntitle: \"サポートと情報\",\nitems: [\n\"サポート\",\n\"私のGitHub\",\n\"問い合わせ\",\n\"アカウント\",\n\"利用規約および個人情報処理政策\",\n\"Language\"\n]\n}\n}\n},\nen: {\nheader: {\nproducts: \"Products\",\nsaetab: \"SaeTab 7\",\nbelief: \"Beliefs\",\nsupport: \"Support & Info\",\nmenu: \"Menu\",\nclose: \"Close\",\nback: \"Back\",\nhome: \"Home\"\n},\nfooter: {\npolicies: \"Terms & Privacy Policy\",\nlanguage: \"Language\",\nsupport: \"Support\",\nnotice: \"We aim to provide a service you can trust, but as a high school student, I may make mistakes or oversights.\\nIf you notice any issues, I would appreciate it if you could let me know through the contact form.\"\n},\nmenus: {\nred: {\ntitle: \"Beliefs\",\nitems: [\n\"First Goal\",\n\"Agreement on Mutual Reinforcement\",\n\"About SK\"\n]\n},\nsaetab: {\ntitle: \"SaeTab 7\",\nitems: [\n\"About SaeTab 7\",\n\"Setup Guide\",\n\"Try It Now\"\n]\n},\nproducts: {\ntitle: \"Products\",\nitems: [\n\"All Products\",\n\"Tools\",\n\"BaramOS\",\n\"My Google Play\",\n\"Logos\",\n\"Nidele Series\"\n]\n},\nsupport: {\ntitle: \"Support & Info\",\nitems: [\n\"Support\",\n\"My GitHub\",\n\"Contact\",\n\"Accounts\",\n\"Terms & Privacy Policy\",\n\"Language\"\n]\n}\n}\n},\nko: {\nheader: {\nproducts: \"프로덕트\",\nsaetab: \"SaeTab 7\",\nbelief: \"신념\",\nsupport: \"지원 및 정보\",\nmenu: \"메뉴\",\nclose: \"닫기\",\nback: \"뒤로\",\nhome: \"홈\"\n},\nfooter: {\npolicies: \"이용약관 및 개인정보 정책\",\nlanguage: \"언어\",\nsupport: \"지원\",\nnotice: \"신뢰받는 서비스를 만들기 위해 노력하고 있지만, 고등학생인 만큼 미흡한 점이 있을 수 있습니다.\\n그러한 경우 문의 양식을 통해 지적해 주시면 감사하겠습니다.\"\n},\nmenus: {\nred: {\ntitle: \"신념\",\nitems: [\n\"첫 번째 목표\",\n\"상호 강화에 관한 합의 내용\",\n\"SK 소개\"\n]\n},\nsaetab: {\ntitle: \"SaeTab 7\",\nitems: [\n\"SaeTab 7 알아보기\",\n\"설정 방법\",\n\"지금 사용해 보기\"\n]\n},\nproducts: {\ntitle: \"프로덕트\",\nitems: [\n\"프로덕트 목록\",\n\"도구\",\n\"BaramOS\",\n\"내 Google Play\",\n\"로고\",\n\"니들레 시리즈\"\n]\n},\nsupport: {\ntitle: \"지원 및 정보\",\nitems: [\n\"지원\",\n\"봉사자용 원시 프로그람\",\n\"문의\",\n\"계정\",\n\"이용약관 및 개인정보 정책\",\n\"언어\"\n]\n}\n}\n},\n\"ko-kp\": {\nheader: {\nproducts: \"제품\",\nsaetab: \"앞길7\",\nbelief: \"신념\",\nsupport: \"지원과 정보\",\nmenu: \"메뉴\",\nclose: \"닫기\",\nback: \"뒤로\",\nhome: \"홈\"\n},\nfooter: {\npolicies: \"리용약관과 개인정보정책\",\nlanguage: \"언어\",\nsupport: \"지원\",\nnotice: \"신뢰받는 봉사를 지향하지만 고등학생이기에 미흡한 점이 있을수 있습니다.\\n그러한 경우 문의양식을 통해 지적해주시면 고맙겠습니다.\"\n},\nmenus: {\nred: {\ntitle: \"신념\",\nitems: [\n\"첫째 목표\",\n\"호상강화에 관한 합의내용\",\n\"SK에 대하여\"\n]\n},\nsaetab: {\ntitle: \"앞길\",\nitems: [\n\"앞길7에 대하여\",\n\"설정방법\",\n\"지금 써보기\"\n]\n},\nproducts: {\ntitle: \"제품\",\nitems: [\n\"제품목록\",\n\"도구\",\n\"바람조작체계\",\n\"나의 길 동무 페지 (Google)\",\n\"등록상표\",\n\"니들레 계렬\"\n]\n},\nsupport: {\ntitle: \"지원과 정보\",\nitems: [\n\"지원\",\n\"내 GitHub\",\n\"문의\",\n\"계정\",\n\"리용약관 및 개인정보정책\",\n\"언어\"\n]\n}\n}\n},\nzh: {\nheader: {\nproducts: \"产品\",\nsaetab: \"SaeTab 7\",\nbelief: \"信念\",\nsupport: \"支持与信息\",\nmenu: \"菜单\",\nclose: \"关闭\",\nback: \"返回\",\nhome: \"主页\"\n},\nfooter: {\npolicies: \"使用条款和隐私政策\",\nlanguage: \"语言\",\nsupport: \"支持\",\nnotice: \"我们致力于成为值得信赖的服务，但由于我还是一名高中生，可能会有做得不够周全的地方。\\n如有不周之处，敬请通过联系表单指出，非常感谢。\"\n},\nmenus: {\nred: {\ntitle: \"信念\",\nitems: [\n\"第一目标\",\n\"关于相互强化的协议内容\",\n\"关于 SK\"\n]\n},\nsaetab: {\ntitle: \"SaeTab 7\",\nitems: [\n\"了解 SaeTab 7\",\n\"设置方法\",\n\"立即试用\"\n]\n},\nproducts: {\ntitle: \"产品\",\nitems: [\n\"产品列表\",\n\"工具\",\n\"BaramOS\",\n\"我的 Google Play\",\n\"标志\",\n\"你的乐系列\"\n]\n},\nsupport: {\ntitle: \"支持与信息\",\nitems: [\n\"支持\",\n\"我的 GitHub\",\n\"联系我\",\n\"账户\",\n\"使用条款和隐私政策\",\n\"语言\"\n]\n}\n}\n},\n\"zh-tw\": {\nheader: {\nproducts: \"產品\",\nsaetab: \"SaeTab 7\",\nbelief: \"信念\",\nsupport: \"支援與資訊\",\nmenu: \"選單\",\nclose: \"關閉\",\nback: \"返回\",\nhome: \"首頁\"\n},\nfooter: {\npolicies: \"使用條款與隱私權政策\",\nlanguage: \"語言\",\nsupport: \"支援\",\nnotice: \"我們致力於成為值得信賴的服務，但由於我還是一名高中生，可能會有做得不夠周全的地方。\\n如有不周之處，敬請透過聯絡表單指正，十分感謝。\"\n},\nmenus: {\nred: {\ntitle: \"信念\",\nitems: [\n\"第一目標\",\n\"關於相互強化的協議內容\",\n\"關於 SK\"\n]\n},\nsaetab: {\ntitle: \"SaeTab 7\",\nitems: [\n\"了解 SaeTab 7\",\n\"設定方法\",\n\"立即試用\"\n]\n},\nproducts: {\ntitle: \"產品\",\nitems: [\n\"產品列表\",\n\"工具\",\n\"BaramOS\",\n\"我的 Google Play\",\n\"標誌\",\n\"你的楽系列\"\n]\n},\nsupport: {\ntitle: \"支援與資訊\",\nitems: [\n\"支援\",\n\"聯絡我\",\n\"聯絡我\",\n\"帳號\",\n\"使用條款與隱私權政策\",\n\"語言\"\n]\n}\n}\n},\nru: {\nheader: {\nproducts: \"Продукты\",\nsaetab: \"SaeTab 7\",\nbelief: \"Убеждения\",\nsupport: \"Поддержка и информация\",\nmenu: \"Меню\",\nclose: \"Закрыть\",\nback: \"Назад\",\nhome: \"Главная\"\n},\nfooter: {\npolicies: \"Условия использования и политика конфиденциальности\",\nlanguage: \"Язык\",\nsupport: \"Поддержка\",\nnotice: \"Мы стремимся предоставлять сервис, которому можно доверять, но, поскольку я ещё учусь в старшей школе, я могу допустить недочёты.\\nЕсли вы заметите что-либо подобное, буду благодарен, если сообщите об этом через форму обратной связи.\"\n},\nmenus: {\nred: {\ntitle: \"Убеждения\",\nitems: [\n\"Первая цель\",\n\"Содержание соглашения о взаимном укреплении\",\n\"О SK\"\n]\n},\nsaetab: {\ntitle: \"SaeTab 7\",\nitems: [\n\"О SaeTab 7\",\n\"Как настроить\",\n\"Попробовать сейчас\"\n]\n},\nproducts: {\ntitle: \"Продукты\",\nitems: [\n\"Все продукты\",\n\"Инструменты\",\n\"BaramOS\",\n\"Мой Google Play\",\n\"Логотипы\",\n\"Серия Nidele\"\n]\n},\nsupport: {\ntitle: \"Поддержка и информация\",\nitems: [\n\"Поддержка\",\n\"Мой GitHub\",\n\"Связаться\",\n\"Аккаунты\",\n\"Условия и политика конфиденциальности\",\n\"Язык\"\n]\n}\n}\n}\n};\nfunction getSelectedLang() {\nlet rawLang = \"ja\";\ntry {\nrawLang = window.localStorage.getItem(\"selectedLang\") || \"ja\";\n} catch (error) {\nconsole.error(`[${NS}] failed to read selectedLang from localStorage.`, error);\nreturn \"ja\";\n}\nif (typeof rawLang !== \"string\") {\nconsole.error(`[${NS}] selectedLang is not a string.`, rawLang);\nreturn \"ja\";\n}\nconst normalizedLang = rawLang.trim().toLowerCase().replace(/_/g, \"-\");\nif (I18N[normalizedLang]) {\nreturn normalizedLang;\n}\nif (normalizedLang.startsWith(\"ko-kp\")) return \"ko-kp\";\nif (normalizedLang.startsWith(\"ko\")) return \"ko\";\nif (\nnormalizedLang.startsWith(\"zh-tw\") ||\nnormalizedLang.startsWith(\"zh-hant\")\n) {\nreturn \"zh-tw\";\n}\nif (normalizedLang.startsWith(\"zh\")) return \"zh\";\nif (normalizedLang.startsWith(\"en\")) return \"en\";\nif (normalizedLang.startsWith(\"ru\")) return \"ru\";\nreturn \"ja\";\n}\nfunction getI18n() {\nconst lang = getSelectedLang();\nconst dictionary = I18N[lang];\nif (!dictionary) {\nconsole.error(`[${NS}] translation dictionary not found: ${lang}`);\nreturn I18N.ja;\n}\nreturn dictionary;\n}\nconst headerHTML = `\n<header style=\"z-index:999999!important\">\n<a\nclass=\"headerv2-logo\"\ndata-headerv2-logo=\"true\"\nhref=\"https://search3958.github.io/\"\n>\n<span class=\"headerv2-logo-image\" aria-hidden=\"true\">\n<svg width=\"38\" height=\"38\" viewBox=\"0 0 38 38\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path d=\"M7 7H19V19L7 14V7Z\" fill=\"url(#paint0_linear_57_48)\"/>\n<path d=\"M31 31H19V19L31 24V31Z\" fill=\"url(#paint1_linear_57_48)\"/>\n<path d=\"M19 7L31 12V19H19V7Z\" fill=\"url(#paint2_linear_57_48)\"/>\n<path d=\"M19 14L31 19H19V14Z\" fill=\"url(#paint3_linear_57_48)\"/>\n<path d=\"M19 31L7 26V19H19V31Z\" fill=\"url(#paint4_linear_57_48)\"/>\n<path d=\"M19 24L7 19H19V24Z\" fill=\"url(#paint5_linear_57_48)\"/>\n<defs>\n<linearGradient id=\"paint0_linear_57_48\" x1=\"7\" y1=\"13\" x2=\"19\" y2=\"13\" gradientUnits=\"userSpaceOnUse\">\n <stop stop-opacity=\"0.43\" style=\"stop-color:black;stop-opacity:0.43;\"/>\n <stop offset=\"1\" stop-opacity=\"0.95\" style=\"stop-color:black;stop-opacity:0.95;\"/>\n</linearGradient>\n<linearGradient id=\"paint1_linear_57_48\" x1=\"31\" y1=\"25\" x2=\"19\" y2=\"25\" gradientUnits=\"userSpaceOnUse\">\n <stop stop-opacity=\"0.43\" style=\"stop-color:black;stop-opacity:0.43;\"/>\n <stop offset=\"1\" stop-opacity=\"0.95\" style=\"stop-color:black;stop-opacity:0.95;\"/>\n</linearGradient>\n<linearGradient id=\"paint2_linear_57_48\" x1=\"19\" y1=\"13\" x2=\"31\" y2=\"13\" gradientUnits=\"userSpaceOnUse\">\n <stop stop-opacity=\"0.43\" style=\"stop-color:black;stop-opacity:0.43;\"/>\n <stop offset=\"1\" stop-opacity=\"0.95\" style=\"stop-color:black;stop-opacity:0.95;\"/>\n</linearGradient>\n<linearGradient id=\"paint3_linear_57_48\" x1=\"19\" y1=\"16.5\" x2=\"31\" y2=\"16.5\" gradientUnits=\"userSpaceOnUse\">\n <stop stop-opacity=\"0.43\" style=\"stop-color:black;stop-opacity:0.43;\"/>\n <stop offset=\"1\" stop-opacity=\"0.95\" style=\"stop-color:black;stop-opacity:0.95;\"/>\n</linearGradient>\n<linearGradient id=\"paint4_linear_57_48\" x1=\"19\" y1=\"25\" x2=\"7\" y2=\"25\" gradientUnits=\"userSpaceOnUse\">\n <stop stop-opacity=\"0.43\" style=\"stop-color:black;stop-opacity:0.43;\"/>\n <stop offset=\"1\" stop-opacity=\"0.95\" style=\"stop-color:black;stop-opacity:0.95;\"/>\n</linearGradient>\n<linearGradient id=\"paint5_linear_57_48\" x1=\"19\" y1=\"21.5\" x2=\"7\" y2=\"21.5\" gradientUnits=\"userSpaceOnUse\">\n <stop stop-opacity=\"0.43\" style=\"stop-color:black;stop-opacity:0.43;\"/>\n <stop offset=\"1\" stop-opacity=\"0.95\" style=\"stop-color:black;stop-opacity:0.95;\"/>\n</linearGradient>\n</defs>\n</svg>\n</span>\n<span class=\"headerv2-logo-back\" aria-hidden=\"true\">\n<svg width=\"27\" height=\"27\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path d=\"M19 12H5M5 12L11 6M5 12L11 18\" stroke=\"currentColor\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n</svg>\n</span>\n</a>\n<a href=\"https://search3958.github.io/i/products/\" data-headerv2-menu=\"products\">\n<span data-headerv2-i18n=\"header.products\">プロダクト</span>\n</a>\n<a href=\"https://search3958.github.io/i/saetab/\" data-headerv2-menu=\"saetab\">\n<span data-headerv2-i18n=\"header.saetab\">SaeTab 7</span>\n</a>\n<a\nhref=\"javascript:void(0)\"\ndata-headerv2-menu=\"red\"\ndata-headerv2-no-navigation=\"true\"\n>\n<span data-headerv2-i18n=\"header.belief\">信念</span>\n</a>\n<a\nhref=\"javascript:void(0)\"\ndata-headerv2-menu=\"support\"\ndata-headerv2-no-navigation=\"true\"\n>\n<span data-headerv2-i18n=\"header.support\">サポートと情報</span>\n</a>\n<button\nclass=\"headerv2-menu-button\"\ntype=\"button\"\naria-expanded=\"false\"\naria-label=\"メニュー\"\n>\n<span class=\"headerv2-menu-button-line\"></span>\n<span class=\"headerv2-menu-button-line\"></span>\n</button>\n</header>\n`;\nconst footerHTML = `\n<footer>\n<span>\n<a href=\"https://search3958.github.io/policies/\">\n<span data-headerv2-i18n=\"footer.policies\">利用規約と個人情報処理政策</span>\n</a>\n・\n<a href=\"https://search3958.github.io/accounts/lang\">\n<span data-headerv2-i18n=\"footer.language\">言語</span>\n</a>\n・\n<a href=\"https://search3958.github.io/support/\">\n<span data-headerv2-i18n=\"footer.support\">サポート</span>\n</a>\n</span>\n<br>\n<img\nwidth=\"40\"\nheight=\"60\"\nsrc=\"https://search3958.github.io/project/logos/3958logo_main.svg\"\nalt=\"\"\n>\n<div class=\"headerv2-footer-note\" data-headerv2-i18n=\"footer.notice\">\n信頼されるサービスを目指しておりますが、高校生ゆえ不手際があるかもしれません\nその際はお問い合わせフォームよりご指摘いただけますと幸いです\n</div>\n</footer>\n`;\nconst menuData = {\nsaetab: {\ntitleKey: \"saetab\",\nitems: [\n{\nhref: \"https://search3958.github.io/i/saetab/\"\n},\n{\nhref: \"https://search3958.github.io/support/docs/ja/newtab_setup.html\"\n},\n{\nhref: \"https://search3958.github.io/newtab/?value=head-try\"\n}\n]\n},\nproducts: {\ntitleKey: \"products\",\nitems: [\n{\nhref: \"https://search3958.github.io/i/products/\"\n},\n{\nhref: \"https://search3958.github.io/i/tools/\"\n},\n{\nhref: \"https://search3958.github.io/i/baram-os/\"\n},\n{\nhref: \"https://play.google.com/store/apps/dev?id=5714216887541621486\"\n},\n{\nhref: \"https://search3958.github.io/project/logos\"\n},\n{\nhref: \"https://nidele206.github.io/\"\n}\n]\n},\nred: {\ntitleKey: \"red\",\nitems: [\n{\nhref: \"https://search3958.github.io/i/red/\"\n},\n{\nhref: \"https://search3958.github.io/i/red/ganghoa\"\n},\n{\nhref: \"https://sk-hub.jp/\"\n}\n]\n},\nsupport: {\ntitleKey: \"support\",\nitems: [\n{\nhref: \"https://search3958.github.io/support/\"\n},\n{\nhref: \"https://github.com/search3958/\"\n},\n{\nhref: \"https://docs.google.com/forms/d/e/1FAIpQLSegCKF2UdLdEA7cQ6y3PS3vlZ8fT29KnEyo26RDl15ocIM1Ig/viewform\"\n},\n{\nhref: \"https://search3958.github.io/accounts/index.html\"\n},\n{\nhref: \"https://search3958.github.io/policies/\"\n},\n{\nhref: \"https://search3958.github.io/accounts/lang\"\n}\n]\n}\n};\nfunction injectStyle() {\nif (!document.head) {\nconsole.error(`[${NS}] document.head not found.`);\nreturn false;\n}\nconst oldStyle = document.getElementById(STYLE_ID);\nif (oldStyle) oldStyle.remove();\nconst style = document.createElement(\"style\");\nif (!style) {\nconsole.error(`[${NS}] failed to create style element.`);\nreturn false;\n}\nstyle.id = STYLE_ID;\nstyle.textContent = `\nheader {\nposition: fixed;\nbackground: #fffb;\ncolor: #000;\ntop: -1px;\nleft: 0;\nwidth: 100vw;\ndisplay: flex;\njustify-content: center;\nalign-items: center;\nbackdrop-filter: blur(24px);\npadding: 0;\nfont-size: 13px;\nheight: 52px;\n}\nheader > a {\ntext-decoration: none;\ncolor: #000;\npadding: 20px 12px;\n}\nheader > a > svg,\n.headerv2-logo-image > svg {\npadding-top: 4px;\n}\n.headerv2-logo-image,\n.headerv2-logo-back {\ndisplay: inline-flex;\nalign-items: center;\njustify-content: center;\n}\n.headerv2-logo-back,\n.headerv2-menu-button {\ndisplay: none;\n}\nfooter .headerv2-footer-note {\nmargin-top: 8px;\nfont-size: 14px;\nline-height: 1.6;\nfont-weight: 400;\ncolor: rgba(0, 0, 0, 0.55);\ntext-align: center;\nwhite-space: pre-line;\n}\n#${BACKDROP_ID} {\nposition: fixed;\ntop: var(--headerv2-header-bottom, 0px);\nleft: 0;\nright: 0;\nbottom: 0;\nz-index: 999997;\nbackground: rgba(232, 232, 232, 0.28);\nbackdrop-filter: blur(14px) saturate(0.9);\n-webkit-backdrop-filter: blur(14px) saturate(0.9);\nopacity: 0;\nvisibility: hidden;\npointer-events: none;\ntransition:\nopacity 320ms cubic-bezier(0.22, 1, 0.36, 1),\nvisibility 0s linear 320ms;\n}\n#${BACKDROP_ID}.is-open {\nopacity: 1;\nvisibility: visible;\npointer-events: auto;\ntransition:\nopacity 320ms cubic-bezier(0.22, 1, 0.36, 1),\nvisibility 0s linear 0s;\n}\n#${MENU_ID} {\nposition: fixed;\ntop: 0;\nleft: 0;\nright: 0;\nz-index: 999998;\noverflow: hidden;\nbox-sizing: border-box;\nheight: 0;\nbackground: #fff;\nopacity: 0;\nvisibility: hidden;\npointer-events: none;\ntransition:\nheight 380ms cubic-bezier(0.22, 1, 0.36, 1),\nopacity 220ms ease,\nvisibility 0s linear 380ms;\npadding-top: 52px;\n}\n#${MENU_ID}.is-open {\nopacity: 1;\nvisibility: visible;\npointer-events: auto;\ntransition:\nheight 300ms cubic-bezier(0.5, 0.22, 0, 1),\nopacity 220ms ease,\nvisibility 0s linear 0s;\n}\n#${MENU_ID} .headerv2-menu-inner {\nwidth: min(1180px, calc(100% - 48px));\nmargin: 0 auto;\npadding: 30px 0 34px;\nbox-sizing: border-box;\n}\n#${MENU_ID} .headerv2-menu-content {\nopacity: 1;\ntransition: opacity 180ms cubic-bezier(0.22, 1, 0.36, 1);\n}\n#${MENU_ID} .headerv2-menu-content.is-fading {\nopacity: 0;\n}\n#${MENU_ID} .headerv2-menu-title {\nmargin: 0 0 15px;\nfont-size: 13px;\nline-height: 1.4;\nfont-weight: 600;\nletter-spacing: 0.01em;\ncolor: rgba(0, 0, 0, 0.48);\n}\n#${MENU_ID} .headerv2-menu-list {\ndisplay: flex;\nflex-direction: column;\nmargin: 0;\npadding: 0;\nlist-style: none;\n}\n#${MENU_ID} .headerv2-menu-list li {\nmargin: 0;\npadding: 0;\nopacity: 0;\ntransform: translateY(-8px);\n}\n#${MENU_ID}.is-open .headerv2-menu-list li {\nanimation: headerv2-menu-item-in 0.4s cubic-bezier(0.1, 0.8, 0.36, 1) forwards;\nanimation-delay: calc(var(--headerv2-item-index, 0) * 40ms);\n}\n@keyframes headerv2-menu-item-in {\nfrom {\nopacity: 0;\ntransform: translateY(-8px);\n}\nto {\nopacity: 1;\ntransform: translateY(0);\n}\n}\n#${MENU_ID} .headerv2-menu-link {\ndisplay: block;\npadding: 8px 0;\ncolor: #111;\ntext-decoration: none;\nfont-size: 20px;\nline-height: 1.5;\nfont-weight: 500;\n}\n@media (max-width: 680px) {\nheader {\njustify-content: space-between;\nbox-sizing: border-box;\npadding: 0 12px;\n}\nheader > a:not(.headerv2-logo) {\ndisplay: none;\n}\nheader > .headerv2-logo {\nwidth: 44px;\nheight: 52px;\npadding: 0;\nbox-sizing: border-box;\ndisplay: inline-flex;\nalign-items: center;\njustify-content: center;\nflex: 0 0 44px;\n}\nheader > .headerv2-logo > svg,\n.headerv2-logo-image > svg {\npadding-top: 0;\n}\n.headerv2-logo-image {\ndisplay: inline-flex;\n}\n.headerv2-logo-back {\ndisplay: none;\n}\n.headerv2-logo.is-back .headerv2-logo-image {\ndisplay: none;\n}\n.headerv2-logo.is-back .headerv2-logo-back {\ndisplay: inline-flex;\n}\n.headerv2-menu-button {\nposition: relative;\ndisplay: inline-flex;\nwidth: 44px;\nheight: 44px;\npadding: 0;\nmargin: 0;\nborder: 0;\nbackground: transparent;\ncolor: #000;\nappearance: none;\n-webkit-appearance: none;\nalign-items: center;\njustify-content: center;\nflex: 0 0 44px;\ncursor: pointer;\n}\n.headerv2-menu-button-line {\nposition: absolute;\nleft: 12px;\nwidth: 20px;\nheight: 1.5px;\nbackground: currentColor;\nborder-radius: 999px;\ntransform-origin: center;\ntransition:\ntransform 180ms cubic-bezier(0.22, 1, 0.36, 1),\nopacity 120ms ease;\n}\n.headerv2-menu-button-line:first-child {\ntransform: translateY(-3px);\n}\n.headerv2-menu-button-line:last-child {\ntransform: translateY(3px);\n}\n.headerv2-menu-button.is-open .headerv2-menu-button-line:first-child {\ntransform: rotate(45deg);\n}\n.headerv2-menu-button.is-open .headerv2-menu-button-line:last-child {\ntransform: rotate(-45deg);\n}\n#${MENU_ID} .headerv2-menu-inner {\nwidth: calc(100% - 40px);\npadding: 25px 0 30px;\n}\n#${MENU_ID} .headerv2-menu-link {\nfont-size: 18px;\npadding: 8px 0;\n}\n}\nfooter{\npadding:48px 0px;\npadding-top:15px;\ntext-align:center;\nfont-size:20px;\ntext-decoration: none;\n}\n@media (prefers-reduced-motion: reduce) {\n#${MENU_ID},\n#${MENU_ID} .headerv2-menu-content,\n#${MENU_ID} .headerv2-menu-list li,\n#${BACKDROP_ID},\n.headerv2-menu-button-line {\ntransition-duration: 1ms !important;\n}\n#${MENU_ID} .headerv2-menu-list li {\nanimation: none !important;\nopacity: 1 !important;\ntransform: none !important;\n}\n}\n`;\ndocument.head.appendChild(style);\nreturn true;\n}\nfunction insertHeader() {\nif (!document.body) {\nconsole.error(`[${NS}] document.body not found.`);\nreturn null;\n}\nconst existingHeader = document.querySelector(\"header\");\nif (existingHeader) existingHeader.remove();\nconst temp = document.createElement(\"div\");\nif (!temp) {\nconsole.error(`[${NS}] failed to create header temp.`);\nreturn null;\n}\ntemp.innerHTML = headerHTML.trim();\nconst headerElement = temp.firstElementChild;\nif (!headerElement) {\nconsole.error(`[${NS}] generated header not found.`);\nreturn null;\n}\ndocument.body.insertBefore(headerElement, document.body.firstChild);\nreturn headerElement;\n}\nfunction insertFooter() {\nif (!document.body) {\nconsole.error(`[${NS}] document.body not found.`);\nreturn null;\n}\nconst existingFooter = document.querySelector(\"footer\");\nif (existingFooter) existingFooter.remove();\nconst temp = document.createElement(\"div\");\nif (!temp) {\nconsole.error(`[${NS}] failed to create footer temp.`);\nreturn null;\n}\ntemp.innerHTML = footerHTML.trim();\nconst footerElement = temp.firstElementChild;\nif (!footerElement) {\nconsole.error(`[${NS}] generated footer not found.`);\nreturn null;\n}\ndocument.body.appendChild(footerElement);\nreturn footerElement;\n}\nfunction createMenu() {\nif (!document.body) {\nconsole.error(`[${NS}] document.body not found.`);\nreturn null;\n}\nconst oldMenu = document.getElementById(MENU_ID);\nif (oldMenu) oldMenu.remove();\nconst oldBackdrop = document.getElementById(BACKDROP_ID);\nif (oldBackdrop) oldBackdrop.remove();\nconst menu = document.createElement(\"div\");\nif (!menu) {\nconsole.error(`[${NS}] failed to create menu.`);\nreturn null;\n}\nmenu.id = MENU_ID;\nconst inner = document.createElement(\"div\");\nif (!inner) {\nconsole.error(`[${NS}] failed to create menu inner.`);\nreturn null;\n}\ninner.className = \"headerv2-menu-inner\";\nconst content = document.createElement(\"div\");\nif (!content) {\nconsole.error(`[${NS}] failed to create menu content.`);\nreturn null;\n}\ncontent.className = \"headerv2-menu-content\";\ninner.appendChild(content);\nmenu.appendChild(inner);\nconst backdrop = document.createElement(\"div\");\nif (!backdrop) {\nconsole.error(`[${NS}] failed to create backdrop.`);\nreturn null;\n}\nbackdrop.id = BACKDROP_ID;\ndocument.body.appendChild(backdrop);\ndocument.body.appendChild(menu);\nreturn { menu, content, backdrop };\n}\nfunction updateHeaderPosition(headerElement) {\nif (!headerElement) {\nconsole.error(`[${NS}] headerElement not found.`);\nreturn;\n}\nconst rect = headerElement.getBoundingClientRect();\nif (!rect) {\nconsole.error(`[${NS}] failed to get header rect.`);\nreturn;\n}\ndocument.documentElement.style.setProperty(\n\"--headerv2-header-bottom\",\n`${Math.round(rect.bottom)}px`\n);\n}\nfunction applyStaticTranslations(headerElement, footerElement) {\nconst dictionary = getI18n();\nfunction applyTranslations(element, scope) {\nif (!element) {\nconsole.error(`[${NS}] ${scope} element not found while applying translations.`);\nreturn;\n}\nconst nodes = element.querySelectorAll(\"[data-headerv2-i18n]\");\nif (!nodes) {\nconsole.error(`[${NS}] ${scope} translation nodes not found.`);\nreturn;\n}\nfor (const node of nodes) {\nif (!node) {\nconsole.error(`[${NS}] invalid ${scope} translation node.`);\ncontinue;\n}\nconst key = node.getAttribute(\"data-headerv2-i18n\");\nif (!key) {\nconsole.error(`[${NS}] ${scope} translation key missing.`, node);\ncontinue;\n}\nconst [group, item] = key.split(\".\");\nconst value = dictionary[group]?.[item];\nif (typeof value !== \"string\") {\nconsole.error(`[${NS}] ${scope} translation value not found: ${key}`);\ncontinue;\n}\nnode.textContent = value;\n}\n}\napplyTranslations(headerElement, \"header\");\napplyTranslations(footerElement, \"footer\");\n}\nfunction getMenuTranslation(type) {\nconst dictionary = getI18n();\nconst menuTranslation = dictionary.menus[type];\nif (!menuTranslation) {\nconsole.error(`[${NS}] menu translation not found: ${type}`);\nreturn null;\n}\nreturn menuTranslation;\n}\nfunction renderMenu(contentElement, type) {\nif (!contentElement) {\nconsole.error(`[${NS}] menu content element not found.`);\nreturn false;\n}\nconst config = menuData[type];\nif (!config) {\nconsole.error(`[${NS}] menu config not found: ${type}`);\nreturn false;\n}\nconst translation = getMenuTranslation(type);\nif (!translation) return false;\nif (\n!Array.isArray(translation.items) ||\ntranslation.items.length !== config.items.length\n) {\nconsole.error(`[${NS}] menu translation item count mismatch: ${type}`);\nreturn false;\n}\ncontentElement.classList.remove(\"headerv2-mobile-root\");\ncontentElement.replaceChildren();\nconst title = document.createElement(\"div\");\nif (!title) {\nconsole.error(`[${NS}] failed to create title.`);\nreturn false;\n}\ntitle.className = \"headerv2-menu-title\";\ntitle.textContent = translation.title;\nconst list = document.createElement(\"ul\");\nif (!list) {\nconsole.error(`[${NS}] failed to create list.`);\nreturn false;\n}\nlist.className = \"headerv2-menu-list\";\nfor (let index = 0; index < config.items.length; index += 1) {\nconst item = config.items[index];\nconst label = translation.items[index];\nif (\n!item ||\ntypeof item.href !== \"string\" ||\ntypeof label !== \"string\"\n) {\nconsole.error(`[${NS}] invalid translated menu item.`, {\nitem,\nlabel,\nindex\n});\ncontinue;\n}\nconst li = document.createElement(\"li\");\nif (!li) {\nconsole.error(`[${NS}] failed to create list item.`);\ncontinue;\n}\nconst link = document.createElement(\"a\");\nif (!link) {\nconsole.error(`[${NS}] failed to create link.`);\ncontinue;\n}\nlink.className = \"headerv2-menu-link\";\nlink.href = item.href;\nlink.textContent = label;\nli.style.setProperty(\"--headerv2-item-index\", String(index));\nli.appendChild(link);\nlist.appendChild(li);\n}\ncontentElement.appendChild(title);\ncontentElement.appendChild(list);\nreturn true;\n}\nfunction isMobileViewport() {\nconst viewportWidth = window.innerWidth;\nif (!Number.isFinite(viewportWidth)) {\nconsole.error(`[${NS}] window.innerWidth is invalid: ${viewportWidth}`);\nreturn false;\n}\nreturn viewportWidth <= MOBILE_BREAKPOINT;\n}\nfunction setupNavigation(headerElement, menuParts) {\nif (!headerElement) {\nconsole.error(`[${NS}] headerElement not found.`);\nreturn;\n}\nif (\n!menuParts ||\n!menuParts.menu ||\n!menuParts.content ||\n!menuParts.backdrop\n) {\nconsole.error(`[${NS}] menu parts incomplete.`);\nreturn;\n}\nconst mobileMenuButton = headerElement.querySelector(\".headerv2-menu-button\");\nif (!mobileMenuButton) {\nconsole.error(`[${NS}] mobile menu button not found.`);\nreturn;\n}\nconst logoLink = headerElement.querySelector(\".headerv2-logo\");\nif (!logoLink) {\nconsole.error(`[${NS}] logo link not found.`);\nreturn;\n}\nconst headerItems = Array.from(headerElement.children).filter(\n(element) => element instanceof HTMLElement\n);\nif (headerItems.length === 0) {\nconsole.error(`[${NS}] header items not found.`);\nreturn;\n}\nconst desktopNavItems = headerItems.filter(\n(element) =>\nelement instanceof HTMLAnchorElement &&\nelement !== logoLink\n);\nif (desktopNavItems.length !== 4) {\nconsole.error(\n`[${NS}] expected exactly 4 desktop navigation items, found ${desktopNavItems.length}.`\n);\n}\nconst triggers = headerItems.filter((element) =>\nelement.hasAttribute(\"data-headerv2-menu\")\n);\nif (triggers.length === 0) {\nconsole.error(`[${NS}] menu triggers not found.`);\n}\nlet activeType = null;\nlet activeTrigger = null;\nlet hoveredHeaderItem = null;\nlet scrollCollapsed = false;\nlet scrollCollapsedItem = null;\nlet closeTimer = null;\nlet switchTimer = null;\nlet isClosing = false;\nlet mobileMenuLevel = \"root\";\nlet lastIsMobile = isMobileViewport();\nfunction clearCloseTimer() {\nif (closeTimer !== null) {\nwindow.clearTimeout(closeTimer);\ncloseTimer = null;\n}\n}\nfunction clearSwitchTimer() {\nif (switchTimer !== null) {\nwindow.clearTimeout(switchTimer);\nswitchTimer = null;\n}\n}\nfunction setTriggerExpanded(trigger, expanded) {\nif (!trigger) {\nconsole.error(`[${NS}] trigger not found while updating aria-expanded.`);\nreturn;\n}\ntrigger.setAttribute(\"aria-expanded\", String(expanded));\n}\nfunction resetTriggerStates() {\nfor (const trigger of triggers) {\nif (!trigger) {\nconsole.error(`[${NS}] invalid trigger while resetting state.`);\ncontinue;\n}\nsetTriggerExpanded(trigger, false);\n}\nactiveTrigger = null;\n}\nfunction getHoveredHeaderItem() {\nfor (const item of headerItems) {\nif (!item) {\nconsole.error(`[${NS}] invalid header item while checking hover.`);\ncontinue;\n}\nif (item.matches(\":hover\")) return item;\n}\nreturn null;\n}\nfunction isScrolled() {\nreturn window.scrollY > 0 || window.pageYOffset > 0;\n}\nfunction getMenuHeight() {\nconst inner = menuParts.menu.querySelector(\".headerv2-menu-inner\");\nif (!inner) {\nconsole.error(`[${NS}] menu inner not found.`);\nreturn 0;\n}\nreturn inner.scrollHeight;\n}\nfunction setMenuHeight(height) {\nif (!Number.isFinite(height) || height < 0) {\nconsole.error(`[${NS}] invalid menu height: ${height}`);\nreturn;\n}\nmenuParts.menu.style.height = `calc(${height}px + 64px)`;\n}\nfunction setMobileHeaderState(menuOpen, submenuOpen) {\nif (!mobileMenuButton) {\nconsole.error(`[${NS}] mobile menu button not found while updating state.`);\nreturn;\n}\nif (!logoLink) {\nconsole.error(`[${NS}] logo link not found while updating state.`);\nreturn;\n}\nconst dictionary = getI18n();\nconst menuLabel =\ntypeof dictionary.header.menu === \"string\"\n? dictionary.header.menu\n: \"Menu\";\nconst closeLabel =\ntypeof dictionary.header.close === \"string\"\n? dictionary.header.close\n: \"Close\";\nconst backLabel =\ntypeof dictionary.header.back === \"string\"\n? dictionary.header.back\n: \"Back\";\nconst homeLabel =\ntypeof dictionary.header.home === \"string\"\n? dictionary.header.home\n: \"Home\";\nmobileMenuButton.classList.toggle(\"is-open\", Boolean(menuOpen));\nmobileMenuButton.setAttribute(\"aria-expanded\", String(Boolean(menuOpen)));\nmobileMenuButton.setAttribute(\n\"aria-label\",\nmenuOpen ? closeLabel : menuLabel\n);\nlogoLink.classList.toggle(\"is-back\", Boolean(submenuOpen));\nlogoLink.setAttribute(\n\"aria-label\",\nsubmenuOpen ? backLabel : homeLabel\n);\n}\nfunction renderMobileRootMenu() {\nif (!menuParts.content) {\nconsole.error(`[${NS}] menu content element not found while rendering mobile root.`);\nreturn false;\n}\nif (desktopNavItems.length === 0) {\nconsole.error(`[${NS}] desktop navigation items are unavailable for mobile root menu.`);\nreturn false;\n}\nmenuParts.content.classList.add(\"headerv2-mobile-root\");\nmenuParts.content.replaceChildren();\nconst list = document.createElement(\"ul\");\nif (!list) {\nconsole.error(`[${NS}] failed to create mobile root list.`);\nreturn false;\n}\nlist.className = \"headerv2-menu-list\";\nfor (let index = 0; index < desktopNavItems.length; index += 1) {\nconst desktopItem = desktopNavItems[index];\nif (!desktopItem) {\nconsole.error(`[${NS}] invalid desktop navigation item at index ${index}.`);\ncontinue;\n}\nconst labelNode = desktopItem.querySelector(\"[data-headerv2-i18n]\");\nif (!labelNode) {\nconsole.error(`[${NS}] mobile root label node not found at index ${index}.`, desktopItem);\ncontinue;\n}\nconst label = labelNode.textContent?.trim();\nif (!label) {\nconsole.error(`[${NS}] mobile root label is empty at index ${index}.`);\ncontinue;\n}\nconst li = document.createElement(\"li\");\nif (!li) {\nconsole.error(`[${NS}] failed to create mobile root list item.`);\ncontinue;\n}\nconst link = document.createElement(\"a\");\nif (!link) {\nconsole.error(`[${NS}] failed to create mobile root link.`);\ncontinue;\n}\nlink.className = \"headerv2-menu-link\";\nconst type = desktopItem.getAttribute(\"data-headerv2-menu\");\nif (type) {\nif (!menuData[type]) {\nconsole.error(`[${NS}] mobile root menu type is invalid: ${type}`);\ncontinue;\n}\nlink.href = \"#headerv2-mobile-submenu\";\nlink.addEventListener(\n\"click\",\n(event) => {\nif (!event) {\n console.error(`[${NS}] mobile submenu click event missing.`);\n return;\n}\nevent.preventDefault();\nopenMobileSubmenu(type);\n},\n{ passive: false }\n);\n} else {\nconst href = desktopItem.getAttribute(\"href\");\nif (!href) {\nconsole.error(`[${NS}] direct mobile root item has no href: ${label}`);\ncontinue;\n}\nlink.href = href;\n}\nlink.textContent = label;\nli.style.setProperty(\"--headerv2-item-index\", String(index));\nli.appendChild(link);\nlist.appendChild(li);\n}\nmenuParts.content.appendChild(list);\nreturn true;\n}\nfunction openMenu(type, trigger = null) {\nif (isMobileViewport()) return;\nif (!menuData[type]) {\nconsole.error(`[${NS}] unknown menu type: ${type}`);\nreturn;\n}\nclearCloseTimer();\nisClosing = false;\nsetMobileHeaderState(false, false);\nupdateHeaderPosition(headerElement);\nif (activeType === null) {\nif (!renderMenu(menuParts.content, type)) return;\nactiveType = type;\nactiveTrigger = trigger;\nmenuParts.menu.classList.add(\"is-open\");\nmenuParts.backdrop.classList.add(\"is-open\");\nsetMenuHeight(getMenuHeight());\nresetTriggerStates();\nif (trigger) {\nsetTriggerExpanded(trigger, true);\nactiveTrigger = trigger;\n}\nreturn;\n}\nif (activeType === type) {\nif (trigger) {\nresetTriggerStates();\nsetTriggerExpanded(trigger, true);\nactiveTrigger = trigger;\n}\nreturn;\n}\nclearSwitchTimer();\nmenuParts.content.classList.add(\"is-fading\");\nsetMenuHeight(getMenuHeight());\nswitchTimer = window.setTimeout(() => {\nswitchTimer = null;\nif (!renderMenu(menuParts.content, type)) {\nmenuParts.content.classList.remove(\"is-fading\");\nreturn;\n}\nactiveType = type;\nresetTriggerStates();\nif (trigger) {\nsetTriggerExpanded(trigger, true);\nactiveTrigger = trigger;\n}\nsetMenuHeight(getMenuHeight());\nrequestAnimationFrame(() => {\nmenuParts.content.classList.remove(\"is-fading\");\n});\n}, 180);\n}\nfunction openMobileMenu() {\nif (!isMobileViewport()) {\nconsole.error(`[${NS}] openMobileMenu called outside mobile viewport.`);\nreturn;\n}\nclearCloseTimer();\nclearSwitchTimer();\nisClosing = false;\nupdateHeaderPosition(headerElement);\nif (!renderMobileRootMenu()) {\nconsole.error(`[${NS}] mobile root menu rendering failed.`);\nreturn;\n}\nactiveType = null;\nactiveTrigger = null;\nmobileMenuLevel = \"root\";\nresetTriggerStates();\nmenuParts.menu.classList.add(\"is-open\");\nmenuParts.backdrop.classList.add(\"is-open\");\nsetMenuHeight(getMenuHeight());\nsetMobileHeaderState(true, false);\n}\nfunction openMobileSubmenu(type) {\nif (!isMobileViewport()) {\nconsole.error(`[${NS}] openMobileSubmenu called outside mobile viewport: ${type}`);\nreturn;\n}\nif (!menuData[type]) {\nconsole.error(`[${NS}] unknown mobile submenu type: ${type}`);\nreturn;\n}\nclearCloseTimer();\nisClosing = false;\nif (!menuParts.menu.classList.contains(\"is-open\")) {\nopenMobileMenu();\n}\nif (activeType === type && mobileMenuLevel === \"submenu\") return;\nclearSwitchTimer();\nmenuParts.content.classList.add(\"is-fading\");\nsetMenuHeight(getMenuHeight());\nswitchTimer = window.setTimeout(() => {\nswitchTimer = null;\nif (!renderMenu(menuParts.content, type)) {\nmenuParts.content.classList.remove(\"is-fading\");\nreturn;\n}\nactiveType = type;\nactiveTrigger = null;\nmobileMenuLevel = \"submenu\";\nresetTriggerStates();\nsetMenuHeight(getMenuHeight());\nsetMobileHeaderState(true, true);\nrequestAnimationFrame(() => {\nmenuParts.content.classList.remove(\"is-fading\");\n});\n}, 180);\n}\nfunction backToMobileRoot() {\nif (!isMobileViewport()) {\nconsole.error(`[${NS}] backToMobileRoot called outside mobile viewport.`);\nreturn;\n}\nif (!menuParts.menu.classList.contains(\"is-open\")) {\nconsole.error(`[${NS}] cannot go back to mobile root because menu is closed.`);\nreturn;\n}\nif (mobileMenuLevel !== \"submenu\") return;\nclearCloseTimer();\nclearSwitchTimer();\nmenuParts.content.classList.add(\"is-fading\");\nsetMenuHeight(getMenuHeight());\nswitchTimer = window.setTimeout(() => {\nswitchTimer = null;\nif (!renderMobileRootMenu()) {\nmenuParts.content.classList.remove(\"is-fading\");\nreturn;\n}\nactiveType = null;\nactiveTrigger = null;\nmobileMenuLevel = \"root\";\nresetTriggerStates();\nsetMenuHeight(getMenuHeight());\nsetMobileHeaderState(true, false);\nrequestAnimationFrame(() => {\nmenuParts.content.classList.remove(\"is-fading\");\n});\n}, 180);\n}\nfunction closeMenu() {\nclearCloseTimer();\nclearSwitchTimer();\nif (\nactiveType === null &&\n!menuParts.menu.classList.contains(\"is-open\")\n) {\nresetTriggerStates();\nmobileMenuLevel = \"root\";\nsetMobileHeaderState(false, false);\nreturn;\n}\nisClosing = true;\nactiveType = null;\nactiveTrigger = null;\nmobileMenuLevel = \"root\";\nresetTriggerStates();\nmenuParts.backdrop.classList.remove(\"is-open\");\nmenuParts.menu.classList.remove(\"is-open\");\nsetMenuHeight(0);\nmenuParts.content.classList.remove(\"is-fading\");\nsetMobileHeaderState(false, false);\nwindow.setTimeout(() => {\nif (\nisClosing &&\n!menuParts.menu.classList.contains(\"is-open\")\n) {\nmenuParts.menu.style.height = \"0px\";\n}\n}, 420);\n}\nfunction scheduleClose() {\nif (isMobileViewport()) return;\nclearCloseTimer();\ncloseTimer = window.setTimeout(() => {\ncloseTimer = null;\nconst currentHeaderItem = getHoveredHeaderItem();\nconst menuHovered = menuParts.menu.matches(\":hover\");\nif (!currentHeaderItem && !menuHovered) {\ncloseMenu();\n}\n}, 80);\n}\nfunction handleHeaderItemEnter(item) {\nif (isMobileViewport()) return;\nif (!item) {\nconsole.error(`[${NS}] header item missing on pointerenter.`);\nreturn;\n}\nclearCloseTimer();\nconst previousHoveredItem = hoveredHeaderItem;\nhoveredHeaderItem = item;\nif (scrollCollapsed) {\nscrollCollapsed = false;\nscrollCollapsedItem = null;\n}\nconst type = item.getAttribute(\"data-headerv2-menu\");\nif (!type) {\ncloseMenu();\nreturn;\n}\nif (typeof type !== \"string\" || !menuData[type]) {\nconsole.error(`[${NS}] invalid menu type on header item:`, type);\ncloseMenu();\nreturn;\n}\nif (previousHoveredItem === item && activeType === type) return;\nopenMenu(type, item);\n}\nfunction handleHeaderItemLeave(item) {\nif (isMobileViewport()) return;\nif (!item) {\nconsole.error(`[${NS}] header item missing on pointerleave.`);\nreturn;\n}\nif (hoveredHeaderItem === item) {\nhoveredHeaderItem = null;\n}\nscheduleClose();\n}\nfor (const item of headerItems) {\nif (!item) {\nconsole.error(`[${NS}] invalid header item.`);\ncontinue;\n}\nconst type = item.getAttribute(\"data-headerv2-menu\");\nif (type) {\nif (!menuData[type]) {\nconsole.error(`[${NS}] unknown header menu type: ${type}`, item);\n}\nsetTriggerExpanded(item, false);\n}\nitem.addEventListener(\n\"pointerenter\",\n() => handleHeaderItemEnter(item),\n{ passive: true }\n);\nitem.addEventListener(\n\"pointerleave\",\n() => handleHeaderItemLeave(item),\n{ passive: true }\n);\nif (item.getAttribute(\"data-headerv2-no-navigation\") === \"true\") {\nitem.addEventListener(\n\"click\",\n(event) => {\nif (!event) {\nconsole.error(`[${NS}] header no-navigation click event missing.`);\nreturn;\n}\nevent.preventDefault();\n},\n{ passive: false }\n);\n}\n}\nmobileMenuButton.addEventListener(\n\"click\",\n(event) => {\nif (!event) {\nconsole.error(`[${NS}] mobile menu button click event missing.`);\nreturn;\n}\nif (!isMobileViewport()) return;\nevent.preventDefault();\nif (menuParts.menu.classList.contains(\"is-open\")) {\ncloseMenu();\nreturn;\n}\nopenMobileMenu();\n},\n{ passive: false }\n);\nlogoLink.addEventListener(\n\"click\",\n(event) => {\nif (!event) {\nconsole.error(`[${NS}] logo click event missing.`);\nreturn;\n}\nif (\n!isMobileViewport() ||\nmobileMenuLevel !== \"submenu\" ||\n!menuParts.menu.classList.contains(\"is-open\")\n) {\nreturn;\n}\nevent.preventDefault();\nbackToMobileRoot();\n},\n{ passive: false }\n);\nheaderElement.addEventListener(\n\"pointerleave\",\n() => {\nif (isMobileViewport()) return;\nhoveredHeaderItem = null;\nif (scrollCollapsed || scrollCollapsedItem !== null) {\nscrollCollapsed = false;\nscrollCollapsedItem = null;\n}\n},\n{ passive: true }\n);\nheaderElement.addEventListener(\n\"pointermove\",\n(event) => {\nif (!event) {\nconsole.error(`[${NS}] pointermove event missing.`);\nreturn;\n}\nif (isMobileViewport()) return;\nif (event.target === headerElement) {\nhoveredHeaderItem = null;\ncloseMenu();\n}\n},\n{ passive: true }\n);\nmenuParts.menu.addEventListener(\n\"pointerenter\",\n() => {\nif (isMobileViewport()) return;\nclearCloseTimer();\n},\n{ passive: true }\n);\nmenuParts.menu.addEventListener(\n\"pointerleave\",\n() => {\nif (isMobileViewport()) return;\nscheduleClose();\n},\n{ passive: true }\n);\nmenuParts.backdrop.addEventListener(\n\"pointerenter\",\n() => {\nif (isMobileViewport()) return;\nscheduleClose();\n},\n{ passive: true }\n);\nmenuParts.backdrop.addEventListener(\"click\", closeMenu);\ndocument.addEventListener(\"keydown\", (event) => {\nif (!event) {\nconsole.error(`[${NS}] keydown event missing.`);\nreturn;\n}\nif (\nevent.key !== \"Escape\" ||\n!menuParts.menu.classList.contains(\"is-open\")\n) {\nreturn;\n}\ncloseMenu();\n});\nwindow.addEventListener(\n\"resize\",\n() => {\nupdateHeaderPosition(headerElement);\nconst mobileNow = isMobileViewport();\nif (mobileNow !== lastIsMobile) {\nlastIsMobile = mobileNow;\ncloseMenu();\n}\nif (menuParts.menu.classList.contains(\"is-open\")) {\nsetMenuHeight(getMenuHeight());\n}\n},\n{ passive: true }\n);\nwindow.addEventListener(\n\"scroll\",\n() => {\nupdateHeaderPosition(headerElement);\nif (isMobileViewport()) {\nif (menuParts.menu.classList.contains(\"is-open\")) {\ncloseMenu();\n}\nreturn;\n}\nconst currentHoveredItem = getHoveredHeaderItem();\nscrollCollapsed = true;\nscrollCollapsedItem = currentHoveredItem;\ncloseMenu();\n},\n{ passive: true }\n);\nupdateHeaderPosition(headerElement);\nsetMobileHeaderState(false, false);\n}\nfunction init() {\nif (!document.head) {\nconsole.error(`[${NS}] document.head not found.`);\nreturn;\n}\nif (!document.body) {\nconsole.error(`[${NS}] document.body not found.`);\nreturn;\n}\nif (!injectStyle()) {\nconsole.error(`[${NS}] style injection failed.`);\nreturn;\n}\nconst headerElement = insertHeader();\nif (!headerElement) {\nconsole.error(`[${NS}] header insertion failed.`);\nreturn;\n}\nconst footerElement = insertFooter();\nif (!footerElement) {\nconsole.error(`[${NS}] footer insertion failed.`);\n}\napplyStaticTranslations(headerElement, footerElement);\nconst menuParts = createMenu();\nif (!menuParts) {\nconsole.error(`[${NS}] menu creation failed.`);\nreturn;\n}\nsetupNavigation(headerElement, menuParts);\n}\nif (document.readyState === \"loading\") {\ndocument.addEventListener(\"DOMContentLoaded\", init, { once: true });\n} else {\ninit();\n}\n})();\n";
+
+const LANG_NAMES = {ja:'日本語',en:'English',ko:'한국어','ko-kp':'조선말',zh:'简体中文','zh-tw':'繁體中文',ru:'Русский'};
+const DEFAULT_SYSTEM_TEXT = {
+  ja:{menu:'メニュー',close:'閉じる',back:'戻る',home:'ホーム'},
+  en:{menu:'Menu',close:'Close',back:'Back',home:'Home'},
+  ko:{menu:'메뉴',close:'닫기',back:'뒤로',home:'홈'},
+  'ko-kp':{menu:'메뉴',close:'닫기',back:'뒤로',home:'홈'},
+  zh:{menu:'菜单',close:'关闭',back:'返回',home:'主页'},
+  'zh-tw':{menu:'選單',close:'關閉',back:'返回',home:'首頁'},
+  ru:{menu:'Меню',close:'Закрыть',back:'Назад',home:'Главная'}
+};
+const el = {};
+const REQUIRED_IDS = ['mainTabs','headerTab','footerTab','sectionRail','pageTitle','pageDescription','editorPanel','fileMenu','commonMenu','importDialog','languageKeyDialog','outputThemeDialog','editorThemeDialog','scriptInput','importStatus','storageKeyField','outputThemeField','editorThemeField','projectFileInput','toast'];
+for (const id of REQUIRED_IDS) {
+  const node = document.getElementById(id);
+  if (!node) console.error(`[HeaderStudio] Required element not found: #${id}`);
+  else el[id] = node;
+}
+function log(message, detail) { if (detail === undefined) console.log(`[HeaderStudio] ${message}`); else console.log(`[HeaderStudio] ${message}`, detail); }
+function clone(value) { return JSON.parse(JSON.stringify(value)); }
+function esc(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
+function keyOf(value, fallback='item') { return String(value ?? '').trim().toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,36) || fallback; }
+function uniqueKey(base, used) { const root=keyOf(base); let key=root, suffix=2; while(used.has(key)) key=`${root}-${suffix++}`; used.add(key); return key; }
+function sysText(code) { return clone(DEFAULT_SYSTEM_TEXT[code] || DEFAULT_SYSTEM_TEXT.en); }
+function langName(code) { return LANG_NAMES[code] || code; }
+function tr(values, code='ja') { return String(values?.[code] ?? ''); }
+function setTr(values, code, value) { if (values && typeof values === 'object') values[code] = value; }
+function escapeHtmlAttribute(value) { return esc(value); }
+
+// Parse only literal JavaScript values from the pasted source. Never execute pasted code.
+function parseLiteral(source, start) {
+  let i=start;
+  function skip() {
+    while (i<source.length) {
+      if (/\s/.test(source[i])) { i++; continue; }
+      if (source[i]==='/' && source[i+1]==='/') { i+=2; while(i<source.length && source[i]!=='\n') i++; continue; }
+      if (source[i]==='/' && source[i+1]==='*') { const end=source.indexOf('*/',i+2); if(end<0) throw Error('Unterminated comment.'); i=end+2; continue; }
+      break;
+    }
+  }
+  function readString() {
+    const quote=source[i++]; let out='';
+    while(i<source.length) {
+      const char=source[i++]; if(char===quote) return out;
+      if(char!=='\\') { out+=char; continue; }
+      if(i>=source.length) throw Error('Invalid string escape.');
+      const next=source[i++], simple={n:'\n',r:'\r',t:'\t',b:'\b',f:'\f',v:'\v','0':'\0'};
+      if(Object.hasOwn(simple,next)) out+=simple[next];
+      else if(next==='x'||next==='u') { const size=next==='x'?2:4,hex=source.slice(i,i+size); if(!new RegExp(`^[0-9a-f]{${size}}$`,'i').test(hex)) throw Error('Invalid string escape.'); out+=String.fromCharCode(parseInt(hex,16)); i+=size; }
+      else out+=next;
+    }
+    throw Error('Unterminated string.');
+  }
+  function readIdentifier() { const match=source.slice(i).match(/^[A-Za-z_$][A-Za-z0-9_$-]*/); if(!match) throw Error(`Unable to parse value at position ${i}.`); i+=match[0].length; return match[0]; }
+  function readValue() {
+    skip(); const char=source[i];
+    if(char==='{') { i++; const object={}; skip(); while(source[i]!=='}') { if(i>=source.length) throw Error('Unterminated object.'); const key=source[i]==='"'||source[i]==="'"?readString():readIdentifier(); skip(); if(source[i]!==':') throw Error(`「${key}」のコロンがありません。`); i++; object[key]=readValue(); skip(); if(source[i]===','){i++;skip();continue;} if(source[i]!=='}') throw Error('オブジェクトの区切りが不正です。'); } i++; return object; }
+    if(char==='[') { i++; const array=[]; skip(); while(source[i]!==']') { if(i>=source.length) throw Error('Unterminated array.'); array.push(readValue()); skip(); if(source[i]===','){i++;skip();continue;} if(source[i]!==']') throw Error('Invalid array separator.'); } i++; return array; }
+    if(char==='"'||char==="'") return readString();
+    const number=source.slice(i).match(/^-?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/); if(number){i+=number[0].length;return Number(number[0]);}
+    const identifier=readIdentifier(); if(identifier==='true')return true;if(identifier==='false')return false;if(identifier==='null')return null;throw Error(`Unsupported value: "${identifier}".`);
+  }
+  const value=readValue(); return {value,end:i};
+}
+function findConstStart(source, name) { const match=new RegExp(`\\bconst\\s+${name}\\s*=\\s*`,'m').exec(source); if(!match) throw Error(`const ${name} was not found.`); return match.index+match[0].length; }
+function findObject(source, name) { const result=parseLiteral(source,findConstStart(source,name)); if(!result.value || typeof result.value!=='object') throw Error(`${name} is not an object.`); return result.value; }
+function findString(source, name) {
+  let index=findConstStart(source,name); while(/\s/.test(source[index]||'')) index++;
+  if(source[index]==='"'||source[index]==="'") { const parsed=parseLiteral(source,index); if(typeof parsed.value!=='string') throw Error(`${name} is not a string.`); return parsed.value; }
+  if(source[index]!=='`') throw Error(`${name} is not a string literal.`);
+  index++; let output='';
+  while(index<source.length) { const char=source[index++]; if(char==='`') return output; if(char==='\\'&&index<source.length){const next=source[index++];output+=(next==='`'||next==='\\')?next:`\\${next}`;}else output+=char; }
+  throw Error(`${name} のテンプレートUnterminated string.`);
+}
+function extractStorageKey(source) {
+  const match=source.match(/(?:window\.)?localStorage\.getItem\(\s*(["'])([^"']+)\1\s*\)/);
+  return match?.[2] || 'selectedLang';
+}
+function translationValue(dictionary, path, fallback='') { const parts=String(path||'').split('.'); return dictionary?.[parts[0]]?.[parts[1]] ?? fallback; }
+function parseScript(source) {
+  if(typeof source!=='string'||!source.trim()) throw Error('The script is empty.');
+  const i18n=findObject(source,'I18N'), menuData=findObject(source,'menuData'), headerHTML=findString(source,'headerHTML'), footerHTML=findString(source,'footerHTML');
+  const languages=Object.keys(i18n).filter(code=>i18n[code]&&typeof i18n[code]==='object');
+  if(!languages.length) throw Error('No language data was found in I18N.');
+  const fallback=languages.includes('ja')?'ja':languages[0];
+  const headerTemplate=document.createElement('template'); headerTemplate.innerHTML=headerHTML.trim();
+  const headerNode=headerTemplate.content.querySelector('header'); if(!headerNode) throw Error('headerHTML does not contain a <header> element.');
+  const logoNode=headerNode.querySelector('.headerv2-logo');
+  const logoImage=logoNode?.querySelector('img');
+  const logoType=logoImage?'url':'svg';
+  const navItems=[], usedKeys=new Set();
+  for(const node of Array.from(headerNode.children)) {
+    if(!(node instanceof HTMLAnchorElement)||node.classList.contains('headerv2-logo')) continue;
+    const labelNode=node.querySelector('[data-headerv2-i18n]');
+    const translationKey=labelNode?.getAttribute('data-headerv2-i18n')||'';
+    const rawKey=translationKey.startsWith('header.')?translationKey.slice(7):(node.getAttribute('data-headerv2-menu')||`nav-${navItems.length+1}`);
+    const key=uniqueKey(rawKey,usedKeys), groupId=node.getAttribute('data-headerv2-menu')||'', label={};
+    for(const language of languages) label[language]=translationValue(i18n[language],translationKey,language===fallback?(labelNode?.textContent?.trim()||''):'');
+    const rawHref=node.hasAttribute('href')?node.getAttribute('href'):'';
+    const href=node.getAttribute('data-headerv2-no-navigation')==='true' && /^javascript:void\(0\);?$/.test(rawHref)?'':rawHref;
+    navItems.push({key,label,href,groupId:menuData[groupId]?groupId:'',navigates:true});
+  }
+  const groups=[];
+  for(const [id,config] of Object.entries(menuData)) {
+    if(!config || !Array.isArray(config.items)) continue;
+    const title={}, items=config.items.map((item,index)=>{const label={};for(const language of languages)label[language]=typeof i18n[language]?.menus?.[id]?.items?.[index]==='string'?i18n[language].menus[id].items[index]:'';return{label,href:typeof item?.href==='string'?item.href:''};});
+    for(const language of languages) title[language]=typeof i18n[language]?.menus?.[id]?.title==='string'?i18n[language].menus[id].title:'';
+    groups.push({id:keyOf(id),title,items});
+  }
+  const footerTemplate=document.createElement('template'); footerTemplate.innerHTML=footerHTML.trim();
+  const footerNode=footerTemplate.content.querySelector('footer'); if(!footerNode) throw Error('footerHTML does not contain a <footer> element.');
+  const footerImage=footerNode.querySelector('img'), footerSvg=footerNode.querySelector('svg');
+  const footerLinks=[];
+  for(const anchor of Array.from(footerNode.querySelectorAll('a'))) {
+    const labelNode=anchor.querySelector('[data-headerv2-i18n]'), translationKey=labelNode?.getAttribute('data-headerv2-i18n')||'', label={};
+    for(const language of languages) label[language]=translationValue(i18n[language],translationKey,language===fallback?(labelNode?.textContent?.trim()||''):'');
+    footerLinks.push({key:translationKey.startsWith('footer.')?translationKey.slice(7):`link-${footerLinks.length+1}`,label,href:anchor.hasAttribute('href')?anchor.getAttribute('href'):''});
+  }
+  const notice={}; const systemText={};
+  for(const language of languages) {
+    notice[language]=typeof i18n[language]?.footer?.notice==='string'?i18n[language].footer.notice:'';
+    const header=i18n[language]?.header||{}, defaults=sysText(language);
+    systemText[language]={menu:header.menu||defaults.menu,close:header.close||defaults.close,back:header.back||defaults.back,home:header.home||defaults.home};
+  }
+  const headerMarkup=logoNode?.innerHTML||'';
+  const model={
+    languages, languageStorageKey:extractStorageKey(source), activeLanguage:languages.includes('ja')?'ja':fallback,
+    header:{logoHref:logoNode?.getAttribute('href')||'',logoType,logoSvg:logoImage?'':headerMarkup,logoUrl:logoImage?.getAttribute('src')||'',navItems},
+    groups,
+    footer:{logoType:footerImage?'url':(footerSvg?'svg':'url'),logoUrl:footerImage?.getAttribute('src')||'',logoSvg:footerSvg?footerSvg.outerHTML:'',links:footerLinks,notice},
+    systemText,theme:'system',editorTheme:'system'
+  };
+  validateModel(model); return model;
+}
+function blankModel(base={}) {
+  const languages=Array.isArray(base.languages)&&base.languages.length?[...base.languages]:['ja','en','ko','ko-kp','zh','zh-tw','ru'];
+  if(!languages.includes('ja')) languages.unshift('ja');
+  const systemText={}; for(const language of languages) systemText[language]=clone(base.systemText?.[language]||sysText(language));
+  return {
+    languages,languageStorageKey:base.languageStorageKey||'selectedLang',activeLanguage:'ja',
+    header:{logoHref:'',logoType:'svg',logoSvg:'',logoUrl:'',navItems:[]},groups:[],
+    footer:{logoType:'url',logoUrl:'',logoSvg:'',links:[],notice:Object.fromEntries(languages.map(code=>[code,'']))},
+    systemText,theme:base.theme||'system',editorTheme:base.editorTheme||'system'
+  };
+}
+function ensureMap(value,languages) { const result=value&&typeof value==='object'?value:{}; for(const language of languages) if(typeof result[language]!=='string') result[language]=''; return result; }
+function validateModel(model) {
+  if(!model||!Array.isArray(model.languages)||!model.languages.length) throw Error('Configure at least one supported language.');
+  model.languages=[...new Set(model.languages.map(code=>String(code).trim().toLowerCase().replace(/_/g,'-')).filter(Boolean))];
+  if(!model.languages.includes('ja')) model.languages.unshift('ja');
+  else model.languages=[ 'ja', ...model.languages.filter(code=>code!=='ja') ];
+  model.languageStorageKey=String(model.languageStorageKey||'selectedLang').trim();
+  if(!model.languageStorageKey) throw Error('Enter a localStorage key.');
+  if(!model.header||typeof model.header!=='object') model.header={};
+  model.header.logoHref=String(model.header.logoHref||'');
+  if(!model.header.logoType) model.header.logoType=model.header.logoUrl?'url':'svg';
+  model.header.logoSvg=String(model.header.logoSvg??model.header.logoMarkup??'');
+  model.header.logoUrl=String(model.header.logoUrl||'');
+  if(!Array.isArray(model.header.navItems)) model.header.navItems=[];
+  if(!Array.isArray(model.groups)) model.groups=[];
+  const groupIds=new Set();
+  for(const group of model.groups) {
+    group.id=keyOf(group.id); if(groupIds.has(group.id)) throw Error(`Duplicate menu ID: ${group.id}`); groupIds.add(group.id);
+    group.title=ensureMap(group.title,model.languages); if(!Array.isArray(group.items)) group.items=[];
+    for(const item of group.items){item.label=ensureMap(item.label,model.languages);item.href=String(item.href||'');}
+  }
+  const navKeys=new Set();
+  for(const item of model.header.navItems) {
+    item.key=keyOf(item.key); if(navKeys.has(item.key)) throw Error(`Duplicate navigation key: ${item.key}`); navKeys.add(item.key);
+    item.label=ensureMap(item.label,model.languages);item.href=String(item.href||'');
+    if(item.groupId&&!groupIds.has(item.groupId)) item.groupId='';
+    item.navigates=true;
+  }
+  if(!model.footer||typeof model.footer!=='object') model.footer={};
+  if(!model.footer.logoType) model.footer.logoType=model.footer.logoSrc?'url':'svg';
+  model.footer.logoUrl=String(model.footer.logoUrl||model.footer.logoSrc||'');
+  model.footer.logoSvg=String(model.footer.logoSvg||'');
+  if(!Array.isArray(model.footer.links)) model.footer.links=[];
+  for(const item of model.footer.links){item.label=ensureMap(item.label,model.languages);item.href=String(item.href||'');item.key=keyOf(item.key||'footer-link');}
+  model.footer.notice=ensureMap(model.footer.notice,model.languages);
+  if(!model.systemText||typeof model.systemText!=='object') model.systemText={};
+  for(const language of model.languages) model.systemText[language]={...sysText(language),...(model.systemText[language]||{})};
+  model.theme=['light','dark','system'].includes(model.theme)?model.theme:'system';
+  model.editorTheme=['light','dark','system'].includes(model.editorTheme)?model.editorTheme:'system';
+  delete model.baseScript;
+  return true;
+}
+function replaceConst(source,name,replacement,mode) {
+  const start=findConstStart(source,name); let end;
+  if(mode==='template') {
+    let index=start; while(/\s/.test(source[index]||'')) index++;
+    if(source[index]==='`') { index++; while(index<source.length){if(source[index]==='\\'){index+=2;continue;}if(source[index]==='`'){end=index+1;break;}index++;} if(end===undefined) throw Error(`Missing closing delimiter for ${name}.`); }
+    else {const parsed=parseLiteral(source,index);if(typeof parsed.value!=='string')throw Error(`${name} is not a string.`);end=parsed.end;}
+  } else end=parseLiteral(source,start).end;
+  return source.slice(0,start)+replacement+source.slice(end);
+}
+function mobileBackIcon() {
+  return '<span class="headerv2-logo-back" aria-hidden="true"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 12H5M5 12L11 6M5 12L11 18" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+}
+function makeHeaderLogo(model) {
+  if(model.header.logoType==='url' && model.header.logoUrl) return `<span class="headerv2-logo-image" aria-hidden="true"><img src="${esc(model.header.logoUrl)}" alt="" style="width:38px;height:38px;object-fit:contain"></span>${mobileBackIcon()}`;
+  const svg=String(model.header.logoSvg||'').trim();
+  if(!svg) return mobileBackIcon();
+  if(/class=["']headerv2-logo-image["']/.test(svg)) return `${svg}${svg.includes('headerv2-logo-back')?'':mobileBackIcon()}`;
+  return `<span class="headerv2-logo-image" aria-hidden="true">${svg}</span>${mobileBackIcon()}`;
+}
+function makeHeaderHTML(model) {
+  const links=model.header.navItems.map(item=>{
+    const group=model.groups.find(group=>group.id===item.groupId && group.items.length>0);
+    const attrs=[]; if(group) attrs.push(`data-headerv2-menu="${esc(group.id)}"`);
+    const href=item.href?`href="${esc(item.href)}"`:'';
+    return `<a ${href} ${attrs.join(' ')}><span data-headerv2-i18n="header.${esc(item.key)}">${esc(item.label?.ja||'')}</span></a>`;
+  }).join('\n');
+  return `<header style="z-index:999999!important">\n<a class="headerv2-logo" data-headerv2-logo="true" ${model.header.logoHref?`href="${esc(model.header.logoHref)}"`:""}>\n${makeHeaderLogo(model)}\n</a>\n${links}\n<button class="headerv2-menu-button" type="button" aria-expanded="false" aria-label="メニュー"><span class="headerv2-menu-button-line"></span><span class="headerv2-menu-button-line"></span></button>\n</header>`;
+}
+function makeFooterHTML(model) {
+  const links=model.footer.links.map((item,index)=>`<a ${item.href?`href="${esc(item.href)}"`:''}><span data-headerv2-i18n="footer.${esc(item.key||`link-${index+1}`)}">${esc(item.label?.ja||'')}</span></a>`).join('\n・\n');
+  const logo=model.footer.logoType==='url'?(model.footer.logoUrl?`<img width="40" height="60" src="${esc(model.footer.logoUrl)}" alt="">`:''):(model.footer.logoSvg||'');
+  return `<footer>\n<span>${links}</span>\n<br>\n${logo}\n<div class="headerv2-footer-note" data-headerv2-i18n="footer.notice">${esc(model.footer.notice?.ja||'')}</div>\n</footer>`;
+}
+function makeI18n(model) {
+  const output={};
+  for(const language of model.languages) {
+    const system=model.systemText?.[language]||sysText(language);
+    const header={menu:system.menu||'',close:system.close||'',back:system.back||'',home:system.home||''};
+    const footer={notice:String(model.footer.notice?.[language]??'')}, menus={};
+    for(const nav of model.header.navItems) header[nav.key]=String(nav.label?.[language]??'');
+    for(const link of model.footer.links) footer[link.key]=String(link.label?.[language]??'');
+    for(const group of model.groups) {
+      const nav=model.header.navItems.find(item=>item.groupId===group.id);
+      menus[group.id]={title:String(nav?.label?.[language]??group.title?.[language]??''),items:group.items.map(item=>String(item.label?.[language]??''))};
+    }
+    output[language]={header,footer,menus};
+  }
+  return output;
+}
+function makeMenuData(model) {
+  const output={};
+  for(const group of model.groups) if(group.items.length) output[group.id]={titleKey:group.id,items:group.items.map(item=>({href:String(item.href||'')}))};
+  return output;
+}
+function addThemeRuntime(source,mode) {
+  const selected=['light','dark','system'].includes(mode)?mode:'system';
+  const runtime=`\n/* HEADERV2_EDITOR_THEME_RUNTIME */\n;(() => {\n"use strict";\nconst mode=${JSON.stringify(selected)};\nconst styleId="headerv2-editor-theme-style";\nconst css='header{background:Canvas!important;color:CanvasText!important}header>a,.headerv2-menu-button{color:CanvasText!important}#headerv2-menu{background:Canvas!important;color:CanvasText!important}#headerv2-menu .headerv2-menu-title{color:GrayText!important}#headerv2-menu .headerv2-menu-link{color:CanvasText!important}#headerv2-backdrop{background:color-mix(in srgb,CanvasText 12%,transparent)!important}footer .headerv2-footer-note{color:GrayText!important}#headerv2-menu .headerv2-mobile-root li{display:flex;align-items:center;gap:8px}#headerv2-menu .headerv2-mobile-root .headerv2-menu-link{flex:1;min-width:0}#headerv2-menu .headerv2-mobile-submenu-button{border:0;background:transparent;color:CanvasText;padding:8px 12px;font:inherit;font-size:22px;cursor:pointer}';\nfunction apply(){if(!document.documentElement){console.error('[headerv2-theme] documentElement not found.');return;}document.documentElement.style.colorScheme=mode==='system'?'light dark':mode;let style=document.getElementById(styleId);if(!style){style=document.createElement('style');if(!style){console.error('[headerv2-theme] style creation failed.');return;}style.id=styleId;(document.head||document.documentElement).appendChild(style);}style.textContent=css;}\napply();console.log('[headerv2-theme] theme initialized:',mode);\n})();\n`;
+  return source+runtime;
+}
+function replaceStorageKey(source,key) {
+  const pattern=/((?:window\.)?localStorage\.getItem\()\s*(?:"[^"]*"|'[^']*')(\s*\))/;
+  if(!pattern.test(source)) throw Error('Could not find the language setting localStorage.getItem() call.');
+  return source.replace(pattern,(_match,prefix,suffix)=>`${prefix}${JSON.stringify(key)}${suffix}`);
+}
+function patchMobileRootNavigation(source) {
+  const replacement = "function renderMobileRootMenu() {\nif (!menuParts.content) {\nconsole.error(\"[headerv2] menu content element not found while rendering mobile root.\");\nreturn false;\n}\nif (desktopNavItems.length === 0) {\nconsole.error(\"[headerv2] desktop navigation items are unavailable for mobile root menu.\");\nreturn false;\n}\nmenuParts.content.classList.add(\"headerv2-mobile-root\");\nmenuParts.content.replaceChildren();\nconst list = document.createElement(\"ul\");\nif (!list) {\nconsole.error(\"[headerv2] failed to create mobile root list.\");\nreturn false;\n}\nlist.className = \"headerv2-menu-list\";\nfor (let index = 0; index < desktopNavItems.length; index += 1) {\nconst desktopItem = desktopNavItems[index];\nif (!desktopItem) {\nconsole.error(\"[headerv2] invalid desktop navigation item at index \" + index + \".\");\ncontinue;\n}\nconst labelNode = desktopItem.querySelector(\"[data-headerv2-i18n]\");\nif (!labelNode) {\nconsole.error(\"[headerv2] mobile root label node not found at index \" + index + \".\", desktopItem);\ncontinue;\n}\nconst label = labelNode.textContent ? labelNode.textContent.trim() : \"\";\nif (!label) {\nconsole.error(\"[headerv2] mobile root label is empty at index \" + index + \".\");\ncontinue;\n}\nconst li = document.createElement(\"li\");\nif (!li) {\nconsole.error(\"[headerv2] failed to create mobile root list item.\");\ncontinue;\n}\nconst link = document.createElement(\"a\");\nif (!link) {\nconsole.error(\"[headerv2] failed to create mobile root link.\");\ncontinue;\n}\nlink.className = \"headerv2-menu-link\";\nconst type = desktopItem.getAttribute(\"data-headerv2-menu\");\nconst href = desktopItem.getAttribute(\"href\");\nif (href && href !== \"javascript:void(0)\") link.setAttribute(\"href\", href);\nlink.textContent = label;\nli.appendChild(link);\nif (type && menuData[type]) {\nconst expandButton = document.createElement(\"button\");\nif (!expandButton) {\nconsole.error(\"[headerv2] failed to create mobile submenu button.\");\ncontinue;\n}\nexpandButton.type = \"button\";\nexpandButton.className = \"headerv2-mobile-submenu-button\";\nexpandButton.setAttribute(\"aria-label\", label + \" のメニューを開く\");\nexpandButton.textContent = \"›\";\nexpandButton.addEventListener(\"click\", (event) => {\nif (!event) {\nconsole.error(\"[headerv2] mobile submenu button event missing.\");\nreturn;\n}\nevent.preventDefault();\nevent.stopPropagation();\nopenMobileSubmenu(type);\n}, { passive: false });\nli.appendChild(expandButton);\n}\nli.style.setProperty(\"--headerv2-item-index\", String(index));\nlist.appendChild(li);\n}\nmenuParts.content.appendChild(list);\nreturn true;\n}";
+  const pattern=/function renderMobileRootMenu\(\) \{[\s\S]*?\n\}\nfunction openMenu/;
+  if(!pattern.test(source)) throw Error("Could not detect the mobile menu navigation function.");
+  return source.replace(pattern,replacement+"\nfunction openMenu");
+}
+function compactGeneratedScript(source) {
+  let output='', quote='', escaped=false, lineComment=false, blockComment=false, previousWord='';
+  for(let index=0;index<source.length;index++) {
+    const char=source[index], next=source[index+1]||'';
+    if(lineComment) { output+=char; if(char==='\n') lineComment=false; continue; }
+    if(blockComment) { output+=char; if(char==='*'&&next==='/'){output+='/';index++;blockComment=false;} continue; }
+    if(quote) { if(quote==='`'&&/\s/.test(char)){if(output&&!/\s$/.test(output))output+=' ';}else output+=char; if(escaped) escaped=false; else if(char==='\\') escaped=true; else if(char===quote) quote=''; continue; }
+    if(char==='/'&&next==='/'){output+='//';index++;lineComment=true;continue;}
+    if(char==='/'&&next==='*'){output+='/*';index++;blockComment=true;continue;}
+    if(char==='"'||char==="'"||char==='`'){quote=char;output+=char;continue;}
+    if(/\s/.test(char)) {
+      let end=index+1, hasLineBreak=char==='\n'||char==='\r';
+      while(end<source.length&&/\s/.test(source[end])){if(source[end]==='\n'||source[end]==='\r')hasLineBreak=true;end++;}
+      const nextChar=source[end]||'';
+      if(hasLineBreak&&(/^(return|throw|break|continue|yield|await)$/.test(previousWord)||/[([{+\-/]$/.test(output.trimEnd()))) output+='\n';
+      else if(output&&nextChar&&!/[;,.()[\]{}]/.test(nextChar)&&!/[;,.()[\]{}]$/.test(output)) output+=' ';
+      index=end-1;continue;
+    }
+    output+=char;
+    if(/[A-Za-z0-9_$]/.test(char)){let word=char,j=index+1;while(j<source.length&&/[A-Za-z0-9_$]/.test(source[j]))word+=source[j++];previousWord=word;}
+    else if(!/\s/.test(char)) previousWord='';
+  }
+  return output.trim();
+}
+function buildExport(model) {
+  validateModel(model);
+  let output=BUILTIN_SCRIPT;
+  output=replaceConst(output,'I18N',JSON.stringify(makeI18n(model)),'object');
+  output=replaceConst(output,'headerHTML',JSON.stringify(makeHeaderHTML(model)),'template');
+  output=replaceConst(output,'footerHTML',JSON.stringify(makeFooterHTML(model)),'template');
+  output=replaceConst(output,'menuData',JSON.stringify(makeMenuData(model)),'object');
+  output=replaceStorageKey(output,model.languageStorageKey);
+  output=patchMobileRootNavigation(output);
+  return compactGeneratedScript(addThemeRuntime(output,model.theme));
+}
+
+let state;
+let activeArea='header';
+let activePage='navigation';
+let toastTimer=null;
+let translationTargetsById=new Map();
+const PAGE_META={
+  header:{navigation:['Navigation Items','Configure labels and destination URLs.'],logo:['Logo','Set an SVG source or image URL.'],menus:['Menu Items','Configure the dropdown items shown for each navigation item.'],languages:['Translations','Manage languages and edit header and footer translations in one table.']},
+  footer:{links:['Footer Items','Configure the links displayed in the footer.'],logo:['Logo','Set the footer logo using SVG or a URL.'],notice:['Notice','Configure the text displayed in the footer.'],languages:['Translations','Manage languages and edit header and footer translations in one table.']}
+};
+function notify(message) {
+  if(!el.toast){console.error('[HeaderStudio] Toast element missing.');return;}
+  el.toast.textContent=message; el.toast.classList.add('visible');
+  if(toastTimer!==null) clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{if(el.toast)el.toast.classList.remove('visible');toastTimer=null;},2600);
+  log(message);
+}
+function setEditorTheme(mode) {
+  state.editorTheme=['light','dark','system'].includes(mode)?mode:'system';
+  const scheme=state.editorTheme==='system'?'light dark':state.editorTheme;
+  document.documentElement.style.colorScheme=scheme;
+}
+function syncMainTabs() {
+  const headerActive=activeArea==='header';
+  if(el.headerTab) el.headerTab.active=headerActive;
+  if(el.footerTab) el.footerTab.active=!headerActive;
+  renderRail(); renderPage();
+}
+function navRailItem(page,label) {
+  const active=activePage===page;
+  const tag=active?'md-filled-tonal-button':'md-text-button';
+  const icons={navigation:'apps',menus:'menu',logo:'image',languages:'lnguage',links:'apps',notice:'text'};
+  return `<${tag} class="rail-button" data-page="${page}" type="button"><span class="icon icon-${icons[page]||'apps'}" aria-hidden="true"></span>${esc(label)}</${tag}>`;
+}
+function renderRail() {
+  if(!el.sectionRail){console.error('[HeaderStudio] Section rail not found.');return;}
+  const labels=activeArea==='header'?[['navigation','Navigation Items'],['menus','Menu Items'],['logo','Logo'],['languages','Translations']]:[['links','Link Items'],['logo','Logo'],['notice','Notice'],['languages','Translations']];
+  if(!labels.some(([page])=>page===activePage)) activePage=labels[0][0];
+  el.sectionRail.innerHTML=`<div class="rail-heading">${activeArea==='header'?'Header':'Footer'}</div>${labels.map(([page,label])=>navRailItem(page,label)).join('')}`;
+}
+function pageContent() {
+  if(activeArea==='header') {
+    if(activePage==='navigation') return renderNavigation();
+    if(activePage==='menus') return renderMenus();
+    if(activePage==='languages') return renderHeaderTranslations();
+  } else {
+    if(activePage==='links') return renderFooterLinks();
+    if(activePage==='logo') return renderFooterLogo();
+    if(activePage==='notice') return renderFooterNotice();
+    if(activePage==='languages') return renderFooterTranslations();
+  }
+  console.error('[HeaderStudio] Unknown editor page',activeArea,activePage); return '';
+}
+function renderPage() {
+  const meta=PAGE_META[activeArea]?.[activePage];
+  if(!meta){console.error('[HeaderStudio] Page metadata missing.',{activeArea,activePage});return;}
+  el.pageTitle.textContent=meta[0]; el.pageDescription.textContent=meta[1];
+  el.editorPanel.innerHTML=pageContent();
+}
+function orderButtons(index,length,kind) {
+  return `<div class="order-actions" role="group" aria-label="Reorder and delete"><md-icon-button data-action="move-up" data-kind="${kind}" data-index="${index}" aria-label="Move up" ${index===0?'disabled':''}><span class="icon icon-up" aria-hidden="true"></span></md-icon-button><md-icon-button data-action="move-down" data-kind="${kind}" data-index="${index}" aria-label="Move down" ${index===length-1?'disabled':''}><span class="icon icon-down" aria-hidden="true"></span></md-icon-button><md-icon-button data-action="delete-item" data-kind="${kind}" data-index="${index}" aria-label="Delete"><span class="icon icon-delete" aria-hidden="true"></span></md-icon-button></div>`;
+}
+function renderNavigation() {
+  const items=state.header.navItems;
+  const content=items.map((item,index)=>`<div class="item-row"><md-outlined-text-field label="Label" data-bind="nav-label" data-index="${index}" value="${esc(tr(item.label,'ja'))}"></md-outlined-text-field><md-outlined-text-field label="Destination URL" placeholder="Leave blank for no destination" data-bind="nav-href" data-index="${index}" value="${esc(item.href)}"></md-outlined-text-field>${orderButtons(index,items.length,'nav')}</div>`).join('');
+  return `<section class="section-card"><div class="section-card-head"><div><h2>Navigation</h2></div><md-filled-button data-action="add-nav" type="button"><span class="icon icon-add" aria-hidden="true"></span> Add</md-filled-button></div>${content?`<div class="item-list">${content}</div>`:'<div class="empty-state">No navigation items yet.</div>'}</section>`;
+}
+function ensureGroupForNav(nav) {
+  if(nav.groupId) {
+    const existing=state.groups.find(group=>group.id===nav.groupId);
+    if(existing) return existing;
+  }
+  const used=new Set(state.groups.map(group=>group.id));
+  const id=uniqueKey(nav.key,used);
+  const group={id,title:clone(nav.label),items:[]};
+  state.groups.push(group); nav.groupId=id;
+  return group;
+}
+function navForGroup(group) { return state.header.navItems.find(nav=>nav.groupId===group.id); }
+function renderMenus() {
+  if(!state.header.navItems.length) return '<div class="empty-state">Add a navigation item first.</div>';
+  return state.header.navItems.map(nav=>{
+    const group=state.groups.find(item=>item.id===nav.groupId);
+    const menuItems=group?.items||[];
+    const rows=menuItems.map((item,index)=>`<div class="item-row"><md-outlined-text-field label="Label" data-bind="menu-label" data-group="${esc(group.id)}" data-index="${index}" value="${esc(tr(item.label,'ja'))}"></md-outlined-text-field><md-outlined-text-field label="Destination URL" placeholder="Leave blank for no destination" data-bind="menu-href" data-group="${esc(group.id)}" data-index="${index}" value="${esc(item.href)}"></md-outlined-text-field>${orderButtons(index,menuItems.length,`menu:${esc(group.id)}`)}</div>`).join('');
+    return `<section class="menu-card"><h2>${esc(tr(nav.label,'ja')||'(Untitled)')}</h2>${rows?`<div class="item-list">${rows}</div>`:'<div class="inline-help">No menu items.</div>'}<div class="add-row"><md-text-button data-action="add-menu-item" data-nav="${esc(nav.key)}" type="button"><span class="icon icon-add" aria-hidden="true"></span> Add item</md-text-button></div></section>`;
+  }).join('');
+}
+function renderFooterLinks() {
+  const links=state.footer.links;
+  const rows=links.map((item,index)=>`<div class="item-row"><md-outlined-text-field label="Label" data-bind="footer-label" data-index="${index}" value="${esc(tr(item.label,'ja'))}"></md-outlined-text-field><md-outlined-text-field label="Destination URL" placeholder="Leave blank for no destination" data-bind="footer-href" data-index="${index}" value="${esc(item.href)}"></md-outlined-text-field>${orderButtons(index,links.length,'footer')}</div>`).join('');
+  return `<section class="section-card"><div class="section-card-head"><h2>Footer Links</h2><md-filled-button data-action="add-footer-link" type="button"><span class="icon icon-add" aria-hidden="true"></span> Add</md-filled-button></div>${rows?`<div class="item-list">${rows}</div>`:'<div class="empty-state">No footer links yet.</div>'}</section>`;
+}
+function renderLogoFields(area) {
+  const data=area==='header'?state.header:state.footer;
+  const urlBind=area==='header'?'header-logo-url':'footer-logo-url';
+  const svgBind=area==='header'?'header-logo-svg':'footer-logo-svg';
+  const typeBind=area==='header'?'header-logo-type':'footer-logo-type';
+  const isHeader=area==='header';
+  return `<section class="section-card"><div class="section-card-head"><h2>${isHeader?'Header Logo':'Footer Logo'}</h2></div><div class="logo-fields"><md-outlined-select label="Source Type" data-bind="${typeBind}" value="${data.logoType==='url'?'url':'svg'}"><md-select-option value="svg"><div slot="headline">SVG</div></md-select-option><md-select-option value="url"><div slot="headline">URL</div></md-select-option></md-outlined-select>${data.logoType==='url'?`<md-outlined-text-field label="Image URL" placeholder="https://example.com/logo.svg" data-bind="${urlBind}" value="${esc(data.logoUrl||'')}"></md-outlined-text-field>`:`<md-outlined-text-field type="textarea" rows="8" label="SVG Code" data-bind="${svgBind}" value="${esc(data.logoSvg||'')}"></md-outlined-text-field>`}${isHeader?`<md-outlined-text-field label="Logo Link URL" placeholder="Leave blank to link to the home page" data-bind="header-logo-href" value="${esc(data.logoHref||'')}"></md-outlined-text-field>`:''}</div></section>`;
+}
+function renderFooterLogo(){return renderLogoFields('footer');}
+function renderHeaderLogo(){return renderLogoFields('header');}
+function renderFooterNotice() {
+  return `<section class="section-card"><div class="section-card-head"><h2>Notice</h2></div><md-outlined-text-field type="textarea" rows="5" label="Footer Text" data-bind="footer-notice-ja" value="${esc(tr(state.footer.notice,'ja'))}"></md-outlined-text-field></section>`;
+}
+function renderLanguageManager() {
+  const rows=state.languages.map(language=>{
+    const fixed=language==='ja';
+    return `<div class="language-row"><div>${fixed?'<span class="language-fixed">ja (Japanese · fixed)</span>':`<input type="text" value="${esc(language)}" data-language-code-input="${esc(language)}" aria-label="${esc(language)} language code">`}</div>${fixed?'':'<md-text-button data-action="rename-language" data-language="'+esc(language)+'" type="button"><span class="icon icon-done" aria-hidden="true"></span>Rename</md-text-button>'}${fixed?'':'<md-icon-button data-action="delete-language" data-language="'+esc(language)+'" aria-label="'+esc(language)+' — delete"><span class="icon icon-delete" aria-hidden="true"></span></md-icon-button>'}</div>`;
+  }).join('');
+  return `<section class="language-manager"><div class="section-card-head"><h2>Languages</h2></div><div class="language-list">${rows}</div><div class="lang-add-row"><input id="newLanguageCode" type="text" maxlength="32" placeholder="Language code (e.g. fr, fr-CA)" aria-label="Language code to add"><md-filled-button data-action="add-language" type="button"><span class="icon icon-add" aria-hidden="true"></span>Add Language</md-filled-button></div></section>`;
+}
+function renderTranslationTable(rows) {
+  translationTargetsById=new Map();
+  const header=`<thead><tr><th scope="col">Item</th>${state.languages.map(language=>`<th scope="col"><span>${esc(language)}</span></th>`).join('')}</tr></thead>`;
+  const body=rows.length?`<tbody>${rows.map((row,index)=>{
+    const rowId=`translation-${index}`;
+    translationTargetsById.set(rowId,row.targets||[]);
+    return `<tr><td class="row-label">${esc(row.label)}</td>${state.languages.map(language=>{
+      const value=row.values?.[language]??'';
+      const attrs=`data-bind="translation" data-row-id="${rowId}" data-language="${esc(language)}"`;
+      return `<td class="translation-cell"><input class="translation-input" type="text" ${attrs} aria-label="${esc(row.label)} / ${esc(language)}" value="${esc(value)}"></td>`;
+    }).join('')}</tr>`;
+  }).join('')}</tbody>`:'<tbody><tr><td colspan="99">No translation entries.</td></tr></tbody>';
+  return `<div class="table-wrap"><table class="translation-table">${header}${body}</table></div>`;
+}
+function renderAllTranslations() {
+  const rows=[];
+  const rowsByLabel=new Map();
+  const addTarget=(target,values,label,fallback)=>{
+    const sourceLabel=String(label??'').trim();
+    const identity=sourceLabel?`text:${sourceLabel}`:`empty:${fallback}`;
+    let row=rowsByLabel.get(identity);
+    if(!row){
+      row={label:sourceLabel||fallback,values:clone(values||{}),targets:[]};
+      rowsByLabel.set(identity,row);rows.push(row);
+    } else {
+      for(const language of state.languages){
+        if(!row.values[language]&&values?.[language])row.values[language]=values[language];
+      }
+    }
+    row.targets.push(target);
+  };
+  state.header.navItems.forEach((item,index)=>addTarget({kind:'nav',index},item.label,tr(item.label,'ja'),`Navigation ${index+1}`));
+  state.header.navItems.forEach((nav,navIndex)=>{
+    const group=state.groups.find(item=>item.id===nav.groupId);
+    if(!group)return;
+    group.items.forEach((item,index)=>addTarget({kind:'menu',group:group.id,index},item.label,tr(item.label,'ja'),`${tr(nav.label,'ja')||'Navigation'} — Menu ${index+1}`));
+  });
+  const systemLabels={menu:'メニュー',close:'Close',back:'戻る',home:'ホーム'};
+  Object.entries(systemLabels).forEach(([key,label])=>{
+    const values=Object.fromEntries(state.languages.map(language=>[language,state.systemText?.[language]?.[key]||'']));
+    addTarget({kind:'system',key},values,label,label);
+  });
+  state.footer.links.forEach((item,index)=>addTarget({kind:'footer',index},item.label,tr(item.label,'ja'),`Link ${index+1}`));
+  return `${renderLanguageManager()}<section class="section-card"><div class="section-card-head"><h2>Translations</h2></div>${renderTranslationTable(rows)}</section>`;
+}
+function renderHeaderTranslations() { return renderAllTranslations(); }
+function renderFooterTranslations() { return renderAllTranslations(); }
+function render() {
+  renderRail();
+  const meta=PAGE_META[activeArea]?.[activePage];
+  if(!meta){console.error('[HeaderStudio] Cannot render invalid page.',{activeArea,activePage});return;}
+  el.pageTitle.textContent=meta[0];el.pageDescription.textContent=meta[1];
+  if(activeArea==='header'&&activePage==='logo') el.editorPanel.innerHTML=renderHeaderLogo();
+  else el.editorPanel.innerHTML=pageContent();
+}
+function changeArea(area) {
+  if(!['header','footer'].includes(area)){console.error('[HeaderStudio] Unknown main area:',area);return;}
+  activeArea=area;activePage=area==='header'?'navigation':'links';
+  const tabs=el.mainTabs;
+  if(tabs) {
+    const tabNodes=Array.from(tabs.querySelectorAll('md-primary-tab'));
+    tabNodes.forEach((tab,index)=>{tab.active=(area==='header'?index===0:index===1);});
+  }
+  render();
+}
+function addNavigation() {
+  const used=new Set(state.header.navItems.map(item=>item.key));
+  const key=uniqueKey(`nav-${state.header.navItems.length+1}`,used);
+  state.header.navItems.push({key,label:Object.fromEntries(state.languages.map(language=>[language,''])),href:'',groupId:'',navigates:true});
+  render();notify('Navigation item added.');
+}
+function addMenuItem(navKey) {
+  const nav=state.header.navItems.find(item=>item.key===navKey);
+  if(!nav){console.error('[HeaderStudio] Navigation item not found:',navKey);return;}
+  const group=ensureGroupForNav(nav);
+  group.items.push({label:Object.fromEntries(state.languages.map(language=>[language,''])),href:''});
+  render();notify('Menu item added.');
+}
+function addFooterLink() {
+  const used=new Set(state.footer.links.map(item=>item.key));
+  const key=uniqueKey(`link-${state.footer.links.length+1}`,used);
+  state.footer.links.push({key,label:Object.fromEntries(state.languages.map(language=>[language,''])),href:''});
+  render();notify('Footer link added.');
+}
+function moveItem(list,index,delta) {
+  const next=index+delta;
+  if(!Array.isArray(list)||index<0||next<0||index>=list.length||next>=list.length)return false;
+  [list[index],list[next]]=[list[next],list[index]];return true;
+}
+function removeNavigation(index) {
+  const nav=state.header.navItems[index];if(!nav)return;
+  state.header.navItems.splice(index,1);
+  if(nav.groupId&&!state.header.navItems.some(item=>item.groupId===nav.groupId)) state.groups=state.groups.filter(group=>group.id!==nav.groupId);
+  render();notify('Navigation item deleted.');
+}
+function validateLanguageCode(value) {
+  const code=String(value??'').trim().toLowerCase().replace(/_/g,'-');
+  if(!code) throw Error('Enter a language code.');
+  return code;
+}
+function updateLanguageMaps(oldCode,newCode,valueForNew) {
+  const rename=map=>{
+    if(!map||typeof map!=='object')return;
+    if(oldCode!==null&&Object.prototype.hasOwnProperty.call(map,oldCode)){
+      map[newCode]=map[oldCode];delete map[oldCode];
+    } else if(oldCode===null) map[newCode]=typeof valueForNew==='function'?valueForNew():valueForNew;
+  };
+  for(const nav of state.header.navItems)rename(nav.label);
+  for(const group of state.groups){rename(group.title);for(const item of group.items)rename(item.label);}
+  for(const item of state.footer.links)rename(item.label);
+  rename(state.footer.notice);
+  if(oldCode!==null&&Object.prototype.hasOwnProperty.call(state.systemText,oldCode)){state.systemText[newCode]=state.systemText[oldCode];delete state.systemText[oldCode];}
+  else if(oldCode===null)state.systemText[newCode]=sysText(newCode);
+}
+function addLanguage() {
+  const field=document.getElementById('newLanguageCode');
+  if(!field){console.error('[HeaderStudio] Language code field not found.');notify('Language code field not found.');return;}
+  let code;
+  try{code=validateLanguageCode(field.value);}catch(error){notify(error.message);field.focus();return;}
+  if(state.languages.includes(code)){notify('This language code already exists.');field.focus();return;}
+  state.languages.push(code);updateLanguageMaps(null,code,()=> '');
+  render();notify(`${code} added.`);
+}
+function renameLanguage(oldCode) {
+  if(oldCode==='ja'){notify('The Japanese (ja) language code cannot be changed.');return;}
+  const field=Array.from(el.editorPanel.querySelectorAll('[data-language-code-input]')).find(input=>input.dataset.languageCodeInput===oldCode);
+  if(!field){console.error('[HeaderStudio] Language code input not found:',oldCode);notify('Language code field not found.');return;}
+  let newCode;
+  try{newCode=validateLanguageCode(field.value);}catch(error){notify(error.message);field.focus();return;}
+  if(newCode==='ja'){notify('The ja code is reserved for Japanese.');field.focus();return;}
+  if(newCode===oldCode){notify('The language code has not changed.');return;}
+  if(state.languages.includes(newCode)){notify('This language code already exists.');field.focus();return;}
+  state.languages=state.languages.map(code=>code===oldCode?newCode:code);
+  updateLanguageMaps(oldCode,newCode);
+  if(state.activeLanguage===oldCode)state.activeLanguage=newCode;
+  render();notify(`${oldCode} to ${newCode} updated.`);
+}
+function deleteLanguage(code) {
+  if(code==='ja'){notify('Japanese (ja) cannot be deleted.');return;}
+  if(!state.languages.includes(code))return;
+  state.languages=state.languages.filter(language=>language!==code);
+  for(const nav of state.header.navItems)delete nav.label[code];
+  for(const group of state.groups){delete group.title[code];for(const item of group.items)delete item.label[code];}
+  for(const item of state.footer.links)delete item.label[code];
+  delete state.footer.notice[code];delete state.systemText[code];
+  if(state.activeLanguage===code)state.activeLanguage='ja';
+  render();notify(`${code} deleted.`);
+}
+function onBind(field) {
+  const bind=field.dataset.bind;
+  const index=Number(field.dataset.index);
+  if(bind==='nav-label'&&state.header.navItems[index])state.header.navItems[index].label.ja=field.value;
+  else if(bind==='nav-href'&&state.header.navItems[index])state.header.navItems[index].href=field.value;
+  else if(bind==='menu-label') {const group=state.groups.find(item=>item.id===field.dataset.group);if(group?.items[index])group.items[index].label.ja=field.value;}
+  else if(bind==='menu-href') {const group=state.groups.find(item=>item.id===field.dataset.group);if(group?.items[index])group.items[index].href=field.value;}
+  else if(bind==='footer-label'&&state.footer.links[index])state.footer.links[index].label.ja=field.value;
+  else if(bind==='footer-href'&&state.footer.links[index])state.footer.links[index].href=field.value;
+  else if(bind==='header-logo-type'){state.header.logoType=field.value;render();}
+  else if(bind==='header-logo-url')state.header.logoUrl=field.value;
+  else if(bind==='header-logo-svg')state.header.logoSvg=field.value;
+  else if(bind==='header-logo-href')state.header.logoHref=field.value;
+  else if(bind==='footer-logo-type'){state.footer.logoType=field.value;render();}
+  else if(bind==='footer-logo-url')state.footer.logoUrl=field.value;
+  else if(bind==='footer-logo-svg')state.footer.logoSvg=field.value;
+  else if(bind==='footer-notice-ja')state.footer.notice.ja=field.value;
+  else if(bind==='translation') {
+    const language=field.dataset.language;
+    const rowId=field.dataset.rowId;
+    const targets=translationTargetsById.get(rowId);
+    if(!Array.isArray(targets)||targets.length===0){console.error('[HeaderStudio] Translation row targets not found:',rowId);return;}
+    for(const target of targets){
+      if(target.kind==='nav'&&state.header.navItems[target.index])state.header.navItems[target.index].label[language]=field.value;
+      else if(target.kind==='menu'){const group=state.groups.find(item=>item.id===target.group);if(group?.items[target.index])group.items[target.index].label[language]=field.value;}
+      else if(target.kind==='footer'&&state.footer.links[target.index])state.footer.links[target.index].label[language]=field.value;
+      else if(target.kind==='system'&&target.key){if(!state.systemText[language])state.systemText[language]=sysText(language);state.systemText[language][target.key]=field.value;}
+    }
+  }
+}
+function findControl(target,selector) {
+  if(!(target instanceof Element)){console.error('[HeaderStudio] Event target is not an Element.');return null;}
+  const control=target.closest(selector);
+  return control;
+}
+function onAction(action) {
+  const kind=action.dataset.kind,index=Number(action.dataset.index);
+  if(action.dataset.action==='add-nav')addNavigation();
+  else if(action.dataset.action==='add-menu-item')addMenuItem(action.dataset.nav);
+  else if(action.dataset.action==='add-footer-link')addFooterLink();
+  else if(action.dataset.action==='add-language')addLanguage();
+  else if(action.dataset.action==='rename-language')renameLanguage(action.dataset.language);
+  else if(action.dataset.action==='delete-language')deleteLanguage(action.dataset.language);
+  else if(action.dataset.action==='move-up'||action.dataset.action==='move-down') {
+    const delta=action.dataset.action==='move-up'?-1:1;
+    if(kind==='nav')moveItem(state.header.navItems,index,delta);
+    else if(kind==='footer')moveItem(state.footer.links,index,delta);
+    else if(kind?.startsWith('menu:')){const id=kind.slice(5),group=state.groups.find(item=>item.id===id);if(group)moveItem(group.items,index,delta);}
+    render();
+  } else if(action.dataset.action==='delete-item') {
+    if(kind==='nav')removeNavigation(index);
+    else if(kind==='footer'){state.footer.links.splice(index,1);render();notify('Footer link deleted.');}
+    else if(kind?.startsWith('menu:')){const id=kind.slice(5),group=state.groups.find(item=>item.id===id);if(group){group.items.splice(index,1);render();notify('Menu item deleted.');}}
+  }
+}
+function setMainTabFromEvent(event) {
+  const target=event.target;
+  if(!target||typeof target.activeTabIndex!=='number')return;
+  changeArea(target.activeTabIndex===0?'header':'footer');
+}
+function downloadFile(filename,data,mime='text/plain;charset=utf-8') {
+  try {
+    const url=URL.createObjectURL(new Blob([data],{type:mime}));
+    const anchor=document.createElement('a');if(!anchor){console.error('[HeaderStudio] Download anchor creation failed.');notify('Could not save the file.');return;}
+    anchor.href=url;anchor.download=filename;anchor.style.display='none';document.body.appendChild(anchor);anchor.click();anchor.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);log(`Exported file: ${filename}`);
+  } catch(error) {console.error('[HeaderStudio] Download failed.',error);notify('Could not export the file.');}
+}
+function exportScript() {
+  try { downloadFile('header-script.txt',buildExport(state));notify('Script exported.'); }
+  catch(error){console.error('[HeaderStudio] Export failed.',error);notify(`Export failed: ${error.message}`);}
+}
+async function copyText(text,successMessage) {
+  try {
+    if(!navigator.clipboard?.writeText)throw Error('Clipboard access is unavailable. Open this page over HTTPS or localhost.');
+    await navigator.clipboard.writeText(text);notify(successMessage);
+  } catch(error) {console.error('[HeaderStudio] Clipboard operation failed.',error);notify(`Copy failed: ${error.message}`);}
+}
+function projectData(){return JSON.stringify({format:'header-studio-project',version:2,model:state},null,2);}
+function saveProject(){downloadFile('header-studio-project.json',projectData(),'application/json;charset=utf-8');notify('Project saved.');}
+function migrateProject(model) {
+  const next=clone(model);
+  if(!next.languageStorageKey)next.languageStorageKey='selectedLang';
+  if(next.header&&!next.header.logoType){
+    const markup=String(next.header.logoMarkup||'');
+    const temp=document.createElement('template');temp.innerHTML=markup;
+    const image=temp.content.querySelector('img');
+    if(image){next.header.logoType='url';next.header.logoUrl=image.getAttribute('src')||'';next.header.logoSvg='';}
+    else{next.header.logoType='svg';next.header.logoSvg=markup;next.header.logoUrl='';}
+  }
+  if(next.footer&&!next.footer.logoType){next.footer.logoType=next.footer.logoSrc?'url':'svg';next.footer.logoUrl=next.footer.logoSrc||'';next.footer.logoSvg='';}
+  return next;
+}
+function loadProject(file) {
+  if(!file){console.error('[HeaderStudio] Project file missing.');return;}
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try {
+      const parsed=JSON.parse(String(reader.result||''));
+      if(parsed.format!=='header-studio-project'||!parsed.model)throw Error('This is not a Header Studio project.');
+      const model=migrateProject(parsed.model);validateModel(model);state=model;
+      setEditorTheme(state.editorTheme);changeArea('header');notify('Project loaded.');
+    } catch(error){console.error('[HeaderStudio] Project import failed.',error);notify(`Import failed: ${error.message}`);}
+  };
+  reader.onerror=()=>{console.error('[HeaderStudio] Project read failed.',reader.error);notify('Could not read the file.');};
+  reader.readAsText(file);
+}
+function openImport(){el.importStatus.textContent='';el.importDialog.show();}
+function closeImport(){el.importDialog.close();}
+function importScript(source) {
+  const parsed=parseScript(source);state=parsed;setEditorTheme(state.editorTheme);changeArea('header');notify('Script imported.');
+}
+function startBlank() {
+  const next=blankModel(state);state=next;setEditorTheme(state.editorTheme);changeArea('header');notify('New blank project created.');
+}
+function openSetting(command) {
+  if(command==='setting-language-key'){
+    el.storageKeyField.value=state.languageStorageKey||'selectedLang';
+    el.languageKeyDialog.show();
+    return;
+  }
+  if(command==='setting-output-theme'){
+    el.outputThemeField.value=state.theme||'system';
+    el.outputThemeDialog.show();
+    return;
+  }
+  if(command==='setting-editor-theme'){
+    el.editorThemeField.value=state.editorTheme||'system';
+    el.editorThemeDialog.show();
+    return;
+  }
+  console.error('[HeaderStudio] Unknown setting command:',command);
+}
+function saveLanguageKey() {
+  const key=String(el.storageKeyField.value||'').trim();
+  if(!key){notify('Enter a localStorage key.');el.storageKeyField.focus();return;}
+  state.languageStorageKey=key;
+  el.languageKeyDialog.close();notify('Language storage key updated.');
+}
+function saveOutputTheme() {
+  state.theme=el.outputThemeField.value||'system';
+  el.outputThemeDialog.close();notify('Header appearance updated.');
+}
+function saveEditorTheme() {
+  setEditorTheme(el.editorThemeField.value||'system');
+  el.editorThemeDialog.close();notify('Editor appearance updated.');
+}
+function handleCommand(command) {
+  if(command==='new')startBlank();
+  else if(command==='import-script')openImport();
+  else if(command==='open-project')el.projectFileInput.click();
+  else if(command==='save-project')saveProject();
+  else if(command==='copy-script')copyText(buildExport(state),'Script copied.');
+  else if(command==='copy-project')copyText(projectData(),'Project data copied.');
+  else if(command==='export-script')exportScript();
+  else if(command==='setting-language-key'||command==='setting-output-theme'||command==='setting-editor-theme')openSetting(command);
+  else if(command==='close-language-key')el.languageKeyDialog.close();
+  else if(command==='close-output-theme')el.outputThemeDialog.close();
+  else if(command==='close-editor-theme')el.editorThemeDialog.close();
+  else if(command==='save-language-key')saveLanguageKey();
+  else if(command==='save-output-theme')saveOutputTheme();
+  else if(command==='save-editor-theme')saveEditorTheme();
+  else if(command==='close-import')closeImport();
+  else if(command==='parse-import') {
+    try {importScript(el.scriptInput.value);el.importDialog.close();el.importStatus.textContent='Import successful.';}
+    catch(error){console.error('[HeaderStudio] Script import failed.',error);el.importStatus.textContent=`Could not parse the script: ${error.message}`;}
+  }
+}
+function bindMenuToggle(buttonId,menu) {
+  const button=document.getElementById(buttonId);
+  if(!button||!menu){console.error('[HeaderStudio] Menu toggle controls are missing:',buttonId);return false;}
+  button.addEventListener('click',()=>{
+    try {
+      if(menu.open)menu.close();
+      else menu.show();
+    } catch(error) {console.error('[HeaderStudio] Failed to toggle menu:',buttonId,error);notify('Could not open the menu.');}
+  });
+  menu.addEventListener('opened',()=>button.setAttribute('aria-expanded','true'));
+  menu.addEventListener('closed',()=>button.setAttribute('aria-expanded','false'));
+  return true;
+}
+function bindEvents() {
+  if(!el.mainTabs||!el.sectionRail||!el.editorPanel){console.error('[HeaderStudio] Main editor controls are missing.');return false;}
+  el.mainTabs.addEventListener('change',setMainTabFromEvent);
+  bindMenuToggle('fileMenuButton',el.fileMenu);
+  bindMenuToggle('commonMenuButton',el.commonMenu);
+  el.sectionRail.addEventListener('click',event=>{
+    const button=findControl(event.target,'[data-page]');if(!button)return;
+    activePage=button.dataset.page;render();
+  });
+  el.editorPanel.addEventListener('click',event=>{
+    const action=findControl(event.target,'[data-action]');if(action&&el.editorPanel.contains(action))onAction(action);
+  });
+  el.editorPanel.addEventListener('input',event=>{
+    const field=findControl(event.target,'[data-bind]');if(field&&el.editorPanel.contains(field))onBind(field);
+  });
+  el.editorPanel.addEventListener('change',event=>{
+    const field=findControl(event.target,'[data-bind]');if(field&&el.editorPanel.contains(field))onBind(field);
+  });
+  document.body.addEventListener('click',event=>{
+    const command=findControl(event.target,'[data-command]');if(command)handleCommand(command.dataset.command);
+  });
+  el.projectFileInput.addEventListener('change',()=>{
+    const file=el.projectFileInput.files?.[0];if(file)loadProject(file);el.projectFileInput.value='';
+  });
+  document.addEventListener('keydown',event=>{
+    if(event.key!=='Escape')return;
+    if(el.importDialog.open)el.importDialog.close();
+    for(const dialog of [el.languageKeyDialog,el.outputThemeDialog,el.editorThemeDialog])if(dialog?.open)dialog.close();
+  });
+  return true;
+}
+async function initialize() {
+  for(const id of REQUIRED_IDS) if(!el[id]) {console.error(`[HeaderStudio] Cannot initialize: #${id} is missing.`);return;}
+  try {await customElements.whenDefined('md-tabs');await customElements.whenDefined('md-outlined-text-field');await customElements.whenDefined('md-menu');}
+  catch(error){console.error('[HeaderStudio] Material Web components failed to initialize.',error);}
+  try {state=parseScript(BUILTIN_SCRIPT);log('Built-in header script loaded.');}
+  catch(error){console.error('[HeaderStudio] Built-in script parser failed.',error);state=blankModel();}
+  validateModel(state);setEditorTheme(state.editorTheme);bindEvents();changeArea('header');log('Editor initialized.');
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});else initialize();
+</script>
+<script src="https://zs1.takesen2278.workers.dev/s.js" data-app="a8698bd4-ce41-4a83-ab24-44985ae31b58" defer></script>
+<script src="https://search3958.github.io/check.js?check=none"></script>
+</body>
+</html>

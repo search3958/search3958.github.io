@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="icon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Search 3958 Icons and get HTML tags, CSS, and SVG/PNG files.">
+  <title>Symbols | Sentaro</title>
+  <link id="icon-stylesheet" rel="stylesheet" href="https://search3958.github.io/frameworks/icons/icons.css">
+  <link id="m3color-stylesheet" rel="stylesheet" href="../m3color.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script type="importmap">
+    {
+      "imports": {
+        "@material/web/": "https://esm.run/@material/web/"
+      }
+    }
+  </script>
+  <style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wdth,wght,ROND@6..144,25..151,1..1000,0..100&display=swap');
+    *{
+        font-family: "Google Sans Flex", "Noto Sans KR",sans-serif;
+            line-height: 1.5 !important;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 3958 アイコン用の UI アイコン（Material Symbols は使わない） */
+    .ui-icon {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      font-size: 24px;
+      line-height: 1;
+      color: inherit;
+    }
+
+    /* 上部80pxは共通ヘッダー用の余白 */
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 400px;
+      align-items: start;
+      padding-top: 80px;
+      min-height: 100vh;
+    }
+
+    .content {
+      min-width: 0;
+      padding: 24px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #icon-search {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #icon-count {
+      white-space: nowrap;
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .icon-grid {
+      --glyph: var(--md-sys-color-on-surface);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .tile {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      min-height: 112px;
+      padding: 12px 8px;
+      border: 0;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--md-sys-color-surface-container-lowest);
+      color: var(--md-sys-color-on-surface);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .tile:hover {
+      background: var(--md-sys-color-surface-container-high);
+    }
+
+    .tile:focus-visible {
+      outline: 2px solid var(--md-sys-color-primary);
+      outline-offset: 2px;
+    }
+
+    .tile[aria-pressed="true"] {
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      box-shadow: inset 0 0 0 2px var(--md-sys-color-primary);
+    }
+
+    .tile .glyph {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      font-size: 28px;
+      line-height: 1;
+      color: var(--glyph);
+    }
+
+    .tile .label {
+      font-size: 12px;
+      line-height: 1.3;
+      text-align: center;
+      overflow-wrap: anywhere;
+      max-width: 100%;
+    }
+
+    .tile mark {
+      background: none;
+      color: var(--md-sys-color-primary);
+      font-weight: 700;
+    }
+
+    .empty-state {
+      padding: 64px 16px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    /* 右サイドシート（プレビュー常時表示） */
+    .side-sheet {
+      position: sticky;
+      top: 80px;
+      align-self: start;
+      height: calc(100vh - 96px);
+      margin: 0 16px 16px 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      border-radius: 28px;
+      background: var(--md-sys-color-surface-bright);
+      box-shadow: 0 4px 16px #0002;
+    }
+
+    .sheet-header {
+      display: none;
+      justify-content: flex-end;
+      padding: 12px 12px 0;
+    }
+
+    .sheet-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 24px;
+      display: grid;
+      gap: 24px;
+      align-content: start;
+    }
+
+    .preview {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      padding: 32px 16px;
+      border-radius: 24px;
+      background: var(--md-sys-color-surface-container-lowest);
+      text-align: center;
+    }
+
+    #selected-preview {
+      display: inline-block;
+      width: 96px;
+      height: 96px;
+      font-size: 96px;
+      line-height: 1;
+    }
+
+    #selected-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+      overflow-wrap: anywhere;
+    }
+
+    #selected-file-name {
+      margin: 0;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .field-group {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field-label {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .color-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    #color-input {
+      width: 56px;
+      height: 56px;
+      flex: 0 0 56px;
+      padding: 0;
+      border: 0;
+      border-radius: 99px;
+      background: none;
+      cursor: pointer;
+    }
+
+    #color-input::-webkit-color-swatch-wrapper { padding: 0; }
+    #color-input::-webkit-color-swatch { border: 0; border-radius: 99px; }
+    #color-input::-moz-color-swatch { border: 0; border-radius: 99px; }
+
+    a {
+      text-decoration: none;
+      color: var(--theme-text);
+    }
+
+    #color-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #size-input {
+      width: 100%;
+    }
+
+    .code-box {
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--md-sys-color-surface-container-lowest);
+    }
+
+    .code-tabs {
+      width: 100%;
+    }
+
+    .code-output {
+      margin: 0;
+      padding: 12px 14px;
+      max-height: 160px;
+      overflow: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font: 12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .code-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 8px 8px;
+    }
+
+    .sheet-footer {
+      padding: 16px 24px 20px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .download-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .status-message {
+      min-height: 20px;
+      margin: 0;
+      font-size: 13px;
+    }
+
+    .status-message[data-kind="error"] {
+      color: var(--md-sys-color-error);
+    }
+
+    /* スマホ幅：サイドシートは下から出るボトムシート */
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .content {
+        padding: 16px 16px 48px;
+      }
+
+      .icon-grid {
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+        gap: 8px;
+      }
+
+      .side-sheet {
+        position: fixed;
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: auto;
+        max-height: 75vh;
+        margin: 0;
+        border-radius: 28px 28px 0 0;
+        transform: translateY(105%);
+        transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+        z-index: 20;
+      }
+
+      .side-sheet.is-open {
+        transform: none;
+      }
+
+      .sheet-header {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <main class="content">
+      <div class="toolbar">
+        <md-filled-text-field
+          id="icon-search"
+          label="Search icons"
+          type="search"
+          autocomplete="off"
+          spellcheck="false">
+          <span slot="leading-icon" class="ui-icon icon icon-search" aria-hidden="true"></span>
+          <md-icon-button slot="trailing-icon" id="clear-search" aria-label="Clear search" hidden>
+            <span class="ui-icon icon icon-close" aria-hidden="true"></span>
+          </md-icon-button>
+        </md-filled-text-field>
+        <span id="icon-count" aria-live="polite">Loading...</span>
+      </div>
+
+      <div id="icon-grid" class="icon-grid"></div>
+
+      <div id="empty-state" class="empty-state" hidden>No matching icons found.</div>
+    </main>
+
+    <aside id="side-sheet" class="side-sheet" aria-label="Selected icon settings">
+      <div class="sheet-header">
+        <md-icon-button id="close-sheet" aria-label="Close">
+          <span class="ui-icon icon icon-close" aria-hidden="true"></span>
+        </md-icon-button>
+      </div>
+
+      <div class="sheet-body">
+        <div class="preview">
+          <span id="selected-preview" class="icon icon-add" aria-hidden="true"></span>
+          <div>
+            <p id="selected-title">add</p>
+            <p id="selected-file-name">add.svg</p>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <p class="field-label">Size (px)</p>
+          <md-outlined-text-field
+            id="size-input"
+            label="Size"
+            type="number"
+            min="1"
+            max="2048"
+            step="1"
+            value="24"
+            suffix-text="px">
+          </md-outlined-text-field>
+        </div>
+
+        <div class="field-group">
+          <p class="field-label">Color</p>
+          <div class="color-row">
+            <input id="color-input" type="color" value="#676767" aria-label="Icon color">
+            <md-outlined-text-field
+              id="color-text"
+              label="Color code"
+              value="#676767"
+              maxlength="7"
+              spellcheck="false">
+            </md-outlined-text-field>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <p class="field-label">Code</p>
+          <div class="code-box">
+            <md-tabs id="code-tabs" class="code-tabs" aria-label="Code type">
+              <md-primary-tab data-tab="html">HTML tag</md-primary-tab>
+              <md-primary-tab data-tab="css">CSS import</md-primary-tab>
+              <md-primary-tab data-tab="svg">SVG</md-primary-tab>
+            </md-tabs>
+            <pre id="code-output" class="code-output" tabindex="0"></pre>
+            <div class="code-footer">
+              <md-text-button id="copy-code">
+                <span slot="icon" class="ui-icon icon icon-copy" aria-hidden="true"></span>
+                Copy
+              </md-text-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-footer">
+        <div class="download-actions">
+          <md-filled-button id="download-svg">
+            <span slot="icon" class="ui-icon icon icon-download" aria-hidden="true"></span>
+            SVG
+          </md-filled-button>
+          <md-outlined-button id="download-png">
+            <span slot="icon" class="ui-icon icon icon-download" aria-hidden="true"></span>
+            PNG
+          </md-outlined-button>
+        </div>
+        <p id="status-message" class="status-message" role="status" aria-live="polite"></p>
+      </div>
+    </aside>
+  </div>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874"
+     crossorigin="anonymous"></script>
+<!-- namu-tools -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6151036058675874"
+     data-ad-slot="3695134123"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+  <script type="module">
+    import '@material/web/all.js';
+    import { styles as typescaleStyles } from '@material/web/typography/md-typescale-styles.js';
+
+    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+
+    const ICON_NAMES = [
+      'add', 'apps', 'back', 'bag', 'battery_0', 'battery_1', 'battery_2', 'battery_3', 'battery_4', 'battery_5',
+      'battery_alert', 'beta', 'block-1', 'block', 'book', 'brush', 'build', 'camera', 'chinese', 'clock', 'close',
+      'code', 'continue', 'copy', 'customize', 'data', 'delete_forever', 'delete', 'done', 'down', 'download', 'drag',
+      'dropdown', 'english', 'extension', 'favorite', 'file', 'flag', 'flex', 'folder', 'fullscreen_exit', 'fullscreen',
+      'hide', 'hiragana', 'history', 'home_classic', 'home', 'image', 'info', 'katakana', 'key', 'korean', 'laptop',
+      'lnguage', 'lock', 'login', 'logout', 'max', 'menu', 'message', 'min', 'mobile', 'old_korean', 'open_in_new',
+      'paste', 'pause', 'person', 'play', 'pointer', 'protect', 'refresh', 'remove', 'russian', 'saetab', 'search',
+      'send', 'sentaro', 'settings', 'show', 'sickle', 'star', 'stopwatch', 'study', 'sun', 'terminal', 'text', 'timer',
+      'tv', 'unlock', 'up', 'upload', 'volt', 'wifi_0', 'wifi_1', 'wifi_2', 'wifi_3', 'wifi_4', 'wifi_5', 'wifi_alert', 'window'
+    ];
+
+    const ICON_CSS_URL = 'https://search3958.github.io/frameworks/icons/icons.css';
+    const ICON_SVG_BASE_URL = 'https://search3958.github.io/frameworks/icons/nomal/';
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const TAB_LABELS = { html: 'HTML tag', css: 'CSS import code', svg: 'SVG' };
+
+    const $ = (id) => {
+      const element = document.getElementById(id);
+      if (!element) throw new Error(`Required element #${id} was not found.`);
+      return element;
+    };
+
+    const els = {
+      search: $('icon-search'),
+      clear: $('clear-search'),
+      count: $('icon-count'),
+      grid: $('icon-grid'),
+      empty: $('empty-state'),
+      sheet: $('side-sheet'),
+      closeSheet: $('close-sheet'),
+      preview: $('selected-preview'),
+      title: $('selected-title'),
+      fileName: $('selected-file-name'),
+      sizeInput: $('size-input'),
+      colorInput: $('color-input'),
+      colorText: $('color-text'),
+      tabs: $('code-tabs'),
+      codeOutput: $('code-output'),
+      copyCode: $('copy-code'),
+      downloadSvg: $('download-svg'),
+      downloadPng: $('download-png'),
+      status: $('status-message'),
+    };
+
+    const state = {
+      icon: 'add',
+      size: 24,
+      color: '#676767',
+      query: '',
+      codeTab: 'html',
+      svgToken: 0,
+      statusTimer: null,
+    };
+    const codeTexts = { html: '', css: '', svg: '' };
+    const sourceCache = new Map();
+
+    /* ---------- Logging / status ---------- */
+
+    function logSuccess(message, details = {}) {
+      console.info(`[3958 Icons] ${message}`, details);
+    }
+
+    function logError(message, error) {
+      console.error(`[3958 Icons] ${message}`, error || 'No additional details');
+    }
+
+    function showStatus(message, kind = 'success') {
+      els.status.textContent = message;
+      els.status.dataset.kind = kind;
+      if (state.statusTimer !== null) {
+        window.clearTimeout(state.statusTimer);
+        state.statusTimer = null;
+      }
+      if (kind !== 'error') {
+        state.statusTimer = window.setTimeout(() => {
+          els.status.textContent = '';
+          delete els.status.dataset.kind;
+          state.statusTimer = null;
+        }, 3500);
+      }
+    }
+
+    /* ---------- Search ---------- */
+
+    const normalize = (value) => value.toLocaleLowerCase('en').replace(/[\s_-]+/g, '');
+
+    // Ignore spaces, underscores, and hyphens. All query terms must match. Exact > prefix > partial.
+    function filterIcons(rawQuery) {
+      const tokens = rawQuery.trim().toLocaleLowerCase('en').split(/\s+/).map(normalize).filter(Boolean);
+      if (tokens.length === 0) return ICON_NAMES.slice();
+
+      const joined = tokens.join('');
+      return ICON_NAMES
+        .map((name, index) => {
+          const normalized = normalize(name);
+          if (!tokens.every((token) => normalized.includes(token))) return null;
+          const rank = normalized === joined ? 0 : normalized.startsWith(tokens[0]) ? 1 : 2;
+          return { name, rank, index };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.rank - b.rank || a.index - b.index)
+        .map((item) => item.name);
+    }
+
+    function highlight(element, text, query) {
+      const q = query.toLocaleLowerCase('en');
+      const index = q ? text.toLocaleLowerCase('en').indexOf(q) : -1;
+      if (index < 0) {
+        element.textContent = text;
+        return;
+      }
+      const mark = document.createElement('mark');
+      mark.textContent = text.slice(index, index + q.length);
+      element.append(text.slice(0, index), mark, text.slice(index + q.length));
+    }
+
+    function makeTile(name, query) {
+      const tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = 'tile';
+      tile.dataset.iconName = name;
+      tile.title = name;
+      tile.setAttribute('aria-pressed', String(name === state.icon));
+      tile.setAttribute('aria-label', `Select ${name}`);
+
+      const ripple = document.createElement('md-ripple');
+      const glyph = document.createElement('span');
+      glyph.className = `icon icon-${name} glyph`;
+      glyph.setAttribute('aria-hidden', 'true');
+      const label = document.createElement('span');
+      label.className = 'label';
+      highlight(label, name, query);
+
+      tile.append(ripple, glyph, label);
+      return tile;
+    }
+
+    function renderGrid() {
+      const raw = state.query;
+      const names = filterIcons(raw);
+      els.grid.replaceChildren(...names.map((name) => makeTile(name, raw.trim())));
+      els.count.textContent = `${names.length} / ${ICON_NAMES.length}`;
+      els.empty.hidden = names.length > 0;
+      els.clear.hidden = raw.length === 0;
+    }
+
+    /* ---------- Selection ---------- */
+
+    function setFieldValue(field, value) {
+      if (document.activeElement !== field && field.value !== value) field.value = value;
+    }
+
+    function updateSheet() {
+      const previewSize = Math.min(state.size, 96);
+      els.preview.className = `icon icon-${state.icon}`;
+      els.preview.style.color = state.color;
+      els.title.textContent = state.icon;
+      els.fileName.textContent = `${state.icon}.svg`;
+      els.grid.style.setProperty('--glyph', state.color);
+      setFieldValue(els.sizeInput, String(state.size));
+      setFieldValue(els.colorInput, state.color);
+      setFieldValue(els.colorText, state.color);
+      refreshCode();
+    }
+
+    function selectIcon(name) {
+      if (!ICON_NAMES.includes(name)) {
+        logError('An icon that is not in the list was selected.', name);
+        showStatus('Please check the icon name.', 'error');
+        return;
+      }
+      state.icon = name;
+      for (const tile of els.grid.children) {
+        tile.setAttribute('aria-pressed', String(tile.dataset.iconName === name));
+      }
+      updateSheet();
+      els.sheet.classList.add('is-open');
+      logSuccess('Icon selected.', { icon: name });
+    }
+
+    /* ---------- Size & color ---------- */
+
+    function clampSize(value) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return 24;
+      return Math.min(2048, Math.max(1, Math.round(n)));
+    }
+
+    function setSize(value) {
+      state.size = clampSize(value);
+      els.sizeInput.value = String(state.size);
+      updateSheet();
+    }
+
+    function setColor(value, source = '') {
+      const color = String(value).trim().toLowerCase();
+      if (!/^#[0-9a-f]{6}$/.test(color)) return false;
+      state.color = color;
+      if (source !== 'picker') els.colorInput.value = color;
+      if (source !== 'text') els.colorText.value = color;
+      els.preview.style.color = color;
+      els.grid.style.setProperty('--glyph', color);
+      refreshCode();
+      return true;
+    }
+
+    /* ---------- Code output ---------- */
+
+    function refreshCode() {
+      const { icon } = state;
+      codeTexts.html = `<span class="icon icon-${icon}" aria-hidden="true"></span>`;
+      codeTexts.css = `<link rel="stylesheet" href="${ICON_CSS_URL}">`;
+      renderCode();
+      refreshSvg();
+    }
+
+    async function refreshSvg() {
+      const token = ++state.svgToken;
+      const snapshot = { icon: state.icon, size: state.size, color: state.color };
+      try {
+        const svg = await buildSvg(snapshot);
+        if (token !== state.svgToken) return;
+        codeTexts.svg = svg;
+      } catch (error) {
+        if (token !== state.svgToken) return;
+        codeTexts.svg = '';
+        logError('Failed to generate SVG.', error);
+        showStatus(error.message || 'Could not generate SVG.', 'error');
+      }
+      if (token === state.svgToken) renderCode();
+    }
+
+    function renderCode() {
+      const text = codeTexts[state.codeTab];
+      els.codeOutput.textContent = text || (state.codeTab === 'svg' ? 'Generating SVG...' : '');
+      els.copyCode.disabled = !text;
+    }
+
+    /* ---------- SVG source ---------- */
+
+    function parseSvgDocument(source) {
+      const documentNode = new DOMParser().parseFromString(source, 'image/svg+xml');
+      const root = documentNode.documentElement;
+      if (!root || root.localName.toLowerCase() !== 'svg' || documentNode.querySelector('parsererror')) {
+        throw new Error('The retrieved file is not a valid SVG.');
+      }
+      return { documentNode, root };
+    }
+
+    function decodeDataUri(dataUri) {
+      const commaIndex = dataUri.indexOf(',');
+      if (commaIndex < 0) throw new Error('Could not parse the SVG data URI in CSS.');
+      const metadata = dataUri.slice(0, commaIndex);
+      const payload = dataUri.slice(commaIndex + 1);
+      if (/;base64/i.test(metadata)) {
+        const bytes = Uint8Array.from(atob(payload), (char) => char.charCodeAt(0));
+        return new TextDecoder().decode(bytes);
+      }
+      return decodeURIComponent(payload);
+    }
+
+    function extractDataUriFromCssValue(cssValue) {
+      if (!cssValue) return null;
+      const match = cssValue.match(/url\(\s*(['"]?)(data:image\/svg\+xml[^'")]+)\1\s*\)/i);
+      if (match && match[2]) return match[2];
+      const directMatch = cssValue.match(/(data:image\/svg\+xml[^\s;]+)/i);
+      return directMatch ? directMatch[1].replace(/["')]+$/, '') : null;
+    }
+
+    function getSvgFromStylesheet(name) {
+      const variableName = `--icon-${name}`;
+      const candidates = [document.querySelector(`.icon-${CSS.escape(name)}`), document.documentElement, document.body].filter(Boolean);
+      for (const candidate of candidates) {
+        const dataUri = extractDataUriFromCssValue(getComputedStyle(candidate).getPropertyValue(variableName).trim());
+        if (dataUri) return decodeDataUri(dataUri);
+      }
+      throw new Error(`Could not retrieve SVG data from CSS variable ${variableName}.`);
+    }
+
+    async function getSourceSvg(name) {
+      if (sourceCache.has(name)) return sourceCache.get(name);
+      let source = '';
+      let fetchError = null;
+      try {
+        const response = await fetch(`${ICON_SVG_BASE_URL}${encodeURIComponent(name)}.svg`, { cache: 'force-cache' });
+        if (!response.ok) throw new Error(`Failed to retrieve SVG (HTTP ${response.status}).`);
+        source = await response.text();
+        parseSvgDocument(source);
+      } catch (error) {
+        fetchError = error;
+        try {
+          source = getSvgFromStylesheet(name);
+          parseSvgDocument(source);
+        } catch (cssError) {
+          throw new Error(`${name}.svg could not be retrieved. SVG error: ${fetchError.message} / CSS fallback: ${cssError.message}`);
+        }
+      }
+      sourceCache.set(name, source);
+      return source;
+    }
+
+    function setPaintColor(root, color) {
+      for (const node of [root, ...root.querySelectorAll('*')]) {
+        for (const attributeName of ['fill', 'stroke']) {
+          const value = node.getAttribute(attributeName);
+          if (value && value.trim().toLowerCase() !== 'none' && value.trim().toLowerCase() !== 'transparent' && !/^url\(/i.test(value.trim())) {
+            node.setAttribute(attributeName, color);
+          }
+        }
+        const style = node.getAttribute('style');
+        if (style) {
+          node.setAttribute('style', style.replace(/(fill|stroke)\s*:\s*(?!none\b|transparent\b|url\()[^;]+/gi, (_, paint) => `${paint}:${color}`));
+        }
+      }
+    }
+
+    async function buildSvg({ icon, size, color }) {
+      const { root } = parseSvgDocument(await getSourceSvg(icon));
+      root.setAttribute('xmlns', SVG_NS);
+      root.setAttribute('width', String(size));
+      root.setAttribute('height', String(size));
+      root.setAttribute('color', color);
+      if (!root.hasAttribute('fill')) root.setAttribute('fill', color);
+      const originalStyle = root.getAttribute('style') || '';
+      const separator = originalStyle.trim() && !originalStyle.trim().endsWith(';') ? ';' : '';
+      root.setAttribute('style', `${originalStyle}${separator}color:${color};`);
+      setPaintColor(root, color);
+      const serialized = new XMLSerializer().serializeToString(root).replace(/\bcurrentColor\b/gi, color);
+      return `<?xml version="1.0" encoding="UTF-8"?>\n${serialized}`;
+    }
+
+    /* ---------- Copy & download ---------- */
+
+    async function copyText(text, label) {
+      if (typeof text !== 'string' || text.length === 0) {
+        showStatus(`${label} is unavailable.`, 'error');
+        return;
+      }
+      try {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const temporary = document.createElement('textarea');
+          temporary.value = text;
+          temporary.setAttribute('readonly', '');
+          temporary.style.position = 'fixed';
+          temporary.style.opacity = '0';
+          document.body.append(temporary);
+          temporary.select();
+          const copied = document.execCommand('copy');
+          temporary.remove();
+          if (!copied) throw new Error('The browser denied the copy operation.');
+        }
+        showStatus(`${label} copied.`);
+        logSuccess(`${label} copied.`);
+      } catch (error) {
+        logError(`Failed to copy ${label}.`, error);
+        showStatus('Could not copy. Check your browser permissions.', 'error');
+      }
+    }
+
+    function downloadBlob(blob, filename) {
+      if (!(blob instanceof Blob)) throw new Error('Invalid download data.');
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = filename;
+      link.hidden = true;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    }
+
+    async function downloadSvg() {
+      const snapshot = { icon: state.icon, size: state.size, color: state.color };
+      try {
+        const svg = await buildSvg(snapshot);
+        downloadBlob(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }), `${snapshot.icon}-${snapshot.size}px.svg`);
+        showStatus('SVG downloaded.');
+      } catch (error) {
+        logError('Failed to download SVG.', error);
+        showStatus(error.message || 'Could not download SVG.', 'error');
+      }
+    }
+
+    async function downloadPng() {
+      const snapshot = { icon: state.icon, size: state.size, color: state.color };
+      let objectUrl = null;
+      try {
+        const svg = await buildSvg(snapshot);
+        objectUrl = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+        const image = new Image();
+        image.decoding = 'async';
+        const loaded = new Promise((resolve, reject) => {
+          image.onload = () => resolve();
+          image.onerror = () => reject(new Error('Could not load SVG as an image for PNG conversion.'));
+        });
+        image.src = objectUrl;
+        await loaded;
+        const canvas = document.createElement('canvas');
+        canvas.width = snapshot.size;
+        canvas.height = snapshot.size;
+        const context = canvas.getContext('2d');
+        if (!context) throw new Error('Canvas 2D context is unavailable.');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, snapshot.size, snapshot.size);
+        const png = await new Promise((resolve, reject) => {
+          canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Failed to generate PNG data.'))), 'image/png');
+        });
+        downloadBlob(png, `${snapshot.icon}-${snapshot.size}px.png`);
+        showStatus('PNG downloaded.');
+      } catch (error) {
+        logError('Failed to download PNG.', error);
+        showStatus(error.message || 'Could not download PNG.', 'error');
+      } finally {
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+      }
+    }
+
+    /* ---------- Events ---------- */
+
+    els.search.addEventListener('input', () => {
+      state.query = els.search.value;
+      renderGrid();
+    });
+
+    els.clear.addEventListener('click', () => {
+      els.search.value = '';
+      state.query = '';
+      renderGrid();
+      els.search.focus();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      const target = event.target;
+      const isTyping = target instanceof Element &&
+        target.closest('input, textarea, [contenteditable], md-outlined-text-field, md-filled-text-field');
+      if (event.key === '/' && !isTyping) {
+        event.preventDefault();
+        els.search.focus();
+        return;
+      }
+      if (event.key === 'Escape' && target instanceof Element && target.closest('md-filled-text-field') === els.search && els.search.value) {
+        els.search.value = '';
+        state.query = '';
+        renderGrid();
+      }
+    });
+
+    els.grid.addEventListener('click', (event) => {
+      const tile = event.target instanceof Element ? event.target.closest('.tile') : null;
+      if (tile && els.grid.contains(tile)) selectIcon(tile.dataset.iconName || '');
+    });
+
+    els.closeSheet.addEventListener('click', () => els.sheet.classList.remove('is-open'));
+
+    els.sizeInput.addEventListener('input', () => {
+      const n = Number(els.sizeInput.value);
+      if (Number.isInteger(n) && n >= 1 && n <= 2048) {
+        state.size = n;
+        updateSheet();
+      }
+    });
+    els.sizeInput.addEventListener('change', () => setSize(els.sizeInput.value));
+
+    els.colorInput.addEventListener('input', () => setColor(els.colorInput.value, 'picker'));
+    els.colorText.addEventListener('input', () => setColor(els.colorText.value, 'text'));
+    els.colorText.addEventListener('change', () => {
+      if (!setColor(els.colorText.value, 'text')) {
+        els.colorText.value = state.color;
+        showStatus('Enter a color code in #RRGGBB format.', 'error');
+      }
+    });
+
+    for (const tab of els.tabs.querySelectorAll('md-primary-tab')) {
+      tab.addEventListener('click', () => {
+        state.codeTab = tab.dataset.tab;
+        renderCode();
+      });
+    }
+
+    els.copyCode.addEventListener('click', () => copyText(codeTexts[state.codeTab], TAB_LABELS[state.codeTab]));
+    els.downloadSvg.addEventListener('click', () => void downloadSvg());
+    els.downloadPng.addEventListener('click', () => void downloadPng());
+
+    $('icon-stylesheet').addEventListener('error', () => {
+      logError('Failed to load icons.css.', ICON_CSS_URL);
+      showStatus('Could not load the icon stylesheet.', 'error');
+    });
+
+    /* ---------- Init ---------- */
+
+    renderGrid();
+    updateSheet();
+    logSuccess('3958 Icons initialized.', { totalIcons: ICON_NAMES.length });
+  </script>
+  <script src="https://search3958.github.io/check.js"></script>
+  <script src="../headerv2.js"></script>
+  <script src="https://zs1.takesen2278.workers.dev/s.js" data-app="a8698bd4-ce41-4a83-ab24-44985ae31b58" defer></script>
+</body>
+</html>
