@@ -410,16 +410,32 @@ console.info("[SaeTabResearch] Research consent prompt displayed.");
 getResearchHistory() {
 let raw;
 try {
-raw = localStorage.getItem("search_history_v2");
+raw = localStorage.getItem("searchHistory");
 } catch (error) {
-console.error("[SaeTabResearch] Could not read search_history_v2.", error);
+console.error("[SaeTabResearch] Could not read searchHistory.", error);
 throw error;
 }
-if (raw === null || raw.trim() === "") return [];
-const parsed = this.safeJSON(raw);
-if (Array.isArray(parsed)) return parsed;
-if (parsed && typeof parsed === "object" && Array.isArray(parsed.history)) return parsed.history;
-throw new Error("search_history_v2 is not an array or an object containing a history array.");
+if (raw === null || raw.trim() === "") {
+console.info("[SaeTabResearch] No saved search history; sending an empty array.");
+return [];
+}
+let parsed;
+try {
+parsed = JSON.parse(raw);
+} catch (error) {
+console.error("[SaeTabResearch] searchHistory contains invalid JSON.", error);
+throw new Error("searchHistory is not valid JSON.", { cause: error });
+}
+if (!Array.isArray(parsed)) {
+throw new Error("searchHistory must be a JSON array.");
+}
+const history = parsed.filter((item, index) => {
+const valid = item && typeof item === "object" && !Array.isArray(item) && typeof item.query === "string" && Number.isFinite(Number(item.time));
+if (!valid) console.warn(`[SaeTabResearch] Invalid search history item skipped at index ${index}.`, item);
+return valid;
+}).map(item => ({ query: item.query, time: Number(item.time) }));
+console.info(`[SaeTabResearch] Search history loaded: ${history.length}/${parsed.length} item(s).`);
+return history;
 },
 async sendResearchPayload(uuid, history) {
 if (!uuid || !Array.isArray(history)) {
