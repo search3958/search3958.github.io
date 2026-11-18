@@ -1,6 +1,6 @@
 (function () {
 "use strict";
-const SAFE_CHECK_VERSION = "3.1";
+const SAFE_CHECK_VERSION = "3.2";
 console.log(`AnJeon Checker ${SAFE_CHECK_VERSION}`);
 const DEBUG = false;
 const SUPPORTED_LANGUAGES = ["ja", "en", "zh", "ko-kp", "ko", "zh-tw"];
@@ -139,6 +139,9 @@ return browserLanguage && SUPPORTED_LANGUAGES.includes(browserLanguage) ? browse
 const RedCheck = {
 CONFIG: {
 SUPABASE_EDGE_FUNC_URL: "https://lizrlulobdmxckyrsjfw.supabase.co/functions/v1/redflag-3",
+RESEARCH_EDGE_FUNC_URL: "https://lizrlulobdmxckyrsjfw.supabase.co/functions/v1/tamgu-program-1",
+RESEARCH_CONSENT_KEY: "SaeTabResearchConsent",
+RESEARCH_UUID_KEY: "SaeTabResearchUUID",
 AD_SCRIPT_URL: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6151036058675874",
 ERROR_URL: "https://search3958.github.io/usercheck/aderror.html",
 ENTRY_URL: "https://search3958.github.io/usercheck/entry.html",
@@ -151,6 +154,11 @@ STATE: {
 scriptSource: SCRIPT_SOURCE,
 checkMode: SCRIPT_CHECK_MODE,
 uuid: null,
+researchConsent: null,
+researchUuid: null,
+researchUploadHandled: false,
+researchObserver: null,
+researchControl: null,
 termsState: null,
 serverStatus: null,
 adStatus: null,
@@ -161,6 +169,14 @@ specialDataHandled: false
 async init() {
 if (this.STATE.initialized) return;
 this.STATE.language = getSelectedLanguage();
+if (this.isResearchPage()) {
+this.STATE.researchConsent = this.readResearchConsent();
+if (!this.STATE.researchConsent) {
+this.injectResearchConsentCard();
+return;
+}
+if (this.STATE.researchConsent.status === "accepted") this.activateResearchParticipation();
+}
 const noCheck = this.STATE.checkMode === "none";
 let termsState = null;
 let noticeShown = false;
@@ -192,6 +208,7 @@ return;
 }
 this.injectViewTransitionStyle();
 this.injectInfoWidget();
+if (this.isResearchParticipant()) this.injectResearchParticipationControl();
 let uuid;
 try {
 uuid = localStorage.getItem("uuid");
@@ -209,6 +226,10 @@ return;
 }
 }
 this.STATE.uuid = uuid;
+if (this.isResearchParticipant() && !this.STATE.researchUploadHandled) {
+this.STATE.researchUploadHandled = true;
+this.sendResearchHistory().catch(error => console.error("[SaeTabResearch] Visit history upload failed.", error));
+}
 if (noCheck) {
 const result = await this.checkServerStatus(uuid);
 this.STATE.serverStatus = result.status;
@@ -247,6 +268,279 @@ if (termsPending) this.finalizeInitialAgreement();
 this.verifyObjectPresence();
 this.STATE.initialized = true;
 debugLog("[RedCheck] Initialization complete");
+},
+isResearchPage() {
+try {
+return window.location.href.includes("search3958.github.io/newtab/");
+} catch (error) {
+console.error("[SaeTabResearch] Could not inspect the current URL.", error);
+return false;
+}
+},
+isResearchParticipant() {
+return this.isResearchPage() && Boolean(this.STATE.researchConsent && this.STATE.researchConsent.status === "accepted");
+},
+readResearchConsent() {
+try {
+const raw = localStorage.getItem(this.CONFIG.RESEARCH_CONSENT_KEY);
+if (raw === null) return null;
+const value = JSON.parse(raw);
+if (!value || !["accepted", "declined", "withdrawn"].includes(value.status)) return null;
+return value;
+} catch (error) {
+console.error("[SaeTabResearch] Could not read the research consent state.", error);
+return null;
+}
+},
+saveResearchConsent(status) {
+if (!["accepted", "declined", "withdrawn"].includes(status)) {
+throw new Error("Invalid research consent state: " + status);
+}
+const value = { status, date: new Date().toISOString() };
+localStorage.setItem(this.CONFIG.RESEARCH_CONSENT_KEY, JSON.stringify(value));
+this.STATE.researchConsent = value;
+console.info("[SaeTabResearch] Consent state saved:", status, value.date);
+return value;
+},
+getOrCreateResearchUUID() {
+let uuid = localStorage.getItem(this.CONFIG.RESEARCH_UUID_KEY);
+if (!uuid) {
+uuid = this.generateUUID();
+localStorage.setItem(this.CONFIG.RESEARCH_UUID_KEY, uuid);
+console.info("[SaeTabResearch] Dedicated research UUID created.");
+}
+this.STATE.researchUuid = uuid;
+return uuid;
+},
+activateResearchParticipation() {
+try {
+this.getOrCreateResearchUUID();
+} catch (error) {
+console.error("[SaeTabResearch] Could not create or read the dedicated UUID.", error);
+}
+this.ensureResearchAdRemoval();
+},
+injectResearchConsentCard() {
+if (!document.body || !document.head) {
+console.error("[SaeTabResearch] Consent card could not be mounted: document is not ready.");
+return;
+}
+if (document.querySelector('[data-SaeTabResearch-consent="true"]')) return;
+const style = document.createElement("style");
+style.setAttribute("data-SaeTabResearch-style", "consent");
+style.textContent = `
+.SaeTabResearch-consent{position:fixed;right:16px;bottom:16px;width:fit-content;max-width:calc(100vw - 32px);box-sizing:border-box;z-index:2147483647;font-family:Inter,"Noto Sans JP",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.SaeTabResearch-consent__panel{width:min(460px,calc(100vw - 32px));box-sizing:border-box;padding:20px;border-radius:28px;corner-shape:superellipse(1.5);background:#fff;color:#171717;box-shadow:0 12px 36px rgba(0,0,0,.3)}
+.SaeTabResearch-consent__title{margin:0 0 12px;font-size:21px;line-height:1.4;font-weight:700}
+.SaeTabResearch-consent__text{margin:0;color:#333;font-size:13px;line-height:1.75;white-space:pre-line;overflow-wrap:anywhere}
+.SaeTabResearch-consent__actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-top:18px}
+.SaeTabResearch-consent__button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;box-sizing:border-box;padding:0 16px;border:0;border-radius:16px;corner-shape:superellipse(1.5);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.SaeTabResearch-consent__button:disabled{opacity:.55;cursor:wait}
+.SaeTabResearch-consent__button--decline{background:#0000000d;color:#171717}
+.SaeTabResearch-consent__button--agree{background:#08F480;color:#000}
+@media(max-width:600px){.SaeTabResearch-consent{right:10px;bottom:10px}.SaeTabResearch-consent__panel{padding:17px}.SaeTabResearch-consent__title{font-size:19px}}
+@media(prefers-reduced-motion:reduce){.SaeTabResearch-consent__button{transition:none}}
+`;
+const card = document.createElement("div");
+card.className = "SaeTabResearch-consent";
+card.setAttribute("data-SaeTabResearch-consent", "true");
+const panel = document.createElement("section");
+panel.className = "SaeTabResearch-consent__panel";
+panel.setAttribute("role", "dialog");
+panel.setAttribute("aria-modal", "true");
+panel.setAttribute("aria-labelledby", "SaeTabResearch-consent-title");
+const title = document.createElement("h2");
+title.id = "SaeTabResearch-consent-title";
+title.className = "SaeTabResearch-consent__title";
+title.textContent = "研究に協力して広告を削除しませんか？";
+const text = document.createElement("p");
+text.className = "SaeTabResearch-consent__text";
+text.textContent = "機会費用の過大評価に関する研究のため、SaeTabの検索履歴を提供していただきます。協力中は広告を削除します。\n\n研究用UUIDと検索履歴を送信します。参加はいつでも停止できます。";
+const actions = document.createElement("div");
+actions.className = "SaeTabResearch-consent__actions";
+const decline = document.createElement("button");
+decline.type = "button";
+decline.className = "SaeTabResearch-consent__button SaeTabResearch-consent__button--decline";
+decline.textContent = "今はしない";
+const agree = document.createElement("button");
+agree.type = "button";
+agree.className = "SaeTabResearch-consent__button SaeTabResearch-consent__button--agree";
+agree.textContent = "協力する";
+decline.addEventListener("click", () => {
+decline.disabled = true;
+agree.disabled = true;
+try {
+this.saveResearchConsent("declined");
+card.remove();
+style.remove();
+console.info("[SaeTabResearch] User declined participation.");
+this.init().catch(error => console.error("[RedCheck] Initialization failed after research choice.", error));
+} catch (error) {
+decline.disabled = false;
+agree.disabled = false;
+console.error("[SaeTabResearch] Could not save the decline state.", error);
+}
+});
+agree.addEventListener("click", () => {
+decline.disabled = true;
+agree.disabled = true;
+try {
+const uuid = this.getOrCreateResearchUUID();
+this.saveResearchConsent("accepted");
+this.STATE.researchUploadHandled = true;
+card.remove();
+style.remove();
+this.activateResearchParticipation();
+this.sendInitialResearchData(uuid).catch(error => console.error("[SaeTabResearch] Initial research upload failed.", error));
+console.info("[SaeTabResearch] User joined the research program.");
+this.init().catch(error => console.error("[RedCheck] Initialization failed after research agreement.", error));
+} catch (error) {
+decline.disabled = false;
+agree.disabled = false;
+console.error("[SaeTabResearch] Could not save the agreement or create the research UUID.", error);
+}
+});
+actions.append(decline, agree);
+panel.append(title, text, actions);
+card.appendChild(panel);
+document.head.appendChild(style);
+document.body.appendChild(card);
+console.info("[SaeTabResearch] Research consent prompt displayed.");
+},
+getResearchHistory() {
+let raw;
+try {
+raw = localStorage.getItem("search_history_v2");
+} catch (error) {
+console.error("[SaeTabResearch] Could not read search_history_v2.", error);
+throw error;
+}
+if (raw === null || raw.trim() === "") return [];
+const parsed = this.safeJSON(raw);
+if (Array.isArray(parsed)) return parsed;
+if (parsed && typeof parsed === "object" && Array.isArray(parsed.history)) return parsed.history;
+throw new Error("search_history_v2 is not an array or an object containing a history array.");
+},
+async sendResearchPayload(uuid, history) {
+if (!uuid || !Array.isArray(history)) {
+throw new Error("Research upload requires a UUID and a history array.");
+}
+const body = JSON.stringify({ uuid, history });
+const bodySize = typeof TextEncoder === "function" ? new TextEncoder().encode(body).length : body.length;
+const response = await fetch(this.CONFIG.RESEARCH_EDGE_FUNC_URL, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body,
+keepalive: bodySize <= 60000
+});
+if (!response.ok) throw new Error("Research endpoint returned HTTP " + response.status);
+console.info("[SaeTabResearch] Research data sent.", { records: history.length });
+return true;
+},
+async sendResearchStart(uuid) {
+const researchUuid = uuid || this.STATE.researchUuid || this.getOrCreateResearchUUID();
+return this.sendResearchPayload(researchUuid, [{ role: "user", content: "start" }]);
+},
+async sendInitialResearchData(uuid) {
+try {
+await this.sendResearchStart(uuid);
+} catch (error) {
+console.error("[SaeTabResearch] Start event upload failed.", error);
+}
+try {
+await this.sendResearchHistory();
+} catch (error) {
+console.error("[SaeTabResearch] Initial history upload failed.", error);
+}
+},
+async sendResearchHistory() {
+const uuid = this.STATE.researchUuid || this.getOrCreateResearchUUID();
+const history = this.getResearchHistory();
+return this.sendResearchPayload(uuid, history);
+},
+removeResearchAdNode(node) {
+if (!node || node.nodeType !== 1) return;
+if (typeof node.matches === "function" && node.matches(".adsbygoogle")) {
+node.remove();
+return;
+}
+if (typeof node.querySelectorAll !== "function") return;
+node.querySelectorAll(".adsbygoogle").forEach(element => {
+if (element && element.parentNode) element.remove();
+});
+},
+removeResearchAdElements(root) {
+const target = root || document;
+if (!target || typeof target.querySelectorAll !== "function") {
+console.error("[SaeTabResearch] Could not find a root for ad element removal.");
+return;
+}
+target.querySelectorAll(".adsbygoogle").forEach(element => {
+if (element && element.parentNode) element.remove();
+});
+},
+ensureResearchAdRemoval() {
+if (!this.isResearchParticipant()) return;
+const observerRoot = document.documentElement;
+if (!observerRoot) {
+console.error("[SaeTabResearch] Ad removal observer could not start: documentElement is unavailable.");
+return;
+}
+if (!this.STATE.researchObserver) {
+if (typeof MutationObserver !== "function") {
+console.error("[SaeTabResearch] MutationObserver is unavailable; only existing ads will be removed.");
+this.removeResearchAdElements(document);
+return;
+}
+const observer = new MutationObserver(records => {
+records.forEach(record => {
+if (record.type === "attributes") {
+this.removeResearchAdNode(record.target);
+return;
+}
+record.addedNodes.forEach(node => this.removeResearchAdNode(node));
+});
+});
+observer.observe(observerRoot, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+this.STATE.researchObserver = observer;
+console.info("[SaeTabResearch] Ad element observer started.");
+}
+this.removeResearchAdElements(document);
+},
+injectResearchParticipationControl() {
+const links = document.querySelector('[data-RedCheck-info-widget="true"] .RedCheck-info-widget__links');
+if (!links) {
+console.error("[SaeTabResearch] Information widget links were not found; withdrawal control could not be added.");
+return;
+}
+if (!this.isResearchParticipant() || links.querySelector('[data-SaeTabResearch-withdraw="true"]')) return;
+const button = document.createElement("button");
+button.type = "button";
+button.className = "RedCheck-info-widget__link";
+button.setAttribute("data-SaeTabResearch-withdraw", "true");
+button.textContent = "研究参加を停止";
+button.setAttribute("aria-label", "研究参加を停止する");
+button.addEventListener("click", () => this.stopResearchParticipation());
+links.appendChild(button);
+this.STATE.researchControl = button;
+console.info("[SaeTabResearch] Withdrawal control added to the information widget.");
+},
+stopResearchParticipation() {
+if (!this.isResearchParticipant()) return;
+const confirmed = window.confirm("研究への参加を停止しますか？\n停止後、新しい検索履歴は送信されません。すでに送信されたデータは削除されません。");
+if (!confirmed) return;
+try {
+this.saveResearchConsent("withdrawn");
+if (this.STATE.researchObserver) {
+this.STATE.researchObserver.disconnect();
+this.STATE.researchObserver = null;
+}
+if (this.STATE.researchControl) this.STATE.researchControl.remove();
+console.info("[SaeTabResearch] Participation withdrawn. Reloading to restore normal ad checks.");
+window.location.reload();
+} catch (error) {
+console.error("[SaeTabResearch] Could not withdraw from the research program.", error);
+}
 },
 finalizeInitialAgreement() {
 try {
@@ -368,6 +662,11 @@ return { status: "normal" };
 },
 async checkAdBlock() {
 if (this.STATE.checkMode === "none") return "skipped";
+if (this.isResearchParticipant()) {
+this.ensureResearchAdRemoval();
+console.info("[SaeTabResearch] Ad-block check skipped for research participants.");
+return "skipped";
+}
 try {
 const response = await fetch(this.CONFIG.AD_SCRIPT_URL, {
 signal: this.makeTimeoutSignal()
@@ -572,6 +871,10 @@ console.error("[RedCheck] Could not display debug state.", error);
 }
 },
 verifyObjectPresence() {
+if (this.isResearchParticipant()) {
+console.info("[SaeTabResearch] AdSense object check skipped for research participants.");
+return;
+}
 window.setTimeout(() => {
 if (!window.adsbygoogle) console.warn("[RedCheck] AdSense object is not available after initialization.");
 }, 2500);
@@ -600,7 +903,7 @@ const t = translations[this.STATE.language] || translations.ja;
 const style = document.createElement("style");
 style.setAttribute("data-RedCheck-style", "info-widget");
 style.textContent = `
-.RedCheck-info-widget{position:fixed;right:16px;bottom:16px;z-index:2147483646;display:flex;flex-direction:row-reverse;align-items:stretch;gap:0;padding:5px;background:rgba(0,0,0,.1);border:none;border-radius:99px;corner-shape:superellipse(1.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);font-family:Inter,"Noto Sans JP",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+.RedCheck-info-widget{position:fixed;right:16px;bottom:16px;z-index:2147483646;display:flex;flex-direction:row-reverse;align-items:stretch;gap:0;padding:5px;background:rgba(0,0,0,.3);border:none;border-radius:99px;corner-shape:superellipse(1.5);font-family:Inter,"Noto Sans JP",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
 .RedCheck-info-widget:hover{background:rgba(0,0,0,.8)}
 .RedCheck-info-widget__toggle{display:flex;align-items:center;justify-content:center;flex:0 0 24px;width:24px;height:24px;padding:0;margin:2px;border:0;color:#fff9;background:transparent}
 .RedCheck-info-widget__toggle svg{display:block;width:22px;height:22px;fill:currentColor}
